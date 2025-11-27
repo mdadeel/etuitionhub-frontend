@@ -1,0 +1,152 @@
+[
+    {
+        "_id": "tutor001",
+        "displayName": "Md. Rahim Khan",
+        "email": "rahim.tutor@email.com",
+        "photoURL": "https://randomuser.me/api/portraits/men/1.jpg",
+        "role": "tutor",
+        "qualification": "MSc in Mathematics, University of Dhaka",
+        "location": "Dhanmondi, Dhaka",
+        "subjects": [
+            "Mathematics",
+            "Physics",
+            "Higher Math"
+        ],
+        "ratings": 4.8,
+        "experience": "5+ years",
+        "availableDays": [
+            "Saturday",
+            "Monday",
+            "Wednesday"
+        ],
+        "expectedSalary": 8000,
+        "isVerified": true,
+        "mobileNumber": "+880171XXXXXX",
+        "gender": "Male"
+    },
+    {
+        "_id": "tutor002",
+        "displayName": "Fatima Begum",
+        "email": "fatima.edu@email.com",
+        "photoURL": "https://randomuser.me/api/portraits/women/2.jpg",
+        "role": "tutor",
+        "qualification": "BA in English, Jahangirnagar University",
+        "location": "Uttara, Dhaka",
+        "subjects": [
+            "English",
+            "Bangla",
+            "General Science"
+        ],
+        "ratings": 4.9,
+        "experience": "8 years",
+        "availableDays": [
+            "Sunday",
+            "Tuesday",
+            "Thursday"
+        ],
+        "expectedSalary": 7000,
+        "isVerified": true,
+        "mobileNumber": "+880181XXXXXX",
+        "gender": "Female"
+    },
+    {
+        "_id": "tutor003",
+        "displayName": "Karim Ahmed",
+        "email": "karim.physics@email.com",
+        "photoURL": "https://randomuser.me/api/portraits/men/3.jpg",
+        "role": "tutor",
+        "qualification": "BSc in Physics, BUET",
+        "location": "Mirpur, Dhaka",
+        "subjects": [
+            "Physics",
+            "Chemistry",
+            "ICT"
+        ],
+        "ratings": 4.7,
+        "experience": "3 years",
+        "availableDays": [
+            "Friday",
+            "Saturday",
+            "Sunday"
+        ],
+        "expectedSalary": 6000,
+        "isVerified": true,
+        "mobileNumber": "+880191XXXXXX",
+        "gender": "Male"
+    },
+    {
+        "_id": "tutor004",
+        "displayName": "Nusrat Jahan",
+        "email": "nusrat.bio@email.com",
+        "photoURL": "https://randomuser.me/api/portraits/women/4.jpg",
+        "role": "tutor",
+        "qualification": "MBBS (Student), Dhaka Medical College",
+        "location": "Mohammadpur, Dhaka",
+        "subjects": [
+            "Biology",
+            "Chemistry",
+            "General Science"
+        ],
+        "ratings": 4.6,
+        "experience": "2 years",
+        "availableDays": [
+            "Monday",
+            "Wednesday",
+            "Friday"
+        ],
+        "expectedSalary": 9000,
+        "isVerified": true,
+        "mobileNumber": "+880151XXXXXX",
+        "gender": "Female"
+    },
+    {
+        "_id": "tutor005",
+        "displayName": "Hasan Mahmud",
+        "email": "hasan.ict@email.com",
+        "photoURL": "https://randomuser.me/api/portraits/men/5.jpg",
+        "role": "tutor",
+        "qualification": "BSc in CSE, BRAC University",
+        "location": "Gulshan, Dhaka",
+        "subjects": [
+            "ICT",
+            "Computer Science",
+            "Programming"
+        ],
+        "ratings": 4.9,
+        "experience": "4 years",
+        "availableDays": [
+            "Saturday",
+            "Sunday",
+            "Tuesday"
+        ],
+        "expectedSalary": 10000,
+        "isVerified": true,
+        "mobileNumber": "+880161XXXXXX",
+        "gender": "Male"
+    },
+    {
+        "_id": "tutor006",
+        "displayName": "Ayesha Siddika",
+        "email": "ayesha.bangla@email.com",
+        "photoURL": "https://randomuser.me/api/portraits/women/6.jpg",
+        "role": "tutor",
+        "qualification": "MA in Bangla, Rajshahi University",
+        "location": "Banani, Dhaka",
+        "subjects": [
+            "Bangla",
+            "Social Science",
+            "Religion"
+        ],
+        "ratings": 4.5,
+        "experience": "6 years",
+        "availableDays": [
+            "Sunday",
+            "Monday",
+            "Thursday"
+        ],
+        "expectedSalary": 5500,
+        "isVerified": true,
+        "mobileNumber": "+880131XXXXXX",
+        "gender": "Female"
+    }
+]

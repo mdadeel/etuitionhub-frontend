@@ -1,0 +1,109 @@
+[
+    {
+        "_id": "tuition001",
+        "student_email": "student1@email.com",
+        "subject": "Mathematics",
+        "class_name": "Class 10 (SSC)",
+        "location": "Dhanmondi, Dhaka",
+        "salary": 5000,
+        "gender": "Any",
+        "days_per_week": 3,
+        "available_days": [
+            "Saturday",
+            "Monday",
+            "Wednesday"
+        ],
+        "description": "Looking for an experienced math tutor for SSC preparation. Need help with algebra and geometry.",
+        "status": "approved",
+        "createdAt": "2024-12-01T10:00:00Z"
+    },
+    {
+        "_id": "tuition002",
+        "student_email": "student2@email.com",
+        "subject": "English",
+        "class_name": "Class 8",
+        "location": "Uttara, Dhaka",
+        "salary": 4000,
+        "gender": "Female",
+        "days_per_week": 2,
+        "available_days": [
+            "Sunday",
+            "Thursday"
+        ],
+        "description": "Need English tutor to improve speaking and writing skills. Prefer female tutor.",
+        "status": "approved",
+        "createdAt": "2024-12-02T14:30:00Z"
+    },
+    {
+        "_id": "tuition003",
+        "student_email": "student3@email.com",
+        "subject": "Physics",
+        "class_name": "Class 11 (HSC)",
+        "location": "Mirpur, Dhaka",
+        "salary": 7000,
+        "gender": "Male",
+        "days_per_week": 4,
+        "available_days": [
+            "Saturday",
+            "Sunday",
+            "Tuesday",
+            "Thursday"
+        ],
+        "description": "HSC Physics preparation needed. Need someone who can explain complex topics simply.",
+        "status": "approved",
+        "createdAt": "2024-12-03T09:15:00Z"
+    },
+    {
+        "_id": "tuition004",
+        "student_email": "student4@email.com",
+        "subject": "Chemistry",
+        "class_name": "Class 12 (HSC)",
+        "location": "Gulshan, Dhaka",
+        "salary": 8000,
+        "gender": "Any",
+        "days_per_week": 3,
+        "available_days": [
+            "Monday",
+            "Wednesday",
+            "Friday"
+        ],
+        "description": "Need chemistry tutor for organic chemistry and admission test preparation.",
+        "status": "approved",
+        "createdAt": "2024-12-04T16:45:00Z"
+    },
+    {
+        "_id": "tuition005",
+        "student_email": "student5@email.com",
+        "subject": "ICT",
+        "class_name": "Class 9",
+        "location": "Mohammadpur, Dhaka",
+        "salary": 4500,
+        "gender": "Male",
+        "days_per_week": 2,
+        "available_days": [
+            "Friday",
+            "Saturday"
+        ],
+        "description": "Looking for ICT tutor who can teach programming basics and computer fundamentals.",
+        "status": "pending",
+        "createdAt": "2024-12-05T11:20:00Z"
+    },
+    {
+        "_id": "tuition006",
+        "student_email": "student6@email.com",
+        "subject": "Biology",
+        "class_name": "Class 11 (HSC)",
+        "location": "Banani, Dhaka",
+        "salary": 6000,
+        "gender": "Female",
+        "days_per_week": 3,
+        "available_days": [
+            "Sunday",
+            "Tuesday",
+            "Thursday"
+        ],
+        "description": "Need biology tutor for medical admission prep. Female tutor preferred.",
+        "status": "approved",
+        "createdAt": "2024-12-05T18:00:00Z"
+    }
+]
