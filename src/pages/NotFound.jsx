@@ -1,16 +1,21 @@
-// 404 - page paoa jaini
-import { Link } from 'react-router-dom';
-
-const NotFound = () => {
+// 404 page comp
+import { Link } from "react-router-dom"
+let NotFound = () => {
+    console.log('404 page')
     return (
-        <div className="min-h-screen flex items-center justify-center bg-base-200">
+        <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
-                <h1 className="text-9xl font-bold text-primary">404</h1>
-                <p className="text-2xl mt-4 mb-8">Page Not Found</p>
-                <Link to="/" className="btn btn-primary">Go Back Home</Link>
+                <h1 className="text-6xl font-bold mb-4">404</h1>
+// <p className="text-xl mb-6">Page not found</p>
+                <p className="text-xl mb-6">Page paoa jaini</p>
+
+
+                <Link to="/" className="btn bg-teal-600 text-white hover:bg-teal-700 border-none">
+                    Go Home
+                </Link>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default NotFound;
+export default NotFound
