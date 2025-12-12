@@ -1,39 +1,75 @@
-// register page comp
-import { useState } from 'react'
-import { useForm } from "react-hook-form"
+// register page - learned useState after making login with hook-form lol
+import { useState } from "react"
+// import {useForm} from 'react-hook-form'  // not using this anymore
 import { Link, useNavigate } from 'react-router-dom'
-import toast from 'react-hot-toast'
-import { useAuth } from "../contexts/AuthContext"
+import toast from "react-hot-toast"
+import { useAuth } from '../contexts/AuthContext'
 let Register = () => {
     let { register: registerUser, googleLogin } = useAuth()
-    let { register, handleSubmit, watch } = useForm()
     let navigate = useNavigate()
-    let [loading, setLoading] = useState(false)
-    console.log('register page')
 
-    // submit fn
-    let onSubmit = async (data) => {
-        setLoading(true)
-        try {
-            // await registerUser(data.email,data.password,data.name,data.role||'student')
-            await registerUser(data.email, data.password, data.name, data.role || 'student')
-            toast.success('Account created!')
-            navigate('/dashboard')
-        } catch (error) {
-            console.log('register error', error)
-            toast.error('Registration failed')
-        } finally {
-            setLoading(false)
+    // manual state for all fields - different from login page
+    let [name, setName] = useState('')
+    let [email, setEmail] = useState('')
+    let [password, setPassword] = useState('')
+    let [role, setRole] = useState('student')
+    let [loading, setLoading] = useState(false)
+    console.log('register page rendering')
+
+    // manual form submit - no hook form here
+    let handleSubmit = (e) => {
+        e.preventDefault()
+
+        // inline validation - should extract but whatever
+        if (!name) {
+            toast.error('Name dao please')
+            return
         }
+        if (name.length < 3) {
+            toast.error('Name ta boro kore dao')
+            return
+        }
+
+        // email check
+        if (!email) {
+            toast.error('Email dao')
+            return
+        }
+        if (!email.includes('@')) {
+            toast.error('Email format thik na')
+            return
+        }
+
+        // password validation
+        if (!password) {
+            toast.error('Password dao')
+            return
+        }
+        if (password.length < 6) {
+            toast.error('Password minimum 6 character')
+            return
+        }
+
+        // all good - register kortesi
+        setLoading(true)
+        registerUser(email, password, name, role)
+            .then(() => {
+                toast.success('Account create hoye geche!')
+                setLoading(false)
+                navigate('/dashboard')
+            })
+            .catch(err => {
+                console.log('registration error', err)
+                toast.error('Registration hoinai')
+                setLoading(false)
+            })
     }
 
-    // google login fn
+    // google login
     let handleGoogleLogin = async () => {
         try {
             await googleLogin()
-            toast.success('Google login hoise')
-
-
+            toast.success('Google diye hoise')
             navigate('/dashboard')
         } catch (error) {
             toast.error('Google login failed')
@@ -46,30 +82,34 @@ let Register = () => {
                 <div className="card-body">
                     <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
 
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSubmit}>
                         <div className="form-control mb-4">
-                            <label className="label">Full Name</label>
-                            <input type="text" {...register("name", { required: true })} className="input input-bordered" />
+                            <label className="label" style={{ marginBottom: '4px' }}>Full Name</label>
+                            <input type="text" value={name} onChange={e => setName(e.target.value)} className="input input-bordered" />
                         </div>
+
+
                         <div className="form-control mb-4">
                             <label className="label">Email</label>
-// <input type="email" {...register("email")} className="input input-bordered" />
-                            <input type="email" {...register("email", { required: true })} className="input input-bordered" />
+                            <input type="email" value={email}
+                                onChange={e => setEmail(e.target.value)} className="input input-bordered" />
                         </div>
                         <div className="form-control mb-4">
                             <label className="label">Password</label>
-                            <input type="password" {...register("password", { required: true, minLength: 6 })} className="input input-bordered" />
+                            <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="input input-bordered" />
                         </div>
                         <div className="form-control mb-4">
                             <label className="label">Role</label>
-                            <select {...register("role")} className="select select-bordered">
-                                <option value="student">Student</option>
-                                <option value="tutor">Tutor</option>
-                            </select>
+// <select value={role} onChange={e => setRole(e.target.value)}>
+                                <select value={role} onChange={e => setRole(e.target.value)} className="select select-bordered">
+                                    <option value="student">Student</option>
+                                    <option value="tutor">Tutor</option>
+                                </select>
                         </div>
 
 
-                        <button type="submit" disabled={loading} className="btn w-full bg-teal-600 text-white hover:bg-teal-700 border-none">
+                        <button type="submit" disabled={loading} className="btn w-full bg-teal-600 text-white 
+hover:bg-teal-700 border-none">
                             {loading ? "Creating..." : "Create Account"}
                         </button>
                     </form>

@@ -53,13 +53,14 @@ let Login = () => {
                             <input type="email" {...register("email", { required: true })} className="input input-bordered" />
                         </div>
                         <div className="form-control mb-4">
-                            <label className="label">Password</label>
+                            <label className="label" style={{ marginBottom: '3px' }}>Password</label>
 // <input type="password" {...register("password")} className="input input-bordered" />
                             <input type="password" {...register("password", { required: true })} className="input input-bordered" />
                         </div>
 
 
-                        <button type="submit" className="btn w-full bg-teal-600 text-white hover:bg-teal-700 border-none">Login</button>
+                        <button type="submit" className="btn w-full bg-teal-600 text-white hover:bg-teal-700 
+border-none">Login</button>
                     </form>
 
                     <div className="divider">OR</div>

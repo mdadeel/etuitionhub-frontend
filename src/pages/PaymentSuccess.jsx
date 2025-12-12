@@ -1,56 +1,36 @@
-// payment success page - stripe checkout er pore dekhabe
+// payment success page
 import { useEffect } from "react"
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import toast from 'react-hot-toast'
-
-function PaymentSuccess() {
+import { Link, useNavigate } from 'react-router-dom'
+let PaymentSuccess = () => {
     let navigate = useNavigate()
-    let [searchParams] = useSearchParams()
+    console.log('payment success')
 
     useEffect(() => {
-        let sessionId = searchParams.get('session_id')
-        console.log('payment success, session:', sessionId) // debug
-
-        if (sessionId) {
-            // payment success hoise!
-            toast.success('Payment successful! Tutor approved hoise')
-
-            // 3 second pore dashboard e jabe
-            setTimeout(() => {
-                navigate('/dashboard')
-            }, 3000)
-        } else {
-            // session id nai - direct dashboard e jao
+        // auto redirect after 3000ms
+        let timer = setTimeout(() => {
             navigate('/dashboard')
-        }
+        }, 3000)
+
+
+        return () => clearTimeout(timer)
     }, [])
 
     return (
-        <div className="min-h-screen bg-base-200 flex items-center justify-center">
-            <div className="card bg-base-100 shadow-2xl max-w-lg">
-                <div className="card-body text-center">
-                    <div className="text-6xl mb-4">✅</div>
-                    <h2 className="card-title text-3xl justify-center mb-2">Payment Successful!</h2>
-                    <p className="text-lg mb-4">Your payment has been processed successfully</p>
-                    <p className="text-gray-600">The tutor application has been approved</p>
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center max-w-md">
+                <div className="text-6xl mb-4">✅</div>
+                <h1 className="text-3xl font-bold mb-4">Payment Successful!</h1>
+// <p className="mb-6">Thank you for your payment</p>
+                <p className="mb-6">Payment hoise! Dhonnobad</p>
 
 
-                    <p className="text-sm text-gray-500 mt-4">Redirecting to dashboard...</p>
-
-                    <div className="card-actions justify-center mt-6">
-                        <button
-                            className="btn btn-primary"
-                            onClick={() => navigate('/dashboard')}
-                        >
-                            Go to Dashboard
-                        </button>
-                        <button
-                            className="btn btn-outline"
-                            onClick={() => navigate('/payment-history')}
-                        >
-                            View Payment History
-                        </button>
-                    </div>
+                <div className="space-x-4">
+                    <Link to="/dashboard" className="btn bg-teal-600 text-white hover:bg-teal-700 border-none">
+                        Go to Dashboard
+                    </Link>
+                    <Link to="/payment-history" className="btn btn-outline">
+                        Payment History
+                    </Link>
                 </div>
             </div>
         </div>
