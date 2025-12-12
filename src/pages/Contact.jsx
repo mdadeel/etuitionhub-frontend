@@ -27,7 +27,6 @@ let Contact = () => {
                     </div>
                     <div className="form-control">
                         <label className="label">Message</label>
-// <textarea className="textarea textarea-bordered h-24"></textarea>
                         <textarea className="textarea textarea-bordered h-24" required></textarea>
                     </div>
                     <button type="submit" className="btn bg-teal-600 text-white hover:bg-teal-700 w-full border-none">

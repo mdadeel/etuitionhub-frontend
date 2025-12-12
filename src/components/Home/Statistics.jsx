@@ -19,7 +19,6 @@ let Statistics = () => {
                     {stats.map((stat, index) => (
                         <div key={index}>
                             <div className="text-4xl font-bold">
-// <CountUp end={stat.value} duration={3} />{stat.suffix}
                                 <CountUp end={stat.value} duration={2.5} />{stat.suffix}
                             </div>
                             <p className="mt-2 opacity-80">{stat.label}</p>

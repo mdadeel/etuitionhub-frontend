@@ -8,7 +8,6 @@ let About = () => {
 
             <div className="prose lg:prose-xl">
                 <p>e-tuitionBD is Bangladesh's premier online tuition platform</p>
-// <p>connecting students with qualified tutors</p>
                 <p>connecting students with qualified tutors across the country</p>
 
                 <h2>Our Mission</h2>

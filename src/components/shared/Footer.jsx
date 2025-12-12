@@ -1,99 +1,91 @@
-// footer component - page er niche thakbe
-// about, links, contact info sob ekhane ase
-// TODO: newsletter signup form add korbo maybe
-import {Link,useLocation} from 'react-router-dom'
-import {FaFacebook,FaLinkedin,FaYoutube} from 'react-icons/fa'
-import {FaXTwitter} from 'react-icons/fa6' // X logo use kortesi
-import {AiOutlineMail,AiOutlinePhone} from "react-icons/ai";
-import {BiCurrentLocation} from "react-icons/bi";
+import { Link } from 'react-router-dom'
+import { FaFacebook, FaLinkedin, FaYoutube } from 'react-icons/fa'
+import { FaXTwitter } from 'react-icons/fa6'
+import { AiOutlineMail, AiOutlinePhone } from "react-icons/ai"
+import { BiCurrentLocation } from "react-icons/bi"
 
-// arrow function define kortesi
-const Footer=()=>{
-    // footer show korbo kina check
-    const allowedPath=true;
-    // const[allowedPath,setAllowedPath]=useState(true);
-    // const pathname=useLocation();
-
-    // NOTE: dashboard e footer hide korbo maybe?
-    // useEffect(()=>{
-    //     pathname.includes('/dashboard')?setAllowedPath(false):setAllowedPath(true);
-    // },[pathname]);
-
+const Footer = () => {
     return (
-        <>
-            {allowedPath && (
-                <footer className="bg-teal-600 text-slate-100 mt-8 lg:mt-32">
-                    <div className="footer p-8 pb-4 md:pt-12 md:pb-8 max-w-7xl mx-auto grid gap-8 lg:gap-18 lg:grid-cols-5">
-                        {/* About section - maybe add logo here too */}
-                        <div className="col-span-2">
-                            <Link to="/" className="flex gap-3 items-center text-3xl text-slate-50 font-bold">
-                                <span className='flex items-center banner-highlighted-text !text-2xl md:!text-3xl'>e-tuitionBD</span>
-                            </Link>
-                            <p className="text-justify mt-2 mb-2">
-                                Your trusted platform for connecting students with qualified tutors.
-                                Find the perfect tutor for home tuition across Bangladesh.
-                            </p>
-                            {/* <p className='text-justify mb-2'>
-                                Open New Horizons: Immerse Yourself in the Art of Language at EduMentor – Where Fluency Fuels Boundless Connections!
-                            </p> */}
-                            <header>
-                                <h1 className='text-xl mb-2 underline underline-offset-2'>Get in touch with us</h1>
-                            </header>
-                            <div className="flex gap-4">
-                                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" data-tip="Facebook" className="tooltip tooltip-bottom cursor-pointer transition duration-200 transform hover:-translate-y-2 border rounded-full p-2">
-                                    <FaFacebook className="text-2xl" />
-                                </a>
-                                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" data-tip="Twitter" className="tooltip tooltip-bottom cursor-pointer transition duration-200 transform hover:-translate-y-2 border rounded-full p-2">
-                                    <FaXTwitter className="text-2xl" /> {/* X logo not Twitter bird */}
-                                </a>
-                                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube" data-tip="YouTube" className="tooltip tooltip-bottom cursor-pointer transition duration-200 transform hover:-translate-y-2 border rounded-full p-2">
-                                    <FaYoutube className="text-2xl" />
-                                </a>
+        <footer className="bg-slate-800 text-gray-300 mt-16">
+            {/* Main Footer Content */}
+            <div className="max-w-7xl mx-auto px-6 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+
+                    {/* Brand Section */}
+                    <div className="lg:col-span-1">
+                        <Link to="/" className="text-2xl font-bold text-teal-400 mb-4 inline-block">
+                            e-tuitionBD
+                        </Link>
+                        <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                            Your trusted platform for connecting students with qualified tutors across Bangladesh.
+                        </p>
+
+                        {/* Social Icons */}
+                        <div className="flex gap-3">
+                            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+                                className="w-10 h-10 bg-slate-700 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors duration-300">
+                                <FaFacebook className="text-lg" />
+                            </a>
+                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+                                className="w-10 h-10 bg-slate-700 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors duration-300">
+                                <FaXTwitter className="text-lg" />
+                            </a>
+                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                                className="w-10 h-10 bg-slate-700 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors duration-300">
+                                <FaLinkedin className="text-lg" />
+                            </a>
+                            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+                                className="w-10 h-10 bg-slate-700 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors duration-300">
+                                <FaYoutube className="text-lg" />
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Quick Links */}
+                    <div>
+                        <h3 className="text-white font-semibold text-lg mb-4">Quick Links</h3>
+                        <ul className="space-y-3">
+                            <li><Link to="/" className="hover:text-teal-400 transition-colors">Home</Link></li>
+                            <li><Link to="/tuitions" className="hover:text-teal-400 transition-colors">Browse Tuitions</Link></li>
+                            <li><Link to="/tutors" className="hover:text-teal-400 transition-colors">Find Tutors</Link></li>
+                            <li><Link to="/dashboard" className="hover:text-teal-400 transition-colors">Dashboard</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Company */}
+                    <div>
+                        <h3 className="text-white font-semibold text-lg mb-4">Company</h3>
+                        <ul className="space-y-3">
+                            <li><Link to="/about" className="hover:text-teal-400 transition-colors">About Us</Link></li>
+                            <li><Link to="/contact" className="hover:text-teal-400 transition-colors">Contact</Link></li>
+                            <li><Link to="/login" className="hover:text-teal-400 transition-colors">Login</Link></li>
+                            <li><Link to="/register" className="hover:text-teal-400 transition-colors">Register</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Contact Info */}
+                    <div>
+                        <h3 className="text-white font-semibold text-lg mb-4">Contact Us</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-start gap-3">
+                                <BiCurrentLocation className="text-teal-400 text-xl mt-1 shrink-0" />
+                                <span className="text-gray-400">Gulshan, Dhaka-1212, Bangladesh</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <AiOutlineMail className="text-teal-400 text-xl shrink-0" />
+                                <span className="text-gray-400">info@e-tuitionbd.com</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <AiOutlinePhone className="text-teal-400 text-xl shrink-0" />
+                                <span className="text-gray-400">+880 1XXX-XXXXXX</span>
                             </div>
                         </div>
-
-                        {/* About Us - TODO: add more links */}
-                        <div className='col-span-1 md:ml-8'>
-                            <span className="footer-title text-lg">About Us</span>
-                            <Link to="/contact" className="link link-hover">Contact</Link>
-                            <Link to="/about" className="link link-hover">About Us</Link>
-                        </div>
-
-                        {/* Quick Links */}
-                        <div className='col-span-1'>
-                            <span className="footer-title text-lg">Quick Links</span>
-                            <Link to="/" className="link link-hover">Home</Link>
-                            <Link to="/tutors" className="link link-hover">Tutors</Link>
-                            <Link to="/tuitions" className="link link-hover">Tuitions</Link>
-                        </div>
-
-                        {/* Contact Info - using placeholder phone for now */}
-                        <div className='col-span-2'>
-                            <span className="footer-title text-lg">CONTACT</span>
-                            <p className='mb-2 text-slate-300'>Contact us via phone, email or visit us in our Head Office.</p>
-                            <p className='flex gap-2 items-center font-normal'>
-                                <BiCurrentLocation className='text-lg text-slate-100' />
-                                <span className='text-slate-300'>Gulshan, Dhaka, Bangladesh</span>
-                            </p>
-                            <p className='flex gap-2 items-center font-normal mt-1'>
-                                <AiOutlineMail className='text-lg text-slate-100' />
-                                <span className='text-slate-300'>info@e-tuitionbd.com</span>
-                            </p>
-                            <p className='flex gap-2 items-center font-normal mt-1'>
-                                <AiOutlinePhone className='text-lg text-slate-100' />
-                                <span className='text-slate-300'>+880 1XXX-XXXXXX</span>
-                            </p>
-                        </div>
                     </div>
-
-                    {/* Copyright - keeping it simple */}
-                    <div className="text-sm lg:text-base mx-auto mt-8 py-6 border-t-2 border-teal-500 flex flex-col gap-2 justify-center items-center">
-                        <p className='text-center px-16'>Copyright © {new Date().getFullYear()} e-tuitionBD. All Rights Reserved.</p>
-                    </div>
-                </footer>
-            )}
-        </>
+                </div>
+            </div>
+        </footer>
     )
 }
 
 export default Footer
+

@@ -10,37 +10,36 @@ const Profile = () => {
     let { register, handleSubmit } = useForm();
 
     // form submit handler - profile update kortesi
-    // NOTE: backend API ready na ekhono
-    // TODO: implement korbo profile update API
     const onSubmit = async (data) => {
-        // loading true kortesi
         setLoading(true);
 
-        // validate kortesi data ase kina
-        if (!data) {
+        if (!data || !dbUser?._id) {
             toast.error('Data nai')
             setLoading(false)
             return
         }
 
-        // try catch use kortesi
         try {
-            // TODO: backend e profile update implement korbo
-            // PUT request pathabo /api/users/:id te
-            console.log('Update profile:', data); // debug log
+            // API call to update profile
+            const res = await fetch(`http://localhost:5000/api/users/${dbUser._id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    displayName: data.displayName,
+                    photoURL: data.photoURL
+                })
+            });
 
-            // wait kortesi 1 second - fake delay
-            setTimeout(() => {
-                toast.success('Profile updated hoise!')
-                setLoading(false)
-            }, 1000) // magic number - 1 second
+            if (res.ok) {
+                toast.success('Profile updated!')
+            } else {
+                toast.error('Update failed')
+            }
         } catch (error) {
-            // error handle kortesi
             console.log('update error:', error)
             toast.error('Update hoinai')
+        } finally {
             setLoading(false)
-
-            // FIXME: proper error handling add korbo
         }
     };
 

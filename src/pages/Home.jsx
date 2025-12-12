@@ -28,7 +28,6 @@ let Home = () => {
 
             <Statistics />
             <WhyChooseUs />
-// <Testimonials />
             <Testimonials />
         </div>
     )

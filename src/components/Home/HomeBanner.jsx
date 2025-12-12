@@ -1,40 +1,42 @@
-// Home Banner - hero section dekhabe
-// users jei first jinish dekhbe
-// Removed gradient - solid colors use kortesi now
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-// not using gradient - project requirement onujayi
-// const animationVariants={
-//     hidden:{opacity:0,y:50},
-//     visible:{opacity:1,y:0}
-// };  // maybe use this later?
-
 const HomeBanner = () => {
     return (
-        <div className="hero min-h-[70vh] bg-teal-600 text-white">
-            <div className="hero-content text-center">
-                {/* <motion.div variants={animationVariants} initial="hidden" animate="visible"> */}
+        <div className="relative min-h-[80vh] bg-teal-600 overflow-hidden">
+            <div className="relative z-10 container mx-auto px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]">
                 <motion.div
-                    className="max-w-2xl"
-                    initial={{ opacity: 0, y: 20 }}
+                    className="text-center max-w-3xl"
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.8 }}
                 >
-                    <h1 className="text-5xl font-bold mb-6">
-                        Find Your Perfect Tutor
+                    <span className="inline-block px-4 py-2 bg-teal-500/20 text-teal-300 rounded-full text-sm font-medium mb-6">
+                        Trusted by 1000+ Students & Tutors
+                    </span>
+
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                        Find Your Perfect
+                        <span className="text-teal-400"> Tutor</span>
                     </h1>
-                    {/* Changed this text a few times - hope its good now */}
-                    <p className="text-xl mb-8 opacity-90">
+
+                    <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
                         Connect with qualified tutors for personalized home tuition.
                         Quality education at your doorstep across Bangladesh.
                     </p>
+
                     <div className="flex gap-4 justify-center flex-wrap">
-                        <Link to="/tutors" className="btn btn-lg bg-white text-teal-600 hover:bg-gray-100 border-none">
+                        <Link
+                            to="/tutors"
+                            className="btn btn-lg bg-teal-500 hover:bg-teal-600 text-white border-none font-semibold px-8 shadow-lg shadow-teal-500/30"
+                        >
                             Find a Tutor
                         </Link>
-                        <Link to="/register" className="btn btn-lg btn-outline border-white text-white hover:bg-white hover:text-teal-600">
-                            Become a Tutor
+                        <Link
+                            to="/tuitions"
+                            className="btn btn-lg bg-transparent border-2 border-white/30 text-white hover:bg-white/10 font-semibold px-8"
+                        >
+                            Browse Tuitions
                         </Link>
                     </div>
                 </motion.div>
@@ -44,3 +46,5 @@ const HomeBanner = () => {
 };
 
 export default HomeBanner;
+
+

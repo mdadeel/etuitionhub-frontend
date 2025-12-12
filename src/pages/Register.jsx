@@ -12,6 +12,7 @@ let Register = () => {
     let [name, setName] = useState('')
     let [email, setEmail] = useState('')
     let [password, setPassword] = useState('')
+    let [phone, setPhone] = useState('')
     let [role, setRole] = useState('student')
     let [loading, setLoading] = useState(false)
     console.log('register page rendering')
@@ -50,9 +51,9 @@ let Register = () => {
             return
         }
 
-        // all good - register kortesi
+        // all good - register kortesi with phone
         setLoading(true)
-        registerUser(email, password, name, role)
+        registerUser(email, password, name, role, phone)
             .then(() => {
                 toast.success('Account create hoye geche!')
                 setLoading(false)
@@ -65,10 +66,10 @@ let Register = () => {
             })
     }
 
-    // google login
+    // google login - pass selected role
     let handleGoogleLogin = async () => {
         try {
-            await googleLogin()
+            await googleLogin(role)  // Pass the selected role!
             toast.success('Google diye hoise')
             navigate('/dashboard')
         } catch (error) {
@@ -119,6 +120,19 @@ let Register = () => {
                                 onChange={e => setPassword(e.target.value)}
                                 className="input input-bordered w-full bg-white text-gray-900 placeholder-gray-400"
                                 placeholder="Minimum 6 characters"
+                            />
+                        </div>
+
+                        <div className="form-control mb-4">
+                            <label className="label">
+                                <span className="label-text font-medium">Phone Number</span>
+                            </label>
+                            <input
+                                type="tel"
+                                value={phone}
+                                onChange={e => setPhone(e.target.value)}
+                                className="input input-bordered w-full bg-white text-gray-900 placeholder-gray-400"
+                                placeholder="01XXXXXXXXX"
                             />
                         </div>
 

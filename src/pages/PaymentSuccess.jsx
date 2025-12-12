@@ -20,8 +20,7 @@ let PaymentSuccess = () => {
             <div className="text-center max-w-md">
                 <div className="text-6xl mb-4">✅</div>
                 <h1 className="text-3xl font-bold mb-4">Payment Successful!</h1>
-// <p className="mb-6">Thank you for your payment</p>
-                <p className="mb-6">Payment hoise! Dhonnobad</p>
+                <p className="mb-6">Thank you for your payment!</p>
 
 
                 <div className="space-x-4">

@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     let googleProvider = new GoogleAuthProvider();
 
     // user ke database e save korbo
-    const saveUserToDB = async (firebaseUser, role) => {
+    const saveUserToDB = async (firebaseUser, role, mobileNumber = '') => {
         let toastId = toast.loading("Saving user...");
         try {
             let userData = {
@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }) => {
                 email: firebaseUser.email,
                 photoURL: firebaseUser.photoURL || '',
                 role: role,
+                mobileNumber: mobileNumber,
                 isVerified: false
             };
 
@@ -99,46 +100,33 @@ export const AuthProvider = ({ children }) => {
     }, [user, userRole]);
 
     // registration function - email password diye register korbo
-    // NOTE: this function ta long hoye geche, maybe refactor korbo
-    const register = async (email, password, name, role = 'student') => {
-        // loading true kortesi
+    const register = async (email, password, name, role = 'student', phone = '') => {
         setLoading(true);
 
-        // validate email - check kortesi @ ase kina
-        // TODO: better validation add korbo
         if (!email.includes('@')) {
             toast.error('Email thik na!')
             setLoading(false)
             return
         }
 
-        // validate password length - minimum 6 character
         if (password.length < 6) {
             toast.error('Password 6 character ba beshi hote hobe')
             setLoading(false)
             return
         }
 
-        // validate name - empty hole reject
         if (!name || name.trim().length === 0) {
             toast.error('Name dao')
             setLoading(false)
             return
         }
 
-        // firebase e user create kortesi
-        // try catch use kortesi error handle korar jonno
         try {
-            // createUserWithEmailAndPassword call kortesi
             let result = await createUserWithEmailAndPassword(auth, email, password);
-
-            // profile update kortesi name diye
             await updateProfile(result.user, { displayName: name });
 
-            // database e user save kortesi
-            // TODO: error handling improve korbo ekhane
-            // FIXME: sometimes db save fail hoy but user create hoye jay
-            await saveUserToDB(result.user, role);
+            // database e user save kortesi with phone
+            await saveUserToDB(result.user, role, phone);
 
             // loading false kortesi
             setLoading(false)
@@ -160,7 +148,8 @@ export const AuthProvider = ({ children }) => {
     };
 
     // Google login - check if user exists first, preserve role
-    const googleLogin = async () => {
+    // If role is passed (from Register page), use it for new users
+    const googleLogin = async (selectedRole = 'student') => {
         setLoading(true);
         try {
             let result = await signInWithPopup(auth, googleProvider);
@@ -172,10 +161,9 @@ export const AuthProvider = ({ children }) => {
                 // User exists - don't overwrite their role
                 return result;
             } catch (error) {
-                // User doesn't exist - save as new student
-                console.log('📝 New Google user - saving as student');
-                await saveUserToDB(result.user, 'student');
-                console.log('google user saved as student') // debug
+                // User doesn't exist - save with selected role
+                console.log('📝 New Google user - saving as:', selectedRole);
+                await saveUserToDB(result.user, selectedRole);
                 return result;
             }
         } catch (error) {

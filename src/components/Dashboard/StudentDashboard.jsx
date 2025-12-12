@@ -300,12 +300,20 @@ const StudentDashboard = () => {
                                             <td>{job.salary}</td>
                                             <td><div className="badge badge-info">{job.status}</div></td>
                                             <td>
-                                                <button
-                                                    className="btn btn-error btn-xs"
-                                                    onClick={() => handleDeleteTuition(job._id)}
-                                                >
-                                                    Delete
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        className="btn btn-info btn-xs"
+                                                        onClick={() => window.location.href = `/tuition/${job._id}`}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-error btn-xs"
+                                                        onClick={() => handleDeleteTuition(job._id)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
@@ -412,7 +420,7 @@ const StudentDashboard = () => {
                 <div className="bg-base-100 p-6 rounded-lg shadow">
                     <h2 className="text-xl font-bold mb-4">Payment History</h2>
                     <p className="text-gray-600 mb-4">View all your payment transactions for tutor bookings.</p>
-                    
+
                     <div className="stats shadow w-full mb-6">
                         <div className="stat">
                             <div className="stat-title">Total Paid</div>

@@ -8,6 +8,7 @@ const TutorDashboard = () => {
     const [activeTab, setActiveTab] = useState("overview")
     let [apps, setApps] = useState([]) // using let even tho const would work
     const [loading, setLoading] = useState(true)
+    const [revenue, setRevenue] = useState([])
 
     // get applications data
     useEffect(() => {
@@ -19,29 +20,27 @@ const TutorDashboard = () => {
 
     // main fn to load apps
     const loadApps = async () => {
-        // fetch from API
         try {
             let response = await fetch(`http://localhost:5000/api/applications/tutor/${user.email}`)
-            // const data=await response.json()
             let data = await response.json()
-            console.log('got apps:', data) // debugging - helpful
+            console.log('got apps:', data)
             setApps(data)
+
+            // Also fetch revenue history
+            let revenueRes = await fetch(`http://localhost:5000/api/payments/tutor/${user.email}`)
+            if (revenueRes.ok) {
+                let revenueData = await revenueRes.json()
+                setRevenue(revenueData)
+            }
         } catch (e) {
             console.error("error:", e)
-            // TODO: show toast message
         } finally {
             setLoading(false)
         }
     }
 
-    // calculate kori total earnings
-    let totalEarnings = 0
-    apps.forEach(app => {
-        if (app.status == 'approved') {
-            totalEarnings += app.expectedSalary
-        }
-    })
-
+    // calculate kori total earnings from revenue
+    let totalEarnings = revenue.reduce((sum, p) => sum + (p.amount || 0), 0)
     let activeStudents = apps.filter(a => a.status === 'approved').length
 
     // delete application - pending thakle delete kora jabe
@@ -79,13 +78,15 @@ const TutorDashboard = () => {
                 <h1 className="text-2xl font-bold">Tutor Dashboard</h1>
 
                 {/* tab navigation */}
-                <div className="tabs tabs-boxed">
+                <div className="tabs tabs-boxed flex-wrap">
                     <a className={`tab ${activeTab === 'overview' ? 'tab-active' : ''}`}
                         onClick={() => setActiveTab('overview')}>Overview</a>
                     <a className={`tab ${activeTab === 'applications' ? 'tab-active' : ''}`}
                         onClick={() => setActiveTab("applications")}>My Applications</a>
                     <a className={`tab ${activeTab === 'ongoing' ? 'tab-active' : ''}`}
                         onClick={() => setActiveTab('ongoing')}>Ongoing Tuitions</a>
+                    <a className={`tab ${activeTab === 'revenue' ? 'tab-active' : ''}`}
+                        onClick={() => setActiveTab('revenue')}>Revenue History</a>
                 </div>
             </div>
 
@@ -142,8 +143,8 @@ const TutorDashboard = () => {
                                             <td>
                                                 {/* status badge - color coded */}
                                                 <div className={`badge ${app.status === 'approved' ? 'badge-success' :
-                                                        app.status === 'rejected' ? 'badge-error' :
-                                                            'badge-warning'
+                                                    app.status === 'rejected' ? 'badge-error' :
+                                                        'badge-warning'
                                                     }`}>
                                                     {app.status}
                                                 </div>
@@ -176,7 +177,6 @@ const TutorDashboard = () => {
                         <p className="text-center text-gray-500 py-8">No ongoing tuitions - apply for more!</p>
                     ) : (
                         <div className="grid gap-4">
-                            {/* approved tuitions grid */}
                             {apps.filter(a => a.status === 'approved').map(app => (
                                 <div key={app._id} className="card bg-base-200 shadow">
                                     <div className="card-body">
@@ -184,11 +184,58 @@ const TutorDashboard = () => {
                                         <p className="text-sm">Student: {app.studentEmail}</p>
                                         <p className="text-sm">Location: {app.tuitionId?.location}</p>
                                         <p className="text-sm font-bold">Monthly Salary: ৳{app.expectedSalary}</p>
-                                        {/* TODO: add contact student button */}
-                                        {/* TODO: add mark as completed option */}
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Revenue History Tab */}
+            {activeTab === 'revenue' && (
+                <div className="bg-base-100 p-6 rounded-lg shadow">
+                    <h2 className="text-xl font-bold mb-4">Revenue History</h2>
+
+                    {/* Total earnings card */}
+                    <div className="stat bg-teal-50 rounded-lg mb-6 inline-block">
+                        <div className="stat-title">Total Earnings</div>
+                        <div className="stat-value text-teal-600">৳{totalEarnings}</div>
+                        <div className="stat-desc">From {revenue.length} payments</div>
+                    </div>
+
+                    {revenue.length === 0 ? (
+                        <p className="text-center text-gray-500 py-8">No payment history yet</p>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="table w-full">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Student</th>
+                                        <th>Subject</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {revenue.map((payment, idx) => (
+                                        <tr key={payment._id}>
+                                            <td>{idx + 1}</td>
+                                            <td>{payment.studentEmail}</td>
+                                            <td>{payment.tuitionId?.subject || 'N/A'}</td>
+                                            <td className="font-semibold text-teal-600">৳{payment.amount}</td>
+                                            <td>
+                                                <span className={`badge ${payment.status === 'completed' ? 'badge-success' : 'badge-warning'}`}>
+                                                    {payment.status}
+                                                </span>
+                                            </td>
+                                            <td>{new Date(payment.createdAt).toLocaleDateString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     )}
                 </div>

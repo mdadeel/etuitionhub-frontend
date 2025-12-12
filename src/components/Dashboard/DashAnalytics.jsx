@@ -1,46 +1,59 @@
 // admin dashboard - analytics/reports
 // Admin Analytics - platform er stats dekhabe
 import { useState, useEffect } from "react"
-import CountUp from 'react-countup'
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 function DashAnalytics() {
     let [stats, setStats] = useState({
         totalUsers: 0,
         totalTutors: 0,
         totalStudents: 0,
+        totalAdmins: 0,
         totalTuitions: 0,
+        pendingTuitions: 0,
+        approvedTuitions: 0,
         totalApplications: 0,
         totalRevenue: 0
     })
     const [loading, setLoading] = useState(true)
+    const [transactions, setTransactions] = useState([])
+
+    // Colors for charts
+    const COLORS = ['#0d9488', '#7c3aed', '#f59e0b', '#ef4444']
 
     useEffect(() => {
-        // main fn to fetch stats
         const fetchStats = async () => {
             try {
-                // fetch all data and calculate stats
                 let usersRes = await fetch("http://localhost:5000/api/users")
                 let tuitionsRes = await fetch('http://localhost:5000/api/tuitions')
-
+                let paymentsRes = await fetch('http://localhost:5000/api/payments/all')
 
                 if (usersRes.ok && tuitionsRes.ok) {
-                    // const users = await usersRes.json()
                     let users = await usersRes.json()
                     let tuitions = await tuitionsRes.json()
+                    let payments = paymentsRes.ok ? await paymentsRes.json() : []
 
                     let tutors = users.filter(u => u.role === 'tutor')
-                    const students = users.filter(u => u.role === "student")
+                    let students = users.filter(u => u.role === "student")
+                    let admins = users.filter(u => u.role === 'admin')
+                    let pending = tuitions.filter(t => t.status === 'pending')
+                    let approved = tuitions.filter(t => t.status === 'approved')
 
-                    // get applications - we don't have endpoint for all apps yet
-                    // so this will be 0 for now - TODO: add later
+                    // Calculate total revenue from completed payments
+                    let completedPayments = payments.filter(p => p.status === 'completed')
+                    let revenue = completedPayments.reduce((sum, p) => sum + (p.amount || 0), 0)
 
+                    setTransactions(payments)
                     setStats({
                         totalUsers: users.length,
                         totalTutors: tutors.length,
                         totalStudents: students.length,
+                        totalAdmins: admins.length,
                         totalTuitions: tuitions.length,
-                        totalApplications: 0, // placeholder
-                        totalRevenue: 0 // placeholder - will come from bookings/payments
+                        pendingTuitions: pending.length,
+                        approvedTuitions: approved.length,
+                        totalApplications: 0,
+                        totalRevenue: revenue
                     })
                 }
                 setLoading(false)
@@ -52,19 +65,31 @@ function DashAnalytics() {
         fetchStats()
     }, [])
 
+    // Chart data
+    const userDistribution = [
+        { name: 'Students', value: stats.totalStudents },
+        { name: 'Tutors', value: stats.totalTutors },
+        { name: 'Admins', value: stats.totalAdmins }
+    ]
+
+    const tuitionStatus = [
+        { name: 'Pending', count: stats.pendingTuitions, fill: '#f59e0b' },
+        { name: 'Approved', count: stats.approvedTuitions, fill: '#10b981' },
+        { name: 'Total', count: stats.totalTuitions, fill: '#0d9488' }
+    ]
+
     if (loading) {
         return <div className="flex justify-center py-12">
             <span className="loading loading-spinner loading-lg"></span>
         </div>
     }
 
-    // main render
-    console.log('rendering analytics')
     return (
         <div>
             <h2 className="text-2xl font-bold mb-6">Platform Analytics</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 <div className="stat bg-base-100 shadow rounded-lg">
                     <div className="stat-figure text-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-8 h-8 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -93,9 +118,9 @@ function DashAnalytics() {
                 </div>
 
                 <div className="stat bg-base-100 shadow rounded-lg">
-                    <div className="stat-title">Applications</div>
-                    <div className="stat-value">{stats.totalApplications}</div>
-                    <div className="stat-desc">tutor applications</div>
+                    <div className="stat-title">Pending Approval</div>
+                    <div className="stat-value text-warning">{stats.pendingTuitions}</div>
+                    <div className="stat-desc">awaiting review</div>
                 </div>
 
                 <div className="stat bg-base-100 shadow rounded-lg">
@@ -108,12 +133,92 @@ function DashAnalytics() {
                 </div>
             </div>
 
-            <div className="alert alert-info mt-8">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span>revenue tracking will be fully functional once payment integration is complete.</span>
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                {/* User Distribution Pie Chart */}
+                <div className="bg-base-100 p-6 rounded-lg shadow">
+                    <h3 className="text-lg font-bold mb-4">User Distribution</h3>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <PieChart>
+                            <Pie
+                                data={userDistribution}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                dataKey="value"
+                            >
+                                {userDistribution.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+
+                {/* Tuition Status Bar Chart */}
+                <div className="bg-base-100 p-6 rounded-lg shadow">
+                    <h3 className="text-lg font-bold mb-4">Tuition Status Overview</h3>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={tuitionStatus}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="count" fill="#0d9488" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Transaction History Table */}
+            <div className="bg-base-100 p-6 rounded-lg shadow mt-8">
+                <h3 className="text-lg font-bold mb-4">Transaction History</h3>
+                {transactions.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No transactions yet</p>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="table w-full">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student</th>
+                                    <th>Tutor</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {transactions.slice(0, 10).map((tx, idx) => (
+                                    <tr key={tx._id}>
+                                        <td>{idx + 1}</td>
+                                        <td>{tx.studentEmail}</td>
+                                        <td>{tx.tutorEmail}</td>
+                                        <td className="font-semibold">৳{tx.amount}</td>
+                                        <td>
+                                            <span className={`badge ${tx.status === 'completed' ? 'badge-success' : tx.status === 'pending' ? 'badge-warning' : 'badge-error'}`}>
+                                                {tx.status}
+                                            </span>
+                                        </td>
+                                        <td>{new Date(tx.createdAt).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        {transactions.length > 10 && (
+                            <p className="text-center text-sm text-gray-500 mt-2">Showing 10 of {transactions.length} transactions</p>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     )
 }
 
 export default DashAnalytics
+

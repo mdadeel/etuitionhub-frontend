@@ -53,7 +53,6 @@ let PaymentHistory = () => {
                         </thead>
                         <tbody>
                             {payments.map((payment) => (
-                                // <tr key={payment._id}>
                                 <tr key={payment._id || payment.id}>
                                     <td>{new Date(payment.createdAt).toLocaleDateString()}</td>
                                     <td>৳{payment.amount}</td>
