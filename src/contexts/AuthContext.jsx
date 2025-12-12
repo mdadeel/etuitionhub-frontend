@@ -92,6 +92,8 @@ export const AuthProvider = ({ children }) => {
 
     // user change hoile db theke role anbo
     useEffect(() => {
+        let isMounted = true;
+        
         // database theke user data anbo
         const fetchUserFromDB = async (email) => {
             try {
@@ -106,15 +108,20 @@ export const AuthProvider = ({ children }) => {
         };
 
         if (user) {
+            console.log("Auth State:", user);
             const fetchUserData = async () => {
                 let data = await fetchUserFromDB(user?.email);
-                setUserData(data);
-                setUserRole(data?.role);
-                // console.log(userRole); // updated value show korbe
-                setLoading(false);
+                if (isMounted) {
+                    setUserData(data);
+                    setUserRole(data?.role);
+                    // console.log(userRole); // updated value show korbe
+                    setLoading(false);
+                }
             };
             fetchUserData()
         }
+        
+        return () => { isMounted = false };
     }, [user]);  // Fixed: removed userRole from deps
 
     // registration function - email password diye register korbo

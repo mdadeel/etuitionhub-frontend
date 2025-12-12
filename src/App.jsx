@@ -48,8 +48,9 @@ let App = () => {
               <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
               <Route path="/checkout/:id" element={<PrivateRoute><Checkout /></PrivateRoute>} />
               <Route path="/payment-success" element={<PrivateRoute><PaymentSuccess /></PrivateRoute>} />
-// <Route path="/payment-history" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} />
+{/* <Route path="/payment-history" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} /> */}
               <Route path="/payment-history" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} />
+              {/* <Route path="/test-layout" element={<TestLayout />} /> */}
 
 
 

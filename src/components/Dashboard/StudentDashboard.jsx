@@ -203,6 +203,13 @@ const StudentDashboard = () => {
         }
     };
 
+    //  Move this to a utility file, it's cluttering the component
+    const calculateStats = () => {
+        let hired = bookings.filter(b => b.isAccepted).length;
+        let posted = myTuitions.length;
+        return { hired, posted };
+    }
+
     return (
         <div>
             <div className="flex justify-between items-center mb-6">

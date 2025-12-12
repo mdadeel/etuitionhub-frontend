@@ -132,7 +132,7 @@ const Navbar = () => {
                     </div>
 
                     {/* Desktop nav links */}
-                    <div className="navbar-center hidden lg:flex">
+                    <div className="navbar-center hidden lg:flex" style={{ marginTop: '2px' }}> {/* Tailwind wasn't centering this correctly */}
                         <ul className="menu menu-horizontal px-1">
                             {navLinks.map(link => (
                                 <li key={link.path} className="nav-item hover:cursor-pointer">
