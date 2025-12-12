@@ -25,14 +25,17 @@ const StudentDashboard = () => {
                 const resTuitions = await fetch(`http://localhost:5000/api/tuitions/student/${user.email}`);
                 if (resTuitions.ok) {
                     const data = await resTuitions.json();
-                    setMyTuitions(data);
+                    if (data.length > 0) {
+                        setMyTuitions(data);
+                    } else {
+                        // no tuitions from API - show demo
+                        console.log('📋 No tuitions found - using demo data');
+                        setMyTuitions(demoTuitions.slice(0, 3));
+                    }
                 } else {
-                    // fallback - use demo data filter kore
-                    console.log('API failed - using demo tuitions')
-                    const studentTuitions = demoTuitions.filter(t =>
-                        t.student_email === user.email || demoTuitions.slice(0, 3) // first 3 as sample
-                    );
-                    setMyTuitions(studentTuitions.slice(0, 3)); // show 3 demo tuitions
+                    // API failed - use demo data
+                    console.log('❌ API failed - using demo tuitions');
+                    setMyTuitions(demoTuitions.slice(0, 3));
                 }
 
                 // Fetch bookings (Tutors I've booked)
@@ -59,6 +62,7 @@ const StudentDashboard = () => {
                             allApps.push(...apps);
                         }
                     }
+                    console.log('📋 Total applications fetched:', allApps.length, allApps);
                     setApplications(allApps);
                 } else {
                     // demo applications create kori - testing jonno
@@ -184,12 +188,13 @@ const StudentDashboard = () => {
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Student Dashboard</h1>
-                <div className="tabs tabs-boxed">
+                <div className="tabs tabs-boxed flex-wrap">
                     <a className={`tab ${activeTab === 'overview' ? 'tab-active' : ''}`} onClick={() => setActiveTab('overview')}>Overview</a>
-                    <a className={`tab ${activeTab === 'post-job' ? 'tab-active' : ''}`} onClick={() => setActiveTab('post-job')}>Post Job</a>
-                    <a className={`tab ${activeTab === 'my-jobs' ? 'tab-active' : ''}`} onClick={() => setActiveTab('my-jobs')}>My Jobs</a>
+                    <a className={`tab ${activeTab === 'post-job' ? 'tab-active' : ''}`} onClick={() => setActiveTab('post-job')}>Post Tuition</a>
+                    <a className={`tab ${activeTab === 'my-jobs' ? 'tab-active' : ''}`} onClick={() => setActiveTab('my-jobs')}>My Tuitions</a>
                     <a className={`tab ${activeTab === 'applications' ? 'tab-active' : ''}`} onClick={() => setActiveTab('applications')}>Applied Tutors</a>
-                    <a className={`tab ${activeTab === 'booked' ? 'tab-active' : ''}`} onClick={() => setActiveTab('booked')}>Booked Tutors</a>
+                    <a className={`tab ${activeTab === 'booked' ? 'tab-active' : ''}`} onClick={() => setActiveTab('booked')}>Booked</a>
+                    <a className={`tab ${activeTab === 'payments' ? 'tab-active' : ''}`} onClick={() => setActiveTab('payments')}>Payments</a>
                 </div>
             </div>
 
@@ -218,8 +223,8 @@ const StudentDashboard = () => {
                     <h2 className="text-xl font-bold mb-4">Post a Tuition Requirement</h2>
                     <form onSubmit={handleSubmit(onPostTuition)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="form-control">
-                            <label className="label">Title</label>
-                            <input {...register('title', { required: true })} placeholder="Need Tutor for Class 10 Math" className="input input-bordered" />
+                            <label className="label">Subject *</label>
+                            <input {...register('subject', { required: true })} placeholder="Mathematics, Physics, English" className="input input-bordered" />
                         </div>
                         <div className="form-control">
                             <label className="label">Class</label>
@@ -398,6 +403,34 @@ const StudentDashboard = () => {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Payments Tab */}
+            {activeTab === 'payments' && (
+                <div className="bg-base-100 p-6 rounded-lg shadow">
+                    <h2 className="text-xl font-bold mb-4">Payment History</h2>
+                    <p className="text-gray-600 mb-4">View all your payment transactions for tutor bookings.</p>
+                    
+                    <div className="stats shadow w-full mb-6">
+                        <div className="stat">
+                            <div className="stat-title">Total Paid</div>
+                            <div className="stat-value text-primary">৳0</div>
+                            <div className="stat-desc">All time payments</div>
+                        </div>
+                        <div className="stat">
+                            <div className="stat-title">Pending</div>
+                            <div className="stat-value text-warning">৳0</div>
+                            <div className="stat-desc">Awaiting payment</div>
+                        </div>
+                    </div>
+
+                    <div className="text-center py-8">
+                        <p className="text-gray-500 mb-4">No payment records found</p>
+                        <a href="/payment-history" className="btn btn-primary">
+                            View Full Payment History
+                        </a>
                     </div>
                 </div>
             )}

@@ -78,9 +78,10 @@ export const AuthProvider = ({ children }) => {
             try {
                 let res = await axios.get(`http://localhost:5000/api/users/${email}`);
                 setDbUser(res.data);
+                console.log('✅ dbUser loaded:', res.data); // debug
                 return res.data;
             } catch (error) {
-                console.log('User DB te nai ba error:', error.message);
+                console.log('❌ User DB error:', error.message);
                 return null;
             }
         };
@@ -158,16 +159,29 @@ export const AuthProvider = ({ children }) => {
         return signInWithEmailAndPassword(auth, email, password);
     };
 
-    // Google login - default role student
+    // Google login - check if user exists first, preserve role
     const googleLogin = async () => {
         setLoading(true);
-        let result = await signInWithPopup(auth, googleProvider);
-        // DB te user ase kina check, nahole save
+        try {
+            let result = await signInWithPopup(auth, googleProvider);
 
-
-        await saveUserToDB(result.user, 'student');
-        console.log('google user saved') // debug
-        return result;
+            // Check if user already exists in database
+            try {
+                let checkRes = await axios.get(`http://localhost:5000/api/users/${result.user.email}`);
+                console.log('✅ Existing Google user found:', checkRes.data);
+                // User exists - don't overwrite their role
+                return result;
+            } catch (error) {
+                // User doesn't exist - save as new student
+                console.log('📝 New Google user - saving as student');
+                await saveUserToDB(result.user, 'student');
+                console.log('google user saved as student') // debug
+                return result;
+            }
+        } catch (error) {
+            setLoading(false);
+            throw error;
+        }
     };
 
     // Logout - token clear korbo

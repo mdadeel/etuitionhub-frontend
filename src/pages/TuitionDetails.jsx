@@ -62,6 +62,18 @@ function TuitionDetails() {
         fetchTuitionDetails()
     }, [id])
 
+    // debug logging - checking values
+    useEffect(() => {
+        console.log('=== TUITION DETAILS DEBUG ===')
+        console.log('user:', user ? 'logged in' : 'not logged in')
+        console.log('dbUser:', dbUser)
+        console.log('dbUser.role:', dbUser?.role)
+        console.log('tuition:', tuition)
+        console.log('tuition.status:', tuition?.status)
+        console.log('Can show apply?', dbUser?.role === 'tutor' && tuition?.status === 'approved')
+        console.log('============================')
+    }, [user, dbUser, tuition])
+
     // form input change handle
     const handleChange = (e) => {
         setFormData({
@@ -180,7 +192,13 @@ function TuitionDetails() {
                         )}
 
                         {/* apply button - only tutors can see, only if approved */}
-                        {dbUser?.role === 'tutor' && tuition.status === "approved" && (
+                        {!dbUser ? (
+                            // loading state while dbUser is being fetched
+                            <div className="text-center py-4">
+                                <span className="loading loading-spinner loading-sm"></span>
+                                <p className="text-sm text-gray-500 mt-2">Loading user info...</p>
+                            </div>
+                        ) : dbUser?.role === 'tutor' && tuition.status === "approved" ? (
                             <div className="card-actions justify-end mt-6">
                                 <button
                                     className="btn btn-primary"
@@ -189,9 +207,17 @@ function TuitionDetails() {
                                     Apply for this Tuition
                                 </button>
                             </div>
-                        )}
+                        ) : dbUser?.role !== 'tutor' ? (
+                            <div className="alert alert-info mt-4">
+                                <span>Only tutors can apply. Please login with a tutor account to apply for this tuition.</span>
+                            </div>
+                        ) : tuition.status !== 'approved' ? (
+                            <div className="alert alert-warning mt-4">
+                                <span>This tuition is pending admin approval and not accepting applications yet.</span>
+                            </div>
+                        ) : null}
 
-                        {/* pending alert */}
+                        {/* pending alert - backup message */}
                         {tuition.status === 'pending' && (
                             <div className="alert alert-warning mt-4">
                                 <span>ei tuition post ta admin approve korenai ekhono</span>
