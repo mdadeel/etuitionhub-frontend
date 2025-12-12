@@ -86,6 +86,19 @@ function TuitionDetails() {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+        // Check if user is logged in and dbUser is loaded
+        if (!user || !dbUser) {
+            toast.error('Please login first!')
+            navigate('/login')
+            return
+        }
+
+        // Check if dbUser has _id
+        if (!dbUser._id) {
+            toast.error('User data not loaded - please refresh page')
+            return
+        }
+
         // validation - basic check only
         // TODO: add more validation like phone number, nid etc
         if (!formData.qualifications || !formData.experiance || !formData.expectedSalary) {
@@ -99,6 +112,13 @@ function TuitionDetails() {
             return
         }
 
+        // Check if this is a demo tuition (invalid ObjectId)
+        // Demo tuitions have IDs like "tuition001" which aren't valid MongoDB IDs
+        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidObjectId(id)) {
+            toast.error('Cannot apply to demo tuitions! Please select a real tuition post')
+            return
+        }
 
         // application data ready kori
         let applicationData = {
@@ -129,7 +149,7 @@ function TuitionDetails() {
                 // TODO: maybe redirect to applications page?
             } else {
                 let errorData = await res.json()
-                toast.error('submit hoinai - ' + (errorData.message || "try again"))
+                toast.error('submit hoinai - ' + (errorData.error || errorData.message || "try again"))
             }
         } catch (error) {
             console.error('submission error:', error)

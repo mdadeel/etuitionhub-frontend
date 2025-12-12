@@ -1,87 +1,158 @@
-// register page - learned useState after making login with hook-form lol
+// register page with step-by-step flow
 import { useState } from "react"
-// import {useForm} from 'react-hook-form'  // not using this anymore
 import { Link, useNavigate } from 'react-router-dom'
 import toast from "react-hot-toast"
 import { useAuth } from '../contexts/AuthContext'
+import { FaGraduationCap, FaChalkboardTeacher } from 'react-icons/fa'
+
 let Register = () => {
     let { register: registerUser, googleLogin } = useAuth()
     let navigate = useNavigate()
 
-    // manual state for all fields - different from login page
+    // Step state - 1 = role selection, 2 = registration form
+    let [step, setStep] = useState(1)
+
+    // form fields
     let [name, setName] = useState('')
     let [email, setEmail] = useState('')
     let [password, setPassword] = useState('')
     let [phone, setPhone] = useState('')
-    let [role, setRole] = useState('student')
+    let [role, setRole] = useState('')
     let [loading, setLoading] = useState(false)
-    console.log('register page rendering')
 
-    // manual form submit - no hook form here
+    // handle role selection
+    let selectRole = (selectedRole) => {
+        setRole(selectedRole)
+        setStep(2)
+    }
+
+    // go back to role selection
+    let goBack = () => {
+        setStep(1)
+    }
+
+    // form submit handler
     let handleSubmit = (e) => {
         e.preventDefault()
 
-        // inline validation - should extract but whatever
         if (!name) {
-            toast.error('Name dao please')
+            toast.error('Name is required')
             return
         }
         if (name.length < 3) {
-            toast.error('Name ta boro kore dao')
+            toast.error('Name must be at least 3 characters')
             return
         }
-
-        // email check
         if (!email) {
-            toast.error('Email dao')
+            toast.error('Email is required')
             return
         }
         if (!email.includes('@')) {
-            toast.error('Email format thik na')
+            toast.error('Invalid email format')
             return
         }
-
-        // password validation
         if (!password) {
-            toast.error('Password dao')
+            toast.error('Password is required')
             return
         }
         if (password.length < 6) {
-            toast.error('Password minimum 6 character')
+            toast.error('Password must be at least 6 characters')
             return
         }
 
-        // all good - register kortesi with phone
         setLoading(true)
         registerUser(email, password, name, role, phone)
             .then(() => {
-                toast.success('Account create hoye geche!')
+                toast.success('Account created successfully!')
                 setLoading(false)
                 navigate('/dashboard')
             })
             .catch(err => {
                 console.log('registration error', err)
-                toast.error('Registration hoinai')
+                toast.error('Registration failed')
                 setLoading(false)
             })
     }
 
-    // google login - pass selected role
+    // google login handler
     let handleGoogleLogin = async () => {
         try {
-            await googleLogin(role)  // Pass the selected role!
-            toast.success('Google diye hoise')
+            await googleLogin(role)
+            toast.success('Registration successful!')
             navigate('/dashboard')
         } catch (error) {
-            toast.error('Google login failed')
+            toast.error('Google registration failed')
         }
     }
 
+    // STEP 1: Role Selection
+    if (step === 1) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4">
+                <div className="max-w-2xl w-full">
+                    <h1 className="text-3xl font-bold text-center mb-2">Create Account</h1>
+                    <p className="text-center text-gray-500 mb-8">What brings you to e-tuitionBD?</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Student Card */}
+                        <div
+                            onClick={() => selectRole('student')}
+                            className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-transparent hover:border-teal-500"
+                        >
+                            <div className="card-body items-center text-center py-10">
+                                <FaGraduationCap className="text-6xl text-teal-600 mb-4" />
+                                <h2 className="card-title text-2xl">I'm a Student</h2>
+                                <p className="text-gray-500 mt-2">Looking for a tutor to help me learn</p>
+                                <div className="mt-4 text-sm text-gray-400">
+                                    • Find qualified tutors<br />
+                                    • Post tuition requirements<br />
+                                    • Book sessions
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Tutor Card */}
+                        <div
+                            onClick={() => selectRole('tutor')}
+                            className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-transparent hover:border-amber-500"
+                        >
+                            <div className="card-body items-center text-center py-10">
+                                <FaChalkboardTeacher className="text-6xl text-amber-600 mb-4" />
+                                <h2 className="card-title text-2xl">I'm a Tutor</h2>
+                                <p className="text-gray-500 mt-2">I want to teach and earn money</p>
+                                <div className="mt-4 text-sm text-gray-400">
+                                    • Apply for tuitions<br />
+                                    • Create tutor profile<br />
+                                    • Get paid for teaching
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p className="text-center mt-8 text-gray-500">
+                        Already have an account? <Link to="/login" className="text-teal-600 hover:underline font-medium">Login</Link>
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
+    // STEP 2: Registration Form
     return (
         <div className="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4">
             <div className="card w-full max-w-md bg-base-100 shadow-xl">
                 <div className="card-body">
-                    <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
+                    {/* Back button and role indicator */}
+                    <div className="flex items-center gap-3 mb-4">
+                        <button onClick={goBack} className="btn btn-ghost btn-sm">
+                            ← Back
+                        </button>
+                        <span className={`badge ${role === 'tutor' ? 'badge-warning' : 'badge-info'} badge-lg`}>
+                            {role === 'tutor' ? '👨‍🏫 Tutor Account' : '🎓 Student Account'}
+                        </span>
+                    </div>
+
+                    <h2 className="text-2xl font-bold text-center mb-6">Complete Registration</h2>
 
                     <form onSubmit={handleSubmit}>
                         <div className="form-control mb-4">
@@ -92,7 +163,7 @@ let Register = () => {
                                 type="text"
                                 value={name}
                                 onChange={e => setName(e.target.value)}
-                                className="input input-bordered w-full bg-white text-gray-900 placeholder-gray-400"
+                                className="input input-bordered w-full bg-white text-gray-900"
                                 placeholder="Enter your full name"
                             />
                         </div>
@@ -105,7 +176,7 @@ let Register = () => {
                                 type="email"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="input input-bordered w-full bg-white text-gray-900 placeholder-gray-400"
+                                className="input input-bordered w-full bg-white text-gray-900"
                                 placeholder="Enter your email"
                             />
                         </div>
@@ -118,36 +189,22 @@ let Register = () => {
                                 type="password"
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="input input-bordered w-full bg-white text-gray-900 placeholder-gray-400"
+                                className="input input-bordered w-full bg-white text-gray-900"
                                 placeholder="Minimum 6 characters"
-                            />
-                        </div>
-
-                        <div className="form-control mb-4">
-                            <label className="label">
-                                <span className="label-text font-medium">Phone Number</span>
-                            </label>
-                            <input
-                                type="tel"
-                                value={phone}
-                                onChange={e => setPhone(e.target.value)}
-                                className="input input-bordered w-full bg-white text-gray-900 placeholder-gray-400"
-                                placeholder="01XXXXXXXXX"
                             />
                         </div>
 
                         <div className="form-control mb-6">
                             <label className="label">
-                                <span className="label-text font-medium">Register as</span>
+                                <span className="label-text font-medium">Phone Number (Optional)</span>
                             </label>
-                            <select
-                                value={role}
-                                onChange={e => setRole(e.target.value)}
-                                className="select select-bordered w-full bg-white text-gray-900"
-                            >
-                                <option value="student">Student - I want to find tutors</option>
-                                <option value="tutor">Tutor - I want to teach</option>
-                            </select>
+                            <input
+                                type="tel"
+                                value={phone}
+                                onChange={e => setPhone(e.target.value)}
+                                className="input input-bordered w-full bg-white text-gray-900"
+                                placeholder="01XXXXXXXXX"
+                            />
                         </div>
 
                         <button
@@ -155,7 +212,7 @@ let Register = () => {
                             disabled={loading}
                             className="btn w-full bg-teal-600 text-white hover:bg-teal-700 border-none"
                         >
-                            {loading ? "Creating..." : "Create Account"}
+                            {loading ? "Creating Account..." : "Create Account"}
                         </button>
                     </form>
 
@@ -181,4 +238,3 @@ let Register = () => {
 }
 
 export default Register
-

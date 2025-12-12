@@ -15,20 +15,11 @@ function DashTuitions() {
                 let res = await fetch('http://localhost:5000/api/tuitions')
                 if (res.ok) {
                     let data = await res.json()
-                    if (data.length > 0) {
-                        setTuitions(data)
-                        console.log("tuitions loaded:", data.length)
-                    } else {
-                        // No tuitions - show demo data
-                        console.log('📋 Using demo tuitions')
-                        setTuitions([
-                            { _id: 'demo1', subject: 'Mathematics', class_name: 'Class 10', location: 'Dhanmondi', salary: 5000, student_email: 'student@demo.com', status: 'pending' },
-                            { _id: 'demo2', subject: 'Physics', class_name: 'HSC', location: 'Uttara', salary: 7000, student_email: 'student2@demo.com', status: 'approved' },
-                            { _id: 'demo3', subject: 'English', class_name: 'Class 8', location: 'Mirpur', salary: 4000, student_email: 'student3@demo.com', status: 'pending' }
-                        ])
-                    }
+                    setTuitions(data)
+                    console.log("tuitions loaded:", data.length)
                 } else {
-                    toast.error('Could not load tuitions')
+                    const errorData = await res.json();
+                    toast.error('Could not load tuitions - ' + (errorData.error || 'server issue'))
                 }
                 setLoading(false)
             } catch (err) {
@@ -46,8 +37,14 @@ function DashTuitions() {
 
     // approve tuition - admin er kaj
     const handleApprove = async (tuitionId) => {
-        // approve korle tutors dekh te parbe
         console.log('approving tuition:', tuitionId)
+
+        // Validate ObjectId
+        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidObjectId(tuitionId)) {
+            toast.error('Cannot approve demo tuitions - invalid ID');
+            return;
+        }
 
         try {
             let res = await fetch(`http://localhost:5000/api/tuitions/${tuitionId}`, {
@@ -57,24 +54,29 @@ function DashTuitions() {
             })
             if (res.ok) {
                 toast.success("Tuition approved! Tutors can see now")
-                // update ui instantly - better ux
                 setTuitions(prev => prev.map(t =>
                     t._id === tuitionId ? { ...t, status: 'approved' } : t
                 ))
             } else {
-                toast.error('Approval failed - try again');
+                const errorData = await res.json();
+                toast.error('Approval failed - ' + (errorData.error || 'try again'));
             }
         } catch (err) {
             console.error('error approving:', err)
-            toast.error("Failed to approve")
+            toast.error("Network error - check connection")
         }
     }
 
     // reject tuition post
-    // TODO: maybe send notification to student why rejected
     const handleReject = async (tuitionId) => {
         if (!confirm("Reject korben ei tuition ta?")) return
 
+        // Validate ObjectId
+        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidObjectId(tuitionId)) {
+            toast.error('Cannot reject demo tuitions - invalid ID');
+            return;
+        }
 
         try {
             let res = await fetch(`http://localhost:5000/api/tuitions/${tuitionId}`, {
@@ -88,11 +90,12 @@ function DashTuitions() {
                     t._id === tuitionId ? { ...t, status: 'rejected' } : t
                 ))
             } else {
-                toast.error("Rejection failed")
+                const errorData = await res.json();
+                toast.error("Rejection failed - " + (errorData.error || 'try again'))
             }
         } catch (err) {
             console.error('reject error:', err)
-            toast.error('error rejecting')
+            toast.error('Network error - check connection')
         }
     }
 

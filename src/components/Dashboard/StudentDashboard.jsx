@@ -128,11 +128,12 @@ const StudentDashboard = () => {
                 setActiveTab('my-jobs');
                 // refetch logic here
             } else {
-                toast.error('Failed to post job');
+                const errorData = await res.json();
+                toast.error('Failed to post job - ' + (errorData.error || 'try again'));
             }
         } catch (error) {
             console.error(error);
-            toast.error('Server error');
+            toast.error('Server error - check connection');
         } finally {
             setLoading(false);
         }
@@ -149,6 +150,13 @@ const StudentDashboard = () => {
     const handleReject = async (appId) => {
         if (!confirm('Are you sure you want to reject this application?')) return;
 
+        // Validate ObjectId
+        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidObjectId(appId)) {
+            toast.error('Cannot reject demo data - invalid ID');
+            return;
+        }
+
         try {
             const res = await fetch(`http://localhost:5000/api/applications/${appId}`, {
                 method: 'PATCH',
@@ -158,15 +166,25 @@ const StudentDashboard = () => {
             if (res.ok) {
                 toast.success('Application rejected');
                 setApplications(prev => prev.map(a => a._id === appId ? { ...a, status: 'rejected' } : a));
+            } else {
+                const errorData = await res.json();
+                toast.error('Rejection failed - ' + (errorData.error || 'try again'));
             }
         } catch (err) {
-            toast.error('failed to reject');
+            toast.error('Network error - check connection');
         }
     };
 
     // delete my tuition post
     const handleDeleteTuition = async (tuitionId) => {
         if (!confirm('Delete this tuition post?')) return;
+
+        // Validate ObjectId
+        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidObjectId(tuitionId)) {
+            toast.error('Cannot delete demo data - invalid ID');
+            return;
+        }
 
         try {
             const res = await fetch(`http://localhost:5000/api/tuitions/${tuitionId}`, {
@@ -176,11 +194,12 @@ const StudentDashboard = () => {
                 toast.success('Tuition deleted');
                 setMyTuitions(prev => prev.filter(t => t._id !== tuitionId));
             } else {
-                toast.error('delete failed');
+                const errorData = await res.json();
+                toast.error('Delete failed - ' + (errorData.error || 'try again'));
             }
         } catch (err) {
             console.error('error:', err);
-            toast.error('Error deleting tuition');
+            toast.error('Network error - check connection');
         }
     };
 
@@ -227,8 +246,8 @@ const StudentDashboard = () => {
                             <input {...register('subject', { required: true })} placeholder="Mathematics, Physics, English" className="input input-bordered" />
                         </div>
                         <div className="form-control">
-                            <label className="label">Class</label>
-                            <select {...register('class_name')} className="select select-bordered">
+                            <label className="label">Class *</label>
+                            <select {...register('class_name', { required: true })} className="select select-bordered">
                                 <option>Class 6</option>
                                 <option>Class 7</option>
                                 <option>Class 8</option>
@@ -238,12 +257,8 @@ const StudentDashboard = () => {
                             </select>
                         </div>
                         <div className="form-control">
-                            <label className="label">Subject</label>
-                            <input {...register('subject')} placeholder="Math, Physics, English" className="input input-bordered" />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">Salary (Monthly)</label>
-                            <input {...register('salary')} placeholder="5000" type="number" className="input input-bordered" />
+                            <label className="label">Salary (Monthly) *</label>
+                            <input {...register('salary', { required: true, min: 1000 })} placeholder="5000" type="number" min="1000" className="input input-bordered" />
                         </div>
                         <div className="form-control">
                             <label className="label">Medium</label>
@@ -261,8 +276,8 @@ const StudentDashboard = () => {
                             </select>
                         </div>
                         <div className="form-control md:col-span-2">
-                            <label className="label">Location Details</label>
-                            <textarea {...register('location')} className="textarea textarea-bordered h-24" placeholder="Full address details..."></textarea>
+                            <label className="label">Location Details *</label>
+                            <textarea {...register('location', { required: true })} className="textarea textarea-bordered h-24" placeholder="Full address details..."></textarea>
                         </div>
                         <div className="md:col-span-2 mt-4">
                             <button className="btn btn-primary w-full" disabled={loading}>

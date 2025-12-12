@@ -62,13 +62,31 @@ export const AuthProvider = ({ children }) => {
 
             // backend API use kortesi
             let res = await axios.post('http://localhost:5000/api/users', userData);
-            // console.log('User saved:',res.data);
+            console.log('User saved/updated:', res.data);
             toast.dismiss(toastId);
+
+            // Update local state immediately
+            setDbUser(res.data);
+            setUserRole(res.data.role);
+
             return res.data;
         } catch (error) {
             console.error('Error saving user:', error);
             toast.dismiss(toastId);
-            // throw korsi na - just log for now
+        }
+    };
+
+    // Refresh user from database
+    const refreshUserFromDB = async (email) => {
+        try {
+            let res = await axios.get(`http://localhost:5000/api/users/${email}`);
+            setDbUser(res.data);
+            setUserRole(res.data.role);
+            console.log('User refreshed:', res.data);
+            return res.data;
+        } catch (error) {
+            console.error('Refresh error:', error);
+            return null;
         }
     };
 
@@ -97,7 +115,7 @@ export const AuthProvider = ({ children }) => {
             };
             fetchUserData()
         }
-    }, [user, userRole]);
+    }, [user]);  // Fixed: removed userRole from deps
 
     // registration function - email password diye register korbo
     const register = async (email, password, name, role = 'student', phone = '') => {
@@ -128,13 +146,12 @@ export const AuthProvider = ({ children }) => {
             // database e user save kortesi with phone
             await saveUserToDB(result.user, role, phone);
 
-            // loading false kortesi
-            setLoading(false)
+            // Refresh to make sure state is updated
+            await refreshUserFromDB(email);
 
-            // result return kortesi
+            setLoading(false);
             return result;
         } catch (err) {
-            // error hole toast show kortesi
             console.log('registration error:', err)
             toast.error('Registration failed!')
             setLoading(false)
@@ -147,25 +164,20 @@ export const AuthProvider = ({ children }) => {
         return signInWithEmailAndPassword(auth, email, password);
     };
 
-    // Google login - check if user exists first, preserve role
-    // If role is passed (from Register page), use it for new users
+    // Google login - ALWAYS save/update role
     const googleLogin = async (selectedRole = 'student') => {
         setLoading(true);
         try {
             let result = await signInWithPopup(auth, googleProvider);
 
-            // Check if user already exists in database
-            try {
-                let checkRes = await axios.get(`http://localhost:5000/api/users/${result.user.email}`);
-                console.log('✅ Existing Google user found:', checkRes.data);
-                // User exists - don't overwrite their role
-                return result;
-            } catch (error) {
-                // User doesn't exist - save with selected role
-                console.log('📝 New Google user - saving as:', selectedRole);
-                await saveUserToDB(result.user, selectedRole);
-                return result;
-            }
+            // Always save to DB - backend will update role if changed
+            console.log('Google login - saving with role:', selectedRole);
+            await saveUserToDB(result.user, selectedRole);
+
+            // Refresh to get updated data
+            await refreshUserFromDB(result.user.email);
+
+            return result;
         } catch (error) {
             setLoading(false);
             throw error;

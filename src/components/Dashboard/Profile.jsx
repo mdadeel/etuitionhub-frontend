@@ -14,7 +14,7 @@ const Profile = () => {
         setLoading(true);
 
         if (!data || !dbUser?._id) {
-            toast.error('Data nai')
+            toast.error('User data not loaded - please refresh')
             setLoading(false)
             return
         }
@@ -33,11 +33,12 @@ const Profile = () => {
             if (res.ok) {
                 toast.success('Profile updated!')
             } else {
-                toast.error('Update failed')
+                const errorData = await res.json();
+                toast.error('Update failed - ' + (errorData.error || 'try again'))
             }
         } catch (error) {
             console.log('update error:', error)
-            toast.error('Update hoinai')
+            toast.error('Network error - check connection')
         } finally {
             setLoading(false)
         }

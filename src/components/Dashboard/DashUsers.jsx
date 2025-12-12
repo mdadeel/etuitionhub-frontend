@@ -12,32 +12,19 @@ function DashUsers() {
         // api theke users load kori
         const fetchUsers = async () => {
             try {
-                let res = await fetch("http://localhost:5000/api/users")
+                let res = await fetch('http://localhost:5000/api/users')
                 if (res.ok) {
                     let data = await res.json()
-                    if (data.length > 0) {
-                        setUsers(data)
-                        console.log('total users:', data.length)
-                    } else {
-                        // No users - show demo data
-                        console.log('📋 Using demo users')
-                        setUsers([
-                            { _id: 'demo1', displayName: 'Demo Student', email: 'student@demo.com', role: 'student', isVerified: true },
-                            { _id: 'demo2', displayName: 'Demo Tutor', email: 'tutor@demo.com', role: 'tutor', isVerified: false },
-                            { _id: 'demo3', displayName: 'Admin User', email: 'admin@etuition.com', role: 'admin', isVerified: true }
-                        ])
-                    }
+                    console.log('users loaded:', data.length)
+                    setUsers(data)
                 } else {
-                    toast.error("Failed to load users - server issue")
+                    const errorData = await res.json();
+                    toast.error("Failed to load users - " + (errorData.error || 'server issue'))
                 }
-                setLoading(false)
             } catch (err) {
-                console.error('fetch users error:', err)
-                // API failed - show demo data
-                setUsers([
-                    { _id: 'demo1', displayName: 'Demo Student', email: 'student@demo.com', role: 'student', isVerified: true },
-                    { _id: 'demo2', displayName: 'Demo Tutor', email: 'tutor@demo.com', role: 'tutor', isVerified: false }
-                ])
+                console.error('load error:', err)
+                toast.error("Network error - check connection")
+            } finally {
                 setLoading(false)
             }
         }
@@ -46,23 +33,31 @@ function DashUsers() {
 
     // user delete kora - dangerous operation!!
     const handleDelete = async (userId) => {
-        // confirm newa ta important - accidental delete theke bachbe
-        if (!confirm("Ei user ke delete korben? Undo kora jabena!")) return
+        // user delete kora - admin power
+        if (!confirm('Delete this user?')) return
+
+        // Validate ObjectId
+        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidObjectId(userId)) {
+            toast.error('Cannot delete demo users - invalid ID');
+            return;
+        }
 
         try {
             let res = await fetch(`http://localhost:5000/api/users/${userId}`, {
                 method: 'DELETE'
             })
             if (res.ok) {
-                toast.success('User deleted successfully')
+                toast.success('User deleted!')
                 // ui update korbo - re-fetch na kore filter kore dilam
                 setUsers(prev => prev.filter(u => u._id !== userId))
             } else {
-                toast.error("Delete hoinai - maybe permission issue")
+                const errorData = await res.json();
+                toast.error("Delete failed - " + (errorData.error || 'try again'))
             }
         } catch (err) {
-            console.error('error deleting:', err)
-            toast.error('Error aise deletion e')
+            console.error('delete error:', err)
+            toast.error('Network error - check connection')
         }
     }
 
@@ -70,6 +65,13 @@ function DashUsers() {
     // TODO: add proper permission check - only super admin role change korte parbe
     const handleRoleChange = async (userId, newRole) => {
         console.log("changing role to:", newRole) // keeping this for debugging
+
+        // Validate ObjectId
+        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidObjectId(userId)) {
+            toast.error('Cannot update demo users - invalid ID');
+            return;
+        }
 
         try {
             let res = await fetch(`http://localhost:5000/api/users/${userId}`, {
@@ -84,11 +86,12 @@ function DashUsers() {
                     u._id === userId ? { ...u, role: newRole } : u
                 ))
             } else {
-                toast.error('Role update failed');
+                const errorData = await res.json();
+                toast.error('Role update failed - ' + (errorData.error || 'try again'));
             }
         } catch (err) {
             console.error("role change error:", err)
-            toast.error("failed to update role - try again")
+            toast.error("Network error - check connection")
         }
     }
 

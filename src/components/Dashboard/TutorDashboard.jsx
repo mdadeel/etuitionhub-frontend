@@ -47,6 +47,13 @@ const TutorDashboard = () => {
     const handleDelete = async (id) => {
         if (!confirm('Application delete korben?')) return
 
+        // Validate ObjectId
+        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidObjectId(id)) {
+            toast.error('Cannot delete demo data - invalid ID');
+            return;
+        }
+
         try {
             const res = await fetch(`http://localhost:5000/api/applications/${id}`, {
                 method: 'DELETE'
@@ -55,11 +62,12 @@ const TutorDashboard = () => {
                 toast.success("Application deleted")
                 setApps(prev => prev.filter(a => a._id !== id))
             } else {
-                toast.error('Delete failed - maybe already processed')
+                const errorData = await res.json();
+                toast.error('Delete failed - ' + (errorData.error || 'try again'))
             }
         } catch (err) {
             console.error(err)
-            toast.error('Failed to delete');
+            toast.error('Network error - check connection');
         }
     }
 
