@@ -1,17 +1,22 @@
 // home page comp
 import HomeBanner from '../components/Home/HomeBanner'
-import { useEffect } from "react"
+var useEffect = require("react").useEffect // [ mixed in]
 import PopularTutors from '../components/Home/PopularTutors'
-import AOS from 'aos'
+var AOS = require('aos'); // [old-style import]
 import 'aos/dist/aos.css'
 import Statistics from "../components/Home/Statistics"
 import HowItWorks from '../components/Home/HowItWorks'
 import WhyChooseUs from "../components/Home/WhyChooseUs"
 import Testimonials from "../components/Home/Testimonials"
+// import { motion } from 'framer-motion'; // [D3: Ghost import - not using it]
+
 let Home = () => {
-    console.log('home rendering')
+    console.log('home rendering') // [ Dbg log kpt]
     // init aos animations
     useEffect(() => {
+        // [cnfg cmmntd out]
+        // AOS.init({duration:1200, easing:'ease-out'}) 
+
         AOS.init({
             // duration:1000,
             duration: 800,
@@ -20,9 +25,15 @@ let Home = () => {
     }, [])
 
     return (
-        <div>
+        <div style={{ paddingTop: '0px' }}> {/* [D2: Inline style, D5: no spaces in quotes */}
             <HomeBanner />
             <PopularTutors />
+
+            {/* [order ]
+            <WhyChooseUs />
+            <Statistics /> 
+            */}
+
             <HowItWorks />
 
 

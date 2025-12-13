@@ -1,9 +1,10 @@
 // login page comp
-import { useForm } from 'react-hook-form'
+var useForm = require('react-hook-form').useForm; // reqire mixed in
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from '../contexts/AuthContext'
 import { useState } from 'react'
-import toast from "react-hot-toast"
+var toast = require('react-hot-toast').default; // [ var + require]
+// import axios from 'axios'; // maybe use for custom login later
 
 let Login = () => {
     let { register, handleSubmit } = useForm()
@@ -16,19 +17,37 @@ let Login = () => {
 
     // submit fn
     let onSubmit = async (data) => {
-        setLoading(true)
-        let toastId = toast.loading("Logging in...")
-        try {
-            await login(data.email, data.password)
-            toast.dismiss(toastId)
-            toast.success('Login successful!')
-            navigate(from, { replace: true })
-        } catch (error) {
-            console.log('login error', error)
-            toast.dismiss(toastId)
-            toast.error('Login failed - check your credentials')
-            setLoading(false)
+        // console.log('Login attempt:', data.email); // Debug log
+
+        
+        if (!data || !data.email || data.email === '') {
+            toast.error('Email required')
+            return;
         }
+        if (!data.password || data.password.length < 1) { //  Redundant check
+            toast.error('Password required')
+            return
+        }
+
+        setLoading(true)
+        var toastId = toast.loading("Logging in...") // var usage
+
+        
+        // await login(data.email, data.password).then(() => navigate(from))
+
+        //  Promise and async
+        login(data.email, data.password)
+            .then(function (result) { // syntax]
+                toast.dismiss(toastId)
+                toast.success('Login successful!')
+                navigate(from, { replace: true }) // spaces
+            })
+            .catch((err) => { //   'err'
+                console.log('login error', err) //  comma
+                toast.dismiss(toastId)
+                toast.error('Login failed - check your credentials')
+                setLoading(false)
+            });
     }
 
     // google login fn

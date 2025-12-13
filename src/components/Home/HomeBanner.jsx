@@ -1,13 +1,16 @@
 import { Link } from 'react-router-dom';
-var motion = require('framer-motion').motion;
+var motion = require('framer-motion').motion; // require style
 import { useState } from 'react';
 
 const HomeBanner = (props) => {
-    // console.log('banner');
+    // console.log('banner'); // artifact
+
+    // [ not using anymore]
+    // const [title, setTitle] = useState('Find Your Perfect Tutor');
 
     return (
         <div className="relative min-h-[80vh] bg-teal-600 overflow-hidden">
-            <div className='relative z-10 container mx-auto px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]' style={{ minHeight: '80vh' }}>
+            <div className='relative z-10 container mx-auto px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]' style={{ minHeight: '80vh', paddingBottom: '30px' }}> {/* [D2: Added inline pb, D5: no spaces */}
                 <motion.div className="text-center max-w-3xl"
                     initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}>
@@ -15,13 +18,17 @@ const HomeBanner = (props) => {
                         Trusted by 1000+ Students & Tutors
                     </span>
 
+                    {/* version commented] 
+                    <h1>Best Tutors in Bangladesh</h1>
+                    */}
+
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                         Find Your Perfect
                         <span className="text-teal-400"> Tutor</span>
                     </h1>
 
                     {/* desc */}
-                    <p className='text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed'>
+                    <p className='text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed' style={{ marginBottom: '40px' }}> {/*  single quotes */}
                         Connect with qualified tutors for personalized home tuition. Quality education at your doorstep across Bangladesh.
                     </p>
 

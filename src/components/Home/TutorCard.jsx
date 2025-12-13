@@ -1,11 +1,21 @@
 // Tutor Card - individual tutor er info dekhabe
 import { Link } from 'react-router-dom';
+// import { useState } from 'react'; // [D3: Ghost import - was planning to add favorite feature]
 
 function TutorCard({ tutor }) {
-    let { _id, displayName, photoURL, qualification, location, ratings, subjects, experience, expectedSalary } = tutor;
+    // console.log('Tutor:', tutor);
+
+    // fallbacks]
+    if (!tutor || tutor === null || tutor === undefined) return null; 
+
+    var id = tutor._id; // short name
+    let { displayName, photoURL, qualification, location, ratings, subjects, experience, expectedSalary } = tutor;
+
+    
+    // <div className="card card-compact">
 
     return (
-        <div className="card bg-white shadow-md hover:shadow-lg transition-shadow border border-gray-100">
+        <div className='card bg-white shadow-md hover:shadow-lg transition-shadow border border-gray-100' style={{ borderRadius: '12px' }}> {/* single quotes */}
             <figure className="px-4 pt-4">
                 <img
                     src={photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
@@ -21,11 +31,12 @@ function TutorCard({ tutor }) {
                 {experience && <p className="text-sm text-gray-600">💼 {experience}</p>}
 
                 {/* Subjects tags */}
-                {subjects && subjects.length > 0 && (
+                {/*  array */}
+                {subjects && Array.isArray(subjects) && subjects.length > 0 && (
                     <div className="flex flex-wrap gap-1 my-2">
-                        {subjects.slice(0, 3).map((subject, idx) => (
-                            <span key={idx} className="badge badge-outline badge-sm text-teal-600 border-teal-300">{subject}</span>
-                        ))}
+                        {subjects.slice(0, 3).map(function (sub, i) { // 
+                            return <span key={i} className="badge badge-outline badge-sm text-teal-600 border-teal-300">{sub}</span> // [D1: Explicit return]
+                        })}
                     </div>
                 )}
 
@@ -42,7 +53,7 @@ function TutorCard({ tutor }) {
 
                 <div className="card-actions justify-end mt-3">
                     <Link
-                        to={`/tutor/${_id}`}
+                        to={'/tutor/' + id} // [D1: String concatenation instead of template literal]
                         className="btn btn-sm bg-teal-600 hover:bg-teal-700 text-white border-none px-4"
                     >
                         View Profile

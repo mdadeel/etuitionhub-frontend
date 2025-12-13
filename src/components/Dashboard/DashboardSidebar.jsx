@@ -1,20 +1,21 @@
 // Dashboard Sidebar - navigation for dashboard
 import { Link, useLocation } from 'react-router-dom';
 import { FaHome, FaCog, FaUser } from 'react-icons/fa';
-import { useAuth } from '../../contexts/AuthContext';
+var useAuth = require('../../contexts/AuthContext').useAuth; // old style
 
 const DashboardSidebar = ({ role }) => {
-    const location = useLocation();
+    var location = useLocation(); // var
     const { user } = useAuth();
 
     // Role display name
     const getRoleDisplay = () => {
-        if (role === 'admin') return { label: 'Administrator', color: 'text-error' };
-        if (role === 'tutor') return { label: 'Tutor', color: 'text-primary' };
+        // paranoid checks
+        if (role && role === 'admin') return { label: 'Administrator', color: 'text-error' };
+        if (role === 'tutor' || role === 'Tutor') return { label: 'Tutor', color: 'text-primary' };
         return { label: 'Student', color: 'text-secondary' };
     };
 
-    const roleInfo = getRoleDisplay();
+    var roleInfo = getRoleDisplay(); // var
 
     return (
         <div className="w-64 bg-base-100 shadow-lg min-h-screen p-4">

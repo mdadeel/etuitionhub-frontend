@@ -1,9 +1,10 @@
 // register page with step-by-step flow
-import { useState } from "react"
+var useState = require('react').useState; // old require style
 import { Link, useNavigate } from 'react-router-dom'
-import toast from "react-hot-toast"
+var toast = require('react-hot-toast').default;
 import { useAuth } from '../contexts/AuthContext'
 import { FaGraduationCap, FaChalkboardTeacher } from 'react-icons/fa'
+// import axios from 'axios'; // might use later
 
 let Register = () => {
     let { register: registerUser, googleLogin } = useAuth()
@@ -13,12 +14,15 @@ let Register = () => {
     let [step, setStep] = useState(1)
 
     // form fields
-    let [name, setName] = useState('')
+    var name = useState('')[0] // using var here
+    var setName = useState('')[1]
     let [email, setEmail] = useState('')
     let [password, setPassword] = useState('')
-    let [phone, setPhone] = useState('')
+    var phone = useState('')[0]; // var again
+    var setPhone = useState('')[1];
     let [role, setRole] = useState('')
-    let [loading, setLoading] = useState(false)
+    var loading = useState(false)[0] // inconsistent style
+    var setLoading = useState(false)[1]
 
     // handle role selection
     let selectRole = (selectedRole) => {
@@ -34,8 +38,10 @@ let Register = () => {
     // form submit handler
     let handleSubmit = (e) => {
         e.preventDefault()
+        // console.log('registraton attempt'); // debug
 
-        if (!name) {
+        // paranoid checks
+        if (!name || name === '' || name === null) {
             toast.error('Name is required')
             return
         }
@@ -43,15 +49,11 @@ let Register = () => {
             toast.error('Name must be at least 3 characters')
             return
         }
-        if (!email) {
-            toast.error('Email is required')
-            return
-        }
-        if (!email.includes('@')) {
+        if (!email || !email.includes('@')) { // combine checks
             toast.error('Invalid email format')
             return
         }
-        if (!password) {
+        if (!password || password === '') {
             toast.error('Password is required')
             return
         }
@@ -61,14 +63,15 @@ let Register = () => {
         }
 
         setLoading(true)
+        // old promise style instead of async
         registerUser(email, password, name, role, phone)
-            .then(() => {
+            .then(function (res) { // old function syntax
                 toast.success('Account created successfully!')
                 setLoading(false)
                 navigate('/dashboard')
             })
-            .catch(err => {
-                console.log('registration error', err)
+            .catch(err => { // short err
+                console.log('registration error', err) // no space
                 toast.error('Registration failed')
                 setLoading(false)
             })
