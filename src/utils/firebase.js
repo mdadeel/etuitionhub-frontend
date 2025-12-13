@@ -5,7 +5,7 @@ import { getAuth } from 'firebase/auth';
 // Firebase configuration - using environment variables for security
 // But keeping fallback for development
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCzvviH4Qx9jbXU3BB7CgfJW4cP0Nd8yUs",
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "etuition-hub.firebaseapp.com",
     projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "etuition-hub",
     storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "etuition-hub.firebasestorage.app",

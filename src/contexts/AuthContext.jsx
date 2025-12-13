@@ -91,9 +91,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     // user change hoile db theke role anbo
+
+
     useEffect(() => {
         let isMounted = true;
-        
+
         // database theke user data anbo
         const fetchUserFromDB = async (email) => {
             try {
@@ -120,7 +122,7 @@ export const AuthProvider = ({ children }) => {
             };
             fetchUserData()
         }
-        
+
         return () => { isMounted = false };
     }, [user]);  // Fixed: removed userRole from deps
 
@@ -226,11 +228,14 @@ export const AuthProvider = ({ children }) => {
             }
         }
 
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            // console.log('Auth Change Observer',currentUser)
-            setUser(currentUser);
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            setLoading(true);
+            console.log('Auth Change Observer', currentUser)
+            setUser(currentUser); // Changed from userData to currentUser
+            // console.log("current user set korlam:", userData?.email);
             setLoading(false);
-        });
+        }); // unsubscribe on unmount
+
         let tokenData = {
             email: user?.email
         }
@@ -238,8 +243,8 @@ export const AuthProvider = ({ children }) => {
 
         return () => {
             unsubscribe();
-        }
-    }, [user?.email]);
+        };
+    }, [user?.email]); // Corrected dependency array
 
     let authInfo = {
         user,

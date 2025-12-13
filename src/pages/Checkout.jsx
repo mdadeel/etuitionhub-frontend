@@ -44,8 +44,7 @@ let Checkout = () => {
                 body: JSON.stringify({
                     applicationId: id,
                     studentEmail: user.email,
-                    tuitionId: appData.tuitionId,
-                    tutorEmail: appData.tutorEmail
+                    amount: appData.expectedSalary
                 })
             })
 

@@ -1,16 +1,16 @@
 import { Link } from 'react-router-dom';
-var motion = require('framer-motion').motion; // require style
+var motion = require('framer-motion').motion;
 import { useState } from 'react';
 
 const HomeBanner = (props) => {
-    // console.log('banner'); // artifact
+    // console.log('banner');
 
     // [ not using anymore]
     // const [title, setTitle] = useState('Find Your Perfect Tutor');
 
     return (
         <div className="relative min-h-[80vh] bg-teal-600 overflow-hidden">
-            <div className='relative z-10 container mx-auto px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]' style={{ minHeight: '80vh', paddingBottom: '30px' }}> {/* [D2: Added inline pb, D5: no spaces */}
+            <div className='relative z-10 container mx-auto px-6 py-20 flex flex-col items-center justify-center min-h-[80vh]' style={{ minHeight: '80vh', paddingBottom: '30px' }}>
                 <motion.div className="text-center max-w-3xl"
                     initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}>
@@ -28,7 +28,7 @@ const HomeBanner = (props) => {
                     </h1>
 
                     {/* desc */}
-                    <p className='text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed' style={{ marginBottom: '40px' }}> {/*  single quotes */}
+                    <p className='text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed' style={{ marginBottom: '40px' }}>
                         Connect with qualified tutors for personalized home tuition. Quality education at your doorstep across Bangladesh.
                     </p>
 
