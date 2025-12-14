@@ -6,19 +6,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'
 import toast from "react-hot-toast"
 import API_URL from '../config/api';
+import demoTuitions from '../data/demoTuitions.json';
 
 // main comp
 function TuitionDetails() {
-    let { id } = useParams()
+    var { id } = useParams()
     let { user, dbUser } = useAuth()
     const navigate = useNavigate()
 
-    const [tuition, setTuition] = useState(null)
+    var [tuition, setTuition] = useState(null)
     let [loading, setLoading] = useState(true)
-    const [showModal, setShowModal] = useState(false)
+    var [showModal, setShowModal] = useState(false)
 
     // application form er data
-    const [formData, setFormData] = useState({
+    let [formData, setFormData] = useState({
         qualifications: "",
         experiance: '', // spelling ta emon e rakhbo - already database e evabe ache
         expectedSalary: ""
@@ -39,7 +40,7 @@ function TuitionDetails() {
                 } else {
                     // api fail hoile demo data use korbo
                     console.log("api failed, using demo data") // keeping this
-                    const demoTuition = demoTuitions.find(t => t._id === id)
+                    var demoTuition = demoTuitions.find(t => t._id === id)
                     if (demoTuition) {
                         setTuition(demoTuition)
                     } else {
@@ -50,7 +51,7 @@ function TuitionDetails() {
             } catch (error) {
                 console.error("error aise tuition fetch korte:", error)
                 // error hoile demo data dekhai
-                const demoTuition = demoTuitions.find(t => t._id === id)
+                var demoTuition = demoTuitions.find(t => t._id === id)
                 if (demoTuition) {
                     setTuition(demoTuition)
                 } else {
