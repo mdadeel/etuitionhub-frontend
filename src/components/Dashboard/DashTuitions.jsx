@@ -2,6 +2,7 @@
 // tuition posts approve/reject kora jay ekhaney
 import { useState, useEffect } from "react"
 import toast from 'react-hot-toast'
+import API_URL from '../../config/api';
 
 function DashTuitions() {
     let [tuitions, setTuitions] = useState([])
@@ -12,7 +13,7 @@ function DashTuitions() {
         // api call - all tuitions anbo
         const fetchTuitions = async () => {
             try {
-                let res = await fetch('http://localhost:5000/api/tuitions')
+                let res = await fetch(`${API_URL}/api/tuitions`)
                 if (res.ok) {
                     let data = await res.json()
                     setTuitions(data)
@@ -47,7 +48,7 @@ function DashTuitions() {
         }
 
         try {
-            let res = await fetch(`http://localhost:5000/api/tuitions/${tuitionId}`, {
+            let res = await fetch(`${API_URL}/api/tuitions/${tuitionId}`, {
                 method: 'PATCH',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: 'approved' })
@@ -79,7 +80,7 @@ function DashTuitions() {
         }
 
         try {
-            let res = await fetch(`http://localhost:5000/api/tuitions/${tuitionId}`, {
+            let res = await fetch(`${API_URL}/api/tuitions/${tuitionId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: "rejected" })

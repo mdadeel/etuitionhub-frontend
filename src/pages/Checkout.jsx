@@ -4,6 +4,8 @@ import { loadStripe } from "@stripe/stripe-js"
 import { useParams, useNavigate } from "react-router-dom"
 import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
+import API_URL from '../config/api';
+
 // stripe key
 let stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_51ScKPwBLmnYHXqck9C3HR4Rg10utxFGf4spiNB6nXVGtkfjqjXmlZObBnZz1FZOOae29kxFE50UIkMJCNxILV0Ux00r6wdXVfi')
 let Checkout = () => {
@@ -28,7 +30,7 @@ let Checkout = () => {
     let fetchApplicationAndCreateSession = async () => {
         try {
             // console.log('ftch app',id)
-            let appRes = await fetch(`http://localhost:5000/api/applications/${id}`)
+            let appRes = await fetch(`${API_URL}/api/applications/${id}`)
             if (!appRes.ok) {
                 throw new Error('App not found')
             }
@@ -38,7 +40,7 @@ let Checkout = () => {
             console.log('app data', appData)
 
             // let res=await fetch('http://localhost:5000/api/payments/create-checkout-session',{
-            let res = await fetch('http://localhost:5000/api/payments/create-checkout-session', {
+            let res = await fetch(`${API_URL}/api/payments/create-checkout-session`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

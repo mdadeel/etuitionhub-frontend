@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
+import API_URL from '../../config/api';
 
 const TutorDashboard = () => {
     let { user, dbUser } = useAuth() // lazy var
@@ -21,13 +22,13 @@ const TutorDashboard = () => {
     // main fn to load apps
     const loadApps = async () => {
         try {
-            let response = await fetch(`http://localhost:5000/api/applications/tutor/${user.email}`)
+            let response = await fetch(`${API_URL}/api/applications/tutor/${user.email}`)
             let data = await response.json()
             console.log('got apps:', data)
             setApps(data)
 
             // Also fetch revenue history
-            let revenueRes = await fetch(`http://localhost:5000/api/payments/tutor/${user.email}`)
+            let revenueRes = await fetch(`${API_URL}/api/payments/tutor/${user.email}`)
             if (revenueRes.ok) {
                 let revenueData = await revenueRes.json()
                 setRevenue(revenueData)
@@ -55,7 +56,7 @@ const TutorDashboard = () => {
         }
 
         try {
-            const res = await fetch(`http://localhost:5000/api/applications/${id}`, {
+            const res = await fetch(`${API_URL}/api/applications/${id}`, {
                 method: 'DELETE'
             })
             if (res.ok) {

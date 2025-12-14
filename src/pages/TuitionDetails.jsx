@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'
 import toast from "react-hot-toast"
-import demoTuitions from '../data/demoTuitions.json';
+import API_URL from '../config/api';
 
 // main comp
 function TuitionDetails() {
@@ -30,7 +30,7 @@ function TuitionDetails() {
         const fetchTuitionDetails = async () => {
             try {
                 // api call try kortesi
-                let res = await fetch(`http://localhost:5000/api/tuitions/${id}`)
+                let res = await fetch(`${API_URL}/api/tuitions/${id}`)
                 if (res.ok) {
                     // const data = await res.json()
                     let data = await res.json()
@@ -135,7 +135,7 @@ function TuitionDetails() {
         console.log("submitting application:", applicationData) // debugging aid
 
         try {
-            let res = await fetch('http://localhost:5000/api/applications', {
+            let res = await fetch(`${API_URL}/api/applications`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(applicationData)

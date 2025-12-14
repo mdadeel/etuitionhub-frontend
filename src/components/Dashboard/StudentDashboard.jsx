@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 import demoTuitions from '../../data/demoTuitions.json'; // demo data fallback
+import API_URL from '../../config/api';
 
 const StudentDashboard = () => {
     let { user, dbUser } = useAuth();
@@ -22,7 +23,7 @@ const StudentDashboard = () => {
         const fetchData = async () => {
             try {
                 // Fetch posted tuitions
-                const resTuitions = await fetch(`http://localhost:5000/api/tuitions/student/${user.email}`);
+                const resTuitions = await fetch(`${API_URL}/api/tuitions/student/${user.email}`);
                 if (resTuitions.ok) {
                     const data = await resTuitions.json();
                     if (data.length > 0) {
@@ -39,7 +40,7 @@ const StudentDashboard = () => {
                 }
 
                 // Fetch bookings (Tutors I've booked)
-                const resBookings = await fetch(`http://localhost:5000/api/bookings/student/${user.email}`);
+                const resBookings = await fetch(`${API_URL}/api/bookings/student/${user.email}`);
                 if (resBookings.ok) {
                     const data = await resBookings.json();
                     setBookings(data);
@@ -50,13 +51,13 @@ const StudentDashboard = () => {
 
                 // fetch applications for my tuitions
                 // API theke try korbo first
-                const resTuition = await fetch(`http://localhost:5000/api/tuitions/student/${user.email}`);
+                const resTuition = await fetch(`${API_URL}/api/tuitions/student/${user.email}`);
                 if (resTuition.ok) {
                     const tuitionData = await resTuition.json();
                     // get all application for all my tuitions
                     const allApps = [];
                     for (const tuit of tuitionData) {
-                        const appRes = await fetch(`http://localhost:5000/api/applications/tuition/${tuit._id}`);
+                        const appRes = await fetch(`${API_URL}/api/applications/tuition/${tuit._id}`);
                         if (appRes.ok) {
                             const apps = await appRes.json();
                             allApps.push(...apps);
@@ -116,7 +117,7 @@ const StudentDashboard = () => {
         };
 
         try {
-            const res = await fetch('http://localhost:5000/api/tuitions', {
+            const res = await fetch(`${API_URL}/api/tuitions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(tuitionData)
@@ -158,7 +159,7 @@ const StudentDashboard = () => {
         }
 
         try {
-            const res = await fetch(`http://localhost:5000/api/applications/${appId}`, {
+            const res = await fetch(`${API_URL}/api/applications/${appId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'rejected' })
@@ -187,7 +188,7 @@ const StudentDashboard = () => {
         }
 
         try {
-            const res = await fetch(`http://localhost:5000/api/tuitions/${tuitionId}`, {
+            const res = await fetch(`${API_URL}/api/tuitions/${tuitionId}`, {
                 method: 'DELETE'
             });
             if (res.ok) {

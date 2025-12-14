@@ -18,6 +18,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 
+import API_URL from '../config/api';
+
 // auth context export kortesi
 export const AuthContext = createContext(null);
 
@@ -61,7 +63,7 @@ export const AuthProvider = ({ children }) => {
             };
 
             // backend API use kortesi
-            let res = await axios.post('http://localhost:5000/api/users', userData);
+            let res = await axios.post(`${API_URL}/api/users`, userData);
             console.log('User saved/updated:', res.data);
             toast.dismiss(toastId);
 
@@ -79,7 +81,7 @@ export const AuthProvider = ({ children }) => {
     // Refresh user from database
     const refreshUserFromDB = async (email) => {
         try {
-            let res = await axios.get(`http://localhost:5000/api/users/${email}`);
+            let res = await axios.get(`${API_URL}/api/users/${email}`);
             setDbUser(res.data);
             setUserRole(res.data.role);
             console.log('User refreshed:', res.data);
@@ -98,7 +100,7 @@ export const AuthProvider = ({ children }) => {
 
         const fetchUserFromDB = async (email) => {
             try {
-                let res = await axios.get(`http://localhost:5000/api/users/${email}`);
+                let res = await axios.get(`${API_URL}/api/users/${email}`);
                 if (isMounted) {
                     setDbUser(res.data);
                     setUserRole(res.data.role);
@@ -121,7 +123,7 @@ export const AuthProvider = ({ children }) => {
             console.log("Fetching DB User for:", user.email);
             fetchUserFromDB(user.email);
         } else {
-            
+
             setDbUser(null);
             setUserRole(null);
             setLoading(false);
@@ -223,7 +225,7 @@ export const AuthProvider = ({ children }) => {
         // JWT token set - messy but kaj kore
         const setJWT = async (tokenData) => {
             try {
-                let res = await axios.post('http://localhost:5000/api/auth/jwt', tokenData, {
+                let res = await axios.post(`${API_URL}/api/auth/jwt`, tokenData, {
                     withCredentials: true
                 });
                 Cookies.set('token', res.data.token)

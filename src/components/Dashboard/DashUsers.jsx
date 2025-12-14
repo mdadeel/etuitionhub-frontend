@@ -2,6 +2,7 @@
 // user list dekha, role change, delete kora jabe
 import { useState, useEffect } from "react"
 import toast from 'react-hot-toast';
+import API_URL from '../../config/api';
 
 function DashUsers() {
     let [users, setUsers] = useState([])
@@ -12,7 +13,7 @@ function DashUsers() {
         // api theke users load kori
         const fetchUsers = async () => {
             try {
-                let res = await fetch('http://localhost:5000/api/users')
+                let res = await fetch(`${API_URL}/api/users`)
                 if (res.ok) {
                     let data = await res.json()
                     console.log('users loaded:', data.length)
@@ -44,7 +45,7 @@ function DashUsers() {
         }
 
         try {
-            let res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+            let res = await fetch(`${API_URL}/api/users/${userId}`, {
                 method: 'DELETE'
             })
             if (res.ok) {
@@ -74,7 +75,7 @@ function DashUsers() {
         }
 
         try {
-            let res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+            let res = await fetch(`${API_URL}/api/users/${userId}`, {
                 method: "PATCH",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ role: newRole })

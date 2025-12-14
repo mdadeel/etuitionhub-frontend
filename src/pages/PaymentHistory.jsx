@@ -1,6 +1,8 @@
 // payment history page
 import { useState, useEffect } from "react"
 import { useAuth } from '../contexts/AuthContext'
+import API_URL from '../config/api';
+
 let PaymentHistory = () => {
     let { user } = useAuth()
     let [payments, setPayments] = useState([])
@@ -16,8 +18,8 @@ let PaymentHistory = () => {
 
     let fetchPayments = async () => {
         try {
-            // let res=await fetch(`http://localhost:5000/api/payments/student/${user.email}`)
-            let res = await fetch(`http://localhost:5000/api/payments/student/${user.email}`)
+            // let res=await fetch(`${API_URL}/api/payments/student/${user.email}`)
+            let res = await fetch(`${API_URL}/api/payments/student/${user.email}`)
             let data = await res.json()
             setPayments(data)
         } catch (error) {

@@ -2,6 +2,7 @@
 // Admin Analytics - platform er stats dekhabe
 import { useState, useEffect } from "react"
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import API_URL from '../../config/api';
 
 function DashAnalytics() {
     let [stats, setStats] = useState({
@@ -24,9 +25,9 @@ function DashAnalytics() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                let usersRes = await fetch("http://localhost:5000/api/users")
-                let tuitionsRes = await fetch('http://localhost:5000/api/tuitions')
-                let paymentsRes = await fetch('http://localhost:5000/api/payments/all')
+                let usersRes = await fetch(`${API_URL}/api/users`)
+                let tuitionsRes = await fetch(`${API_URL}/api/tuitions`)
+                let paymentsRes = await fetch(`${API_URL}/api/payments/all`)
 
                 if (usersRes.ok && tuitionsRes.ok) {
                     let users = await usersRes.json()
