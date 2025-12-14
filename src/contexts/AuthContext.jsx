@@ -1,7 +1,4 @@
-// Auth Context - authentication and user management
-// handles login, register, logout etc kortesi ekhane
-// app er sob jaygay user state maintain kore
-// "use client" - NOTE: maybe remove this?
+
 import { createContext, useContext, useState, useEffect } from 'react';
 import {
     createUserWithEmailAndPassword,
@@ -63,28 +60,33 @@ export const AuthProvider = ({ children }) => {
             };
 
             // backend API use kortesi
+            console.log('Posting user to DB:', userData);
             let res = await axios.post(`${API_URL}/api/users`, userData);
-            console.log('User saved/updated:', res.data);
+            console.log('Backend response:', res.data);
+
             toast.dismiss(toastId);
 
-            // Update local state immediately
+            // Update local state immediately with BACKEND data
+            // this is crucial cause backend might upgrade role
             setDbUser(res.data);
-            setUserRole(res.data.role);
+            setUserRole(res.data.role); // explicitly set role from response
 
             return res.data;
         } catch (error) {
             console.error('Error saving user:', error);
             toast.dismiss(toastId);
+            throw error; // throw so caller knows it failed
         }
     };
 
     // Refresh user from database
     const refreshUserFromDB = async (email) => {
         try {
+            console.log('Refreshing user data for:', email);
             let res = await axios.get(`${API_URL}/api/users/${email}`);
             setDbUser(res.data);
             setUserRole(res.data.role);
-            console.log('User refreshed:', res.data);
+            console.log('Refreshed User Role:', res.data.role);
             return res.data;
         } catch (error) {
             console.error('Refresh error:', error);
@@ -132,6 +134,44 @@ export const AuthProvider = ({ children }) => {
         return () => { isMounted = false };
     }, [user?.email]);
 
+    // JWT generation helper
+    const setJWT = async (email) => {
+        if (!email) return;
+        try {
+            console.log('Generating JWT for:', email);
+            let res = await axios.post(`${API_URL}/api/auth/jwt`, { email }, {
+                withCredentials: true
+            });
+            if (res.data.token) {
+                Cookies.set('token', res.data.token, { expires: 7 }); // expires in 7 days
+                console.log('JWT Token set in cookies');
+                return res.data.token;
+            }
+        } catch (error) {
+            console.log('JWT generation error:', error);
+        }
+    };
+
+    // auth state changes listen kortesi
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            setLoading(true);
+            console.log('Auth Change Observer', currentUser)
+            setUser(currentUser);
+
+            // Generate token if user exists
+            if (currentUser?.email) {
+                await setJWT(currentUser.email);
+            }
+
+            setLoading(false);
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
     // rgstrtn function email password diye register korbo
     const register = async (email, password, name, role = 'student', phone = '') => {
         setLoading(true);
@@ -155,11 +195,17 @@ export const AuthProvider = ({ children }) => {
         }
 
         try {
+            console.log('Starting registration with role:', role);
             let result = await createUserWithEmailAndPassword(auth, email, password);
             await updateProfile(result.user, { displayName: name });
 
             // database e user save kortesi with phone
-            await saveUserToDB(result.user, role, phone);
+            // AWAIT THE RESULT to obtain correct role from backend
+            let savedUser = await saveUserToDB(result.user, role, phone);
+            console.log('Saved user role form DB:', savedUser?.role);
+
+            // Generate JWT immediately
+            await setJWT(result.user.email);
 
             // Refresh to make sure state is updated
             await refreshUserFromDB(email);
@@ -174,9 +220,17 @@ export const AuthProvider = ({ children }) => {
     };
 
     // email/password diye login
-    const login = (email, password) => {
+    const login = async (email, password) => {
         setLoading(true);
-        return signInWithEmailAndPassword(auth, email, password);
+        try {
+            const result = await signInWithEmailAndPassword(auth, email, password);
+            // Generate JWT immediately
+            await setJWT(result.user.email);
+            return result;
+        } catch (error) {
+            setLoading(false);
+            throw error;
+        }
     };
 
     // Google login - ALWAYS save/update role
@@ -186,8 +240,12 @@ export const AuthProvider = ({ children }) => {
             let result = await signInWithPopup(auth, googleProvider);
 
             // Always save to DB - backend will update role if changed
-            console.log('Google login - saving with role:', selectedRole);
-            await saveUserToDB(result.user, selectedRole);
+            console.log('Google login - requesting role:', selectedRole);
+            let savedUser = await saveUserToDB(result.user, selectedRole);
+            console.log('After Google Login - DB Role:', savedUser?.role);
+
+            // Generate JWT immediately
+            await setJWT(result.user.email);
 
             // Refresh to get updated data
             await refreshUserFromDB(result.user.email);
@@ -219,38 +277,6 @@ export const AuthProvider = ({ children }) => {
         updateProfile(auth.currentUser, updateUser);
         setUser((preUser) => ({ ...preUser, ...updateUser }))
     }
-
-    // auth state changes listen kortesi
-    useEffect(() => {
-        // JWT token set - messy but kaj kore
-        const setJWT = async (tokenData) => {
-            try {
-                let res = await axios.post(`${API_URL}/api/auth/jwt`, tokenData, {
-                    withCredentials: true
-                });
-                Cookies.set('token', res.data.token)
-            } catch {
-                // console.log('JWT error')
-            }
-        }
-
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setLoading(true);
-            console.log('Auth Change Observer', currentUser)
-            setUser(currentUser); // Changed from userData to currentUser
-            // console.log("current user set korlam:", userData?.email);
-            setLoading(false);
-        }); // unsubscribe on unmount
-
-        let tokenData = {
-            email: user?.email
-        }
-        setJWT(tokenData)
-
-        return () => {
-            unsubscribe();
-        };
-    }, [user?.email]); // Corrected dependency array
 
     let authInfo = {
         user,

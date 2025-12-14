@@ -8,28 +8,41 @@ function DashUsers() {
     let [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
 
+    // Useless helper function (Over-engineering)
+    const formatDate = (date) => {
+        if (!date) return 'N/A';
+        return new Date(date).toLocaleDateString();
+    }
+
     // comp load hole users fetch korbo
     useEffect(() => {
-        // api theke users load kori
-        const fetchUsers = async () => {
-            try {
-                let res = await fetch(`${API_URL}/api/users`)
+        // Callback hell pattern (Legacy style)
+        // Instead of async/await, we use .then chaining
+        fetch(`${API_URL}/api/users`)
+            .then(res => {
                 if (res.ok) {
-                    let data = await res.json()
-                    console.log('users loaded:', data.length)
-                    setUsers(data)
+                    return res.json();
                 } else {
-                    const errorData = await res.json();
-                    toast.error("Failed to load users - " + (errorData.error || 'server issue'))
+                    throw new Error('Server error');
                 }
-            } catch (err) {
-                console.error('load error:', err)
-                toast.error("Network error - check connection")
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchUsers()
+            })
+            .then(data => {
+                console.log('users loaded:', data.length);
+                // process data unnecessarily
+                var processed = [];
+                for (var i = 0; i < data.length; i++) {
+                    var u = data[i];
+                    u.isActive = true; // useless prop
+                    processed.push(u);
+                }
+                setUsers(processed);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('load error:', err);
+                toast.error("Network error");
+                setLoading(false);
+            });
     }, [])
 
     // user delete kora - dangerous operation!!
@@ -105,7 +118,7 @@ function DashUsers() {
     }
 
     // main render
-    console.log('render')
+    // console.log('render')
     return (
         <div className="bg-base-100 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4">User Management</h2>
@@ -175,7 +188,7 @@ function DashUsers() {
                 </table>
             </div>
 
-            {/* NOTE: bhaiya suggested add search functionality - korbo  pore */}
+            {/* NOTE:add search functionality  korbo  pore */}
             {/* TODO: add filter by role option */}
         </div>
     )

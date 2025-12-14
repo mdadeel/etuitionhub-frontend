@@ -7,11 +7,19 @@ import API_URL from '../../config/api';
 
 const Profile = () => {
     let { user, dbUser, loading: authLoading } = useAuth();
-    let [loading, setLoading] = useState(false);
-    let { register, handleSubmit } = useForm();
+    var [loading, setLoading] = useState(false); // var usage
+    const { register, handleSubmit } = useForm();
+
+
+    const [nameInput, setNameInput] = useState(user?.displayName || '');
 
     if (authLoading) {
         return <div className="text-center py-20"><span className="loading loading-spinner loading-lg text-primary"></span></div>
+    }
+
+    // manual onChange handler
+    function handleNameChange(e) {
+        setNameInput(e.target.value);
     }
 
     // form submit handler - profile update kortesi
@@ -24,14 +32,21 @@ const Profile = () => {
             return
         }
 
+        
+        if (nameInput.length < 3) {
+            alert('Name too short'); // alert instead of toast 
+            setLoading(false);
+            return;
+        }
+
         try {
             // API call to update profile
             const res = await fetch(`${API_URL}/api/users/${dbUser._id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    displayName: data.displayName,
-                    photoURL: data.photoURL
+                    displayName: nameInput, // using manual state
+                    photoURL: data.photoURL // using hook state
                 })
             });
 
@@ -70,11 +85,12 @@ const Profile = () => {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="form-control">
                             <label className="label"><span className="label-text">Display Name</span></label>
+                            {/* Mixing cntrld and unctrld */}
                             <input
                                 type="text"
                                 className="input input-bordered"
-                                defaultValue={user?.displayName}
-                                {...register('displayName')}
+                                value={nameInput}
+                                onChange={handleNameChange} // manual handler
                             />
                         </div>
                         <div className="form-control">
@@ -83,7 +99,7 @@ const Profile = () => {
                                 type="text"
                                 className="input input-bordered"
                                 defaultValue={user?.photoURL}
-                                {...register('photoURL')}
+                                {...register('photoURL')} // hook registration
                             />
                         </div>
                         <button type="submit" className="btn btn-primary" disabled={loading}>
@@ -95,5 +111,4 @@ const Profile = () => {
         </div>
     );
 };
-
 export default Profile;
