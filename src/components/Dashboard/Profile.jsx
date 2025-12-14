@@ -6,9 +6,13 @@ import toast from 'react-hot-toast';
 import API_URL from '../../config/api';
 
 const Profile = () => {
-    let { user, dbUser } = useAuth();
+    let { user, dbUser, loading: authLoading } = useAuth();
     let [loading, setLoading] = useState(false);
     let { register, handleSubmit } = useForm();
+
+    if (authLoading) {
+        return <div className="text-center py-20"><span className="loading loading-spinner loading-lg text-primary"></span></div>
+    }
 
     // form submit handler - profile update kortesi
     const onSubmit = async (data) => {
