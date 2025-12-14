@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import API_URL from '../../config/api';
 
 const Profile = () => {
     let { user, dbUser } = useAuth();
@@ -21,7 +22,7 @@ const Profile = () => {
 
         try {
             // API call to update profile
-            const res = await fetch(`http://localhost:5000/api/users/${dbUser._id}`, {
+            const res = await fetch(`${API_URL}/api/users/${dbUser._id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

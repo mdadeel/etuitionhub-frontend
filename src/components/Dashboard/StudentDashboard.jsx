@@ -1,4 +1,4 @@
-// Student Dashboard - student er main overview with tabs
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
@@ -7,12 +7,17 @@ import Cookies from 'js-cookie';
 import demoTuitions from '../../data/demoTuitions.json'; // demo data fallback
 import API_URL from '../../config/api';
 
-const StudentDashboard = () => {
+var StudentDashboard = () => {
+
+    // hooks call
     let { user, dbUser } = useAuth();
-    let [activeTab, setActiveTab] = useState('overview');
-    let [bookings, setBookings] = useState([]);
-    let [myTuitions, setMyTuitions] = useState([]);
-    let [applications, setApplications] = useState([]); // tutor applications amar posts er jonno
+    var [activeTab, setActiveTab] = useState('overview');
+
+    let [bookings, setBookings] = useState([])
+    let [myTuitions, setMyTuitions] = useState([])
+    var [applications, setApplications] = useState([]) // tutor applications amar posts er jonno
+
+    // form hook
     let { register, handleSubmit, reset } = useForm();
     let [loading, setLoading] = useState(false);
 
@@ -20,74 +25,77 @@ const StudentDashboard = () => {
     useEffect(() => {
         if (!user?.email) return;
 
-        const fetchData = async () => {
-            try {
+        
+    const fetchData = async () => {
+        try {
                 // Fetch posted tuitions
                 const resTuitions = await fetch(`${API_URL}/api/tuitions/student/${user.email}`);
-                if (resTuitions.ok) {
+
+        if (resTuitions.ok) {
                     const data = await resTuitions.json();
-                    if (data.length > 0) {
+            if (data.length > 0) {
                         setMyTuitions(data);
-                    } else {
+     } else {
                         // no tuitions from API - show demo
                         console.log('📋 No tuitions found - using demo data');
                         setMyTuitions(demoTuitions.slice(0, 3));
-                    }
-                } else {
+     }
+        } else {
                     // API failed - use demo data
                     console.log('❌ API failed - using demo tuitions');
                     setMyTuitions(demoTuitions.slice(0, 3));
-                }
+ }
 
                 // Fetch bookings (Tutors I've booked)
-                const resBookings = await fetch(`${API_URL}/api/bookings/student/${user.email}`);
-                if (resBookings.ok) {
+         const resBookings = await fetch(`${API_URL}/api/bookings/student/${user.email}`);
+         if (resBookings.ok) {
                     const data = await resBookings.json();
                     setBookings(data);
-                } else {
-                    // demo bookings nai - empty rakhbo for now
-                    console.log('no bookings data')
-                }
+          } else {
+         // demo bookings nai - empty rakhbo for now
+             console.log('no bookings data')
+         }
 
                 // fetch applications for my tuitions
                 // API theke try korbo first
-                const resTuition = await fetch(`${API_URL}/api/tuitions/student/${user.email}`);
-                if (resTuition.ok) {
-                    const tuitionData = await resTuition.json();
+           const resTuition = await fetch(`${API_URL}/api/tuitions/student/${user.email}`);
+          if (resTuition.ok) {
+             const tuitionData = await resTuition.json();
+
                     // get all application for all my tuitions
-                    const allApps = [];
+                    var allApps = []
                     for (const tuit of tuitionData) {
                         const appRes = await fetch(`${API_URL}/api/applications/tuition/${tuit._id}`);
                         if (appRes.ok) {
                             const apps = await appRes.json();
                             allApps.push(...apps);
-                        }
-                    }
+      }
+  }
                     console.log('📋 Total applications fetched:', allApps.length, allApps);
                     setApplications(allApps);
-                } else {
-                    // demo applications create kori - testing jonno
-                    console.log('using demo applications')
-                    const demoApps = [
-                        {
-                            _id: 'app001',
+  } else {
+          // demo applications create kori - testing jonno
+        console.log('using demo applications')
+               const demoApps = [
+          {
+                    _id: 'app001',
                             tutorName: 'Md. Rahman',
                             tutorEmail: 'rahman@test.com',
                             qualifications: 'BSc in Mathematics from DU',
                             experiance: '3 years teaching SSC/HSC students',
                             expectedSalary: 8000,
                             status: 'pending'
-                        },
-                        {
+},
+       {
                             _id: 'app002',
-                            tutorName: 'Fatima Akter',
+                     tutorName: 'Fatima Akter',
                             tutorEmail: 'fatima@test.com',
-                            qualifications: 'MSc in Physics from BUET',
-                            experiance: '5 years experiance',
+                    qualifications: 'MSc in Physics from BUET',
+                       experiance: '5 years experiance',
                             expectedSalary: 10000,
                             status: 'pending'
-                        }
-                    ];
+      }
+];
                     setApplications(demoApps);
                 }
             } catch (error) {
@@ -99,77 +107,77 @@ const StudentDashboard = () => {
         };
 
         fetchData();
-        // Commented out to prevent infinite loop if API is weird
-        // const interval = setInterval(fetchData, 10000);
-        // return () => clearInterval(interval);
-    }, [user?.email]);
+
+}, [user?.email]);
 
     // Handle posting new tuition job
     const onPostTuition = async (data) => {
-        setLoading(true);
+        setLoading(true)
         // console.log("posting job:", data);
-        const tuitionData = {
-            ...data,
-            student_name: user?.displayName,
-            student_email: user?.email,
-            status: 'pending',
+
+ var tuitionData = {
+    ...data,
+    student_name: user?.displayName,
+    student_email: user?.email,
+    status: 'pending',
             createdAt: new Date()
         };
 
-        try {
-            const res = await fetch(`${API_URL}/api/tuitions`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(tuitionData)
-            });
+   try {
+      const res = await fetch(`${API_URL}/api/tuitions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(tuitionData)
+      });
 
-            if (res.ok) {
-                toast.success('Tuition job posted successfully!');
-                reset();
-                setActiveTab('my-jobs');
+    if (res.ok) {
+             toast.success('Tuition job posted successfully!');
+            reset();
+         setActiveTab('my-jobs');
                 // refetch logic here
-            } else {
+        } else {
                 const errorData = await res.json();
                 toast.error('Failed to post job - ' + (errorData.error || 'try again'));
             }
-        } catch (error) {
-            console.error(error);
+ } catch (error) {
+     console.error(error);
             toast.error('Server error - check connection');
-        } finally {
+ } finally {
             setLoading(false);
         }
     };
 
     // application approve - checkout redirect for payment
     const handleApprove = (appId) => {
-        // checkout page e jabo payment er jonno
-        console.log('approving app:', appId) // chk
+     // checkout page e jabo payment er jonno
+     console.log('approving app:', appId) // chk
         window.location.href = `/checkout/${appId}`
-    };
+ };
 
     // reject application  
     const handleReject = async (appId) => {
         if (!confirm('Are you sure you want to reject this application?')) return;
 
-        // Validate ObjectId
-        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+ // Validate ObjectId
+ const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidObjectId(appId)) {
-            toast.error('Cannot reject demo data - invalid ID');
+     toast.error('Cannot reject demo data - invalid ID');
             return;
         }
 
-        try {
+     try {
+        // reject api hitting...
             const res = await fetch(`${API_URL}/api/applications/${appId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'rejected' })
-            });
-            if (res.ok) {
-                toast.success('Application rejected');
-                setApplications(prev => prev.map(a => a._id === appId ? { ...a, status: 'rejected' } : a));
-            } else {
-                const errorData = await res.json();
-                toast.error('Rejection failed - ' + (errorData.error || 'try again'));
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'rejected' })
+           });
+        if (res.ok) {
+            toast.success('Application rejected');
+               setApplications(prev => prev.map(a => a._id === appId ? { ...a, status: 'rejected' } : a));
+           } else {
+            const errorData = await res.json();
+            toast.error('Rejection failed - ' + (errorData.error || 'try again'));
             }
         } catch (err) {
             toast.error('Network error - check connection');
@@ -178,14 +186,14 @@ const StudentDashboard = () => {
 
     // delete my tuition post
     const handleDeleteTuition = async (tuitionId) => {
-        if (!confirm('Delete this tuition post?')) return;
+   if (!confirm('Delete this tuition post?')) return;
 
         // Validate ObjectId
         const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidObjectId(tuitionId)) {
             toast.error('Cannot delete demo data - invalid ID');
             return;
-        }
+}
 
         try {
             const res = await fetch(`${API_URL}/api/tuitions/${tuitionId}`, {
@@ -205,92 +213,92 @@ const StudentDashboard = () => {
     };
 
     //  Move this to a utility file, it's cluttering the component
-    const calculateStats = () => {
+    var calculateStats = () => {
         let hired = bookings.filter(b => b.isAccepted).length;
         let posted = myTuitions.length;
         return { hired, posted };
     }
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
+     <div>
+        <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Student Dashboard</h1>
-                <div className="tabs tabs-boxed flex-wrap">
-                    <a className={`tab ${activeTab === 'overview' ? 'tab-active' : ''}`} onClick={() => setActiveTab('overview')}>Overview</a>
-                    <a className={`tab ${activeTab === 'post-job' ? 'tab-active' : ''}`} onClick={() => setActiveTab('post-job')}>Post Tuition</a>
-                    <a className={`tab ${activeTab === 'my-jobs' ? 'tab-active' : ''}`} onClick={() => setActiveTab('my-jobs')}>My Tuitions</a>
-                    <a className={`tab ${activeTab === 'applications' ? 'tab-active' : ''}`} onClick={() => setActiveTab('applications')}>Applied Tutors</a>
-                    <a className={`tab ${activeTab === 'booked' ? 'tab-active' : ''}`} onClick={() => setActiveTab('booked')}>Booked</a>
-                    <a className={`tab ${activeTab === 'payments' ? 'tab-active' : ''}`} onClick={() => setActiveTab('payments')}>Payments</a>
-                </div>
+            <div className="tabs tabs-boxed flex-wrap">
+                <a className={`tab ${activeTab === 'overview' ? 'tab-active' : ''}`} onClick={() => setActiveTab('overview')}>Overview</a>
+                <a className={`tab ${activeTab === 'post-job' ? 'tab-active' : ''}`} onClick={() => setActiveTab('post-job')}>Post Tuition</a>
+                <a className={`tab ${activeTab === 'my-jobs' ? 'tab-active' : ''}`} onClick={() => setActiveTab('my-jobs')}>My Tuitions</a>
+                <a className={`tab ${activeTab === 'applications' ? 'tab-active' : ''}`} onClick={() => setActiveTab('applications')}>Applied Tutors</a>
+                <a className={`tab ${activeTab === 'booked' ? 'tab-active' : ''}`} onClick={() => setActiveTab('booked')}>Booked</a>
+                <a className={`tab ${activeTab === 'payments' ? 'tab-active' : ''}`} onClick={() => setActiveTab('payments')}>Payments</a>
             </div>
+        </div>
 
             {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="stat bg-base-100 shadow rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="stat bg-base-100 shadow rounded-lg">
                         <div className="stat-title">My Posted Jobs</div>
-                        <div className="stat-value text-primary">{myTuitions.length}</div>
-                        <div className="stat-desc">Jobs you posted</div>
-                    </div>
-                    <div className="stat bg-base-100 shadow rounded-lg">
-                        <div className="stat-title">Applications</div>
-                        <div className="stat-value text-secondary">0</div>
-                        <div className="stat-desc">Tutors applied</div>
-                    </div>
-                    <div className="stat bg-base-100 shadow rounded-lg">
+                  <div className="stat-value text-primary">{myTuitions.length}</div>
+                  <div className="stat-desc">Jobs you posted</div>
+              </div>
+              <div className="stat bg-base-100 shadow rounded-lg">
+                  <div className="stat-title">Applications</div>
+                  <div className="stat-value text-secondary">0</div>
+                  <div className="stat-desc">Tutors applied</div>
+           </div>
+           <div className="stat bg-base-100 shadow rounded-lg">
                         <div className="stat-title">Hired Tutors</div>
-                        <div className="stat-value">{bookings.filter(b => b.isAccepted).length}</div>
-                        <div className="stat-desc">Confirmed bookings</div>
-                    </div>
+                     <div className="stat-value">{bookings.filter(b => b.isAccepted).length}</div>
+                     <div className="stat-desc">Confirmed bookings</div>
+                 </div>
                 </div>
-            )}
+          )}
 
-            {activeTab === 'post-job' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">Post a Tuition Requirement</h2>
-                    <form onSubmit={handleSubmit(onPostTuition)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {activeTab === 'post-job' && (
+             <div className="bg-base-100 p-6 rounded-lg shadow">
+               <h2 className="text-xl font-bold mb-4">Post a Tuition Requirement</h2>
+                  <form onSubmit={handleSubmit(onPostTuition)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="form-control">
-                            <label className="label">Subject *</label>
-                            <input {...register('subject', { required: true })} placeholder="Mathematics, Physics, English" className="input input-bordered" />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">Class *</label>
+                          <label className="label">Subject *</label>
+                          <input {...register('subject', { required: true })} placeholder="Mathematics, Physics, English" className="input input-bordered" />
+                      </div>
+                 <div className="form-control">
+                   <label className="label">Class *</label>
                             <select {...register('class_name', { required: true })} className="select select-bordered">
-                                <option>Class 6</option>
-                                <option>Class 7</option>
-                                <option>Class 8</option>
+                      <option>Class 6</option>
+                       <option>Class 7</option>
+                       <option>Class 8</option>
                                 <option>Class 9</option>
-                                <option>Class 10</option>
+                         <option>Class 10</option>
                                 <option>HSC</option>
-                            </select>
-                        </div>
-                        <div className="form-control">
+                   </select>
+                 </div>
+                 <div className="form-control">
                             <label className="label">Salary (Monthly) *</label>
                             <input {...register('salary', { required: true, min: 1000 })} placeholder="5000" type="number" min="1000" className="input input-bordered" />
-                        </div>
-                        <div className="form-control">
+                   </div>
+                   <div className="form-control">
                             <label className="label">Medium</label>
-                            <select {...register('medium')} className="select select-bordered">
-                                <option>Bangla Medium</option>
-                                <option>English Medium</option>
+                       <select {...register('medium')} className="select select-bordered">
+                           <option>Bangla Medium</option>
+                           <option>English Medium</option>
                             </select>
-                        </div>
+                   </div>
                         <div className="form-control">
-                            <label className="label">Days per week</label>
-                            <select {...register('days_per_week')} className="select select-bordered">
-                                <option>3 days</option>
-                                <option>4 days</option>
-                                <option>5 days</option>
+                   <label className="label">Days per week</label>
+                       <select {...register('days_per_week')} className="select select-bordered">
+                           <option>3 days</option>
+                          <option>4 days</option>
+                          <option>5 days</option>
                             </select>
-                        </div>
-                        <div className="form-control md:col-span-2">
-                            <label className="label">Location Details *</label>
+                  </div>
+                  <div className="form-control md:col-span-2">
+                      <label className="label">Location Details *</label>
                             <textarea {...register('location', { required: true })} className="textarea textarea-bordered h-24" placeholder="Full address details..."></textarea>
-                        </div>
+                  </div>
                         <div className="md:col-span-2 mt-4">
-                            <button className="btn btn-primary w-full" disabled={loading}>
-                                {loading ? 'Posting...' : 'Post Requirement'}
-                            </button>
+                      <button className="btn btn-primary w-full" disabled={loading}>
+                          {loading ? 'Posting...' : 'Post Requirement'}
+                      </button>
                         </div>
                     </form>
                 </div>
