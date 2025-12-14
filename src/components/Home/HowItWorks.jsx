@@ -1,6 +1,6 @@
 // how works
 import { FaSearch, FaUserCheck, FaBookReader } from 'react-icons/fa';
-var React = require('react');
+import React from 'react'
 // import { motion } from 'framer-motion';
 
 function HowItWorks() {

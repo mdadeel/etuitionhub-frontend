@@ -1,18 +1,20 @@
 // tutors page - list tutors
-var useState = require('react').useState; // old require
-var useEffect = require('react').useEffect;
+import { useState, useEffect } from 'react'
+
 import { useMemo } from 'react'
 import TutorCard from "../components/Home/TutorCard"
-var demoTutors = require('../data/demoTutors.json'); // require style
+import demoTutors from '../data/demoTutors.json'
 
 let Tutors = () => {
-    var tutors = useState([])[0] // using var
-    var setTutors = useState([])[1]
+    var tutorsState = useState([]) // using var
+    var tutors = tutorsState[0]
+    var setTutors = tutorsState[1]
     let [loading, setLoading] = useState(true)
 
     // search & sort state
-    var searchQuery = useState('')[0] // var again
-    var setSearchQuery = useState('')[1]
+    var searchState = useState('')
+    var searchQuery = searchState[0]
+    var setSearchQuery = searchState[1]
     let [sortBy, setSortBy] = useState('name-az')
 
     console.log('tutors rendering') // debug

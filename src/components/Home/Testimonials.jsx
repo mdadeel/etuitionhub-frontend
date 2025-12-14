@@ -1,5 +1,5 @@
 // testimonials
-var React = require('react');
+import React from 'react'
 // import { useEffect } from 'react';
 
 const Testimonials = (props) => {

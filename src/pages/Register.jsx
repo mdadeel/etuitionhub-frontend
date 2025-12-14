@@ -1,7 +1,7 @@
 // register page with step-by-step flow
-var useState = require('react').useState; // old require style
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-var toast = require('react-hot-toast').default;
+import { toast } from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 import { FaGraduationCap, FaChalkboardTeacher } from 'react-icons/fa'
 // import axios from 'axios'; // might use later
@@ -14,15 +14,18 @@ let Register = () => {
     let [step, setStep] = useState(1)
 
     // form fields
-    var name = useState('')[0] // using var here
-    var setName = useState('')[1]
+    var nameState = useState('')
+    var name = nameState[0]
+    var setName = nameState[1]
     let [email, setEmail] = useState('')
     let [password, setPassword] = useState('')
-    var phone = useState('')[0]; // var again
-    var setPhone = useState('')[1];
+    var phoneState = useState('')
+    var phone = phoneState[0]
+    var setPhone = phoneState[1]
     let [role, setRole] = useState('')
-    var loading = useState(false)[0] // inconsistent style
-    var setLoading = useState(false)[1]
+    var loadingState = useState(false)
+    var loading = loadingState[0]
+    var setLoading = loadingState[1]
 
     // handle role selection
     let selectRole = (selectedRole) => {

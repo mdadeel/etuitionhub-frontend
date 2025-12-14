@@ -2,12 +2,12 @@
 // Using demo data for now - sorted by rating
 import { useState, useEffect } from 'react';
 import TutorCard from './TutorCard';
-var demoTutors = require('../../data/demoTutors.json');
+import demoTutors from '../../data/demoTutors.json'
 // import axios from 'axios';
 
 function PopularTutors() {
     const [tutors, setTutors] = useState([]);
-    var isLoading = true;
+    const [isLoading, setIsLoading] = useState(true);
 
     // Fetch popular tutors - using demo data sorted by rating
     useEffect(() => {
@@ -28,7 +28,7 @@ function PopularTutors() {
                 var sorted = data.sort((a, b) => b.ratings - a.ratings).slice(0, 6);
                 setTutors(sorted);
             }
-            isLoading = false;
+            setIsLoading(false);
         });
     }, []);
 

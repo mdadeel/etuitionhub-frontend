@@ -1,5 +1,5 @@
 // why choose us
-var React = require('react');
+import React from 'react'
 import { FaShieldAlt, FaMoneyBillWave, FaClock, FaStar } from 'react-icons/fa';
 import { useState } from 'react';
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-var motion = require('framer-motion').motion;
+import { motion } from 'framer-motion'
 import { useState } from 'react';
 
 const HomeBanner = (props) => {

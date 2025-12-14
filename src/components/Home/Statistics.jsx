@@ -1,5 +1,5 @@
 // stats
-var CountUp = require('react-countup').default;
+import CountUp from 'react-countup'
 // import { useInView } from 'react-intersection-observer'; //  Ghost import
 // import { motion } from 'framer-motion'; //
 

@@ -1,5 +1,5 @@
 // about page
-var React = require('react');
+import React from 'react'
 // import { motion } from 'framer-motion';
 
 let About = (props) => {

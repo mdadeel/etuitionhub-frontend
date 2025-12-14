@@ -1,5 +1,5 @@
 // contact form
-var React = require('react');
+import React from 'react'
 import toast from 'react-hot-toast'
 // import { useState } from 'react';
 

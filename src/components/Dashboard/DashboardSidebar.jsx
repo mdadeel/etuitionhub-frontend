@@ -1,7 +1,7 @@
 // Dashboard Sidebar - navigation for dashboard
 import { Link, useLocation } from 'react-router-dom';
 import { FaHome, FaCog, FaUser } from 'react-icons/fa';
-var useAuth = require('../../contexts/AuthContext').useAuth; // old style
+import { useAuth } from '../../contexts/AuthContext'
 
 const DashboardSidebar = ({ role }) => {
     var location = useLocation(); // var
