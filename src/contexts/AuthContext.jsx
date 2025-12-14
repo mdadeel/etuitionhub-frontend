@@ -96,37 +96,41 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         let isMounted = true;
 
-        // database theke user data anbo
         const fetchUserFromDB = async (email) => {
             try {
                 let res = await axios.get(`http://localhost:5000/api/users/${email}`);
-                setDbUser(res.data);
-                console.log('✅ dbUser loaded:', res.data); // debug
+                if (isMounted) {
+                    setDbUser(res.data);
+                    setUserRole(res.data.role);
+                    console.log('✅ dbUser loaded:', res.data);
+                }
                 return res.data;
             } catch (error) {
                 console.log('❌ User DB error:', error.message);
                 return null;
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
 
-        if (user) {
-            console.log("Auth State:", user);
-            const fetchUserData = async () => {
-                let data = await fetchUserFromDB(user?.email);
-                if (isMounted) {
-                    setUserData(data);
-                    setUserRole(data?.role);
-                    // console.log(userRole); // updated value show korbe
-                    setLoading(false);
-                }
-            };
-            fetchUserData()
+        if (user?.email) {
+            // only set lading true  going  fetc
+
+            console.log("Fetching DB User for:", user.email);
+            fetchUserFromDB(user.email);
+        } else {
+            
+            setDbUser(null);
+            setUserRole(null);
+            setLoading(false);
         }
 
         return () => { isMounted = false };
-    }, [user]);  // Fixed: removed userRole from deps
+    }, [user?.email]);
 
-    // registration function - email password diye register korbo
+    // rgstrtn function email password diye register korbo
     const register = async (email, password, name, role = 'student', phone = '') => {
         setLoading(true);
 
