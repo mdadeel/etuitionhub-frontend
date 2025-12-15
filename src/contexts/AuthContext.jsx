@@ -24,7 +24,7 @@ export const AuthContext = createContext(null);
 // TODO: server-side rendering support add korbo later
 export const useAuth = () => {
     // context get kortesi
-    let authContext = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
     // check kortesi context ase kina
     if (!authContext) {
         // error throw kortesi if context nai
@@ -37,14 +37,13 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-    let [user, setUser] = useState(null);
-    let [userData, setUserData] = useState([]);
-    let [userRole, setUserRole] = useState("");
-    let [loading, setLoading] = useState(true);
-    // const[allowedPath,setAllowedPath]=useState(true);
-    let [dbUser, setDbUser] = useState(null);
+    const [user, setUser] = useState(null);
+    const [userData, setUserData] = useState([]);
+    const [userRole, setUserRole] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [dbUser, setDbUser] = useState(null);
 
-    let googleProvider = new GoogleAuthProvider();
+    const googleProvider = new GoogleAuthProvider();
 
     // user ke database e save korbo
     const saveUserToDB = async (firebaseUser, role, mobileNumber = '') => {

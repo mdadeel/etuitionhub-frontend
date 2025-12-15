@@ -19,9 +19,9 @@ function TuitionDetails() {
     var [showModal, setShowModal] = useState(false)
 
     // application form er data
-    let [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
         qualifications: "",
-        experiance: '', // spelling ta emon e rakhbo - already database e evabe ache
+        experience: '',
         expectedSalary: ""
     })
 
@@ -102,7 +102,7 @@ function TuitionDetails() {
 
         // validation - basic check only
         // TODO: add more validation like phone number, nid etc
-        if (!formData.qualifications || !formData.experiance || !formData.expectedSalary) {
+        if (!formData.qualifications || !formData.experience || !formData.expectedSalary) {
             toast.error("sob field fill koren!") // bangla instruction
             return
         }
@@ -129,7 +129,7 @@ function TuitionDetails() {
             tuitionId: id,
             studentEmail: tuition.student_email,
             qualifications: formData.qualifications,
-            experiance: formData.experiance, // misspelling intentional
+            experience: formData.experience,
             expectedSalary: Number(formData.expectedSalary)
         }
 
@@ -146,7 +146,7 @@ function TuitionDetails() {
                 toast.success("application submit hoise! wait koren approval er jonno")
                 setShowModal(false)
                 // reset form
-                setFormData({ qualifications: '', experiance: "", expectedSalary: '' })
+                setFormData({ qualifications: '', experience: "", expectedSalary: '' })
                 // TODO: maybe redirect to applications page?
             } else {
                 let errorData = await res.json()
@@ -248,79 +248,106 @@ function TuitionDetails() {
                 </div>
             </div>
 
-            {/* application modal - form submit korar jonno */}
+            {/* application modal - redesigned with modern styling */}
             {showModal && (
-                <div className="modal modal-open">
-                    <div className="modal-box">
-                        <h3 className="font-bold text-lg mb-4">Apply for Tuition</h3>
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={() => setShowModal(false)}
+                    ></div>
 
-                        <form onSubmit={handleSubmit}>
-                            {/* readonly fields - change kora jabena */}
-                            <div className="form-control mb-3">
-                                <label className="label"><span className="label-text">Name</span></label>
-                                <input
-                                    type="text"
-                                    value={user?.displayName || ''}
-                                    className="input input-bordered"
-                                    readOnly
-                                />
+                    {/* modal content */}
+                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+                        {/* header with gradient */}
+                        <div className="bg-gradient-to-r from-teal-600 to-teal-700 px-6 py-4">
+                            <h3 className="text-xl font-bold text-white">Apply for this Tuition</h3>
+                            <p className="text-teal-100 text-sm">{tuition.subject} - {tuition.class_name}</p>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                            {/* readonly info section */}
+                            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="avatar placeholder">
+                                        <div className="bg-teal-100 text-teal-700 rounded-full w-10">
+                                            <span className="text-lg">{user?.displayName?.[0] || '?'}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-gray-800">{user?.displayName}</p>
+                                        <p className="text-sm text-gray-500">{user?.email}</p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="form-control mb-3">
-                                <label className="label"><span className="label-text">Email</span></label>
-                                <input
-                                    type="email"
-                                    value={user?.email || ""}
-                                    className="input input-bordered"
-                                    readOnly
-                                />
-                            </div>
-
-                            {/* editable fields - user fill korbe */}
-                            <div className="form-control mb-3">
-                                <label className="label"><span className="label-text">Qualifications* (educational background)</span></label>
+                            {/* qualifications field */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Qualifications* <span className="text-gray-400 font-normal">(educational background)</span>
+                                </label>
                                 <textarea
                                     name="qualifications"
                                     value={formData.qualifications}
                                     onChange={handleChange}
-                                    className="textarea textarea-bordered"
-                                    placeholder="E.g., BSc in Mathematics from DU, 3.5 cgpa"
-                                    required
-                                ></textarea>
-                            </div>
-
-                            <div className="form-control mb-3">
-                                <label className="label"><span className="label-text">Experience* (teaching experiance)</span></label>
-                                <textarea
-                                    name="experiance"
-                                    value={formData.experiance}
-                                    onChange={handleChange}
-                                    className="textarea textarea-bordered"
-                                    placeholder="e.g., 2 years teaching class 8-10 students"
-                                    required
-                                ></textarea>
-                            </div>
-
-                            <div className="form-control mb-4">
-                                <label className="label"><span className="label-text">Expected Salary (bdt/month)*</span></label>
-                                <input
-                                    type="number"
-                                    name="expectedSalary"
-                                    value={formData.expectedSalary}
-                                    onChange={handleChange}
-                                    className="input input-bordered"
-                                    placeholder="enter amount in taka"
-                                    min="1000"
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none transition"
+                                    placeholder="E.g., BSc in Mathematics from DU, CGPA 3.5&#10;MSc ongoing..."
+                                    rows={3}
                                     required
                                 />
                             </div>
 
-                            {/* modal actions */}
-                            <div className="modal-action">
-                                <button type="button" className="btn" onClick={() => setShowModal(false)}>
+                            {/* experience field */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Experience* <span className="text-gray-400 font-normal">(teaching experience)</span>
+                                </label>
+                                <textarea
+                                    name="experience"
+                                    value={formData.experience}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none transition"
+                                    placeholder="E.g., 2 years teaching class 8-10 students&#10;Coached 15+ students for SSC..."
+                                    rows={3}
+                                    required
+                                />
+                            </div>
+
+                            {/* salary field */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Expected Salary* <span className="text-gray-400 font-normal">(BDT/month)</span>
+                                </label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">৳</span>
+                                    <input
+                                        type="number"
+                                        name="expectedSalary"
+                                        value={formData.expectedSalary}
+                                        onChange={handleChange}
+                                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                                        placeholder="5000"
+                                        min="1000"
+                                        max="50000"
+                                        required
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">Student's budget: ৳{tuition.salary}/month</p>
+                            </div>
+
+                            {/* action buttons */}
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    className="flex-1 px-4 py-3 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition font-medium"
+                                    onClick={() => setShowModal(false)}
+                                >
                                     Cancel
                                 </button>
-                                <button type="submit" className="btn btn-primary">
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition font-medium shadow-lg shadow-teal-600/30"
+                                >
                                     Submit Application
                                 </button>
                             </div>
