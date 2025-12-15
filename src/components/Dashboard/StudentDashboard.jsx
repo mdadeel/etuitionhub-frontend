@@ -1,81 +1,83 @@
-
+// student dashboard - tuition post and application management
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import Cookies from 'js-cookie';
-import demoTuitions from '../../data/demoTuitions.json'; // demo data fallback
-import API_URL from '../../config/api';
+import { useNavigate } from 'react-router-dom';
+import demoTuitions from '../../data/demoTuitions.json';
+import api from '../../services/api';
+// import axios from 'axios'; // maybe use later
 
-var StudentDashboard = () => {
-    // manual destructuring - messy style
-    let auth = useAuth()
-    var user = auth.user
+const StudentDashboard = () => {
+    const { user } = useAuth();
+    let navigate = useNavigate(); // using let - works same anyway
 
-    // tab state
-    var tabState = useState('overview')
-    var activeTab = tabState[0]
-    var setActiveTab = tabState[1]
+    // state variables - could combine but easier to read separately
+    const [activeTab, setActiveTab] = useState('overview');
+    let [bookings, setBookings] = useState([]); // let instead of const
+    const [myTuitions, setMyTuitions] = useState([]);
+    var [applications, setApplications] = useState([]); // var usage intentional
+    const [loading, setLoading] = useState(false);
 
-    var [bookings, setBookings] = useState([])
-    let [myTuitions, setMyTuitions] = useState([])
-    var [applications, setApplications] = useState([])
+    const { register, handleSubmit, reset } = useForm();
 
-    var { register, handleSubmit, reset } = useForm();
-    var [loading, setLoading] = useState(false);
-
+    // data fetch - runs on mount
     useEffect(() => {
         if (!user?.email) return;
 
-        const fetchDta = async () => {
+        const fetchData = async () => {
             try {
-                // getting tuitions
-                const r1 = await fetch(`${API_URL}/api/tuitions/student/${user.email}`);
-
-                if (r1.ok) {
-                    const d1 = await r1.json();
-                    if (d1.length > 0) {
-                        setMyTuitions(d1);
+                // Fetch tuitions amader
+                let currentTuitions = [];
+                try {
+                    const response = await api.get(`/api/tuitions/student/${user.email}`);
+                    // console.log('tuitions fetched:', response.data)
+                    if (response.data && response.data.length > 0) {
+                        setMyTuitions(response.data);
+                        currentTuitions = response.data;
                     } else {
+                        // fallback to demo data
                         setMyTuitions(demoTuitions.slice(0, 3));
+                        currentTuitions = demoTuitions.slice(0, 3);
                     }
-                } else {
+                } catch (err) {
+                    console.error('tuition fetch error:', err);
                     setMyTuitions(demoTuitions.slice(0, 3));
+                    currentTuitions = demoTuitions.slice(0, 3);
                 }
 
-                // bookings chk
-                const r2 = await fetch(`${API_URL}/api/bookings/student/${user.email}`);
-                if (r2.ok) {
-                    const d2 = await r2.json();
-                    setBookings(d2);
+                // bookings anbo
+                try {
+                    const response = await api.get(`/api/bookings/student/${user.email}`);
+                    setBookings(response.data);
+                } catch (err) {
+                    // console.log('booking err', err)
                 }
 
-                // apps cleanup
-                if (r1.ok) {
-                    const tData = await r1.json();
-                    var allApps = []
-                    for (const t of tData) {
-                        const aRes = await fetch(`${API_URL}/api/applications/tuition/${t._id}`);
-                        if (aRes.ok) {
-                            const apps = await aRes.json();
-                            allApps.push(...apps);
+                // apps fetch for each tuition - loop chalaisi
+                if (currentTuitions.length > 0) {
+                    var allApps = []; // var here
+                    for (const t of currentTuitions) {
+                        try {
+                            const appResponse = await api.get(`/api/applications/tuition/${t._id}`);
+                            allApps.push(...appResponse.data);
+                        } catch (appErr) {
+                            // skip - demo tuition might fail
                         }
                     }
                     setApplications(allApps);
                 }
             } catch (e) {
-                // fail safe
-                setMyTuitions(demoTuitions.slice(0, 3));
+                console.error('fetch error', e);
             }
         };
 
-        fetchDta();
-
-    }, [user?.email]);
+        fetchData();
+    }, [user?.email]); // dependency array
 
     const onPostTuition = async (data) => {
-        setLoading(true)
-        var postData = {
+        setLoading(true);
+        const postData = {
             ...data,
             student_name: user?.displayName,
             student_email: user?.email,
@@ -84,84 +86,67 @@ var StudentDashboard = () => {
         };
 
         try {
-            var token = Cookies.get('token');
-            var headers = { 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-
-            const res = await fetch(`${API_URL}/api/tuitions`, {
-                method: 'POST',
-                headers: headers,
-                credentials: 'include',
-                body: JSON.stringify(postData)
-            });
-
-            if (res.ok) {
-                toast.success('Tuition posted successfully!');
-                reset();
-                setActiveTab('my-jobs');
-            } else {
-                const err = await res.json();
-                if (res.status === 401) toast.error('Session expired - login again');
-                else toast.error('Failed - ' + (err.error || 'error'));
-            }
-        } catch (e) {
-            toast.error('Connection error');
+            await api.post('/api/tuitions', postData);
+            toast.success('Tuition posted successfully!');
+            reset();
+            setActiveTab('my-jobs');
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || 'Failed to post tuition';
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
     const handleApprove = (id) => {
-        window.location.href = `/checkout/${id}`
+        navigate(`/checkout/${id}`);
     };
 
     const handleReject = async (id) => {
         if (!confirm('Reject application?')) return;
         try {
-            const res = await fetch(`${API_URL}/api/applications/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'rejected' })
-            });
-            if (res.ok) {
-                toast.success('Rejected');
-                setApplications(prev => prev.map(a => a._id === id ? { ...a, status: 'rejected' } : a));
-            }
-        } catch (e) { }
+            await api.patch(`/api/applications/${id}`, { status: 'rejected' });
+            toast.success('Rejected');
+            setApplications(prev => prev.map(a => a._id === id ? { ...a, status: 'rejected' } : a));
+        } catch (error) {
+            toast.error('Failed to reject application');
+        }
     };
 
     const handleDeleteTuition = async (tid) => {
         if (!confirm('Delete post?')) return;
         try {
-            var token = Cookies.get('token');
-            var headers = {};
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-
-            const res = await fetch(`${API_URL}/api/tuitions/${tid}`, {
-                method: 'DELETE',
-                headers: headers,
-                credentials: 'include'
-            });
-            if (res.ok) {
-                toast.success('Deleted');
-                setMyTuitions(prev => prev.filter(t => t._id !== tid));
-            }
-        } catch (e) {
-            toast.error('Error deleting');
+            await api.delete(`/api/tuitions/${tid}`);
+            toast.success('Deleted');
+            setMyTuitions(prev => prev.filter(t => t._id !== tid));
+        } catch (error) {
+            toast.error('Error deleting tuition');
         }
     };
+
+    const tabs = [
+        { id: 'overview', label: 'Overview' },
+        { id: 'post-job', label: 'Post Tuition' },
+        { id: 'my-jobs', label: 'My Tuitions' },
+        { id: 'applications', label: 'Applied Tutors' },
+        { id: 'booked', label: 'Booked' },
+        { id: 'payments', label: 'Payments' },
+    ];
 
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Student Dashboard</h1>
                 <div className="tabs tabs-boxed flex-wrap">
-                    <a className={`tab ${activeTab === 'overview' ? 'tab-active' : ''}`} onClick={() => setActiveTab('overview')}>Overview</a>
-                    <a className={`tab ${activeTab === 'post-job' ? 'tab-active' : ''}`} onClick={() => setActiveTab('post-job')}>Post Tuition</a>
-                    <a className={`tab ${activeTab === 'my-jobs' ? 'tab-active' : ''}`} onClick={() => setActiveTab('my-jobs')}>My Tuitions</a>
-                    <a className={`tab ${activeTab === 'applications' ? 'tab-active' : ''}`} onClick={() => setActiveTab('applications')}>Applied Tutors</a>
-                    <a className={`tab ${activeTab === 'booked' ? 'tab-active' : ''}`} onClick={() => setActiveTab('booked')}>Booked</a>
-                    <a className={`tab ${activeTab === 'payments' ? 'tab-active' : ''}`} onClick={() => setActiveTab('payments')}>Payments</a>
+                    {tabs.map(tab => (
+                        <a
+                            key={tab.id}
+                            className={`tab ${activeTab === tab.id ? 'tab-active' : ''}`}
+                            onClick={() => setActiveTab(tab.id)}
+                        >
+                            {tab.label}
+                        </a>
+                    ))}
                 </div>
             </div>
 
@@ -174,7 +159,7 @@ var StudentDashboard = () => {
                     </div>
                     <div className="stat bg-base-100 shadow rounded-lg">
                         <div className="stat-title">Applications</div>
-                        <div className="stat-value text-secondary">0</div>
+                        <div className="stat-value text-secondary">{applications.length}</div>
                         <div className="stat-desc">Tutors applied</div>
                     </div>
                     <div className="stat bg-base-100 shadow rounded-lg">
@@ -185,7 +170,7 @@ var StudentDashboard = () => {
                 </div>
             )}
 
-            {activeTab === 'post-job' ? (
+            {activeTab === 'post-job' && (
                 <div className="bg-base-100 p-6 rounded-lg shadow">
                     <h2 className="text-xl font-bold mb-4">Post a Tuition Requirement</h2>
                     <form onSubmit={handleSubmit(onPostTuition)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -217,10 +202,11 @@ var StudentDashboard = () => {
                         </div>
                         <div className="form-control">
                             <label className="label">Days per week</label>
-                            <select {...register('days_per_week')} className="select select-bordered">
-                                <option>3 days</option>
-                                <option>4 days</option>
-                                <option>5 days</option>
+                            <select {...register('days_per_week', { valueAsNumber: true })} className="select select-bordered">
+                                <option value="3">3 days</option>
+                                <option value="4">4 days</option>
+                                <option value="5">5 days</option>
+                                <option value="6">6 days</option>
                             </select>
                         </div>
                         <div className="form-control md:col-span-2">
@@ -234,7 +220,7 @@ var StudentDashboard = () => {
                         </div>
                     </form>
                 </div>
-            ) : null}
+            )}
 
             {activeTab === 'my-jobs' && (
                 <div className="bg-base-100 p-6 rounded-lg shadow">
@@ -244,7 +230,7 @@ var StudentDashboard = () => {
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Title</th>
+                                    <th>Class</th>
                                     <th>Subject</th>
                                     <th>Salary</th>
                                     <th>Status</th>
@@ -258,13 +244,13 @@ var StudentDashboard = () => {
                                     myTuitions.map((job, idx) => (
                                         <tr key={job._id}>
                                             <th>{idx + 1}</th>
-                                            <td>{job.title}</td>
+                                            <td>{job.class_name}</td>
                                             <td>{job.subject}</td>
                                             <td>{job.salary}</td>
                                             <td><div className="badge badge-info">{job.status}</div></td>
                                             <td>
                                                 <div className="flex gap-2">
-                                                    <button className="btn btn-info btn-xs" onClick={() => window.location.href = `/tuition/${job._id}`}>Edit</button>
+                                                    <button className="btn btn-info btn-xs" onClick={() => navigate(`/tuition/${job._id}`)}>Edit</button>
                                                     <button className="btn btn-error btn-xs" onClick={() => handleDeleteTuition(job._id)}>Delete</button>
                                                 </div>
                                             </td>
@@ -298,7 +284,7 @@ var StudentDashboard = () => {
                                         </div>
                                         <div className="mt-3">
                                             <p><strong>Qualifications:</strong> {app.qualifications}</p>
-                                            <p><strong>Experience:</strong> {app.experiance}</p>
+                                            <p><strong>Experience:</strong> {app.experience || app.experiance}</p>
                                             <p><strong>Expected Salary:</strong> ৳{app.expectedSalary}/month</p>
                                         </div>
                                         {app.status === 'pending' && (
@@ -336,7 +322,7 @@ var StudentDashboard = () => {
                                     bookings.map((booking, idx) => (
                                         <tr key={booking._id}>
                                             <th>{idx + 1}</th>
-                                            <td>{booking.tutor_name}</td>
+                                            <td>{booking.tutor_name || booking.tutorName}</td>
                                             <td>{booking.subject}</td>
                                             <td>{booking.mobile}</td>
                                             <td>

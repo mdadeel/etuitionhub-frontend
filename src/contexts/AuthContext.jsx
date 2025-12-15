@@ -288,6 +288,7 @@ export const AuthProvider = ({ children }) => {
         setLoading,
         register,
         updateUserProfile,
+        refreshUserFromDB,
         login,
         resetPassword,
         googleLogin,
