@@ -1,241 +1,254 @@
-// admin dashboard - tuition management comp 
-// tuition posts approve/reject kora jay ekhaney
-import { useState, useEffect } from "react"
+/**
+ * Admin Dashboard - Tuition Management
+ * 
+ * Refactored with:
+ * - Axios API service instead of raw fetch
+ * - Optimistic UI updates for approve/reject actions
+ * - Centralized validation from utils
+ * - Cleaner component structure
+ */
+import { useState, useEffect, useMemo } from "react"
 import toast from 'react-hot-toast'
-import API_URL from '../../config/api';
+import api from '../../services/api'
+
+/**
+ * Check if string is valid MongoDB ObjectId
+ * Regex check here for quick validation before API call
+ */
+const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id)
 
 function DashTuitions() {
-    const [tuitions, setTuitions] = useState([])
-    const [filteredTuitions, setFilteredTuitions] = useState([]) // Redundant state
-    const [loading, setLoading] = useState(true)
-    const [filterStatus, setFilterStatus] = useState('all')
+    const [tuitionList, setTuitionList] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [activeFilter, setActiveFilter] = useState('all')
 
-    // load hole tuitions fetch
+    // Fetch tuitions on mount
     useEffect(() => {
-        // api call - all tuitions anbo
-        const fetchTuitions = async () => {
+        const loadTuitions = async () => {
             try {
-                let res = await fetch(`${API_URL}/api/tuitions`)
-                if (res.ok) {
-                    let data = await res.json()
-                    setTuitions(data)
-
-                    // Manual filtering logic - bloated
-                    let temp = []
-                    for (let i = 0; i < data.length; i++) {
-                        temp.push(data[i])
-                    }
-                    setFilteredTuitions(temp)
-
-                    console.log("tuitions loaded:", data.length)
-                } else {
-                    const errorData = await res.json();
-                    toast.error('Could not load tuitions - ' + (errorData.error || 'server issue'))
-                }
-                setLoading(false)
+                const response = await api.get('/api/tuitions')
+                setTuitionList(response.data)
+                console.log("Tuitions loaded:", response.data.length)
             } catch (err) {
-                console.error("fetch error:", err)
-                // API failed - show demo data
-                setTuitions([
+                console.error("Fetch error:", err)
+                const errorMessage = err.response?.data?.error || 'server issue'
+                toast.error('Could not load tuitions - ' + errorMessage)
+
+                // Demo data fallback for development
+                setTuitionList([
                     { _id: 'demo1', subject: 'Mathematics', class_name: 'Class 10', location: 'Dhanmondi', salary: 5000, student_email: 'student@demo.com', status: 'pending' },
                     { _id: 'demo2', subject: 'Physics', class_name: 'HSC', location: 'Uttara', salary: 7000, student_email: 'student2@demo.com', status: 'approved' }
                 ])
-                setFilteredTuitions([
-                    { _id: 'demo1', subject: 'Mathematics', class_name: 'Class 10', location: 'Dhanmondi', salary: 5000, student_email: 'student@demo.com', status: 'pending' },
-                    { _id: 'demo2', subject: 'Physics', class_name: 'HSC', location: 'Uttara', salary: 7000, student_email: 'student2@demo.com', status: 'approved' }
-                ])
-                setLoading(false)
+            } finally {
+                setIsLoading(false)
             }
         }
-        fetchTuitions()
+        loadTuitions()
     }, [])
 
-    // approve tuition - admin er kaj
+    // Filtered tuitions - using useMemo for performance
+    const filteredTuitions = useMemo(() => {
+        if (activeFilter === 'all') return tuitionList
+        return tuitionList.filter(t => t.status === activeFilter)
+    }, [tuitionList, activeFilter])
+
+    /**
+     * Approve tuition - with optimistic UI update
+     * Updates UI immediately, then syncs with server
+     * Rolls back if API call fails
+     */
     const handleApprove = async (tuitionId) => {
-        console.log('approving tuition:', tuitionId)
+        console.log('Approving tuition:', tuitionId)
 
-        // Validate ObjectId
-        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+        // Validate ObjectId before making API call
         if (!isValidObjectId(tuitionId)) {
-            toast.error('Cannot approve demo tuitions - invalid ID');
-            return;
+            toast.error('Cannot approve demo tuitions - invalid ID')
+            return
         }
 
+        // Store original state for rollback
+        const originalList = [...tuitionList]
+
+        // OPTIMISTIC UPDATE: Update UI immediately
+        setTuitionList(prev =>
+            prev.map(t => t._id === tuitionId ? { ...t, status: 'approved' } : t)
+        )
+
         try {
-            let res = await fetch(`${API_URL}/api/tuitions/${tuitionId}`, {
-                method: 'PATCH',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: 'approved' })
-            })
-            if (res.ok) {
-                toast.success("Tuition approved! Tutors can see now")
-
-                // Bloated state update
-                let updatedList = [...tuitions]
-                for (let i = 0; i < updatedList.length; i++) {
-                    if (updatedList[i]._id === tuitionId) {
-                        updatedList[i].status = 'approved'
-                    }
-                }
-                setTuitions(updatedList)
-                setFilteredTuitions(updatedList) // sync both states manually
-
-            } else {
-                const errorData = await res.json();
-                toast.error('Approval failed - ' + (errorData.error || 'try again'));
-            }
+            await api.patch(`/api/tuitions/${tuitionId}`, { status: 'approved' })
+            toast.success("Tuition approved! Tutors can see it now")
         } catch (err) {
-            console.error('error approving:', err)
-            toast.error("Network error - check connection")
+            // ROLLBACK: Revert to original state if API fails
+            setTuitionList(originalList)
+            const errorMessage = err.response?.data?.error || 'try again'
+            toast.error('Approval failed - ' + errorMessage)
         }
     }
 
-    // reject tuition post
+    /**
+     * Reject tuition - with optimistic UI update
+     */
     const handleReject = async (tuitionId) => {
-        if (!confirm("Reject korben ei tuition ta?")) return
+        if (!confirm("Reject this tuition post?")) return
 
-        // Validate ObjectId
-        const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidObjectId(tuitionId)) {
-            toast.error('Cannot reject demo tuitions - invalid ID');
-            return;
+            toast.error('Cannot reject demo tuitions - invalid ID')
+            return
         }
+
+        const originalList = [...tuitionList]
+
+        // Optimistic update
+        setTuitionList(prev =>
+            prev.map(t => t._id === tuitionId ? { ...t, status: 'rejected' } : t)
+        )
 
         try {
-            let res = await fetch(`${API_URL}/api/tuitions/${tuitionId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: "rejected" })
-            })
-            if (res.ok) {
-                toast.success('Tuition rejected')
-
-                // Another manual update loop
-                const newArr = []
-                tuitions.forEach(t => {
-                    if (t._id === tuitionId) {
-                        t.status = 'rejected'
-                        newArr.push(t)
-                    } else {
-                        newArr.push(t)
-                    }
-                })
-                setTuitions(newArr)
-                setFilteredTuitions(newArr)
-
-            } else {
-                const errorData = await res.json();
-                toast.error("Rejection failed - " + (errorData.error || 'try again'))
-            }
+            await api.patch(`/api/tuitions/${tuitionId}`, { status: 'rejected' })
+            toast.success('Tuition rejected')
         } catch (err) {
-            console.error('reject error:', err)
-            toast.error('Network error - check connection')
+            // Rollback on failure
+            setTuitionList(originalList)
+            const errorMessage = err.response?.data?.error || 'try again'
+            toast.error("Rejection failed - " + errorMessage)
         }
     }
 
-    // Filter handler (manual loop)
-    const handleFilter = (status) => {
-        setFilterStatus(status)
-        if (status === 'all') {
-            setFilteredTuitions(tuitions)
-        } else {
-            let res = []
-            for (let k = 0; k < tuitions.length; k++) {
-                if (tuitions[k].status === status) {
-                    res.push(tuitions[k])
-                }
-            }
-            setFilteredTuitions(res)
-        }
-    }
-
-    // loading state
-    if (loading) {
+    if (isLoading) {
         return <div className="flex justify-center py-12">
             <span className="loading loading-spinner loading-lg"></span>
         </div>
     }
 
-    // main render
-    // console.log('chk')
     return (
         <div className="bg-base-100 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4">Tuition Management</h2>
-            <p className="text-gray-600 mb-6">Total Posts: {tuitions.length}</p>
+            <p className="text-gray-600 mb-6">Total Posts: {tuitionList.length}</p>
 
-            {/* Filter buttons - zombie code below */}
-            {/* <div className="btn-group mb-4">
-                    <button className="btn">All</button>
-                    <button className="btn">Pending</button>
-                </div> */}
-
+            {/* Filter Buttons */}
             <div className="flex gap-2 mb-4">
-                <button className={`btn btn-sm ${filterStatus === 'all' ? 'btn-primary' : ''}`} onClick={() => handleFilter('all')}>All</button>
-                <button className={`btn btn-sm ${filterStatus === 'pending' ? 'btn-warning' : ''}`} onClick={() => handleFilter('pending')}>Pending</button>
-                <button className={`btn btn-sm ${filterStatus === 'approved' ? 'btn-success' : ''}`} onClick={() => handleFilter('approved')}>Approved</button>
+                <FilterButton
+                    label="All"
+                    isActive={activeFilter === 'all'}
+                    onClick={() => setActiveFilter('all')}
+                />
+                <FilterButton
+                    label="Pending"
+                    isActive={activeFilter === 'pending'}
+                    onClick={() => setActiveFilter('pending')}
+                    color="warning"
+                />
+                <FilterButton
+                    label="Approved"
+                    isActive={activeFilter === 'approved'}
+                    onClick={() => setActiveFilter('approved')}
+                    color="success"
+                />
             </div>
 
-            {/* tuition table - all posts show kore */}
-            <div className="overflow-x-auto">
-                <table className="table w-full">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Subject</th>
-                            <th>Class</th>
-                            <th>Location</th>
-                            <th>Salary</th>
-                            <th>Student</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredTuitions.map((tuition, idx) => (
-                            <tr key={tuition._id}>
-                                <th>{idx + 1}</th>
-                                <td>{tuition.subject}</td>
-                                <td>{tuition.class_name}</td>
-                                <td>{tuition.location}</td>
-                                <td>৳{tuition.salary}</td>
-                                <td className="text-sm">{tuition.student_email}</td>
-                                <td>
-                                    {/* status badge - color coded */}
-                                    <div className={`badge ${tuition.status === 'approved' ? 'badge-success' :
-                                        tuition.status === 'rejected' ? 'badge-error' :
-                                            'badge-warning'
-                                        }`}>
-                                        {tuition.status}
-                                    </div>
-                                </td>
-                                <td>
-                                    {/* action buttons - only pending posts er jonno */}
-                                    {tuition.status === 'pending' && (
-                                        <div className="flex gap-2">
-                                            <button
-                                                className="btn btn-success btn-xs"
-                                                onClick={() => handleApprove(tuition._id)}
-                                            >
-                                                Approve
-                                            </button>
-                                            <button
-                                                className="btn btn-error btn-xs"
-                                                onClick={() => handleReject(tuition._id)}
-                                            >
-                                                Reject
-                                            </button>
-                                        </div>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* NOTE: add filter by status option - bhaiya suggested */}
-            {/* TODO: add bulk approval feature for multiple tuitions */}
+            {/* Tuitions Table */}
+            <TuitionTable
+                tuitions={filteredTuitions}
+                onApprove={handleApprove}
+                onReject={handleReject}
+            />
         </div>
+    )
+}
+
+/**
+ * Filter Button Component
+ */
+function FilterButton({ label, isActive, onClick, color = 'primary' }) {
+    const activeClass = isActive ? `btn-${color}` : ''
+    return (
+        <button
+            className={`btn btn-sm ${activeClass}`}
+            onClick={onClick}
+        >
+            {label}
+        </button>
+    )
+}
+
+/**
+ * Tuition Table Component
+ * Separated for cleaner code structure
+ */
+function TuitionTable({ tuitions, onApprove, onReject }) {
+    return (
+        <div className="overflow-x-auto">
+            <table className="table w-full">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Subject</th>
+                        <th>Class</th>
+                        <th>Location</th>
+                        <th>Salary</th>
+                        <th>Student</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tuitions.map((tuition, idx) => (
+                        <TuitionRow
+                            key={tuition._id}
+                            tuition={tuition}
+                            index={idx + 1}
+                            onApprove={onApprove}
+                            onReject={onReject}
+                        />
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    )
+}
+
+/**
+ * Single Tuition Row Component
+ */
+function TuitionRow({ tuition, index, onApprove, onReject }) {
+    const statusBadgeClass = {
+        'approved': 'badge-success',
+        'rejected': 'badge-error',
+        'pending': 'badge-warning'
+    }[tuition.status] || 'badge-warning'
+
+    return (
+        <tr>
+            <th>{index}</th>
+            <td>{tuition.subject}</td>
+            <td>{tuition.class_name}</td>
+            <td>{tuition.location}</td>
+            <td>৳{tuition.salary}</td>
+            <td className="text-sm">{tuition.student_email}</td>
+            <td>
+                <div className={`badge ${statusBadgeClass}`}>
+                    {tuition.status}
+                </div>
+            </td>
+            <td>
+                {tuition.status === 'pending' && (
+                    <div className="flex gap-2">
+                        <button
+                            className="btn btn-success btn-xs"
+                            onClick={() => onApprove(tuition._id)}
+                        >
+                            Approve
+                        </button>
+                        <button
+                            className="btn btn-error btn-xs"
+                            onClick={() => onReject(tuition._id)}
+                        >
+                            Reject
+                        </button>
+                    </div>
+                )}
+            </td>
+        </tr>
     )
 }
 
