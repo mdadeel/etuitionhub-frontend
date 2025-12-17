@@ -17,7 +17,7 @@ const ITEMS_PER_PAGE = 6;
 
 const Tuitions = () => {
     // Data fetching - logic hidden in hook
-    const { tuitions, loading } = useTuitions();
+    const { tuitions, loading, error } = useTuitions();
 
     // Filtering - all filter logic in hook
     const {
@@ -27,7 +27,7 @@ const Tuitions = () => {
         hasActiveFilters,
         filteredTuitions,
         filterOptions
-    } = useTuitionFilters(tuitions);
+    } = useTuitionFilters(tuitions || []);
 
     // Pagination - reusable hook
     const {
@@ -40,6 +40,25 @@ const Tuitions = () => {
     // Loading state
     if (loading) {
         return <LoadingSpinner />;
+    }
+
+    // Error state - show message instead of blank page
+    if (error) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <PageHeader title="Available Tuitions" subtitle="Find tuition jobs" />
+                <div className="text-center py-12">
+                    <p className="text-red-500 text-lg mb-4">⚠️ Failed to load tuitions</p>
+                    <p className="text-gray-500 mb-4">{error}</p>
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => window.location.reload()}
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (

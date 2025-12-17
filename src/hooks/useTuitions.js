@@ -21,7 +21,8 @@ export const useTuitions = (initialFilters = {}) => {
             setLoading(true);
             setError(null);
             const data = await tuitionService.getAll(initialFilters);
-            setTuitions(data);
+            // Safety check - ensure we always have an array
+            setTuitions(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Failed to fetch tuitions:', err);
             setError(err.response?.data?.error || 'Failed to load tuitions');
