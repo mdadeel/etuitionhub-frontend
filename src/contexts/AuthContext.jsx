@@ -69,9 +69,18 @@ export const AuthProvider = ({ children }) => {
 
             return res.data;
         } catch (error) {
-            console.error('Error saving user:', error);
+            console.error('Error saving user to DB:', error);
+            console.error('Response data:', error.response?.data);
+            console.error('Response status:', error.response?.status);
             toast.dismiss(toastId);
-            throw error; // throw so caller knows it failed
+            
+            // Show specific error
+            if (error.code === 'ERR_NETWORK') {
+                toast.error('Cannot connect to server. Is backend running?');
+            } else {
+                toast.error(error.response?.data?.error || 'Failed to save user');
+            }
+            throw error;
         }
     };
 
@@ -209,9 +218,11 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
             return result;
         } catch (err) {
-            console.log('registration error:', err)
-            toast.error('Registration failed!')
-            setLoading(false)
+            console.error('Registration error:', err);
+            console.error('Error response:', err.response?.data);
+            const errorMsg = err.response?.data?.error || err.message || 'Registration failed!';
+            toast.error(errorMsg);
+            setLoading(false);
         }
     };
 
@@ -248,6 +259,7 @@ export const AuthProvider = ({ children }) => {
 
             return result;
         } catch (error) {
+            console.error('Google login error:', error.code, error.message);
             setLoading(false);
             throw error;
         }
