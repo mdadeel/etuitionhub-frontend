@@ -17,22 +17,20 @@ import Cookies from 'js-cookie';
 
 import API_URL from '../config/api';
 
-// auth context export kortesi
+// Export auth context for app-wide access
 export const AuthContext = createContext(null);
 
-// custom hook define kortesi - easier auth access er jonno
-// TODO: server-side rendering support add korbo later
+/**
+ * Custom hook for easy auth access
+ * @returns {Object} Auth context value
+ */
 export const useAuth = () => {
-    // context get kortesi
     const authContext = useContext(AuthContext);
-    // check kortesi context ase kina
     if (!authContext) {
-        // error throw kortesi if context nai
         throw new Error(
             "You must wrap your application with AuthProvider to use useAuth."
         )
     }
-    // context return kortesi
     return authContext;
 };
 
@@ -45,11 +43,11 @@ export const AuthProvider = ({ children }) => {
 
     const googleProvider = new GoogleAuthProvider();
 
-    // user ke database e save korbo
+    // Save user to database
     const saveUserToDB = async (firebaseUser, role, mobileNumber = '') => {
-        let toastId = toast.loading("Saving user...");
+        const toastId = toast.loading("Saving user...");
         try {
-            let userData = {
+            const userData = {
                 displayName: firebaseUser.displayName,
                 email: firebaseUser.email,
                 photoURL: firebaseUser.photoURL || '',
@@ -58,9 +56,8 @@ export const AuthProvider = ({ children }) => {
                 isVerified: false
             };
 
-            // backend API use kortesi
             console.log('Posting user to DB:', userData);
-            let res = await axios.post(`${API_URL}/api/users`, userData);
+            const res = await axios.post(`${API_URL}/api/users`, userData);
             console.log('Backend response:', res.data);
 
             toast.dismiss(toastId);
@@ -151,7 +148,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // auth state changes listen kortesi
+    // Listen to auth state changes
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setLoading(true);
@@ -198,7 +195,7 @@ export const AuthProvider = ({ children }) => {
             let result = await createUserWithEmailAndPassword(auth, email, password);
             await updateProfile(result.user, { displayName: name });
 
-            // database e user save kortesi with phone
+            // Save user to database with phone number
             // AWAIT THE RESULT to obtain correct role from backend
             let savedUser = await saveUserToDB(result.user, role, phone);
             console.log('Saved user role form DB:', savedUser?.role);

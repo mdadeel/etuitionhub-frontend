@@ -12,11 +12,11 @@ const StudentDashboard = () => {
     const { user } = useAuth();
     let navigate = useNavigate(); // using let - works same anyway
 
-    // state variables - could combine but easier to read separately
+    // state variables
     const [activeTab, setActiveTab] = useState('overview');
-    let [bookings, setBookings] = useState([]); // let instead of const
+    const [bookings, setBookings] = useState([]);
     const [myTuitions, setMyTuitions] = useState([]);
-    var [applications, setApplications] = useState([]); // var usage intentional
+    const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const { register, handleSubmit, reset } = useForm();

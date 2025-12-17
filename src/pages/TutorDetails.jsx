@@ -1,20 +1,22 @@
-// Tutor Details - full tutor profile dekhabe
-// demo data use kortesi for now
+/**
+ * Tutor Details Page
+ * Displays full tutor profile information
+ */
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import demoTutors from '../data/demoTutors.json';
 import { useAuth } from '../contexts/AuthContext';
 
-function TutorDetails() {
-    let { id } = useParams();
-    let { user } = useAuth();
-    let [tutor, setTutor] = useState(null);
-    let [loading, setLoading] = useState(true);
+const TutorDetails = () => {
+    const { id } = useParams();
+    const { user } = useAuth();
+    const [tutor, setTutor] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // demo data theke find korbo
+        // Find tutor from demo data
         setTimeout(() => {
-            let found = demoTutors.find(t => t._id === id);
+            const found = demoTutors.find(t => t._id === id);
             setTutor(found);
             setLoading(false);
         }, 300);

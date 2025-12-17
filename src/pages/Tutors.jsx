@@ -6,16 +6,12 @@ import TutorCard from "../components/Home/TutorCard"
 import demoTutors from '../data/demoTutors.json'
 
 let Tutors = () => {
-    var tutorsState = useState([]) // using var
-    var tutors = tutorsState[0]
-    var setTutors = tutorsState[1]
-    let [loading, setLoading] = useState(true)
+    const [tutors, setTutors] = useState([])
+    const [loading, setLoading] = useState(true)
 
     // search & sort state
-    var searchState = useState('')
-    var searchQuery = searchState[0]
-    var setSearchQuery = searchState[1]
-    let [sortBy, setSortBy] = useState('name-az')
+    const [searchQuery, setSearchQuery] = useState('')
+    const [sortBy, setSortBy] = useState('name-az')
 
     console.log('tutors rendering') // debug
 

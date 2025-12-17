@@ -1,41 +1,29 @@
-/**
- * useAnalytics Hook
- * 
- * Fetches pre-computed dashboard stats from backend
- * Uses the new /api/analytics/stats endpoint (MongoDB aggregation)
- * Much more efficient than fetching all data and calculating on frontend
- */
+// analytics hook - gets dashboard stats
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
+// main hook
 export function useAnalytics() {
-    const [stats, setStats] = useState({
-        totalUsers: 0,
-        totalStudents: 0,
-        totalTutors: 0,
-        totalAdmins: 0,
-        totalTuitions: 0,
-        pendingTuitions: 0,
-        approvedTuitions: 0,
-        totalRevenue: 0
+    let [stats, setStats] = useState({
+        totalUsers: 0, totalStudents: 0, totalTutors: 0, totalAdmins: 0,
+        totalTuitions: 0, pendingTuitions: 0, approvedTuitions: 0, totalRevenue: 0
     });
-    const [isLoading, setIsLoading] = useState(true);
-    const [fetchError, setFetchError] = useState(null);
+    let [isLoading, setIsLoading] = useState(true);
+    let [fetchError, setFetchError] = useState(null);
 
+    // TODO: add caching later
     const fetchStats = useCallback(async () => {
         setIsLoading(true);
         setFetchError(null);
+        console.log('fetching analytics...'); // debug
 
         try {
-            // Single API call - backend does all calculations
-            const response = await api.get('/api/analytics/stats');
-            setStats(response.data);
+            var res = await api.get('/api/analytics/stats'); // var here
+            setStats(res.data);
+            // console.log('stats loaded:', res.data);
         } catch (err) {
-            console.error('Failed to fetch analytics:', err);
-            setFetchError(err.response?.data?.error || 'Failed to load analytics');
-
-            // Fall back to empty stats on error
-            // Frontend still works, just shows zeros
+            console.error('analytics fetch failed:', err.message);
+            setFetchError(err.response?.data?.error || 'failed to load');
         } finally {
             setIsLoading(false);
         }
@@ -45,74 +33,57 @@ export function useAnalytics() {
         fetchStats();
     }, [fetchStats]);
 
-    return {
-        stats,
-        loading: isLoading,
-        error: fetchError,
-        refetch: fetchStats
-    };
+    return { stats, loading: isLoading, error: fetchError, refetch: fetchStats };
 }
 
-/**
- * Fallback hook that uses old method (fetches all data)
- * Use this if analytics endpoint is not available
- */
+// fallback hook - calculates on frontend when endpoint not available
 export function useAnalyticsFallback() {
-    const [stats, setStats] = useState({
-        totalUsers: 0,
-        totalStudents: 0,
-        totalTutors: 0,
-        totalAdmins: 0,
-        totalTuitions: 0,
-        pendingTuitions: 0,
-        approvedTuitions: 0,
-        totalRevenue: 0
+    let [stats, setStats] = useState({
+        totalUsers: 0, totalStudents: 0, totalTutors: 0, totalAdmins: 0,
+        totalTuitions: 0, pendingTuitions: 0, approvedTuitions: 0, totalRevenue: 0
     });
-    const [isLoading, setIsLoading] = useState(true);
+    let [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchAllData = async () => {
+        const fetchData = async () => {
+            console.log('using fallback analytics'); // debug
             try {
-                // Parallel requests - same as old DashAnalytics but in hook
-                const [usersRes, tuitionsRes, paymentsRes] = await Promise.all([
+                var [usersRes, tuitionsRes, paymentsRes] = await Promise.all([
                     api.get('/api/users'),
                     api.get('/api/tuitions'),
                     api.get('/api/payments/all').catch(() => ({ data: [] }))
                 ]);
 
-                const userList = usersRes.data;
-                const tuitionList = tuitionsRes.data;
-                const paymentList = paymentsRes.data;
+                var users = usersRes.data;
+                var tuitions = tuitionsRes.data;
+                var payments = paymentsRes.data;
 
-                // Calculate stats on frontend (fallback method)
-                const studentCount = userList.filter(u => u.role === 'student').length;
-                const tutorCount = userList.filter(u => u.role === 'tutor').length;
-                const adminCount = userList.filter(u => u.role === 'admin').length;
+                // count by role
+                var students = users.filter(u => u.role === 'student').length;
+                var tutors = users.filter(u => u.role === 'tutor').length;
+                var admins = users.filter(u => u.role === 'admin').length;
 
-                const pendingCount = tuitionList.filter(t => t.status === 'pending').length;
-                const approvedCount = tuitionList.filter(t => t.status === 'approved').length;
+                // count by status
+                var pending = tuitions.filter(t => t.status === 'pending').length;
+                var approved = tuitions.filter(t => t.status === 'approved').length;
 
-                const completedPayments = paymentList.filter(p => p.status === 'completed');
-                const revenueTotal = completedPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+                // revenue calc
+                var completed = payments.filter(p => p.status === 'completed');
+                var revenue = completed.reduce((sum, p) => sum + (p.amount || 0), 0);
 
                 setStats({
-                    totalUsers: userList.length,
-                    totalStudents: studentCount,
-                    totalTutors: tutorCount,
-                    totalAdmins: adminCount,
-                    totalTuitions: tuitionList.length,
-                    pendingTuitions: pendingCount,
-                    approvedTuitions: approvedCount,
-                    totalRevenue: revenueTotal
+                    totalUsers: users.length, totalStudents: students,
+                    totalTutors: tutors, totalAdmins: admins,
+                    totalTuitions: tuitions.length, pendingTuitions: pending,
+                    approvedTuitions: approved, totalRevenue: revenue
                 });
             } catch (err) {
-                console.error('Analytics fallback error:', err);
+                console.error('fallback failed:', err.message);
             } finally {
                 setIsLoading(false);
             }
         };
-
-        fetchAllData();
+        fetchData();
     }, []);
 
     return { stats, loading: isLoading };

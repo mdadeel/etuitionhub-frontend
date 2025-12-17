@@ -47,7 +47,7 @@ const Profile = () => {
         setPhotoInput(e.target.value);
     }
 
-    // form submit handler - profile update kortesi
+    // Form submit handler - updates user profile
     const onSubmit = async (data) => {
         setLoading(true);
 

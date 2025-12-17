@@ -1,6 +1,7 @@
-// Navbar - sticky navbar with DaisyUI
-// req.md onujayi requirements follow kortesi
-// class ordering is a mess but it works - dont touch
+/**
+ * Navbar Component
+ * Sticky navigation bar with DaisyUI styling
+ */
 "use client";
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,27 +11,19 @@ import { ImProfile } from "react-icons/im";
 import { toast } from 'react-hot-toast';
 import Cookies from 'js-cookie';
 
-// Not sure if this is the best way to do active links but it works
 const Navbar = () => {
     const router = useNavigate();
     const location = useLocation();
     const pathname = location.pathname;
-    // const [allowedPath, setAllowedPath] = useState(true);
     const allowedPath = true;
 
-    // useEffect(() => {
-    //   pathname.includes('/dashboard') ? setAllowedPath(false) : setAllowedPath(true);
-    // }, [pathname]);
-
     const { user, logout, userRole, setLoading } = useAuth();
-    // console.log("logged user", user);
     const currentUserName = user?.displayName;
     const currentUserEmail = user?.email;
     const currentUserPhotoURL = user?.photoURL;
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    // Hardcoded for now - maybe move to config later
     const navLinks = [
         { path: '/', label: 'Home' },
         { path: '/tuitions', label: 'Tuitions' },
@@ -39,62 +32,33 @@ const Navbar = () => {
         { path: '/contact', label: 'Contact' },
     ];
 
-    // logout function - user logout handle kortesi
-    // NOTE: this function ta long hoye geche
-    // TODO: maybe split into smaller functions
+    /**
+     * Handle user logout with loading state and redirect
+     */
     const handleLogout = async () => {
-        // loading toast show kortesi
         const toastId = toast.loading("Logging out...");
 
-        // debug log
-        // console.log("logout process start");
-
-        // check kortesi user logged in ase kina
         if (user) {
-            // user ase, proceed kortesi
             try {
-                // logout function call kortesi
                 await logout();
-
-                // cookie clear kortesi
-                // token empty string set kortesi
-                Cookies.set('token', '')
-
-                // toast dismiss kortesi
+                Cookies.set('token', '');
                 toast.dismiss(toastId);
-
-                // success message show kortesi
                 toast.success("Logout successful!");
-
-                // loading false kortesi
                 setLoading(false);
 
-                // login page e redirect kortesi
-                // 1 second delay disi
+                // Redirect after short delay
                 setTimeout(() => {
                     router('/login');
-                }, 1000) // magic number - 1 second
+                }, 1000);
             } catch (error) {
-                // error hole ekhane handle kortesi
-                // console.log(error.message);
-
-                // error message show kortesi
                 toast.error(`Error: ${error.message}`);
-
-                // toast dismiss kortesi
                 toast.dismiss(toastId);
-
-                // loading false kortesi
                 setLoading(false);
-
-                // NOTE: sometimes error ashe but logout hoye jay
-                // FIXME: improve error handling
             }
         } else {
-            // user nai, just redirect kortesi
-            toast.dismiss(toastId)
-            toast.error('Already logged out')
-            router('/login')
+            toast.dismiss(toastId);
+            toast.error('Already logged out');
+            router('/login');
         }
     };
 
@@ -102,7 +66,7 @@ const Navbar = () => {
         <>
             {allowedPath && (
                 <nav className="navbar sticky top-0 z-50 bg-base-100 shadow-lg px-4">
-                    {/* Logo section - moved from header.js */}
+                    {/* Logo section */}
                     <div className="navbar-start">
                         <div className="dropdown">
                             <label tabIndex={0} className="btn btn-ghost lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -132,7 +96,7 @@ const Navbar = () => {
                     </div>
 
                     {/* Desktop nav links */}
-                    <div className="navbar-center hidden lg:flex" style={{ marginTop: '2px' }}> {/* Tailwind wasn't centering this correctly */}
+                    <div className="navbar-center hidden lg:flex" style={{ marginTop: '2px' }}>
                         <ul className="menu menu-horizontal px-1">
                             {navLinks.map(link => (
                                 <li key={link.path} className="nav-item hover:cursor-pointer">
@@ -147,7 +111,7 @@ const Navbar = () => {
                         </ul>
                     </div>
 
-                    {/* Auth buttons - this part was tricky */}
+                    {/* Auth buttons */}
                     <div className="navbar-end">
                         {user ? (
                             <div className="dropdown dropdown-end">

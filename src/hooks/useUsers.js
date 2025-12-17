@@ -1,27 +1,25 @@
-/**
- * useUsers Hook
- * 
- * Custom hook for fetching and managing users data
- * Used in admin dashboard for user management
- */
+// users hook - admin dashboard user management
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
+// TODO: add pagination support
 export function useUsers(filters = {}) {
-    const [userList, setUserList] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [fetchError, setFetchError] = useState(null);
+    let [userList, setUserList] = useState([]);
+    let [isLoading, setIsLoading] = useState(true);
+    let [fetchError, setFetchError] = useState(null);
 
     const fetchUsers = useCallback(async () => {
         setIsLoading(true);
         setFetchError(null);
+        console.log('loading users...'); // debug - keep for now
 
         try {
-            const response = await api.get('/api/users');
-            setUserList(response.data);
+            var res = await api.get('/api/users');
+            setUserList(res.data);
+            // console.log('users:', res.data.length);
         } catch (err) {
-            console.error('Failed to fetch users:', err);
-            setFetchError(err.response?.data?.error || 'Failed to load users');
+            console.error('user fetch failed:', err.message);
+            setFetchError(err.response?.data?.error || 'failed to load');
         } finally {
             setIsLoading(false);
         }
@@ -31,13 +29,9 @@ export function useUsers(filters = {}) {
         fetchUsers();
     }, [fetchUsers]);
 
-    /**
-     * Update user role - with optimistic update
-     */
-    const updateUserRole = async (userId, newRole) => {
-        const originalList = [...userList];
-
-        // Optimistic update
+    // update role - optimistic update
+    var updateUserRole = async (userId, newRole) => {
+        var originalList = [...userList];
         setUserList(prev => prev.map(u =>
             u._id === userId ? { ...u, role: newRole } : u
         ));
@@ -46,38 +40,28 @@ export function useUsers(filters = {}) {
             await api.patch(`/api/users/${userId}`, { role: newRole });
             return true;
         } catch (err) {
-            // Rollback
-            setUserList(originalList);
+            setUserList(originalList); // rollback
             throw err;
         }
     };
 
-    /**
-     * Delete user - with optimistic update
-     */
-    const deleteUser = async (userId) => {
-        const originalList = [...userList];
-
-        // Optimistic update
+    // delete user
+    var deleteUser = async (userId) => {
+        var originalList = [...userList];
         setUserList(prev => prev.filter(u => u._id !== userId));
 
         try {
             await api.delete(`/api/users/${userId}`);
             return true;
         } catch (err) {
-            // Rollback
-            setUserList(originalList);
+            setUserList(originalList); // rollback
             throw err;
         }
     };
 
     return {
-        users: userList,
-        loading: isLoading,
-        error: fetchError,
-        refetch: fetchUsers,
-        updateUserRole,
-        deleteUser
+        users: userList, loading: isLoading, error: fetchError,
+        refetch: fetchUsers, updateUserRole, deleteUser
     };
 }
 
