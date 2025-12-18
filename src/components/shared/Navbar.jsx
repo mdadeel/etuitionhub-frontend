@@ -1,8 +1,4 @@
-/**
- * Navbar Component
- * Sticky navigation bar with DaisyUI styling
- */
-"use client";
+// navbar - sticky top with daisy ui
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';

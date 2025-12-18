@@ -1,7 +1,4 @@
-/**
- * Footer Component
- * Site-wide footer with links and contact info
- */
+// footer comp - links and contact info
 import { Link } from 'react-router-dom';
 import { FaFacebook, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';

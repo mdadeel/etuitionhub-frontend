@@ -1,10 +1,5 @@
-/**
- * Tuitions Page - "Dumb" component
- * 
- * All logic abstracted to hooks
- * All UI blocks extracted to components
- * This component only orchestrates rendering
- */
+// tuitions page - shows all available tuitions
+// filtering and pagination hooks use korsi
 import { useTuitions, useTuitionFilters, usePagination } from '../hooks/useTuitions';
 import TuitionCard from '../components/Tuitions/TuitionCard';
 import FilterBar from '../components/Tuitions/FilterBar';
