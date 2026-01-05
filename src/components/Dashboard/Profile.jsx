@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import Cookies from 'js-cookie';
-import API_URL from '../../config/api';
+import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 
 const Profile = () => {
@@ -35,24 +34,17 @@ const Profile = () => {
         }
 
         try {
-            const res = await fetch(`${API_URL}/api/users/by-email/${user?.email}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    displayName: nameInput,
-                    photoURL: photoInput
-                })
+            await api.patch(`/api/users/by-email/${user?.email}`, {
+                displayName: nameInput,
+                photoURL: photoInput
             });
 
-            if (res.ok) {
-                toast.success('Identity parameters synchronized.');
-                await refreshUserFromDB(user?.email);
-                updateUserProfile({ displayName: nameInput, photoURL: photoInput });
-            } else {
-                toast.error('Synchronization failed.');
-            }
+            toast.success('Identity parameters synchronized.');
+            await refreshUserFromDB(user?.email);
+            updateUserProfile({ displayName: nameInput, photoURL: photoInput });
         } catch (error) {
-            toast.error('Core connectivity failure.');
+            const errorMsg = error.response?.data?.error || 'Synchronization failed.';
+            toast.error(errorMsg);
         } finally {
             setLoading(false);
         }
