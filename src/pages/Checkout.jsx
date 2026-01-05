@@ -5,52 +5,48 @@ import { useParams, useNavigate } from "react-router-dom"
 import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
 import API_URL from '../config/api';
+import LoadingSpinner from '../components/shared/LoadingSpinner';
 
 // stripe key
 let stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_51ScKPwBLmnYHXqck9C3HR4Rg10utxFGf4spiNB6nXVGtkfjqjXmlZObBnZz1FZOOae29kxFE50UIkMJCNxILV0Ux00r6wdXVfi')
 
-let Checkout = () => {
-    let { id } = useParams()
-    let { user } = useAuth()
-    let navigate = useNavigate()
-    let [loading, setLoading] = useState(true)
-    let [error, setError] = useState(null)
-    let [application, setApplication] = useState(null)
-    console.log('checkout page', id)
+const Checkout = () => {
+    const { id } = useParams();
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [application, setApplication] = useState(null);
 
     useEffect(() => {
         if (!id || !user?.email) {
-            toast.error('Invalid session')
-            navigate('/dashboard')
-            return
+            toast.error('Session Invalid: Identity context missing');
+            navigate('/dashboard');
+            return;
         }
-        fetchApplication()
-    }, [id, user])
+        fetchApplication();
+    }, [id, user]);
 
-    let fetchApplication = async () => {
+    const fetchApplication = async () => {
         try {
-            setLoading(true)
-            setError(null)
-            let appRes = await fetch(`${API_URL}/api/applications/${id}`)
-            if (!appRes.ok) {
-                throw new Error('Application not found')
-            }
-            let appData = await appRes.json()
-            setApplication(appData)
-            console.log('app data', appData)
-            setLoading(false)
+            setLoading(true);
+            setError(null);
+            const appRes = await fetch(`${API_URL}/api/applications/${id}`);
+            if (!appRes.ok) throw new Error('Transaction target not found');
+            const appData = await appRes.json();
+            setApplication(appData);
+            setLoading(false);
         } catch (err) {
-            console.log('fetch app error', err)
-            setError('Could not load application details')
-            setLoading(false)
+            setError('Operational failure: Could not load target parameters');
+            setLoading(false);
         }
-    }
+    };
 
-    let handlePayment = async () => {
-        if (!application) return
-        setLoading(true)
+    const handlePayment = async () => {
+        if (!application) return;
+        setLoading(true);
         try {
-            let res = await fetch(`${API_URL}/api/payments/create-checkout-session`, {
+            const res = await fetch(`${API_URL}/api/payments/create-checkout-session`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -58,109 +54,114 @@ let Checkout = () => {
                     studentEmail: user.email,
                     amount: application.expectedSalary
                 })
-            })
+            });
 
-            let data = await res.json()
+            const data = await res.json();
             if (data.url) {
-                window.location.href = data.url
+                window.location.href = data.url;
             } else {
-                throw new Error(data.error || 'Payment session failed')
+                throw new Error(data.error || 'Payment gateway synchronization failed');
             }
         } catch (error) {
-            console.log('payment error', error)
-            toast.error('Payment service unavailable')
-            setError('Payment service not available. Please try again later.')
-            setLoading(false)
+            toast.error('Gateway Error: Service unavailable');
+            setError('Payment infrastructure is currently offline.');
+            setLoading(false);
         }
-    }
+    };
 
-    // loading state
     if (loading && !application) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="loading loading-spinner loading-lg text-teal-600"></div>
-                    <p className="mt-4">Loading payment details...</p>
-                </div>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50/30">
+                <LoadingSpinner />
             </div>
-        )
+        );
     }
 
-    // error state
     if (error && !application) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="text-error text-6xl mb-4">⚠️</div>
-                    <h2 className="text-xl font-bold">{error}</h2>
-                    <div className="mt-4 flex gap-2 justify-center">
-                        <button onClick={() => navigate('/dashboard')} className="btn btn-outline">
-                            Back to Dashboard
-                        </button>
-                        <button onClick={fetchApplication} className="btn btn-primary">
-                            Retry
-                        </button>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50/30 p-8">
+                <div className="max-w-md w-full text-center">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500 mb-4 italic">System Alert</p>
+                    <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">{error}</h2>
+                    <div className="mt-12 flex flex-col gap-4">
+                        <button onClick={() => navigate('/dashboard')} className="btn-quiet-secondary w-full">Return to Management</button>
+                        <button onClick={fetchApplication} className="btn-quiet-primary w-full">Retry Synchronization</button>
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 
-    // success - show payment form
     return (
-        <div className="min-h-screen py-10 px-4">
-            <div className="max-w-lg mx-auto">
-                <div className="card bg-base-100 shadow-xl">
-                    <div className="card-body">
-                        <h2 className="card-title text-2xl">Payment Details</h2>
+        <div className="fade-up min-h-screen py-20 px-8 bg-gray-50/30">
+            <div className="max-w-xl mx-auto">
+                <header className="mb-12 border-b border-gray-200 pb-8">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Transaction Infrastructure</span>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Requirement Finalization</h1>
+                </header>
 
-                        <div className="divider"></div>
+                <div className="bg-white border border-gray-200 rounded-sm shadow-sm overflow-hidden">
+                    <div className="p-8 border-b border-gray-100 bg-gray-50/30">
+                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-900">Engagement Summary</h3>
+                    </div>
 
-                        <div className="space-y-3">
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Tutor:</span>
-                                <span className="font-semibold">{application?.tutorName}</span>
+                    <div className="p-8 space-y-6">
+                        <div className="grid grid-cols-2 gap-8 pb-6 border-b border-gray-50">
+                            <div>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Contractor</p>
+                                <p className="text-sm font-bold text-gray-900">{application?.tutorName}</p>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Subject:</span>
-                                <span>{application?.tuitionId?.subject || 'N/A'}</span>
-                            </div>
-                            <div className="flex justify-between text-lg">
-                                <span className="text-gray-500">Amount:</span>
-                                <span className="font-bold text-primary">৳{application?.expectedSalary}/month</span>
+                            <div className="text-right">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Reference</p>
+                                <p className="text-xs font-mono text-gray-500">#{id?.slice(-8).toUpperCase()}</p>
                             </div>
                         </div>
 
-                        <div className="divider"></div>
-
-                        {error && (
-                            <div className="alert alert-warning">
-                                <span>{error}</span>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Subject Scale</span>
+                                <span className="text-sm font-medium text-gray-900">{application?.tuitionId?.subject || 'Direct Engagement'}</span>
                             </div>
-                        )}
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Service Frequency</span>
+                                <span className="text-sm font-medium text-gray-900">Monthly Recurrent</span>
+                            </div>
+                        </div>
 
-                        <div className="card-actions justify-end">
-                            <button onClick={() => navigate('/dashboard')} className="btn btn-ghost">
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handlePayment}
-                                className="btn btn-primary"
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <><span className="loading loading-spinner loading-sm"></span> Processing...</>
-                                ) : (
-                                    'Pay with Stripe'
-                                )}
-                            </button>
+                        <div className="pt-6 mt-6 border-t border-gray-100">
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Total Yield Liability</p>
+                                    <p className="text-xs text-gray-400 font-medium italic">Applicable system fees inclusive</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-3xl font-extrabold text-indigo-600 tracking-tighter">৳{application?.expectedSalary}</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-2">/ Mon</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <div className="p-8 bg-gray-50 border-t border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
+                        <button onClick={() => navigate('/dashboard')} className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">Abort Transaction</button>
+                        <button
+                            onClick={handlePayment}
+                            className="btn-quiet-primary px-12 py-4 text-[10px]"
+                            disabled={loading}
+                        >
+                            {loading ? 'Processing Protocol...' : 'Initialize Secure Payment'}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="mt-8 flex items-center justify-center gap-4 py-4 px-6 border border-dashed border-gray-200 rounded-sm">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Encrypted via standard SSL/Stripe protocols</p>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Checkout
 

@@ -9,31 +9,31 @@ import AdminDashboard from '../components/Dashboard/AdminDashboard';
 import Profile from '../components/Dashboard/Profile';
 
 // Main dashboard wrapper with sidebar
-function Dashboard() {
+const Dashboard = () => {
     const { user, dbUser } = useAuth();
     const role = dbUser?.role || 'student';
 
-    // Default fallback - should never happen but just in case
     if (!user) {
         return <Navigate to="/login" />;
     }
 
     return (
-        <div className="flex min-h-screen bg-base-200">
+        <div className="flex min-h-screen bg-white">
             <DashboardSidebar role={role} />
-            <div className="flex-1 p-6">
-                <Routes>
-                    <Route index element={
-                        role === 'admin' ? <AdminDashboard /> :
-                            role === 'tutor' ? <TutorDashboard /> :
-                                <StudentDashboard />
-                    } />
-                    <Route path="profile" element={<Profile />} />
-                    {/* Add more dashboard routes as needed - TODO */}
-                </Routes>
-            </div>
+            <main className="flex-1 px-8 py-12 lg:px-12 bg-gray-50/30">
+                <div className="max-w-6xl mx-auto">
+                    <Routes>
+                        <Route index element={
+                            role === 'admin' ? <AdminDashboard /> :
+                                role === 'tutor' ? <TutorDashboard /> :
+                                    <StudentDashboard />
+                        } />
+                        <Route path="profile" element={<Profile />} />
+                    </Routes>
+                </div>
+            </main>
         </div>
     );
-}
+};
 
 export default Dashboard;

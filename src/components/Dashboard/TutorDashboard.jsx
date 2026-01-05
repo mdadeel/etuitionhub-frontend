@@ -3,169 +3,167 @@ import { useState, useEffect } from 'react'
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
 import API_URL from '../../config/api';
+import LoadingSpinner from '../shared/LoadingSpinner';
 
 const TutorDashboard = () => {
-    let { user, dbUser } = useAuth() // lazy var
-    const [activeTab, setActiveTab] = useState("overview")
-    let [apps, setApps] = useState([]) // using let even tho const would work
-    const [loading, setLoading] = useState(true)
-    const [revenue, setRevenue] = useState([])
+    const { user, dbUser } = useAuth();
+    const [activeTab, setActiveTab] = useState("overview");
+    const [apps, setApps] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [revenue, setRevenue] = useState([]);
 
-    // get applications data
     useEffect(() => {
         if (user?.email) {
-            // fetchApplications() // old way - slow
-            loadApps()
+            loadDashboardData();
         }
-    }, [user]) // missing dependency warning - ignore it for now
+    }, [user]);
 
-    // main fn to load apps
-    const loadApps = async () => {
+    const loadDashboardData = async () => {
         try {
-            let response = await fetch(`${API_URL}/api/applications/tutor/${user.email}`)
-            let data = await response.json()
-            console.log('got apps:', data)
-            setApps(data)
+            const response = await fetch(`${API_URL}/api/applications/tutor/${user.email}`);
+            const data = await response.json();
+            setApps(data);
 
-            // Also fetch revenue history
-            let revenueRes = await fetch(`${API_URL}/api/payments/tutor/${user.email}`)
+            const revenueRes = await fetch(`${API_URL}/api/payments/tutor/${user.email}`);
             if (revenueRes.ok) {
-                let revenueData = await revenueRes.json()
-                setRevenue(revenueData)
+                const revenueData = await revenueRes.json();
+                setRevenue(revenueData);
             }
         } catch (e) {
-            console.error("error:", e)
+            console.error("Dashboard Load Error:", e);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
-    // calculate kori total earnings from revenue
-    let totalEarnings = revenue.reduce((sum, p) => sum + (p.amount || 0), 0)
-    let activeStudents = apps.filter(a => a.status === 'approved').length
+    const totalEarnings = revenue.reduce((sum, p) => sum + (p.amount || 0), 0);
+    const activeStudents = apps.filter(a => a.status === 'approved').length;
 
-    // delete application - pending thakle delete kora jabe
     const handleDelete = async (id) => {
-        if (!confirm('Application delete korben?')) return
+        if (!confirm('Permanently remove this application documentation?')) return;
 
-        // Validate ObjectId
         const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidObjectId(id)) {
-            toast.error('Cannot delete demo data - invalid ID');
+            toast.error('System Integrity: Demo data is read-only.');
             return;
         }
 
         try {
             const res = await fetch(`${API_URL}/api/applications/${id}`, {
                 method: 'DELETE'
-            })
+            });
             if (res.ok) {
-                toast.success("Application deleted")
-                setApps(prev => prev.filter(a => a._id !== id))
+                toast.success("Record expunged.");
+                setApps(prev => prev.filter(a => a._id !== id));
             } else {
-                const errorData = await res.json();
-                toast.error('Delete failed - ' + (errorData.error || 'try again'))
+                toast.error('Operation failed.');
             }
         } catch (err) {
-            console.error(err)
-            toast.error('Network error - check connection');
+            toast.error('Connection interrupt.');
         }
-    }
+    };
 
-    // loading spinner
-    if (loading) {
-        return <div className="flex justify-center py-12">
-            <span className="loading loading-spinner loading-lg"></span>
-        </div>
-    }
+    if (loading) return <LoadingSpinner />;
 
-    // main render
-    console.log('rendering dashboard...')
+    const tabs = [
+        { id: 'overview', label: 'Strategic Overview' },
+        { id: 'applications', label: 'Active Pipeline' },
+        { id: 'ongoing', label: 'Ongoing Engagements' },
+        { id: 'revenue', label: 'Financial History' }
+    ];
+
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Tutor Dashboard</h1>
-
-                {/* tab navigation */}
-                <div className="tabs tabs-boxed flex-wrap">
-                    <a className={`tab ${activeTab === 'overview' ? 'tab-active' : ''}`}
-                        onClick={() => setActiveTab('overview')}>Overview</a>
-                    <a className={`tab ${activeTab === 'applications' ? 'tab-active' : ''}`}
-                        onClick={() => setActiveTab("applications")}>My Applications</a>
-                    <a className={`tab ${activeTab === 'ongoing' ? 'tab-active' : ''}`}
-                        onClick={() => setActiveTab('ongoing')}>Ongoing Tuitions</a>
-                    <a className={`tab ${activeTab === 'revenue' ? 'tab-active' : ''}`}
-                        onClick={() => setActiveTab('revenue')}>Revenue History</a>
+        <div className="fade-up">
+            <header className="mb-12 border-b border-gray-200 pb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                <div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Management Interface</span>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Professional Dashboard</h1>
                 </div>
-            </div>
 
-            {/* overview tab - stats dekhay */}
+                <div className="flex bg-gray-100 p-1 rounded-sm gap-1">
+                    {tabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-200 ${activeTab === tab.id
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-400 hover:text-gray-600'
+                                }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+            </header>
+
             {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="stat bg-base-100 shadow rounded-lg">
-                        <div className="stat-title">Total Applications</div>
-                        <div className="stat-value text-primary">{apps.length}</div>
-                        <div className="stat-desc">All applications submitted</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="p-8 bg-white border border-gray-200 rounded-sm shadow-sm transition-transform hover:-translate-y-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Pipeline Volume</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-extrabold text-gray-900">{apps.length}</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase">Requests</span>
+                        </div>
                     </div>
-
-
-                    <div className="stat bg-base-100 shadow rounded-lg">
-                        <div className="stat-title">Active Students</div>
-                        <div className="stat-value text-secondary">{activeStudents}</div>
-                        <div className="stat-desc">Currently teaching</div>
+                    <div className="p-8 bg-white border border-gray-200 rounded-sm shadow-sm transition-transform hover:-translate-y-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Active Tenure</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-extrabold text-indigo-600">{activeStudents}</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase">Engagements</span>
+                        </div>
                     </div>
-                    <div className="stat bg-base-100 shadow rounded-lg">
-                        <div className="stat-title">Total Earnings</div>
-                        <div className="stat-value">৳{totalEarnings}</div>
-                        <div className="stat-desc">From approved tuitions</div>
+                    <div className="p-8 bg-white border border-gray-200 rounded-sm shadow-sm transition-transform hover:-translate-y-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Accumulated Yield</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-extrabold text-gray-900">৳{totalEarnings}</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase">BDT</span>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* applications tab - tutor er sob applications */}
             {activeTab === 'applications' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">My Applications</h2>
+                <div className="bg-white border border-gray-200 rounded-sm overflow-hidden">
                     {apps.length === 0 ? (
-                        <p className="text-center text-gray-500 py-8">You haven't applied to any tuitions yet</p>
+                        <div className="p-20 text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Zero active pipeline records found.</p>
+                        </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            {/* applications table */}
-                            <table className="table w-full">
+                            <table className="w-full text-left">
                                 <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Tuition</th>
-                                        <th>Student</th>
-                                        <th>Expected Salary</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                    <tr className="bg-gray-50 border-b border-gray-100">
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Reference</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Subject</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Valuation</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Status</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-gray-50">
                                     {apps.map((app, idx) => (
-                                        <tr key={app._id}>
-                                            <th>{idx + 1}</th>
-                                            <td>{app.tuitionId?.subject || "N/A"}</td>
-                                            <td>{app.studentEmail}</td>
-                                            <td>৳{app.expectedSalary}</td>
-                                            <td>
-                                                {/* status badge - color coded */}
-                                                <div className={`badge ${app.status === 'approved' ? 'badge-success' :
-                                                    app.status === 'rejected' ? 'badge-error' :
-                                                        'badge-warning'
+                                        <tr key={app._id} className="hover:bg-gray-50/50 transition-colors">
+                                            <td className="px-6 py-4 text-xs font-bold text-gray-400">#0{idx + 1}</td>
+                                            <td className="px-6 py-4">
+                                                <p className="text-sm font-bold text-gray-900">{app.tuitionId?.subject}</p>
+                                                <p className="text-[10px] text-gray-400">{app.studentEmail}</p>
+                                            </td>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-600">৳{app.expectedSalary}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide border ${app.status === 'approved' ? 'bg-green-50 text-green-700 border-green-100' :
+                                                    app.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-100' :
+                                                        'bg-gray-50 text-gray-400 border-gray-100'
                                                     }`}>
                                                     {app.status}
-                                                </div>
+                                                </span>
                                             </td>
-                                            <td>
-                                                {/* delete button - only pending er jonno */}
+                                            <td className="px-6 py-4 text-right">
                                                 {app.status === 'pending' && (
                                                     <button
-                                                        className="btn btn-error btn-xs"
+                                                        className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors"
                                                         onClick={() => handleDelete(app._id)}
                                                     >
-                                                        Delete
+                                                        Recall
                                                     </button>
                                                 )}
                                             </td>
@@ -178,69 +176,79 @@ const TutorDashboard = () => {
                 </div>
             )}
 
-            {/* ongoing tuitions tab - approved tuitions dekhay */}
             {activeTab === 'ongoing' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">Ongoing Tuitions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {apps.filter(a => a.status === 'approved').length === 0 ? (
-                        <p className="text-center text-gray-500 py-8">No ongoing tuitions - apply for more!</p>
+                        <div className="col-span-full p-20 bg-white border border-dashed border-gray-200 rounded-sm text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">No active engagements on record.</p>
+                        </div>
                     ) : (
-                        <div className="grid gap-4">
-                            {apps.filter(a => a.status === 'approved').map(app => (
-                                <div key={app._id} className="card bg-base-200 shadow">
-                                    <div className="card-body">
-                                        <h3 className="font-bold">{app.tuitionId?.subject}</h3>
-                                        <p className="text-sm">Student: {app.studentEmail}</p>
-                                        <p className="text-sm">Location: {app.tuitionId?.location}</p>
-                                        <p className="text-sm font-bold">Monthly Salary: ৳{app.expectedSalary}</p>
+                        apps.filter(a => a.status === 'approved').map(app => (
+                            <div key={app._id} className="p-8 bg-white border border-gray-200 rounded-sm shadow-sm">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-green-600 mb-4 block">Verified Engagement</span>
+                                <h3 className="text-xl font-extrabold text-gray-900 mb-2">{app.tuitionId?.subject}</h3>
+                                <div className="space-y-4 pt-4 border-t border-gray-50">
+                                    <div className="flex justify-between text-xs">
+                                        <span className="text-gray-400 uppercase tracking-widest font-bold">Client</span>
+                                        <span className="text-gray-900 font-bold">{app.studentEmail}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs">
+                                        <span className="text-gray-400 uppercase tracking-widest font-bold">Location</span>
+                                        <span className="text-gray-900 font-bold">{app.tuitionId?.location}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs">
+                                        <span className="text-gray-400 uppercase tracking-widest font-bold">Yield</span>
+                                        <span className="text-indigo-600 font-bold">৳{app.expectedSalary} / mo</span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))
                     )}
                 </div>
             )}
 
-            {/* Revenue History Tab */}
             {activeTab === 'revenue' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">Revenue History</h2>
-
-                    {/* Total earnings card */}
-                    <div className="stat bg-teal-50 rounded-lg mb-6 inline-block">
-                        <div className="stat-title">Total Earnings</div>
-                        <div className="stat-value text-teal-600">৳{totalEarnings}</div>
-                        <div className="stat-desc">From {revenue.length} payments</div>
+                <div className="bg-white border border-gray-200 rounded-sm overflow-hidden">
+                    <div className="p-8 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                        <h2 className="text-sm font-bold uppercase tracking-widest text-gray-900">Yield Logs</h2>
+                        <div className="text-right">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Total Accumulation</p>
+                            <p className="text-xl font-extrabold text-indigo-600">৳{totalEarnings}</p>
+                        </div>
                     </div>
 
                     {revenue.length === 0 ? (
-                        <p className="text-center text-gray-500 py-8">No payment history yet</p>
+                        <div className="p-20 text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">No financial history logs available.</p>
+                        </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="table w-full">
+                            <table className="w-full text-left">
                                 <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Student</th>
-                                        <th>Subject</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
+                                    <tr className="bg-gray-50/30 border-b border-gray-100">
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Date</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Description</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Amount</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 text-right">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {revenue.map((payment, idx) => (
-                                        <tr key={payment._id}>
-                                            <td>{idx + 1}</td>
-                                            <td>{payment.studentEmail}</td>
-                                            <td>{payment.tuitionId?.subject || 'N/A'}</td>
-                                            <td className="font-semibold text-teal-600">৳{payment.amount}</td>
-                                            <td>
-                                                <span className={`badge ${payment.status === 'completed' ? 'badge-success' : 'badge-warning'}`}>
+                                <tbody className="divide-y divide-gray-50">
+                                    {revenue.map((payment) => (
+                                        <tr key={payment._id} className="hover:bg-gray-50/50 transition-colors">
+                                            <td className="px-6 py-4 text-xs font-bold text-gray-400">
+                                                {new Date(payment.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <p className="text-sm font-bold text-gray-900">{payment.tuitionId?.subject || 'Direct Payment'}</p>
+                                                <p className="text-[10px] text-gray-400">From {payment.studentEmail}</p>
+                                            </td>
+                                            <td className="px-6 py-4 text-sm font-extrabold text-gray-900">৳{payment.amount}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide border ${payment.status === 'completed' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-yellow-50 text-yellow-700 border-yellow-100'
+                                                    }`}>
                                                     {payment.status}
                                                 </span>
                                             </td>
-                                            <td>{new Date(payment.createdAt).toLocaleDateString()}</td>
                                         </tr>
                                     ))}
                                 </tbody>

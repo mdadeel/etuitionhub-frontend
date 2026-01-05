@@ -5,52 +5,44 @@ import { useMemo } from 'react'
 import TutorCard from "../components/Home/TutorCard"
 import demoTutors from '../data/demoTutors.json'
 
-let Tutors = () => {
+import LoadingSpinner from '../components/shared/LoadingSpinner'
+import EmptyState from '../components/shared/EmptyState'
+
+const Tutors = () => {
     const [tutors, setTutors] = useState([])
     const [loading, setLoading] = useState(true)
-
-    // search & sort state
     const [searchQuery, setSearchQuery] = useState('')
     const [sortBy, setSortBy] = useState('name-az')
 
-    console.log('tutors rendering') // debug
-
     useEffect(() => {
-        // demo data
-        // old promise style
-        new Promise((resolve) => {
-            setTimeout(() => resolve(demoTutors), 500);
-        }).then(function (data) { // old function
-            setTutors(data)
+        // Simulating fetch
+        setTimeout(() => {
+            setTutors(demoTutors)
             setLoading(false)
-        });
+        }, 500)
     }, [])
 
-    // filtered and sorted tutors - performance optimization
     const filteredAndSortedTutors = useMemo(() => {
-        var result = [...tutors] // var usage
+        let result = [...tutors]
 
-        // search - by name or subjects
-        if (searchQuery && searchQuery !== '') { // paranoid
+        if (searchQuery) {
             result = result.filter(t =>
                 t.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 t.subjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
             )
         }
 
-        // sort logic
         switch (sortBy) {
             case 'name-az':
-                result.sort((a, b) => a.displayName.localeCompare(b.displayName)) // no spaces
+                result.sort((a, b) => a.displayName.localeCompare(b.displayName))
                 break
             case 'name-za':
                 result.sort((a, b) => b.displayName.localeCompare(a.displayName))
                 break
             case 'exp-high':
-                // extract years from "5+ years" or "8 years" format
-                result.sort(function (a, b) { // old syntax
-                    var aExp = parseInt(a.experience) || 0 // var
-                    var bExp = parseInt(b.experience) || 0
+                result.sort((a, b) => {
+                    const aExp = parseInt(a.experience) || 0
+                    const bExp = parseInt(b.experience) || 0
                     return bExp - aExp
                 })
                 break
@@ -64,80 +56,78 @@ let Tutors = () => {
         return result
     }, [tutors, searchQuery, sortBy])
 
-    // clear filters
     const handleClear = () => {
         setSearchQuery('')
         setSortBy('name-az')
     }
 
-    // paranoid loading check
-    if (loading || loading === true) {
-        return <div className="min-h-screen flex items-center justify-center">
-            <span className="loading loading-spinner loading-lg text-teal-600"></span>
-        </div>
-    }
+    if (loading) return <LoadingSpinner />
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-2">Our Tutors</h1>
-            <p className="text-gray-600 mb-6">Find the perfect tutor</p>
+        <div className="max-w-7xl mx-auto px-6 py-20 pb-40">
+            <header className="mb-20">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                    <div className="max-w-xl">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Verified Talent</span>
+                        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Elite Education Experts</h1>
+                        <p className="text-gray-500 text-sm leading-relaxed">
+                            Connect with the most qualified academic professionals in Bangladesh. Every profile undergoes rigorous verification to ensure quality and trust.
+                        </p>
+                    </div>
+                </div>
+            </header>
 
             {/* Search & Sort Controls */}
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-                {/* Search Input */}
-                <div className="flex-1">
-                    <input
-                        type="text"
-                        placeholder="🔍 Search by tutor name or subject..."
-                        className="input input-bordered w-full"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+            <div className="flex flex-col gap-6 mb-16">
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1">
+                        <input
+                            type="text"
+                            placeholder="Filter by name, subject, or specialization..."
+                            className="input-quiet h-12 pl-4"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <select
+                        className="input-quiet h-12 w-full md:w-48 appearance-none bg-white cursor-pointer"
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                    >
+                        <option value="name-az">Name: A-Z</option>
+                        <option value="name-za">Name: Z-A</option>
+                        <option value="exp-high">Experience Level</option>
+                        <option value="salary-low">Salary: Low to High</option>
+                    </select>
                 </div>
 
-                {/* Sort Dropdown */}
-                <select
-                    className="select select-bordered w-full md:w-auto"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                >
-                    <option value="name-az">Name: A-Z</option>
-                    <option value="name-za">Name: Z-A</option>
-                    <option value="exp-high">Experience: High to Low</option>
-                    <option value="salary-low">Salary: Low to High</option>
-                </select>
-
-                {/* Clear Button */}
-                {(searchQuery || sortBy !== 'name-az') && (
-                    <button
-                        className="btn btn-ghost"
-                        onClick={handleClear}
-                    >
-                        Clear
-                    </button>
-                )}
+                <div className="flex items-center justify-between">
+                    <div className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+                        {filteredAndSortedTutors.length} Experts Available
+                    </div>
+                    {(searchQuery || sortBy !== 'name-az') && (
+                        <button
+                            className="text-xs font-bold text-gray-400 hover:text-red-500 transition-colors uppercase tracking-widest"
+                            onClick={handleClear}
+                        >
+                            Reset Discovery
+                        </button>
+                    )}
+                </div>
             </div>
 
-            {/* Results Count */}
-            <p className="text-sm text-gray-600 mb-4">
-                Showing {filteredAndSortedTutors.length} tutor{filteredAndSortedTutors.length !== 1 ? 's' : ''}
-            </p>
-
-            {/* Tutors Grid */}
             {filteredAndSortedTutors.length === 0 ? (
-                <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No tutors found</p>
-                    <button
-                        className="btn btn-primary mt-4"
-                        onClick={handleClear}
-                    >
-                        Clear Filters
-                    </button>
-                </div>
+                <EmptyState
+                    message="No experts found matching your requirements"
+                    onAction={handleClear}
+                    actionLabel="Reset Parameters"
+                />
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {filteredAndSortedTutors.map(tutor => (
-                        <TutorCard key={tutor._id} tutor={tutor} />
+                        <div key={tutor._id} className="fade-up">
+                            <TutorCard tutor={tutor} />
+                        </div>
                     ))}
                 </div>
             )}

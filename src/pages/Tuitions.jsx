@@ -8,13 +8,11 @@ import LoadingSpinner from '../components/shared/LoadingSpinner';
 import EmptyState from '../components/shared/EmptyState';
 import PageHeader from '../components/shared/PageHeader';
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 9;
 
 const Tuitions = () => {
-    // Data fetching - logic hidden in hook
     const { tuitions, loading, error } = useTuitions();
 
-    // Filtering - all filter logic in hook
     const {
         filters,
         updateFilter,
@@ -24,7 +22,6 @@ const Tuitions = () => {
         filterOptions
     } = useTuitionFilters(tuitions || []);
 
-    // Pagination - reusable hook
     const {
         currentPage,
         totalPages,
@@ -32,24 +29,22 @@ const Tuitions = () => {
         goToPage
     } = usePagination(filteredTuitions, ITEMS_PER_PAGE);
 
-    // Loading state
     if (loading) {
         return <LoadingSpinner />;
     }
 
-    // Error state - show message instead of blank page
     if (error) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <PageHeader title="Available Tuitions" subtitle="Find tuition jobs" />
-                <div className="text-center py-12">
-                    <p className="text-red-500 text-lg mb-4">⚠️ Failed to load tuitions</p>
-                    <p className="text-gray-500 mb-4">{error}</p>
+            <div className="max-w-7xl mx-auto px-6 py-24">
+                <div className="text-center">
+                    <span className="text-xs font-bold text-red-500 uppercase tracking-[0.2em] mb-4 block">System Error</span>
+                    <h1 className="text-3xl font-extrabold text-gray-900 mb-6">Failed to synchronize data.</h1>
+                    <p className="text-gray-500 mb-8 max-w-sm mx-auto text-sm">{error}</p>
                     <button
-                        className="btn btn-primary"
+                        className="btn-quiet-primary px-8"
                         onClick={() => window.location.reload()}
                     >
-                        Try Again
+                        Retry Connection
                     </button>
                 </div>
             </div>
@@ -57,13 +52,22 @@ const Tuitions = () => {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <PageHeader
-                title="Available Tuitions"
-                subtitle="Find tuition jobs"
-            />
+        <div className="max-w-7xl mx-auto px-6 py-20 pb-40">
+            <header className="mb-20">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                    <div className="max-w-lg">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Direct Marketplace</span>
+                        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Available Positions</h1>
+                        <p className="text-gray-500 text-sm leading-relaxed">
+                            Analyze and apply to verified tuition requirements. We prioritize clarity of expectations and direct communication.
+                        </p>
+                    </div>
+                    <div className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+                        {filteredTuitions.length} Results Found
+                    </div>
+                </div>
+            </header>
 
-            {/* Filter Controls */}
             <FilterBar
                 filters={filters}
                 onFilterChange={updateFilter}
@@ -73,34 +77,28 @@ const Tuitions = () => {
                 showClearButton={hasActiveFilters}
             />
 
-            {/* Results Count */}
-            <p className="text-sm text-gray-500 mb-4">
-                Showing {filteredTuitions.length} tuition{filteredTuitions.length !== 1 ? 's' : ''}
-            </p>
-
-            {/* Content */}
             {filteredTuitions.length === 0 ? (
                 <EmptyState
-                    message="No tuitions found matching your criteria"
+                    message="No requirements match your current parameters"
                     onAction={clearFilters}
-                    actionLabel="Clear Filters"
+                    actionLabel="Reset Parameters"
                 />
             ) : (
-                <>
-                    {/* Tuition Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="space-y-24">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {paginatedItems.map(tuition => (
                             <TuitionCard key={tuition._id} tuition={tuition} />
                         ))}
                     </div>
 
-                    {/* Pagination */}
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={goToPage}
-                    />
-                </>
+                    <div className="border-t border-gray-100 pt-12">
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={goToPage}
+                        />
+                    </div>
+                </div>
             )}
         </div>
     );

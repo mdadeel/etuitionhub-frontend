@@ -7,79 +7,67 @@ import { BiCurrentLocation } from 'react-icons/bi';
 
 const Footer = () => {
     return (
-        <footer className="bg-slate-800 text-gray-300 mt-16">
-            <div className="max-w-7xl mx-auto px-6 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-
+        <footer className="bg-white border-t border-gray-100 py-16 mt-24">
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
                     {/* Brand Section */}
-                    <div className="lg:col-span-1">
-                        <Link to="/" className="text-2xl font-bold text-teal-400 mb-4 inline-block">
+                    <div className="md:col-span-4">
+                        <Link to="/" className="text-xl font-bold tracking-tight text-gray-900 flex items-center gap-2 mb-4">
+                            <span className="w-8 h-8 bg-indigo-600 rounded-sm flex items-center justify-center text-white text-xs">ET</span>
                             e-tuitionBD
                         </Link>
-                        <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                            Your trusted platform for connecting students with qualified tutors across Bangladesh.
+                        <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
+                            A high-signal educational marketplace connecting people with specialized talent across Bangladesh.
                         </p>
 
-                        {/* Social Icons */}
-                        <div className="flex gap-3">
-                            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-                                className="w-10 h-10 bg-slate-700 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors duration-300">
-                                <FaFacebook className="text-lg" />
-                            </a>
-                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-                                className="w-10 h-10 bg-slate-700 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors duration-300">
-                                <FaXTwitter className="text-lg" />
-                            </a>
-                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-                                className="w-10 h-10 bg-slate-700 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors duration-300">
-                                <FaLinkedin className="text-lg" />
-                            </a>
-                            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
-                                className="w-10 h-10 bg-slate-700 hover:bg-teal-600 rounded-lg flex items-center justify-center transition-colors duration-300">
-                                <FaYoutube className="text-lg" />
-                            </a>
+                        <div className="flex gap-4 mt-8">
+                            {[FaFacebook, FaXTwitter, FaLinkedin, FaYoutube].map((Icon, i) => (
+                                <a key={i} href="#" className="text-gray-400 hover:text-gray-900 transition-colors">
+                                    <Icon className="text-lg" />
+                                </a>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-white font-semibold text-lg mb-4">Quick Links</h3>
+                    {/* Navigation */}
+                    <div className="md:col-span-2">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-6">Product</h4>
                         <ul className="space-y-3">
-                            <li><Link to="/" className="hover:text-teal-400 transition-colors">Home</Link></li>
-                            <li><Link to="/tuitions" className="hover:text-teal-400 transition-colors">Browse Tuitions</Link></li>
-                            <li><Link to="/tutors" className="hover:text-teal-400 transition-colors">Find Tutors</Link></li>
-                            <li><Link to="/dashboard" className="hover:text-teal-400 transition-colors">Dashboard</Link></li>
+                            <li><Link to="/tuitions" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Find Tuition</Link></li>
+                            <li><Link to="/tutors" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Find Tutors</Link></li>
+                            <li><Link to="/dashboard" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Dashboard</Link></li>
                         </ul>
                     </div>
 
-                    {/* Company */}
-                    <div>
-                        <h3 className="text-white font-semibold text-lg mb-4">Company</h3>
+                    <div className="md:col-span-2">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-6">Company</h4>
                         <ul className="space-y-3">
-                            <li><Link to="/about" className="hover:text-teal-400 transition-colors">About Us</Link></li>
-                            <li><Link to="/contact" className="hover:text-teal-400 transition-colors">Contact</Link></li>
-                            <li><Link to="/login" className="hover:text-teal-400 transition-colors">Login</Link></li>
-                            <li><Link to="/register" className="hover:text-teal-400 transition-colors">Register</Link></li>
+                            <li><Link to="/about" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">About Us</Link></li>
+                            <li><Link to="/contact" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Contact</Link></li>
                         </ul>
                     </div>
 
                     {/* Contact Info */}
-                    <div>
-                        <h3 className="text-white font-semibold text-lg mb-4">Contact Us</h3>
+                    <div className="md:col-span-4">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-6">Office</h4>
                         <div className="space-y-4">
                             <div className="flex items-start gap-3">
-                                <BiCurrentLocation className="text-teal-400 text-xl mt-1 shrink-0" />
-                                <span className="text-gray-400">Gulshan, Dhaka-1212, Bangladesh</span>
+                                <BiCurrentLocation className="text-gray-400 text-lg shrink-0 mt-0.5" />
+                                <span className="text-sm text-gray-500">Gulshan-2, Dhaka-1212</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <AiOutlineMail className="text-teal-400 text-xl shrink-0" />
-                                <span className="text-gray-400">info@e-tuitionbd.com</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <AiOutlinePhone className="text-teal-400 text-xl shrink-0" />
-                                <span className="text-gray-400">+880 1XXX-XXXXXX</span>
+                                <AiOutlineMail className="text-gray-400 text-lg shrink-0" />
+                                <span className="text-sm text-gray-500">hello@e-tuitionbd.com</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div className="mt-16 pt-8 border-t border-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-xs text-gray-400">© 2025 e-tuitionBD. All rights reserved.</p>
+                    <div className="flex gap-6">
+                        <Link to="#" className="text-xs text-gray-400 hover:text-gray-900">Privacy Policy</Link>
+                        <Link to="#" className="text-xs text-gray-400 hover:text-gray-900">Terms of Service</Link>
                     </div>
                 </div>
             </div>

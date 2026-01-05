@@ -1,14 +1,13 @@
-// tuition details page - showing single tuition post details
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from "react-hot-toast";
 import demoTuitions from '../data/demoTuitions.json';
-import api from '../services/api'; // Use the centralized API service
-import { isValidObjectId } from '../utils/validators'; // Import from new utility file
+import api from '../services/api';
+import { isValidObjectId } from '../utils/validators';
+import LoadingSpinner from '../components/shared/LoadingSpinner';
 
-// Main component
-function TuitionDetails() {
+const TuitionDetails = () => {
     const { id } = useParams();
     const { user, dbUser } = useAuth();
     const navigate = useNavigate();
@@ -17,29 +16,23 @@ function TuitionDetails() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
 
-    // Application form data state
     const [formData, setFormData] = useState({
         qualifications: "",
         experience: '',
         expectedSalary: ""
     });
 
-    // Fetch tuition details on component mount
     useEffect(() => {
         const fetchTuitionDetails = async () => {
             try {
                 const response = await api.get(`/api/tuitions/${id}`);
                 setTuition(response.data);
-                console.log('Tuition loaded from API:', response.data);
             } catch (error) {
-                console.error("Error fetching tuition details from API:", error);
-                // Fallback to demo data if API call fails
                 const demoTuition = demoTuitions.find(t => t._id === id);
                 if (demoTuition) {
                     setTuition(demoTuition);
-                    toast.error("Failed to load tuition from server, displaying demo data.");
                 } else {
-                    toast.error('Tuition not found.');
+                    toast.error('Requirement not found.');
                 }
             } finally {
                 setLoading(false);
@@ -48,19 +41,6 @@ function TuitionDetails() {
         fetchTuitionDetails();
     }, [id]);
 
-    // Debug logging for user and tuition status
-    useEffect(() => {
-        console.log('--- TUITION DETAILS DEBUG ---');
-        console.log('User:', user ? 'logged in' : 'not logged in');
-        console.log('DB User:', dbUser);
-        console.log('DB User Role:', dbUser?.role);
-        console.log('Tuition:', tuition);
-        console.log('Tuition Status:', tuition?.status);
-        console.log('Can show apply button?', dbUser?.role === 'tutor' && tuition?.status === 'approved');
-        console.log('---------------------------');
-    }, [user, dbUser, tuition]);
-
-    // Handle form input changes
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -68,41 +48,30 @@ function TuitionDetails() {
         });
     };
 
-    // Handle application form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate user login status and data
         if (!user || !dbUser) {
-            toast.error('Please log in first!');
+            toast.error('Session required.');
             navigate('/login');
             return;
         }
 
-        if (!dbUser._id) {
-            toast.error('User data not loaded - please refresh the page.');
-            return;
-        }
-
-        // Validate form fields
         if (!formData.qualifications || !formData.experience || !formData.expectedSalary) {
-            toast.error("Please fill in all required fields.");
+            toast.error("All parameters required.");
             return;
         }
 
-        // Validate expected salary
         if (formData.expectedSalary < 1000) {
-            toast.error('Expected salary is too low! Minimum 1000 BDT.');
+            toast.error('Minimum salary threshold not met.');
             return;
         }
 
-        // Prevent application to demo tuitions (invalid ObjectIds)
         if (!isValidObjectId(id)) {
-            toast.error('Cannot apply to demo tuitions. Please select a real tuition post.');
+            toast.error('Demo data interaction restricted.');
             return;
         }
 
-        // Prepare application data
         const applicationData = {
             tutorId: dbUser._id,
             tutorEmail: user.email,
@@ -114,215 +83,207 @@ function TuitionDetails() {
             expectedSalary: Number(formData.expectedSalary)
         };
 
-        console.log("Submitting application:", applicationData);
-
         try {
-            // Send application to API
             const response = await api.post('/api/applications', applicationData);
             if (response.status === 201) {
-                toast.success("Application submitted successfully! Awaiting approval.");
+                toast.success("Application registered. Awaiting validation.");
                 setShowModal(false);
-                // Reset form fields
                 setFormData({ qualifications: '', experience: "", expectedSalary: '' });
-                // Consider adding a refetch or redirect here if needed
             }
         } catch (error) {
-            console.error('Application submission error:', error);
-            const errorMessage = error.response?.data?.error || error.message || "Something went wrong. Please try again.";
+            const errorMessage = error.response?.data?.error || "Submission failure.";
             toast.error(errorMessage);
         }
     };
 
-    // Show loading spinner while data is being fetched
-    if (loading) {
+    if (loading) return <LoadingSpinner />;
+
+    if (!tuition) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <span className="loading loading-spinner loading-lg"></span>
+            <div className="max-w-7xl mx-auto px-6 py-24 text-center">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-4 block">Error 404</span>
+                <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Requirement not found.</h1>
+                <Link to="/tuitions" className="btn-quiet-secondary inline-block px-8">
+                    Return to Marketplace
+                </Link>
             </div>
         );
     }
 
-    // Display message if tuition is not found
-    if (!tuition) {
-        return <div className="text-center mt-10">Tuition post not found or has been deleted.</div>;
-    }
-
-    console.log('Rendering tuition details...');
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="max-w-4xl mx-auto">
-                {/* Main tuition details card */}
-                <div className="card bg-base-100 shadow-xl">
-                    <div className="card-body">
-                        <h2 className="card-title text-3xl mb-4">{tuition.subject}</h2>
+        <div className="max-w-7xl mx-auto px-6 py-20 pb-40">
+            <header className="mb-16 border-b border-gray-100 pb-12">
+                <div className="max-w-3xl">
+                    <div className="flex items-center gap-4 mb-4">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600">Active Requirement</span>
+                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide border ${tuition.status === 'approved' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'
+                            }`}>
+                            {tuition.status}
+                        </span>
+                    </div>
+                    <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-6">{tuition.subject}</h1>
+                    <div className="flex flex-wrap gap-8 text-sm text-gray-500 font-medium">
+                        <div className="flex items-center gap-2">
+                            <span className="opacity-40 text-[10px] font-bold uppercase tracking-tight">Level</span>
+                            <span className="text-gray-900">{tuition.class_name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="opacity-40 text-[10px] font-bold uppercase tracking-tight">Area</span>
+                            <span className="text-gray-900">{tuition.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="opacity-40 text-[10px] font-bold uppercase tracking-tight">Timeline</span>
+                            <span className="text-gray-900">{tuition.days_per_week} days / week</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-                        {/* Grid layout for tuition details */}
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <p className="text-gray-600"><strong>Class:</strong> {tuition.class_name}</p>
-                                <p className="text-gray-600"><strong>Location:</strong> {tuition.location}</p>
-                                <p className="text-gray-600"><strong>Salary:</strong> ৳{tuition.salary}/month</p>
-                                <p className="text-gray-600"><strong>Gender Preference:</strong> {tuition.gender || 'Any'}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="lg:col-span-8">
+                    <section className="mb-16">
+                        <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-900 mb-8 border-b border-gray-100 pb-4">Specifications</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="p-6 bg-gray-50 border border-gray-100">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Logistics</p>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">Proposed Fee</span>
+                                        <span className="font-bold text-gray-900">৳{tuition.salary} / mo</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">Gender Preference</span>
+                                        <span className="font-bold text-gray-900">{tuition.gender || 'Any'}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-gray-600"><strong>Days per Week:</strong> {tuition.days_per_week}</p>
-                                <p className="text-gray-600"><strong>Available Days:</strong> {tuition.available_days?.join(", ") || "not specified"}</p>
-                                <p className="text-gray-600"><strong>Status:</strong>
-                                    <span className={`badge ml-2 ${tuition.status === 'approved' ? 'badge-success' :
-                                        tuition.status === "pending" ? 'badge-warning' :
-                                            'badge-info'
-                                        }`}>
-                                        {tuition.status}
-                                    </span>
-                                </p>
+                            <div className="p-6 bg-gray-50 border border-gray-100">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Schedule</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {tuition.available_days?.map((day, idx) => (
+                                        <span key={idx} className="px-3 py-1 bg-white border border-gray-200 text-xs font-bold text-gray-600 uppercase tracking-tight">
+                                            {day}
+                                        </span>
+                                    )) || "Pending specification"}
+                                </div>
                             </div>
                         </div>
+                    </section>
 
-                        {/* Tuition description */}
-                        {tuition.description && (
-                            <div className="mt-4">
-                                <h3 className="font-bold mb-2">Description:</h3>
-                                <p className="text-gray-700">{tuition.description}</p>
-                            </div>
-                        )}
+                    {tuition.description && (
+                        <section className="mb-16">
+                            <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-900 mb-8 border-b border-gray-100 pb-4">Additional Context</h2>
+                            <p className="text-gray-600 leading-relaxed max-w-2xl whitespace-pre-line">
+                                {tuition.description}
+                            </p>
+                        </section>
+                    )}
+                </div>
 
-                        {/* Conditional rendering for apply button based on user role and tuition status */}
-                        {!dbUser ? (
-                            // Loading state while dbUser is being fetched
-                            <div className="text-center py-4">
-                                <span className="loading loading-spinner loading-sm"></span>
-                                <p className="text-sm text-gray-500 mt-2">Loading user info...</p>
-                            </div>
-                        ) : dbUser?.role === 'tutor' && tuition.status === "approved" ? (
-                            <div className="card-actions justify-end mt-6">
+                <div className="lg:col-span-4">
+                    <div className="sticky top-32 border border-gray-200 p-8 rounded-sm bg-white shadow-sm">
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">Interested in this position?</h3>
+                        <p className="text-sm text-gray-500 mb-8">Submit your professional profile for review by the student/guardian.</p>
+
+                        <div className="space-y-4">
+                            {!dbUser ? (
+                                <div className="flex items-center justify-center gap-3 h-14 bg-gray-50 text-gray-400 text-xs uppercase tracking-widest font-bold">
+                                    <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
+                                    Loading System
+                                </div>
+                            ) : dbUser?.role === 'tutor' && tuition.status === "approved" ? (
                                 <button
-                                    className="btn btn-primary"
+                                    className="btn-quiet-primary w-full h-14 text-base"
                                     onClick={() => setShowModal(true)}
                                 >
-                                    Apply for this Tuition
+                                    Register Application
                                 </button>
-                            </div>
-                        ) : dbUser?.role !== 'tutor' ? (
-                            <div className="alert alert-info mt-4">
-                                <span>Only tutors can apply. Please log in with a tutor account to apply for this tuition.</span>
-                            </div>
-                        ) : tuition.status !== 'approved' ? (
-                            <div className="alert alert-warning mt-4">
-                                <span>This tuition is pending admin approval and not accepting applications yet.</span>
-                            </div>
-                        ) : null}
+                            ) : dbUser?.role !== 'tutor' ? (
+                                <div className="p-4 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-medium leading-relaxed">
+                                    Only verified professionals can submit applications.
+                                </div>
+                            ) : tuition.status !== 'approved' ? (
+                                <div className="p-4 bg-yellow-50 border border-yellow-100 text-yellow-700 text-xs font-medium leading-relaxed">
+                                    This position is currently under review by the moderation team.
+                                </div>
+                            ) : null}
 
-                        {/* Pending status alert for students/public view */}
-                        {tuition.status === 'pending' && (
-                            <div className="alert alert-warning mt-4">
-                                <span>This tuition post is awaiting admin approval.</span>
-                            </div>
-                        )}
+                            <button className="btn-quiet-secondary w-full h-14 text-base">
+                                Save Requirement
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Application modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    {/* Backdrop */}
-                    <div
-                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                        onClick={() => setShowModal(false)}
-                    ></div>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
+                    <div className="relative bg-white w-full max-w-lg border border-gray-200 shadow-2xl rounded-sm overflow-hidden flex flex-col max-h-[90vh]">
+                        <header className="p-6 border-b border-gray-100 shrink-0">
+                            <h3 className="text-lg font-extrabold text-gray-900 uppercase tracking-tight">Technical Application</h3>
+                            <p className="text-xs text-gray-500 font-medium mt-1">{tuition.subject} — {tuition.class_name}</p>
+                        </header>
 
-                    {/* Modal content */}
-                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-                        {/* Header with gradient */}
-                        <div className="bg-gradient-to-r from-teal-600 to-teal-700 px-6 py-4">
-                            <h3 className="text-xl font-bold text-white">Apply for this Tuition</h3>
-                            <p className="text-teal-100 text-sm">{tuition.subject} - {tuition.class_name}</p>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                            {/* Readonly tutor info section */}
-                            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                                <div className="flex items-center gap-3">
-                                    <div className="avatar placeholder">
-                                        <div className="bg-teal-100 text-teal-700 rounded-full w-10">
-                                            <span className="text-lg">{user?.displayName?.[0] || '?'}</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-gray-800">{user?.displayName}</p>
-                                        <p className="text-sm text-gray-500">{user?.email}</p>
-                                    </div>
+                        <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto">
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                                        Professional Qualifications
+                                    </label>
+                                    <textarea
+                                        name="qualifications"
+                                        value={formData.qualifications}
+                                        onChange={handleChange}
+                                        className="input-quiet w-full p-4 min-h-[120px] resize-none"
+                                        placeholder="Summarize your academic background and relevant certifications..."
+                                        required
+                                    />
                                 </div>
-                            </div>
 
-                            {/* Qualifications field */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Qualifications* <span className="text-gray-400 font-normal">(educational background)</span>
-                                </label>
-                                <textarea
-                                    name="qualifications"
-                                    value={formData.qualifications}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none transition"
-                                    placeholder="E.g., BSc in Mathematics from DU, CGPA 3.5&#10;MSc ongoing..."
-                                    rows={3}
-                                    required
-                                />
-                            </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                                        Relevant Pedagogy Experience
+                                    </label>
+                                    <textarea
+                                        name="experience"
+                                        value={formData.experience}
+                                        onChange={handleChange}
+                                        className="input-quiet w-full p-4 min-h-[120px] resize-none"
+                                        placeholder="Detail your history with similar levels and subjects..."
+                                        required
+                                    />
+                                </div>
 
-                            {/* Experience field */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Experience* <span className="text-gray-400 font-normal">(teaching experience)</span>
-                                </label>
-                                <textarea
-                                    name="experience"
-                                    value={formData.experience}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none transition"
-                                    placeholder="E.g., 2 years teaching class 8-10 students&#10;Coached 15+ students for SSC..."
-                                    rows={3}
-                                    required
-                                />
-                            </div>
-
-                            {/* Salary field */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Expected Salary* <span className="text-gray-400 font-normal">(BDT/month)</span>
-                                </label>
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">৳</span>
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                                        Proposed Compensation (BDT/mo)
+                                    </label>
                                     <input
                                         type="number"
                                         name="expectedSalary"
                                         value={formData.expectedSalary}
                                         onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-                                        placeholder="5000"
-                                        min="1000"
-                                        max="50000"
+                                        className="input-quiet w-full h-12 pl-4"
+                                        placeholder={`Client Budget: ৳${tuition.salary}`}
                                         required
                                     />
                                 </div>
-                                <p className="text-xs text-gray-400 mt-1">Student's budget: ৳{tuition.salary}/month</p>
                             </div>
 
-                            {/* Action buttons */}
-                            <div className="flex gap-3 pt-2">
+                            <div className="flex gap-4 pt-4 border-t border-gray-100">
                                 <button
                                     type="button"
-                                    className="flex-1 px-4 py-3 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition font-medium"
+                                    className="btn-quiet-secondary flex-1 h-12"
                                     onClick={() => setShowModal(false)}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition font-medium shadow-lg shadow-teal-600/30"
+                                    className="btn-quiet-primary flex-1 h-12"
                                 >
-                                    Submit Application
+                                    Submit Profile
                                 </button>
                             </div>
                         </form>
@@ -331,6 +292,6 @@ function TuitionDetails() {
             )}
         </div>
     );
-}
+};
 
 export default TuitionDetails;

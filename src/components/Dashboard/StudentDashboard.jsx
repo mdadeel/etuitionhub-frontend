@@ -10,9 +10,8 @@ import api from '../../services/api';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
-    let navigate = useNavigate(); // using let - works same anyway
+    const navigate = useNavigate();
 
-    // state variables
     const [activeTab, setActiveTab] = useState('overview');
     const [bookings, setBookings] = useState([]);
     const [myTuitions, setMyTuitions] = useState([]);
@@ -21,59 +20,52 @@ const StudentDashboard = () => {
 
     const { register, handleSubmit, reset } = useForm();
 
-    // data fetch - runs on mount
     useEffect(() => {
         if (!user?.email) return;
 
         const fetchData = async () => {
             try {
-                // Fetch tuitions amader
                 let currentTuitions = [];
                 try {
                     const response = await api.get(`/api/tuitions/student/${user.email}`);
-                    // console.log('tuitions fetched:', response.data)
                     if (response.data && response.data.length > 0) {
                         setMyTuitions(response.data);
                         currentTuitions = response.data;
                     } else {
-                        // fallback to demo data
                         setMyTuitions(demoTuitions.slice(0, 3));
                         currentTuitions = demoTuitions.slice(0, 3);
                     }
                 } catch (err) {
-                    console.error('tuition fetch error:', err);
                     setMyTuitions(demoTuitions.slice(0, 3));
                     currentTuitions = demoTuitions.slice(0, 3);
                 }
 
-                // bookings anbo
                 try {
                     const response = await api.get(`/api/bookings/student/${user.email}`);
                     setBookings(response.data);
                 } catch (err) {
-                    // console.log('booking err', err)
+                    console.error('Booking fetch fail');
                 }
 
-                // apps fetch for each tuition - loop chalaisi
                 if (currentTuitions.length > 0) {
-                    var allApps = []; // var here
+                    const allApps = [];
                     for (const t of currentTuitions) {
                         try {
                             const appResponse = await api.get(`/api/applications/tuition/${t._id}`);
                             allApps.push(...appResponse.data);
                         } catch (appErr) {
-                            // skip - demo tuition might fail
+                            // bypass failures
                         }
                     }
                     setApplications(allApps);
                 }
             } catch (e) {
-                console.error('fetch error', e);
+                console.error('Core fetch failure', e);
             }
         };
 
         fetchData();
-    }, [user?.email]); // dependency array
+    }, [user?.email]);
 
     const onPostTuition = async (data) => {
         setLoading(true);
@@ -87,171 +79,186 @@ const StudentDashboard = () => {
 
         try {
             await api.post('/api/tuitions', postData);
-            toast.success('Tuition posted successfully!');
+            toast.success('Marketplace request registered.');
             reset();
             setActiveTab('my-jobs');
         } catch (error) {
-            const errorMessage = error.response?.data?.error || 'Failed to post tuition';
-            toast.error(errorMessage);
+            toast.error(error.response?.data?.error || 'Operation failed');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleApprove = (id) => {
-        navigate(`/checkout/${id}`);
-    };
+    const handleApprove = (id) => navigate(`/checkout/${id}`);
 
     const handleReject = async (id) => {
-        if (!confirm('Reject application?')) return;
+        if (!confirm('Reject this professional profile?')) return;
         try {
             await api.patch(`/api/applications/${id}`, { status: 'rejected' });
-            toast.success('Rejected');
+            toast.success('Profile rejected.');
             setApplications(prev => prev.map(a => a._id === id ? { ...a, status: 'rejected' } : a));
         } catch (error) {
-            toast.error('Failed to reject application');
+            toast.error('Operation failed.');
         }
     };
 
     const handleDeleteTuition = async (tid) => {
-        if (!confirm('Delete post?')) return;
+        if (!confirm('Permanently remove this requirement?')) return;
         try {
             await api.delete(`/api/tuitions/${tid}`);
-            toast.success('Deleted');
+            toast.success('Requirement expunged.');
             setMyTuitions(prev => prev.filter(t => t._id !== tid));
         } catch (error) {
-            toast.error('Error deleting tuition');
+            toast.error('System error.');
         }
     };
 
     const tabs = [
-        { id: 'overview', label: 'Overview' },
-        { id: 'post-job', label: 'Post Tuition' },
-        { id: 'my-jobs', label: 'My Tuitions' },
-        { id: 'applications', label: 'Applied Tutors' },
-        { id: 'booked', label: 'Booked' },
-        { id: 'payments', label: 'Payments' },
+        { id: 'overview', label: 'Management Overview' },
+        { id: 'post-job', label: 'Draft Requirement' },
+        { id: 'my-jobs', label: 'Active Requests' },
+        { id: 'applications', label: 'Candidate Pipeline' },
+        { id: 'booked', label: 'Verified Engagements' }
     ];
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Student Dashboard</h1>
-                <div className="tabs tabs-boxed flex-wrap">
+        <div className="fade-up">
+            <header className="mb-12 border-b border-gray-200 pb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                <div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Client Interface</span>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Requirement Dashboard</h1>
+                </div>
+
+                <div className="flex bg-gray-100 p-1 rounded-sm gap-1 overflow-x-auto">
                     {tabs.map(tab => (
-                        <a
+                        <button
                             key={tab.id}
-                            className={`tab ${activeTab === tab.id ? 'tab-active' : ''}`}
                             onClick={() => setActiveTab(tab.id)}
+                            className={`px-4 py-2 text-[10px] whitespace-nowrap font-bold uppercase tracking-widest transition-all duration-200 ${activeTab === tab.id
+                                    ? 'bg-white text-gray-900 shadow-sm'
+                                    : 'text-gray-400 hover:text-gray-600'
+                                }`}
                         >
                             {tab.label}
-                        </a>
+                        </button>
                     ))}
                 </div>
-            </div>
+            </header>
 
             {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="stat bg-base-100 shadow rounded-lg">
-                        <div className="stat-title">My Posted Tuitions</div>
-                        <div className="stat-value text-primary">{myTuitions.length}</div>
-                        <div className="stat-desc">Tuitions you posted</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="p-8 bg-white border border-gray-200 rounded-sm shadow-sm transition-transform hover:-translate-y-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Request Volume</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-extrabold text-gray-900">{myTuitions.length}</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase">Posts</span>
+                        </div>
                     </div>
-                    <div className="stat bg-base-100 shadow rounded-lg">
-                        <div className="stat-title">Applications</div>
-                        <div className="stat-value text-secondary">{applications.length}</div>
-                        <div className="stat-desc">Tutors applied</div>
+                    <div className="p-8 bg-white border border-gray-200 rounded-sm shadow-sm transition-transform hover:-translate-y-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Candidate Pipeline</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-extrabold text-indigo-600">{applications.length}</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase">Verified Tutors</span>
+                        </div>
                     </div>
-                    <div className="stat bg-base-100 shadow rounded-lg">
-                        <div className="stat-title">Hired Tutors</div>
-                        <div className="stat-value">{bookings.filter(b => b.isAccepted).length}</div>
-                        <div className="stat-desc">Confirmed bookings</div>
+                    <div className="p-8 bg-white border border-gray-200 rounded-sm shadow-sm transition-transform hover:-translate-y-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Active Tenure</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-extrabold text-gray-900">{bookings.filter(b => b.isAccepted).length}</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase">Booked</span>
+                        </div>
                     </div>
                 </div>
             )}
 
             {activeTab === 'post-job' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">Post a Tuition Requirement</h2>
-                    <form onSubmit={handleSubmit(onPostTuition)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="form-control">
-                            <label className="label">Subject *</label>
-                            <input {...register('subject', { required: true })} placeholder="Mathematics, Physics, English" className="input input-bordered" />
+                <div className="bg-white border border-gray-200 p-8 rounded-sm max-w-3xl mx-auto shadow-sm">
+                    <h2 className="text-lg font-bold text-gray-900 mb-8 border-b border-gray-50 pb-4">Draft New Requirement</h2>
+                    <form onSubmit={handleSubmit(onPostTuition)} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Academic Subject</label>
+                                <input {...register('subject', { required: true })} placeholder="e.g. Higher Mathematics" className="input-quiet w-full h-12 px-4" />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Academic Level</label>
+                                <select {...register('class_name', { required: true })} className="input-quiet w-full h-12 px-4 appearance-none bg-white cursor-pointer">
+                                    <option>Class 6</option>
+                                    <option>Class 7</option>
+                                    <option>Class 8</option>
+                                    <option>Class 9</option>
+                                    <option>Class 10</option>
+                                    <option>HSC</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Proposed Yield (BDT/mo)</label>
+                                <input {...register('salary', { required: true, min: 1000 })} type="number" placeholder="5000" className="input-quiet w-full h-12 px-4" />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Instructional Medium</label>
+                                <select {...register('medium')} className="input-quiet w-full h-12 px-4 appearance-none bg-white cursor-pointer">
+                                    <option>Bangla Medium</option>
+                                    <option>English Medium</option>
+                                </select>
+                            </div>
                         </div>
-                        <div className="form-control">
-                            <label className="label">Class *</label>
-                            <select {...register('class_name', { required: true })} className="select select-bordered">
-                                <option>Class 6</option>
-                                <option>Class 7</option>
-                                <option>Class 8</option>
-                                <option>Class 9</option>
-                                <option>Class 10</option>
-                                <option>HSC</option>
+                        <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Operations Frequency</label>
+                            <select {...register('days_per_week', { valueAsNumber: true })} className="input-quiet w-full h-12 px-4 appearance-none bg-white cursor-pointer">
+                                <option value="3">3 days per week</option>
+                                <option value="4">4 days per week</option>
+                                <option value="5">5 days per week</option>
+                                <option value="6">6 days per week</option>
                             </select>
                         </div>
-                        <div className="form-control">
-                            <label className="label">Salary (Monthly) *</label>
-                            <input {...register('salary', { required: true, min: 1000 })} placeholder="5000" type="number" min="1000" className="input input-bordered" />
+                        <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Geographic Parameters</label>
+                            <textarea {...register('location', { required: true })} className="input-quiet w-full p-4 min-h-[120px] resize-none" placeholder="Primary instruction location..."></textarea>
                         </div>
-                        <div className="form-control">
-                            <label className="label">Medium</label>
-                            <select {...register('medium')} className="select select-bordered">
-                                <option>Bangla Medium</option>
-                                <option>English Medium</option>
-                            </select>
-                        </div>
-                        <div className="form-control">
-                            <label className="label">Days per week</label>
-                            <select {...register('days_per_week', { valueAsNumber: true })} className="select select-bordered">
-                                <option value="3">3 days</option>
-                                <option value="4">4 days</option>
-                                <option value="5">5 days</option>
-                                <option value="6">6 days</option>
-                            </select>
-                        </div>
-                        <div className="form-control md:col-span-2">
-                            <label className="label">Location Details *</label>
-                            <textarea {...register('location', { required: true })} className="textarea textarea-bordered h-24" placeholder="Full address details..."></textarea>
-                        </div>
-                        <div className="md:col-span-2 mt-4">
-                            <button className="btn btn-primary w-full" disabled={loading}>
-                                {loading ? 'Posting...' : 'Post Requirement'}
-                            </button>
-                        </div>
+                        <button className="btn-quiet-primary w-full h-14" disabled={loading}>
+                            {loading ? 'Processing System...' : 'Finalize and Post Requirement'}
+                        </button>
                     </form>
                 </div>
             )}
 
             {activeTab === 'my-jobs' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">My Posted Tuitions</h2>
+                <div className="bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">
-                        <table className="table w-full">
+                        <table className="w-full text-left">
                             <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Class</th>
-                                    <th>Subject</th>
-                                    <th>Salary</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                <tr className="bg-gray-50 border-b border-gray-100">
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Ref</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Position</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Parameters</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 text-right">Operations</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-gray-50">
                                 {myTuitions.length === 0 ? (
-                                    <tr><td colSpan="6" className="text-center">No tuitions posted yet</td></tr>
+                                    <tr><td colSpan="4" className="p-20 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400">Zero requirements registered.</td></tr>
                                 ) : (
                                     myTuitions.map((job, idx) => (
-                                        <tr key={job._id}>
-                                            <th>{idx + 1}</th>
-                                            <td>{job.class_name}</td>
-                                            <td>{job.subject}</td>
-                                            <td>{job.salary}</td>
-                                            <td><div className="badge badge-info">{job.status}</div></td>
-                                            <td>
-                                                <div className="flex gap-2">
-                                                    <button className="btn btn-info btn-xs" onClick={() => navigate(`/tuition/${job._id}`)}>Edit</button>
-                                                    <button className="btn btn-error btn-xs" onClick={() => handleDeleteTuition(job._id)}>Delete</button>
+                                        <tr key={job._id} className="hover:bg-gray-50/50 transition-colors">
+                                            <td className="px-6 py-4 text-xs font-bold text-gray-400">#0{idx + 1}</td>
+                                            <td className="px-6 py-4">
+                                                <p className="text-sm font-bold text-gray-900">{job.subject}</p>
+                                                <p className="text-[10px] text-gray-500 uppercase tracking-tighter">{job.class_name}</p>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-sm font-medium text-gray-600">৳{job.salary}</span>
+                                                    <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide border ${job.status === 'approved' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'
+                                                        }`}>
+                                                        {job.status}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex justify-end gap-6">
+                                                    <button className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-indigo-600" onClick={() => navigate(`/tuition/${job._id}`)}>Adjust</button>
+                                                    <button className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700" onClick={() => handleDeleteTuition(job._id)}>Remove</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -264,100 +271,73 @@ const StudentDashboard = () => {
             )}
 
             {activeTab === 'applications' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">Tutor Applications</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {applications.length === 0 ? (
-                        <p className="text-center text-gray-500 py-8">No applications yet</p>
-                    ) : (
-                        <div className="grid gap-4">
-                            {applications.map(app => (
-                                <div key={app._id} className="card bg-base-200 shadow">
-                                    <div className="card-body">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <h3 className="font-bold text-lg">{app.tutorName}</h3>
-                                                <p className="text-sm text-gray-600">{app.tutorEmail}</p>
-                                            </div>
-                                            <div className={`badge ${app.status === 'approved' ? 'badge-success' : app.status === 'rejected' ? 'badge-error' : 'badge-warning'}`}>
-                                                {app.status}
-                                            </div>
-                                        </div>
-                                        <div className="mt-3">
-                                            <p><strong>Qualifications:</strong> {app.qualifications}</p>
-                                            <p><strong>Experience:</strong> {app.experience || app.experiance}</p>
-                                            <p><strong>Expected Salary:</strong> ৳{app.expectedSalary}/month</p>
-                                        </div>
-                                        {app.status === 'pending' && (
-                                            <div className="card-actions justify-end mt-4">
-                                                <button className="btn btn-error btn-sm" onClick={() => handleReject(app._id)}>Reject</button>
-                                                <button className="btn btn-success btn-sm" onClick={() => handleApprove(app._id)}>Accept & Pay</button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="col-span-full p-20 bg-white border border-dashed border-gray-200 rounded-sm text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pipeline currently inactive.</p>
                         </div>
+                    ) : (
+                        applications.map(app => (
+                            <div key={app._id} className="p-8 bg-white border border-gray-200 shadow-sm rounded-sm">
+                                <header className="flex justify-between items-start mb-6">
+                                    <div>
+                                        <h3 className="text-xl font-extrabold text-gray-900">{app.tutorName}</h3>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">{app.tutorEmail}</p>
+                                    </div>
+                                    <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide border ${app.status === 'approved' ? 'bg-green-50 text-green-700 border-green-100' : app.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-gray-50 text-gray-400 border-gray-100'
+                                        }`}>
+                                        {app.status}
+                                    </span>
+                                </header>
+                                <div className="space-y-4 text-sm text-gray-600 mb-8 max-w-lg leading-relaxed">
+                                    <p><strong className="text-gray-900 border-b border-gray-100 pb-1 inline-block mb-1 font-bold text-[10px] uppercase tracking-widest">Qualifications</strong><br />{app.qualifications}</p>
+                                    <p><strong className="text-gray-900 border-b border-gray-100 pb-1 inline-block mb-1 font-bold text-[10px] uppercase tracking-widest">Relevant Experience</strong><br />{app.experience || app.experiance}</p>
+                                    <p><strong className="text-gray-900 border-b border-gray-100 pb-1 inline-block mb-1 font-bold text-[10px] uppercase tracking-widest">Proposed Yield</strong><br /><span className="text-indigo-600 font-extrabold text-lg">৳{app.expectedSalary}</span></p>
+                                </div>
+                                {app.status === 'pending' && (
+                                    <div className="flex gap-4 pt-4 border-t border-gray-100">
+                                        <button className="btn-quiet-secondary flex-1 h-12" onClick={() => handleReject(app._id)}>Decline</button>
+                                        <button className="btn-quiet-primary flex-1 h-12" onClick={() => handleApprove(app._id)}>Verify & Execute</button>
+                                    </div>
+                                )}
+                            </div>
+                        ))
                     )}
                 </div>
             )}
 
             {activeTab === 'booked' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">Booked Tutors</h2>
+                <div className="bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">
-                        <table className="table w-full">
+                        <table className="w-full text-left">
                             <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Tutor Name</th>
-                                    <th>Subject</th>
-                                    <th>Mobile</th>
-                                    <th>Status</th>
+                                <tr className="bg-gray-50 border-b border-gray-100">
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Engagement</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Professional</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Communication</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 text-right">Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-gray-50">
                                 {bookings.length === 0 ? (
-                                    <tr><td colSpan="5" className="text-center">No tutors booked yet</td></tr>
+                                    <tr><td colSpan="4" className="p-20 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400">No active confirmed engagements.</td></tr>
                                 ) : (
                                     bookings.map((booking, idx) => (
-                                        <tr key={booking._id}>
-                                            <th>{idx + 1}</th>
-                                            <td>{booking.tutor_name || booking.tutorName}</td>
-                                            <td>{booking.subject}</td>
-                                            <td>{booking.mobile}</td>
-                                            <td>
-                                                <div className={`badge ${booking.isAccepted ? 'badge-success' : 'badge-warning'}`}>
-                                                    {booking.isAccepted ? 'Accepted' : 'Pending'}
-                                                </div>
+                                        <tr key={booking._id} className="hover:bg-gray-50/50 transition-colors">
+                                            <td className="px-6 py-4 text-sm font-bold text-gray-900">{booking.subject}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 font-medium">{booking.tutor_name || booking.tutorName}</td>
+                                            <td className="px-6 py-4 text-xs font-bold text-indigo-600 tracking-wider transition-colors hover:text-indigo-800 cursor-pointer">{booking.mobile}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide border ${booking.isAccepted ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'
+                                                    }`}>
+                                                    {booking.isAccepted ? 'Verified' : 'Pending'}
+                                                </span>
                                             </td>
                                         </tr>
                                     ))
                                 )}
                             </tbody>
                         </table>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'payments' && (
-                <div className="bg-base-100 p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-bold mb-4">Payment History</h2>
-                    <p className="text-gray-600 mb-4">View all your payment transactions for tutor bookings.</p>
-                    <div className="stats shadow w-full mb-6">
-                        <div className="stat">
-                            <div className="stat-title">Total Paid</div>
-                            <div className="stat-value text-primary">৳0</div>
-                            <div className="stat-desc">All time payments</div>
-                        </div>
-                        <div className="stat">
-                            <div className="stat-title">Pending</div>
-                            <div className="stat-value text-warning">৳0</div>
-                            <div className="stat-desc">Awaiting payment</div>
-                        </div>
-                    </div>
-                    <div className="text-center py-8">
-                        <p className="text-gray-500 mb-4">No payment records found</p>
-                        <a href="/payment-history" className="btn btn-primary">View Full Payment History</a>
                     </div>
                 </div>
             )}

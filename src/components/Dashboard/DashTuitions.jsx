@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import LoadingSpinner from '../shared/LoadingSpinner';
 
 var isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
 
@@ -11,21 +12,20 @@ var demoTuitions = [
     { _id: 'demo2', subject: 'Physics', class_name: 'HSC', location: 'Uttara', salary: 7000, student_email: 'student2@demo.com', status: 'approved' }
 ];
 
-function DashTuitions() {
-    let [tuitions, setTuitions] = useState([]);
-    let [loading, setLoading] = useState(true);
-    let [filter, setFilter] = useState('all');
+const DashTuitions = () => {
+    const [tuitions, setTuitions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState('all');
 
     useEffect(() => {
-        var loadTuitions = async () => {
-            console.log('loading tuitions...'); // debug
+        const loadTuitions = async () => {
             try {
-                var res = await api.get('/api/tuitions');
+                const res = await api.get('/api/tuitions');
                 setTuitions(res.data);
             } catch (err) {
-                console.error('load failed:', err.message);
-                toast.error('Could not load tuitions');
-                setTuitions(demoTuitions); // fallback
+                console.error('Core marketplace load failed');
+                toast.error('Marketplace status unavailable');
+                // setTuitions(demoTuitions); // Removed demo fallback for cleaner interface
             } finally {
                 setLoading(false);
             }
@@ -33,105 +33,140 @@ function DashTuitions() {
         loadTuitions();
     }, []);
 
-    // filtered list
-    var filtered = useMemo(() => {
+    const filtered = useMemo(() => {
         if (filter === 'all') return tuitions;
         return tuitions.filter(t => t.status === filter);
     }, [tuitions, filter]);
 
-    // approve handler
-    var handleApprove = async (id) => {
+    const handleApprove = async (id) => {
+        const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
-            toast.error('Cannot approve demo tuitions');
+            toast.error('Operational Integrity: Demo data is read-only');
             return;
         }
 
-        var backup = [...tuitions];
+        const backup = [...tuitions];
         setTuitions(prev => prev.map(t => t._id === id ? { ...t, status: 'approved' } : t));
 
         try {
             await api.patch(`/api/tuitions/${id}`, { status: 'approved' });
-            toast.success('Approved!');
+            toast.success('Requirement verified and active.');
         } catch (err) {
             setTuitions(backup);
-            toast.error('Approval failed');
+            toast.error('Verification failed.');
         }
     };
 
-    // reject handler
-    var handleReject = async (id) => {
-        if (!confirm('Reject this tuition?')) return;
+    const handleReject = async (id) => {
+        if (!confirm('Reject this requirement from the marketplace?')) return;
 
+        const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
-            toast.error('Cannot reject demo tuitions');
+            toast.error('Operational Integrity: Demo data is read-only');
             return;
         }
 
-        var backup = [...tuitions];
+        const backup = [...tuitions];
         setTuitions(prev => prev.map(t => t._id === id ? { ...t, status: 'rejected' } : t));
 
         try {
             await api.patch(`/api/tuitions/${id}`, { status: 'rejected' });
-            toast.success('Rejected');
+            toast.success('Requirement rejected.');
         } catch (err) {
             setTuitions(backup);
-            toast.error('Rejection failed');
+            toast.error('Operation failed.');
         }
     };
 
-    if (loading) {
-        return <div className="flex justify-center py-12">
-            <span className="loading loading-spinner loading-lg"></span>
-        </div>;
-    }
+    if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="bg-base-100 p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Tuition Management</h2>
-            <p className="text-gray-600 mb-6">Total Posts: {tuitions.length}</p>
+        <div className="bg-white border border-gray-200 rounded-sm shadow-sm overflow-hidden">
+            <header className="p-8 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-gray-900">Marketplace Operations</h2>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{tuitions.length} Active Requirement Loads</p>
+                </div>
 
-            {/* filter */}
-            <div className="flex gap-2 mb-4">
-                <button className={`btn btn-sm ${filter === 'all' ? 'btn-primary' : ''}`} onClick={() => setFilter('all')}>All</button>
-                <button className={`btn btn-sm ${filter === 'pending' ? 'btn-warning' : ''}`} onClick={() => setFilter('pending')}>Pending</button>
-                <button className={`btn btn-sm ${filter === 'approved' ? 'btn-success' : ''}`} onClick={() => setFilter('approved')}>Approved</button>
-            </div>
+                <div className="flex bg-gray-100 p-1 rounded-sm gap-1 overflow-x-auto">
+                    {['all', 'pending', 'approved'].map(f => (
+                        <button
+                            key={f}
+                            className={`px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest transition-all duration-200 ${filter === f
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-400 hover:text-gray-600'
+                                }`}
+                            onClick={() => setFilter(f)}
+                        >
+                            {f === 'approved' ? 'Active' : f}
+                        </button>
+                    ))}
+                </div>
+            </header>
 
-            {/* table */}
             <div className="overflow-x-auto">
-                <table className="table w-full">
+                <table className="w-full text-left">
                     <thead>
-                        <tr><th>#</th><th>Subject</th><th>Class</th><th>Location</th><th>Salary</th><th>Student</th><th>Status</th><th>Actions</th></tr>
+                        <tr className="bg-gray-50 border-b border-gray-100">
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Subject / Scale</th>
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Location</th>
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 text-center">Yield</th>
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 text-center">Status</th>
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 text-right">Operations</th>
+                        </tr>
                     </thead>
-                    <tbody>
-                        {filtered.map((t, i) => {
-                            var badgeClass = t.status === 'approved' ? 'badge-success' :
-                                t.status === 'rejected' ? 'badge-error' : 'badge-warning';
-                            return (
-                                <tr key={t._id}>
-                                    <th>{i + 1}</th>
-                                    <td>{t.subject}</td>
-                                    <td>{t.class_name}</td>
-                                    <td>{t.location}</td>
-                                    <td>৳{t.salary}</td>
-                                    <td className="text-sm">{t.student_email}</td>
-                                    <td><div className={`badge ${badgeClass}`}>{t.status}</div></td>
-                                    <td>
+                    <tbody className="divide-y divide-gray-50">
+                        {filtered.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="px-6 py-20 text-center">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Zero operational records found.</p>
+                                </td>
+                            </tr>
+                        ) : (
+                            filtered.map((t, i) => (
+                                <tr key={t._id} className="hover:bg-gray-50/50 transition-colors">
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm font-bold text-gray-900">{t.subject}</p>
+                                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">{t.class_name}</p>
+                                    </td>
+                                    <td className="px-6 py-4 text-xs text-gray-600 italic">{t.location}</td>
+                                    <td className="px-6 py-4 text-center">
+                                        <span className="text-sm font-extrabold text-gray-900">৳{t.salary}</span>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide border ${t.status === 'approved' ? 'bg-green-50 text-green-700 border-green-100' :
+                                            t.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-100' :
+                                                'bg-yellow-50 text-yellow-700 border-yellow-100'
+                                            }`}>
+                                            {t.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
                                         {t.status === 'pending' && (
-                                            <div className="flex gap-2">
-                                                <button className="btn btn-success btn-xs" onClick={() => handleApprove(t._id)}>Approve</button>
-                                                <button className="btn btn-error btn-xs" onClick={() => handleReject(t._id)}>Reject</button>
+                                            <div className="flex justify-end gap-4">
+                                                <button
+                                                    className="text-[9px] font-extrabold uppercase tracking-[0.15em] text-indigo-600 hover:text-indigo-800 transition-colors"
+                                                    onClick={() => handleApprove(t._id)}
+                                                >
+                                                    Verify
+                                                </button>
+                                                <button
+                                                    className="text-[9px] font-extrabold uppercase tracking-[0.15em] text-red-500 hover:text-red-700 transition-colors"
+                                                    onClick={() => handleReject(t._id)}
+                                                >
+                                                    Dismiss
+                                                </button>
                                             </div>
                                         )}
                                     </td>
                                 </tr>
-                            );
-                        })}
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
         </div>
     );
-}
+};
 
 export default DashTuitions;

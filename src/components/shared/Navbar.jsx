@@ -11,7 +11,6 @@ const Navbar = () => {
     const router = useNavigate();
     const location = useLocation();
     const pathname = location.pathname;
-    const allowedPath = true;
 
     const { user, logout, userRole, setLoading } = useAuth();
     const currentUserName = user?.displayName;
@@ -22,165 +21,138 @@ const Navbar = () => {
 
     const navLinks = [
         { path: '/', label: 'Home' },
-        { path: '/tuitions', label: 'Tuitions' },
-        { path: '/tutors', label: 'Tutors' },
+        { path: '/tuitions', label: 'Find Tuition' },
+        { path: '/tutors', label: 'Find Tutors' },
+    ];
+
+    const secondaryLinks = [
         { path: '/about', label: 'About' },
         { path: '/contact', label: 'Contact' },
     ];
 
-    /**
-     * Handle user logout with loading state and redirect
-     */
     const handleLogout = async () => {
         const toastId = toast.loading("Logging out...");
-
-        if (user) {
-            try {
-                await logout();
-                Cookies.set('token', '');
-                toast.dismiss(toastId);
-                toast.success("Logout successful!");
-                setLoading(false);
-
-                // Redirect after short delay
-                setTimeout(() => {
-                    router('/login');
-                }, 1000);
-            } catch (error) {
-                toast.error(`Error: ${error.message}`);
-                toast.dismiss(toastId);
-                setLoading(false);
-            }
-        } else {
+        try {
+            await logout();
+            Cookies.set('token', '');
             toast.dismiss(toastId);
-            toast.error('Already logged out');
-            router('/login');
+            toast.success("Logout successful!");
+            setLoading(false);
+            setTimeout(() => router('/login'), 500);
+        } catch (error) {
+            toast.error(`Error: ${error.message}`);
+            toast.dismiss(toastId);
+            setLoading(false);
         }
     };
 
     return (
-        <>
-            {allowedPath && (
-                <nav className="navbar sticky top-0 z-50 bg-base-100 shadow-lg px-4">
-                    {/* Logo section */}
-                    <div className="navbar-start">
-                        <div className="dropdown">
-                            <label tabIndex={0} className="btn btn-ghost lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
-                                </svg>
-                            </label>
+        <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 px-6 py-3">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+                {/* Logo */}
+                <div className="flex items-center gap-12">
+                    <Link to="/" className="text-xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
+                        <span className="w-8 h-8 bg-indigo-600 rounded-sm flex items-center justify-center text-white text-xs">ET</span>
+                        e-tuitionBD
+                    </Link>
+
+                    {/* Desktop Nav */}
+                    <div className="hidden lg:flex items-center gap-8">
+                        {navLinks.map(link => (
+                            <NavLink
+                                key={link.path}
+                                to={link.path}
+                                className={({ isActive }) => 
+                                    `text-sm font-medium transition-colors ${isActive ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-900'}`
+                                }
+                            >
+                                {link.label}
+                            </NavLink>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Auth & Secondary Section */}
+                <div className="flex items-center gap-6">
+                    <div className="hidden lg:flex items-center gap-6 mr-6 border-r border-gray-100 pr-6">
+                        {secondaryLinks.map(link => (
+                            <Link key={link.path} to={link.path} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                                {link.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {user ? (
+                        <div className="relative">
+                            <button 
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="flex items-center gap-2 focus:outline-none"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
+                                    <img 
+                                        src={currentUserPhotoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
+                                        alt={currentUserName} 
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <span className="text-sm font-medium text-gray-700 hidden sm:block">{currentUserName?.split(' ')[0]}</span>
+                            </button>
+
                             {isMenuOpen && (
-                                <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                                    {navLinks.map(link => (
-                                        <li key={link.path}>
-                                            <NavLink
-                                                className={`${pathname === link.path ? "bg-teal-200" : ""}`}
-                                                to={link.path}
-                                                onClick={() => setIsMenuOpen(false)}
-                                            >
-                                                {link.label}
-                                            </NavLink>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-sm shadow-sm py-2 fade-up">
+                                    <div className="px-4 py-2 border-b border-gray-100 mb-2">
+                                        <p className="text-sm font-semibold text-gray-900 truncate">{currentUserName}</p>
+                                        <p className="text-xs text-gray-500 truncate">{currentUserEmail}</p>
+                                        {userRole && (
+                                            <span className="inline-block mt-2 px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider bg-gray-100 text-gray-600 rounded-sm">
+                                                {userRole}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <MdDashboard className="text-lg opacity-60" /> Dashboard
+                                    </Link>
+                                    <Link to="/dashboard/profile" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <ImProfile className="text-lg opacity-60" /> Profile
+                                    </Link>
+                                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                        <MdLogout className="text-lg opacity-60" /> Logout
+                                    </button>
+                                </div>
                             )}
                         </div>
-                        <Link to="/" className="btn btn-ghost normal-case text-xl text-teal-600 font-bold">
-                            e-tuitionBD
+                    ) : (
+                        <div className="flex items-center gap-4">
+                            <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900">Login</Link>
+                            <Link to="/register" className="btn-quiet-primary">Register</Link>
+                        </div>
+                    )}
+                    
+                    {/* Mobile Menu Toggle */}
+                    <button className="lg:hidden p-2 text-gray-500" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            {/* Mobile Menu */}
+            {isMenuOpen && !user && (
+                <div className="lg:hidden border-t border-gray-100 mt-3 pt-3 flex flex-col gap-4">
+                    {[...navLinks, ...secondaryLinks].map(link => (
+                        <Link 
+                            key={link.path} 
+                            to={link.path} 
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-sm font-medium text-gray-600 px-2"
+                        >
+                            {link.label}
                         </Link>
-                    </div>
-
-                    {/* Desktop nav links */}
-                    <div className="navbar-center hidden lg:flex" style={{ marginTop: '2px' }}>
-                        <ul className="menu menu-horizontal px-1">
-                            {navLinks.map(link => (
-                                <li key={link.path} className="nav-item hover:cursor-pointer">
-                                    <NavLink
-                                        to={link.path}
-                                        className={`${pathname === link.path ? "active text-teal-600 font-semibold" : ""}`}
-                                    >
-                                        {link.label}
-                                    </NavLink>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Auth buttons */}
-                    <div className="navbar-end">
-                        {user ? (
-                            <div className="dropdown dropdown-end">
-                                <label
-                                    tabIndex={0}
-                                    className="btn btn-ghost btn-circle avatar tooltip tooltip-left"
-                                    data-tip={currentUserName}
-                                >
-                                    <div className="w-10 rounded-full ring-2 ring-offset-2 ring-teal-400">
-                                        {currentUserPhotoURL &&
-                                            <img
-                                                className="object-top"
-                                                src={currentUserPhotoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
-                                                alt={currentUserName}
-                                            />
-                                        }
-                                    </div>
-                                </label>
-                                <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-3 shadow bg-base-100 rounded-box w-52">
-                                    <div className="w-full flex justify-center">
-                                        <div className="mt-2 mb-3 h-16 w-16 rounded-full ring-2 ring-offset-2 ring-slate-400">
-                                            {currentUserPhotoURL &&
-                                                <img
-                                                    className="h-16 w-full rounded-full object-cover object-center"
-                                                    src={currentUserPhotoURL}
-                                                    alt={currentUserName}
-                                                />
-                                            }
-                                        </div>
-                                    </div>
-                                    <li className="mt-1 text-center font-bold">{currentUserName}</li>
-                                    <p className="text-slate-600 text-sm mt-1 mb-2 font-normal text-center whitespace-nowrap">
-                                        {currentUserEmail}
-                                    </p>
-                                    {userRole && (
-                                        <p className="uppercase px-5 py-0.5 text-sm bg-teal-300 w-fit mx-auto rounded-xl">
-                                            {userRole}
-                                        </p>
-                                    )}
-                                    <div className="divider mt-1 mb-2"></div>
-                                    <li>
-                                        <Link to="/dashboard/profile" className="flex gap-2 items-center">
-                                            <ImProfile className="text-xl" />
-                                            Profile
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link to="/dashboard" className="flex gap-2 items-center">
-                                            <MdDashboard className="text-xl" />
-                                            Dashboard
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <button onClick={handleLogout} className="flex gap-2 items-center text-red-500">
-                                            <MdLogout className="text-xl" />
-                                            Logout
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        ) : (
-                            <div className="flex gap-2">
-                                <Link to="/login" className="btn btn-ghost flex gap-2">
-                                    <MdLogin className="text-xl" />
-                                    Login
-                                </Link>
-                                <Link to="/register" className="btn bg-teal-600 text-white hover:bg-teal-700 border-none">Register</Link>
-                            </div>
-                        )}
-                    </div>
-                </nav>
+                    ))}
+                </div>
             )}
-        </>
+        </nav>
     );
 };
 

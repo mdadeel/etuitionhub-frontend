@@ -10,37 +10,23 @@ import WhyChooseUs from "../components/Home/WhyChooseUs"
 import Testimonials from "../components/Home/Testimonials"
 // import { motion } from 'framer-motion';
 
-let Home = () => {
-    console.log('home rendering')
-
-    // init aos animations
+const Home = () => {
     useEffect(() => {
-        // custom config
-        // AOS.init({duration:1200, easing:'ease-out'}) 
-
         AOS.init({
-            // duration:1000,
             duration: 800,
             once: true,
         })
     }, [])
 
     return (
-        <div style={{ paddingTop: '0px' }}> {/* inline style fix */}
+        <div className="bg-white">
             <HomeBanner />
-            <PopularTutors />
-
-            {/* [order ]
-            <WhyChooseUs />
-            <Statistics /> 
-            */}
-
-            <HowItWorks />
-
-
-            <Statistics />
-            <WhyChooseUs />
-            <Testimonials />
+            <div className="fade-up">
+                <PopularTutors />
+            </div>
+            <div className="fade-up">
+                <HowItWorks />
+            </div>
         </div>
     )
 }

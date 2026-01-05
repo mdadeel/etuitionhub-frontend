@@ -2,67 +2,63 @@
 import { Link } from 'react-router-dom';
 // import { useState } from 'react';
 
-function TutorCard({ tutor }) {
-    // console.log('Tutor:', tutor);
+const TutorCard = ({ tutor }) => {
+    if (!tutor) return null;
 
-    // fallbacks]
-    if (!tutor || tutor === null || tutor === undefined) return null;
-
-    var id = tutor._id; // short name
-    let { displayName, photoURL, qualification, location, ratings, subjects, experience, expectedSalary } = tutor;
-
-
-    // <div className="card card-compact">
+    const { _id, displayName, photoURL, qualification, location, ratings, subjects, expectedSalary } = tutor;
 
     return (
-        <div className='card bg-white shadow-md hover:shadow-lg transition-shadow border border-gray-100' style={{ borderRadius: '12px' }}>
-            <figure className="px-4 pt-4">
+        <div className="card-quiet group h-full flex flex-col">
+            <div className="aspect-[4/3] overflow-hidden bg-gray-50 border-b border-gray-100 relative">
                 <img
                     src={photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
                     alt={displayName}
-                    className="rounded-lg h-48 w-full object-cover"
+                    className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                 />
-            </figure>
-            <div className="card-body p-4">
-                <h3 className="card-title text-lg text-gray-800">{displayName}</h3>
-                <p className="text-sm text-teal-600 font-medium">{qualification || 'Tutor'}</p>
-
-                {location && <p className="text-sm text-gray-600">📍 {location}</p>}
-                {experience && <p className="text-sm text-gray-600">💼 {experience}</p>}
-
-                {/* Subjects tags */}
-                {/*  array */}
-                {subjects && Array.isArray(subjects) && subjects.length > 0 && (
-                    <div className="flex flex-wrap gap-1 my-2">
-                        {subjects.slice(0, 3).map(function (sub, i) {
-                            return <span key={i} className="badge badge-outline badge-sm text-teal-600 border-teal-300">{sub}</span>
-                        })}
+                {expectedSalary && (
+                    <div className="absolute bottom-4 left-4 px-3 py-1 bg-white border border-gray-200 text-sm font-bold text-gray-900 shadow-sm">
+                        ৳{expectedSalary}/mo
                     </div>
                 )}
+            </div>
 
-                {/* Rating and salary */}
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
-                    <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="font-medium text-gray-700">{ratings || 'N/A'}</span>
+            <div className="p-6 flex-grow flex flex-col">
+                <div className="mb-4">
+                    <div className="flex items-center justify-between gap-4 mb-2">
+                        <h3 className="text-lg font-bold text-gray-900 truncate">{displayName}</h3>
+                        <div className="flex items-center gap-1 shrink-0">
+                            <span className="text-indigo-600 text-xs font-bold">★ {ratings || 'N/A'}</span>
+                        </div>
                     </div>
-                    {expectedSalary && (
-                        <span className="text-teal-600 font-bold">৳{expectedSalary}/mo</span>
+                    <p className="text-xs font-bold uppercase tracking-wider text-indigo-600 truncate">{qualification || 'Tutor'}</p>
+                </div>
+
+                <div className="space-y-2 mb-6 flex-grow">
+                    <div className="flex items-center gap-2 text-gray-500 text-sm">
+                        <span className="opacity-60 text-xs uppercase tracking-tight font-bold w-12">Area</span>
+                        <span className="truncate">{location || 'Dhaka'}</span>
+                    </div>
+                    {subjects && Array.isArray(subjects) && subjects.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                            {subjects.slice(0, 3).map((sub, i) => (
+                                <span key={i} className="px-2 py-0.5 bg-gray-50 border border-gray-100 text-[10px] font-bold text-gray-600 uppercase tracking-tight">
+                                    {sub}
+                                </span>
+                            ))}
+                        </div>
                     )}
                 </div>
 
-                <div className="card-actions justify-end mt-3">
-                    <Link
-                        to={'/tutor/' + id}
-                        className="btn btn-sm bg-teal-600 hover:bg-teal-700 text-white border-none px-4"
-                    >
-                        View Profile
-                    </Link>
-                </div>
+                <Link
+                    to={`/tutor/${_id}`}
+                    className="btn-quiet-secondary w-full text-center"
+                >
+                    View Details
+                </Link>
             </div>
         </div>
     );
-}
+};
 
 export default TutorCard;
 

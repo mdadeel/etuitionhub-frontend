@@ -4,73 +4,73 @@ import { FaHome, FaCog, FaUser } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext'
 
 const DashboardSidebar = ({ role }) => {
-    var location = useLocation(); // var
+    const location = useLocation();
     const { user } = useAuth();
 
-    // Role display name
     const getRoleDisplay = () => {
-        // paranoid checks
-        if (role && role === 'admin') return { label: 'Administrator', color: 'text-error' };
-        if (role === 'tutor' || role === 'Tutor') return { label: 'Tutor', color: 'text-primary' };
-        return { label: 'Student', color: 'text-secondary' };
+        if (role?.toLowerCase() === 'admin') return { label: 'Administrator', color: 'text-red-500' };
+        if (role?.toLowerCase() === 'tutor') return { label: 'Professional', color: 'text-indigo-600' };
+        return { label: 'Client', color: 'text-gray-500' };
     };
 
-    var roleInfo = getRoleDisplay(); // var
+    const roleInfo = getRoleDisplay();
+
+    const menuItems = [
+        { path: '/dashboard', label: 'Management Overview', icon: <FaHome className="w-4 h-4" /> },
+        { path: '/dashboard/profile', label: 'Identity Settings', icon: <FaCog className="w-4 h-4" /> },
+    ];
 
     return (
-        <div className="w-64 bg-base-100 shadow-lg min-h-screen p-4">
-            {/* User info */}
-            <div className="mb-6 text-center pb-4 border-b border-base-300">
-                <div className="avatar placeholder mb-2">
-                    <div className="bg-primary text-primary-content rounded-full w-16">
+        <aside className="w-72 bg-white border-r border-gray-100 min-h-screen sticky top-0 flex flex-col">
+            <div className="p-8 border-b border-gray-50 mb-8">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
                         {user?.photoURL ? (
-                            <img src={user.photoURL} alt={user.displayName} />
+                            <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover grayscale" />
                         ) : (
-                            <span className="text-xl">{user?.displayName?.charAt(0) || 'U'}</span>
+                            <div className="w-full h-full flex items-center justify-center text-sm font-bold text-gray-400">
+                                {user?.displayName?.charAt(0) || 'U'}
+                            </div>
                         )}
                     </div>
+                    <div>
+                        <h3 className="text-sm font-bold text-gray-900 truncate max-w-[140px]">{user?.displayName || 'User'}</h3>
+                        <p className={`text-[10px] font-bold uppercase tracking-widest ${roleInfo.color}`}>{roleInfo.label}</p>
+                    </div>
                 </div>
-                <h3 className="font-bold text-sm">{user?.displayName || 'User'}</h3>
-                <p className={`text-xs font-semibold ${roleInfo.color}`}>{roleInfo.label}</p>
             </div>
 
-            <h2 className="text-lg font-bold mb-4 text-primary">Dashboard</h2>
+            <nav className="flex-grow px-4">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 px-4 mb-4">Operations</div>
+                <ul className="space-y-1">
+                    {menuItems.map((item) => {
+                        const isActive = location.pathname === item.path;
+                        return (
+                            <li key={item.path}>
+                                <Link
+                                    to={item.path}
+                                    className={`flex items-center gap-3 px-4 py-3 text-sm font-bold transition-all duration-200 group ${isActive
+                                            ? 'bg-gray-50 text-indigo-600'
+                                            : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50/50'
+                                        }`}
+                                >
+                                    <span className={isActive ? 'text-indigo-600' : 'text-gray-300 group-hover:text-gray-900'}>
+                                        {item.icon}
+                                    </span>
+                                    {item.label}
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </nav>
 
-            <ul className="menu gap-1">
-                <li>
-                    <Link
-                        to="/dashboard"
-                        className={location.pathname === '/dashboard' ? 'active' : ''}
-                    >
-                        <FaHome />
-                        Overview
-                    </Link>
-                </li>
-                <li>
-                    <Link
-                        to="/dashboard/profile"
-                        className={location.pathname === '/dashboard/profile' ? 'active' : ''}
-                    >
-                        <FaCog />
-                        Profile Settings
-                    </Link>
-                </li>
-            </ul>
-
-            {/* Role-specific info */}
-            <div className="mt-6 p-3 bg-base-200 rounded-lg text-xs">
-                <p className="font-semibold mb-1">Quick Tips:</p>
-                {role === 'admin' && (
-                    <p className="text-gray-600">Use the tabs above to manage users and tuitions.</p>
-                )}
-                {role === 'tutor' && (
-                    <p className="text-gray-600">Use tabs to view your applications and ongoing tuitions.</p>
-                )}
-                {role === 'student' && (
-                    <p className="text-gray-600">Use tabs to post tuitions and manage applications.</p>
-                )}
+            <div className="p-8 mt-auto">
+                <div className="p-6 bg-gray-50 border border-gray-100 italic text-[11px] leading-relaxed text-gray-500">
+                    "Precision in management leads to excellence in results."
+                </div>
             </div>
-        </div>
+        </aside>
     );
 };
 

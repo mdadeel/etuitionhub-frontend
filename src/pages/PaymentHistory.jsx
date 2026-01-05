@@ -2,64 +2,78 @@
 import { useState, useEffect } from "react"
 import { useAuth } from '../contexts/AuthContext'
 import API_URL from '../config/api';
+import LoadingSpinner from '../components/shared/LoadingSpinner';
+import toast from 'react-hot-toast';
 
-let PaymentHistory = () => {
-    let { user } = useAuth()
-    let [payments, setPayments] = useState([])
-    let [loading, setLoading] = useState(true)
-    console.log('payment history page')
+const PaymentHistory = () => {
+    const { user } = useAuth();
+    const [payments, setPayments] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!user?.email) return
+        if (!user?.email) return;
+        fetchPayments();
+    }, [user]);
 
-
-        fetchPayments()
-    }, [user])
-
-    let fetchPayments = async () => {
+    const fetchPayments = async () => {
         try {
-            // let res=await fetch(`${API_URL}/api/payments/student/${user.email}`)
-            let res = await fetch(`${API_URL}/api/payments/student/${user.email}`)
-            let data = await res.json()
-            setPayments(data)
+            const res = await fetch(`${API_URL}/api/payments/student/${user.email}`);
+            const data = await res.json();
+            setPayments(data);
         } catch (error) {
-            console.log('fetch error', error)
+            toast.error('Log recovery failure: Could not sync transaction history.');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
-    if (loading) {
-        return <div className="min-h-screen flex items-center justify-center">
-            <span className="loading loading-spinner loading-lg text-teal-600"></span>
-        </div>
-    }
+    if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6">Payment History</h1>
-
+        <div className="fade-up container mx-auto px-8 py-20 lg:px-12 max-w-5xl">
+            <header className="mb-12 border-b border-gray-200 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Financial Infrastructure</span>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Yield History Logs</h1>
+                </div>
+                <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-sm border border-gray-100">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Total Entries</span>
+                    <span className="text-sm font-bold text-gray-900">{payments.length}</span>
+                </div>
+            </header>
 
             {payments.length === 0 ? (
-                <p className="text-center text-gray-500">No payments yet</p>
+                <div className="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Zero transaction records detected in current sector.</p>
+                </div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="table w-full">
+                <div className="bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm">
+                    <table className="w-full text-left">
                         <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Tutor</th>
+                            <tr className="bg-gray-50 border-b border-gray-100">
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Timestamp</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Professional Node</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Yield Volume</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500 text-right">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-gray-50">
                             {payments.map((payment) => (
-                                <tr key={payment._id || payment.id}>
-                                    <td>{new Date(payment.createdAt).toLocaleDateString()}</td>
-                                    <td>৳{payment.amount}</td>
-                                    <td><span className="badge badge-success">{payment.status}</span></td>
-                                    <td>{payment.tutorName}</td>
+                                <tr key={payment._id || payment.id} className="hover:bg-gray-50/50 transition-colors group">
+                                    <td className="px-6 py-5 text-xs font-mono text-gray-500">
+                                        {new Date(payment.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase()}
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <p className="text-xs font-bold text-gray-900 uppercase tracking-widest group-hover:text-indigo-600 transition-colors">{payment.tutorName}</p>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <p className="text-sm font-extrabold text-gray-900 tracking-tight">৳{payment.amount}</p>
+                                    </td>
+                                    <td className="px-6 py-5 text-right">
+                                        <span className="text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 bg-green-50 text-green-700 border border-green-100 rounded-sm">
+                                            {payment.status}
+                                        </span>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -67,7 +81,7 @@ let PaymentHistory = () => {
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
 export default PaymentHistory
