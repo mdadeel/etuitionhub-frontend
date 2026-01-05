@@ -3,11 +3,13 @@ import { useState } from 'react';
 import DashUsers from './DashUsers';
 import DashTuitions from './DashTuitions';
 import DashAnalytics from './DashAnalytics';
+import DashPayments from './DashPayments';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('analytics');
     const tabs = [
-        { id: 'analytics', label: 'Systems intelligence' },
+        { id: 'analytics', label: 'Systems Intelligence' },
+        { id: 'payments', label: 'Payment Verification' },
         { id: 'users', label: 'Identity Management' },
         { id: 'tuitions', label: 'Marketplace Operations' }
     ];
@@ -38,6 +40,7 @@ const AdminDashboard = () => {
 
             {/* tab content */}
             {activeTab === 'analytics' && <DashAnalytics />}
+            {activeTab === 'payments' && <DashPayments />}
             {activeTab === 'users' && <DashUsers />}
             {activeTab === 'tuitions' && <DashTuitions />}
         </div>
@@ -45,3 +48,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

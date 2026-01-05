@@ -70,9 +70,27 @@ const PaymentHistory = () => {
                                         <p className="text-sm font-extrabold text-gray-900 tracking-tight">৳{payment.amount}</p>
                                     </td>
                                     <td className="px-6 py-5 text-right">
-                                        <span className="text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 bg-green-50 text-green-700 border border-green-100 rounded-sm">
-                                            {payment.status}
-                                        </span>
+                                        {(() => {
+                                            const statusStyles = {
+                                                pending_verification: 'bg-yellow-50 text-yellow-700 border-yellow-100',
+                                                verified: 'bg-green-50 text-green-700 border-green-100',
+                                                completed: 'bg-green-50 text-green-700 border-green-100',
+                                                rejected: 'bg-red-50 text-red-700 border-red-100'
+                                            };
+                                            const statusLabels = {
+                                                pending_verification: 'Pending',
+                                                verified: 'Verified',
+                                                completed: 'Completed',
+                                                rejected: 'Rejected'
+                                            };
+                                            const style = statusStyles[payment.status] || statusStyles.pending_verification;
+                                            const label = statusLabels[payment.status] || payment.status;
+                                            return (
+                                                <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 border rounded-sm ${style}`}>
+                                                    {label}
+                                                </span>
+                                            );
+                                        })()}
                                     </td>
                                 </tr>
                             ))}
