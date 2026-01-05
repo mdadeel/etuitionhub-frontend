@@ -1,8 +1,7 @@
 // home banner - hero section
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-
-// console.log('banner loaded'); // debug
+import heroImage from '../../assets/hero-banner.png';
 
 const HomeBanner = () => {
     return (
@@ -10,7 +9,7 @@ const HomeBanner = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     <div className="lg:col-span-7">
-                        
+
 
                         <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 mb-8 leading-[1.1]">
                             The standard for <br />
@@ -45,14 +44,17 @@ const HomeBanner = () => {
                     </div>
 
                     <div className="hidden lg:block lg:col-span-5 relative">
-                        <div className="aspect-square bg-gray-50 rounded-sm overflow-hidden border border-gray-100 relative group">
-                            <div className="absolute inset-x-8 bottom-8 p-6 bg-white border border-gray-200 rounded-sm shadow-sm transition-transform duration-300 group-hover:-translate-y-2">
-                                <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-2">Featured Expert</p>
-                                <p className="text-gray-900 font-semibold text-lg">Mathematics & Physics</p>
-                                <p className="text-gray-500 text-sm mt-1">Specializing in O/A Levels & Engineering Admission.</p>
-                            </div>
-                            <div className="w-full h-full bg-slate-50 flex items-center justify-center p-20 opacity-20">
-                                <span className="text-8xl font-black text-slate-900 italic">ET</span>
+                        <div className="aspect-[16/10] lg:aspect-[4/3] bg-gray-50 rounded-sm overflow-hidden border border-gray-100 relative group shadow-2xl">
+                            <img
+                                src={heroImage}
+                                alt="Elite Tuition"
+                                className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent opacity-60"></div>
+                            <div className="absolute inset-x-8 bottom-8 p-6 bg-white/90 backdrop-blur-md border border-white/20 rounded-sm shadow-xl transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                                <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-2">Elite Pedagogy</p>
+                                <p className="text-gray-900 font-bold text-xl tracking-tight">Structured Growth.</p>
+                                <p className="text-gray-500 text-xs mt-2 uppercase tracking-wide font-medium">Curated Expert Matchmaking.</p>
                             </div>
                         </div>
                     </div>

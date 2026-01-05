@@ -6,6 +6,7 @@ import { MdDashboard, MdLogin, MdLogout } from "react-icons/md";
 import { ImProfile } from "react-icons/im";
 import { toast } from 'react-hot-toast';
 import Cookies from 'js-cookie';
+import logo from '../../assets/logo.png';
 
 const Navbar = () => {
     const router = useNavigate();
@@ -51,9 +52,8 @@ const Navbar = () => {
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 {/* Logo */}
                 <div className="flex items-center gap-12">
-                    <Link to="/" className="text-xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
-                        <span className="w-8 h-8 bg-indigo-600 rounded-sm flex items-center justify-center text-white text-xs">ET</span>
-                        e-tuitionBD
+                    <Link to="/" className="flex items-center gap-2">
+                        <img src={logo} alt="e-tuitionBD Logo" className="h-10 w-auto" />
                     </Link>
 
                     {/* Desktop Nav */}
@@ -62,7 +62,7 @@ const Navbar = () => {
                             <NavLink
                                 key={link.path}
                                 to={link.path}
-                                className={({ isActive }) => 
+                                className={({ isActive }) =>
                                     `text-sm font-medium transition-colors ${isActive ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-900'}`
                                 }
                             >
@@ -84,14 +84,14 @@ const Navbar = () => {
 
                     {user ? (
                         <div className="relative">
-                            <button 
+                            <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                                 className="flex items-center gap-2 focus:outline-none"
                             >
                                 <div className="w-8 h-8 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
-                                    <img 
-                                        src={currentUserPhotoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
-                                        alt={currentUserName} 
+                                    <img
+                                        src={currentUserPhotoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
+                                        alt={currentUserName}
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
@@ -127,7 +127,7 @@ const Navbar = () => {
                             <Link to="/register" className="btn-quiet-primary">Register</Link>
                         </div>
                     )}
-                    
+
                     {/* Mobile Menu Toggle */}
                     <button className="lg:hidden p-2 text-gray-500" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,9 +141,9 @@ const Navbar = () => {
             {isMenuOpen && !user && (
                 <div className="lg:hidden border-t border-gray-100 mt-3 pt-3 flex flex-col gap-4">
                     {[...navLinks, ...secondaryLinks].map(link => (
-                        <Link 
-                            key={link.path} 
-                            to={link.path} 
+                        <Link
+                            key={link.path}
+                            to={link.path}
                             onClick={() => setIsMenuOpen(false)}
                             className="text-sm font-medium text-gray-600 px-2"
                         >
