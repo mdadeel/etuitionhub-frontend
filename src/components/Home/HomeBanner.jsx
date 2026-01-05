@@ -6,13 +6,11 @@ import { motion } from 'framer-motion';
 
 const HomeBanner = () => {
     return (
-        <section className="bg-white px-6 pt-20 pb-32">
+        <section className="bg-white px-6 pt-4 pb-20">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     <div className="lg:col-span-7">
-                        <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider rounded-sm mb-6">
-                            Verified Experts Only
-                        </span>
+                        
 
                         <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 mb-8 leading-[1.1]">
                             The standard for <br />

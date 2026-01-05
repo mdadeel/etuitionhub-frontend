@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from "react-router-dom"
 import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
-import API_URL from '../config/api';
+import api from '../services/api';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 
 const PAYMENT_METHODS = [
@@ -42,10 +42,8 @@ const Checkout = () => {
         try {
             setLoading(true);
             setError(null);
-            const appRes = await fetch(`${API_URL}/api/applications/${id}`);
-            if (!appRes.ok) throw new Error('Transaction target not found');
-            const appData = await appRes.json();
-            setApplication(appData);
+            const response = await api.get(`/api/applications/${id}`);
+            setApplication(response.data);
             setLoading(false);
         } catch (err) {
             setError('Operational failure: Could not load target parameters');
@@ -87,21 +85,15 @@ const Checkout = () => {
                 status: 'pending_verification'
             };
 
-            const res = await fetch(`${API_URL}/api/payments/manual`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(paymentData)
-            });
+            const response = await api.post('/api/payments/manual', paymentData);
 
-            if (res.ok) {
+            if (response.status === 201) {
                 toast.success('Payment submitted for verification');
                 navigate('/payment-success');
-            } else {
-                const data = await res.json();
-                throw new Error(data.error || 'Submission failed');
             }
         } catch (error) {
-            toast.error(error.message || 'Payment submission failed');
+            const errorMessage = error.response?.data?.error || 'Payment submission failed';
+            toast.error(errorMessage);
         } finally {
             setSubmitting(false);
         }
@@ -153,8 +145,8 @@ const Checkout = () => {
                                             type="button"
                                             onClick={() => setFormData(prev => ({ ...prev, paymentMethod: method.id }))}
                                             className={`p-4 border rounded-sm text-left transition-all ${formData.paymentMethod === method.id
-                                                    ? 'border-indigo-600 bg-indigo-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                ? 'border-indigo-600 bg-indigo-50'
+                                                : 'border-gray-200 hover:border-gray-300'
                                                 }`}
                                         >
                                             <div className="flex items-center gap-3">

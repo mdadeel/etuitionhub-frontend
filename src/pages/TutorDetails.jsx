@@ -26,7 +26,7 @@ const TutorDetails = () => {
 
     if (!tutor) {
         return (
-            <div className="max-w-7xl mx-auto px-6 py-24 text-center">
+            <div className="max-w-7xl mx-auto px-6 py-20 text-center">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-4 block">Error 404</span>
                 <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Expert profile not found.</h1>
                 <Link to="/tutors" className="btn-quiet-secondary inline-block px-8">

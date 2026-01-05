@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
-import API_URL from '../../config/api';
+import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 
 const TutorDashboard = () => {
@@ -20,14 +20,15 @@ const TutorDashboard = () => {
 
     const loadDashboardData = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/applications/tutor/${user.email}`);
-            const data = await response.json();
-            setApps(data);
+            const appResponse = await api.get(`/api/applications/tutor/${user.email}`);
+            setApps(appResponse.data || []);
 
-            const revenueRes = await fetch(`${API_URL}/api/payments/tutor/${user.email}`);
-            if (revenueRes.ok) {
-                const revenueData = await revenueRes.json();
-                setRevenue(revenueData);
+            try {
+                const revenueRes = await api.get(`/api/payments/tutor/${user.email}`);
+                setRevenue(revenueRes.data || []);
+            } catch (e) {
+                // Revenue fetch may fail if no payments yet
+                console.log('Revenue fetch:', e.message);
             }
         } catch (e) {
             console.error("Dashboard Load Error:", e);
@@ -49,17 +50,11 @@ const TutorDashboard = () => {
         }
 
         try {
-            const res = await fetch(`${API_URL}/api/applications/${id}`, {
-                method: 'DELETE'
-            });
-            if (res.ok) {
-                toast.success("Record expunged.");
-                setApps(prev => prev.filter(a => a._id !== id));
-            } else {
-                toast.error('Operation failed.');
-            }
+            await api.delete(`/api/applications/${id}`);
+            toast.success("Record expunged.");
+            setApps(prev => prev.filter(a => a._id !== id));
         } catch (err) {
-            toast.error('Connection interrupt.');
+            toast.error(err.response?.data?.error || 'Operation failed.');
         }
     };
 
