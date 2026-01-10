@@ -5,7 +5,7 @@ import heroImage from '../../assets/hero-banner.png';
 
 const HomeBanner = () => {
     return (
-        <section className="bg-white px-6 pt-4 pb-20">
+        <section className="bg-white px-6 pt-12 pb-20">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     <div className="lg:col-span-7">
@@ -51,7 +51,7 @@ const HomeBanner = () => {
                                 className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent opacity-60"></div>
-                            <div className="absolute inset-x-8 bottom-8 p-6 bg-white/90 backdrop-blur-md border border-white/20 rounded-sm shadow-xl transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+                            <div className="absolute inset-x-10 bottom-4 p-5 bg-white/90 backdrop-blur-md border border-white/20 rounded-sm shadow-xl transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
                                 <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-2">Elite Pedagogy</p>
                                 <p className="text-gray-900 font-bold text-xl tracking-tight">Structured Growth.</p>
                                 <p className="text-gray-500 text-xs mt-2 uppercase tracking-wide font-medium">Curated Expert Matchmaking.</p>
