@@ -22,17 +22,17 @@ function WhyChooseUs() {
     console.log('why choose us rendered'); // debug - remove later
 
     return (
-        <section className="py-16 bg-base-200">
+        <section className="py-20 bg-[var(--color-surface-muted)]">
             <div className="container mx-auto px-4">
-                <h2 className="text-3xl font-bold text-center mb-2">Why Choose Us</h2>
-                <p className="text-center text-gray-600 mb-10">Benefits of using e-tuitionBD</p>
+                <h2 className="text-3xl font-bold text-center mb-2 text-[var(--color-text-primary)]">Why Choose Us</h2>
+                <p className="text-center text-[var(--color-text-secondary)] mb-12">Benefits of using e-tuitionBD</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {features.map((feature, idx) => (
-                        <div key={idx} className="bg-base-100 p-6 rounded-lg shadow-md text-center">
-                            <div className="mb-3 flex justify-center">{feature.icon}</div>
-                            <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                            <p className="text-sm text-gray-600">{feature.description}</p>
+                        <div key={idx} className="bg-[var(--color-surface)] p-8 rounded-xl border border-[var(--color-border)] shadow-sm text-center transform transition-all hover:-translate-y-1 hover:shadow-md">
+                            <div className="mb-4 flex justify-center">{feature.icon}</div>
+                            <h3 className="font-bold text-[var(--color-text-primary)] text-lg mb-2">{feature.title}</h3>
+                            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{feature.description}</p>
                         </div>
                     ))}
                 </div>

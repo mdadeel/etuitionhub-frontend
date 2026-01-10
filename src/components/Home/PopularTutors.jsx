@@ -23,7 +23,7 @@ const PopularTutors = () => {
 
     if (isLoading) {
         return (
-            <section className="py-24 bg-white">
+            <section className="py-24 bg-[var(--color-surface)]">
                 <div className='max-w-7xl mx-auto px-6 text-center'>
                     <div className="w-12 h-12 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
                 </div>
@@ -32,14 +32,14 @@ const PopularTutors = () => {
     }
 
     return (
-        <section className="py-24 bg-white border-t border-gray-100">
+        <section className="py-24 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
                     <div>
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Curation</span>
-                        <h2 className='text-3xl font-extrabold tracking-tight text-gray-900'>Popular Tutors</h2>
+                        <h2 className='text-3xl font-extrabold tracking-tight text-[var(--color-text-primary)]'>Popular Tutors</h2>
                     </div>
-                    <Link to="/tutors" className="text-sm font-semibold text-gray-900 hover:text-indigo-600 transition-colors flex items-center gap-2">
+                    <Link to="/tutors" className="text-sm font-semibold text-[var(--color-text-primary)] hover:text-indigo-600 transition-colors flex items-center gap-2">
                         View All Experts <span>→</span>
                     </Link>
                 </div>

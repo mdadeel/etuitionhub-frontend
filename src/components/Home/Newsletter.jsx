@@ -1,8 +1,8 @@
 const Newsletter = () => {
     return (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-[var(--color-surface)]">
             <div className="max-w-6xl mx-auto px-6">
-                <div className="bg-indigo-900 rounded-2xl p-8 md:p-16 text-center relative overflow-hidden">
+                <div className="bg-indigo-900 dark:bg-indigo-950/50 border border-indigo-500/10 rounded-2xl p-8 md:p-16 text-center relative overflow-hidden transition-colors duration-300">
                     {/* Background Pattern */}
                     <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
                         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +30,7 @@ const Newsletter = () => {
                                 className="flex-1 px-6 py-4 rounded-full bg-white/10 border border-white/20 text-white placeholder-indigo-300 focus:outline-none focus:bg-white/20 transition-all backdrop-blur-sm"
                                 required
                             />
-                            <button className="px-8 py-4 bg-white text-indigo-900 font-bold rounded-full hover:bg-indigo-50 transition-colors shadow-lg">
+                            <button className="px-8 py-4 bg-white text-indigo-900 font-bold rounded-full hover:bg-gray-100 transition-colors shadow-lg">
                                 Subscribe Now
                             </button>
                         </form>

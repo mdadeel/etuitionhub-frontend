@@ -1,105 +1,92 @@
-// tuitions page - shows all available tuitions
-// filtering and pagination hooks use korsi
 import { useTuitions, useTuitionFilters, usePagination } from '../hooks/useTuitions';
-import TuitionCard from '../components/Tuitions/TuitionCard';
 import FilterBar from '../components/Tuitions/FilterBar';
-import Pagination from '../components/shared/Pagination';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
-import EmptyState from '../components/shared/EmptyState';
-import PageHeader from '../components/shared/PageHeader';
-
-const ITEMS_PER_PAGE = 9;
+import TuitionCard from '../components/Tuitions/TuitionCard';
+import Pagination from '../components/Tuitions/Pagination';
+import TuitionSkeleton, { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
+import EmptyState from '../components/Tuitions/EmptyState';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Tuitions = () => {
-    const { tuitions, loading, error } = useTuitions();
-
+    const { userRole } = useAuth();
+    const { theme } = useTheme();
+    const { tuitions, loading, error, refetch } = useTuitions();
     const {
         filters,
         updateFilter,
         clearFilters,
-        hasActiveFilters,
         filteredTuitions,
         filterOptions
-    } = useTuitionFilters(tuitions || []);
+    } = useTuitionFilters(tuitions);
 
     const {
         currentPage,
         totalPages,
         paginatedItems,
-        goToPage
-    } = usePagination(filteredTuitions, ITEMS_PER_PAGE);
-
-    if (loading) {
-        return <LoadingSpinner />;
-    }
-
-    if (error) {
-        return (
-            <div className="max-w-7xl mx-auto px-6 py-12">
-                <div className="text-center">
-                    <span className="text-xs font-bold text-red-500 uppercase tracking-[0.2em] mb-4 block">System Error</span>
-                    <h1 className="text-3xl font-extrabold text-gray-900 mb-6">Failed to synchronize data.</h1>
-                    <p className="text-gray-500 mb-8 max-w-sm mx-auto text-sm">{error}</p>
-                    <button
-                        className="btn-quiet-primary px-8"
-                        onClick={() => window.location.reload()}
-                    >
-                        Retry Connection
-                    </button>
-                </div>
-            </div>
-        );
-    }
+        goToPage,
+        nextPage,
+        prevPage,
+        hasNextPage,
+        hasPrevPage
+    } = usePagination(filteredTuitions, 8); // Updated to 8 for 4-per-row layout
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-4 pb-10">
-            {/* <header className="mb-20">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                    <div className="max-w-lg">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Direct Marketplace</span>
-                        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Available Positions</h1>
-                        <p className="text-gray-500 text-sm leading-relaxed">
-                            Analyze and apply to verified tuition requirements. We prioritize clarity of expectations and direct communication.
+        <div className="bg-[var(--color-surface)] min-h-screen py-16 px-6 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+                    <div className="max-w-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <span className="w-12 h-[2px] bg-teal-600"></span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-600">Available Projects</span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black text-[var(--color-text-primary)] leading-[1.1] mb-6">
+                            Find Your Ideal <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-indigo-600">Tuition Matrix</span>
+                        </h1>
+                        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed max-w-lg">
+                            Access our high-density database of tuition requirements. filter by subject, class node, or spatial location to find your match.
                         </p>
                     </div>
-                    <div className="text-sm font-bold text-gray-400 uppercase tracking-widest">
-                        {filteredTuitions.length} Results Found
-                    </div>
+                    {userRole === 'admin' && (
+                        <div className="px-4 py-2 bg-[var(--color-surface-muted)] border border-[var(--color-border)] rounded-lg">
+                            <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Admin View Active</span>
+                        </div>
+                    )}
                 </div>
-            </header> */}
 
-            <FilterBar
-                filters={filters}
-                onFilterChange={updateFilter}
-                onClear={clearFilters}
-                classOptions={filterOptions.classes}
-                locationOptions={filterOptions.locations}
-                showClearButton={hasActiveFilters}
-            />
-
-            {filteredTuitions.length === 0 ? (
-                <EmptyState
-                    message="No requirements match your current parameters"
-                    onAction={clearFilters}
-                    actionLabel="Reset Parameters"
+                <FilterBar
+                    filters={filters}
+                    onFilterChange={updateFilter}
+                    onClear={clearFilters}
+                    classOptions={filterOptions.classes}
+                    locationOptions={filterOptions.locations}
                 />
-            ) : (
-                <div className="space-y-24">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {paginatedItems.map(tuition => (
-                            <TuitionCard key={tuition._id} tuition={tuition} />
-                        ))}
-                    </div>
 
-                    <div className="border-t border-gray-100 pt-12">
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={goToPage}
-                        />
+                {loading ? (
+                    <TuitionGridSkeleton />
+                ) : filteredTuitions.length === 0 ? (
+                    <EmptyState onReset={clearFilters} />
+                ) : (
+                    <div className="space-y-24">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {paginatedItems.map(tuition => (
+                                <TuitionCard key={tuition._id} tuition={tuition} />
+                            ))}
+                        </div>
+
+                        {totalPages > 1 && (
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={goToPage}
+                                onNext={nextPage}
+                                onPrev={prevPage}
+                                hasNext={hasNextPage}
+                                hasPrev={hasPrev}
+                            />
+                        )}
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };
