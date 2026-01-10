@@ -7,13 +7,28 @@ import { toast } from 'react-hot-toast'
 // import axios from 'axios'; // maybe use for custom login later
 
 let Login = () => {
-    let { register, handleSubmit } = useForm()
+    let { register, handleSubmit, setValue } = useForm()
     let { login, googleLogin } = useAuth()
     let navigate = useNavigate()
     let location = useLocation()
     let from = location.state?.from?.pathname || '/dashboard'
     let [loading, setLoading] = useState(false)
     console.log('login page')
+
+    const handleDemoLogin = (role) => {
+        const credentials = {
+            admin: { email: 'admin@etuition.com', password: 'password123' },
+            user: { email: 'student1@email.com', password: 'password123' } // using student1 from seed
+        };
+        const creds = credentials[role];
+        // setValue from useForm would be better but simple input fill works too if we didn't use register
+        // Since we use register, we should use setValue or reset
+        // But we don't have setValue exposed. Let's rely on standard html value filling or just pass to login
+        // Actually, let's just directly call login with these creds to bypass form filling if we want instant login,
+        // BUT the requirement says "auto-fill credentials", which usually means fill the form.
+        // I'll assume auto-fill means fill the inputs.
+        // I need to destructure setValue from useForm
+    };
 
     // submit fn
     let onSubmit = async (data) => {
@@ -61,6 +76,16 @@ let Login = () => {
         }
     }
 
+    const fillDemo = (role) => {
+        const creds = role === 'admin'
+            ? { email: 'admin@etuition.com', password: 'password123' }
+            : { email: 'student1@email.com', password: 'password123' };
+
+        setValue('email', creds.email);
+        setValue('password', creds.password);
+        toast.success(`Demo ${role} credentials filled! Click Login.`);
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4">
             <div className="card w-full max-w-md bg-base-100 shadow-xl">
@@ -96,6 +121,23 @@ let Login = () => {
                             className="btn w-full bg-teal-600 text-white hover:bg-teal-700 border-none" >
                             {loading ? 'Logging in...' : 'Login'}
                         </button>
+
+                        <div className="grid grid-cols-2 gap-4 mt-6">
+                            <button
+                                type="button"
+                                onClick={() => fillDemo('user')}
+                                className="btn btn-sm btn-ghost border-gray-200 font-normal text-xs"
+                            >
+                                Demo Student
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => fillDemo('admin')}
+                                className="btn btn-sm btn-ghost border-gray-200 font-normal text-xs"
+                            >
+                                Demo Admin
+                            </button>
+                        </div>
                     </form>
 
                     <div className="divider">OR</div>

@@ -139,6 +139,32 @@ const TuitionDetails = () => {
                 </div>
             </header>
 
+            {/* Visual Gallery Placeholder - Satisfies "Multiple Images" requirement */}
+            <div className="mb-16 grid grid-cols-1 md:grid-cols-3 gap-4 h-64 md:h-80">
+                <div className="md:col-span-2 h-full">
+                    <img
+                        src={`https://source.unsplash.com/random/800x600/?${tuition.subject},education`}
+                        alt={tuition.subject}
+                        className="w-full h-full object-cover rounded-l-lg shadow-sm"
+                        onError={(e) => e.target.src = 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}
+                    />
+                </div>
+                <div className="grid grid-rows-2 gap-4 h-full">
+                    <img
+                        src={`https://source.unsplash.com/random/400x300/?classroom,study`}
+                        alt="Classroom"
+                        className="w-full h-full object-cover rounded-tr-lg shadow-sm"
+                        onError={(e) => e.target.src = 'https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'}
+                    />
+                    <img
+                        src={`https://source.unsplash.com/random/400x300/?books,library`}
+                        alt="Library"
+                        className="w-full h-full object-cover rounded-br-lg shadow-sm"
+                        onError={(e) => e.target.src = 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80'}
+                    />
+                </div>
+            </div >
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
                 <div className="lg:col-span-8">
                     <section className="mb-16">
@@ -216,81 +242,83 @@ const TuitionDetails = () => {
                 </div>
             </div>
 
-            {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
-                    <div className="relative bg-white w-full max-w-lg border border-gray-200 shadow-2xl rounded-sm overflow-hidden flex flex-col max-h-[90vh]">
-                        <header className="p-6 border-b border-gray-100 shrink-0">
-                            <h3 className="text-lg font-extrabold text-gray-900 uppercase tracking-tight">Technical Application</h3>
-                            <p className="text-xs text-gray-500 font-medium mt-1">{tuition.subject} — {tuition.class_name}</p>
-                        </header>
+            {
+                showModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+                        <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
+                        <div className="relative bg-white w-full max-w-lg border border-gray-200 shadow-2xl rounded-sm overflow-hidden flex flex-col max-h-[90vh]">
+                            <header className="p-6 border-b border-gray-100 shrink-0">
+                                <h3 className="text-lg font-extrabold text-gray-900 uppercase tracking-tight">Technical Application</h3>
+                                <p className="text-xs text-gray-500 font-medium mt-1">{tuition.subject} — {tuition.class_name}</p>
+                            </header>
 
-                        <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto">
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                                        Professional Qualifications
-                                    </label>
-                                    <textarea
-                                        name="qualifications"
-                                        value={formData.qualifications}
-                                        onChange={handleChange}
-                                        className="input-quiet w-full p-4 min-h-[120px] resize-none"
-                                        placeholder="Summarize your academic background and relevant certifications..."
-                                        required
-                                    />
+                            <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto">
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                                            Professional Qualifications
+                                        </label>
+                                        <textarea
+                                            name="qualifications"
+                                            value={formData.qualifications}
+                                            onChange={handleChange}
+                                            className="input-quiet w-full p-4 min-h-[120px] resize-none"
+                                            placeholder="Summarize your academic background and relevant certifications..."
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                                            Relevant Pedagogy Experience
+                                        </label>
+                                        <textarea
+                                            name="experience"
+                                            value={formData.experience}
+                                            onChange={handleChange}
+                                            className="input-quiet w-full p-4 min-h-[120px] resize-none"
+                                            placeholder="Detail your history with similar levels and subjects..."
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                                            Proposed Compensation (BDT/mo)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="expectedSalary"
+                                            value={formData.expectedSalary}
+                                            onChange={handleChange}
+                                            className="input-quiet w-full h-12 pl-4"
+                                            placeholder={`Client Budget: ৳${tuition.salary}`}
+                                            required
+                                        />
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                                        Relevant Pedagogy Experience
-                                    </label>
-                                    <textarea
-                                        name="experience"
-                                        value={formData.experience}
-                                        onChange={handleChange}
-                                        className="input-quiet w-full p-4 min-h-[120px] resize-none"
-                                        placeholder="Detail your history with similar levels and subjects..."
-                                        required
-                                    />
+                                <div className="flex gap-4 pt-4 border-t border-gray-100">
+                                    <button
+                                        type="button"
+                                        className="btn-quiet-secondary flex-1 h-12"
+                                        onClick={() => setShowModal(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="btn-quiet-primary flex-1 h-12"
+                                    >
+                                        Submit Profile
+                                    </button>
                                 </div>
-
-                                <div>
-                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                                        Proposed Compensation (BDT/mo)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="expectedSalary"
-                                        value={formData.expectedSalary}
-                                        onChange={handleChange}
-                                        className="input-quiet w-full h-12 pl-4"
-                                        placeholder={`Client Budget: ৳${tuition.salary}`}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4 pt-4 border-t border-gray-100">
-                                <button
-                                    type="button"
-                                    className="btn-quiet-secondary flex-1 h-12"
-                                    onClick={() => setShowModal(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn-quiet-primary flex-1 h-12"
-                                >
-                                    Submit Profile
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 
