@@ -18,9 +18,9 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-white">
+        <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
             <DashboardSidebar role={role} />
-            <main className="flex-1 px-8 py-12 lg:px-12 bg-gray-50/30">
+            <main className="flex-1 h-full overflow-y-auto px-8 py-12 lg:px-12 scrollbar-hide">
                 <div className="max-w-6xl mx-auto">
                     <Routes>
                         <Route index element={

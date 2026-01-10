@@ -35,7 +35,7 @@ const Tuitions = () => {
 
     if (error) {
         return (
-            <div className="max-w-7xl mx-auto px-6 py-24">
+            <div className="max-w-7xl mx-auto px-6 py-12">
                 <div className="text-center">
                     <span className="text-xs font-bold text-red-500 uppercase tracking-[0.2em] mb-4 block">System Error</span>
                     <h1 className="text-3xl font-extrabold text-gray-900 mb-6">Failed to synchronize data.</h1>
@@ -53,7 +53,7 @@ const Tuitions = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-4 pb-10">
-            <header className="mb-20">
+            {/* <header className="mb-20">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <div className="max-w-lg">
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Direct Marketplace</span>
@@ -66,7 +66,7 @@ const Tuitions = () => {
                         {filteredTuitions.length} Results Found
                     </div>
                 </div>
-            </header>
+            </header> */}
 
             <FilterBar
                 filters={filters}

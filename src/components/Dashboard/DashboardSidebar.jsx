@@ -9,55 +9,64 @@ const DashboardSidebar = ({ role }) => {
 
     const getRoleDisplay = () => {
         if (role?.toLowerCase() === 'admin') return { label: 'Administrator', color: 'text-red-500' };
-        if (role?.toLowerCase() === 'tutor') return { label: 'Professional', color: 'text-indigo-600' };
+        if (role?.toLowerCase() === 'tutor') return { label: 'Professional', color: 'text-teal-600' };
         return { label: 'Client', color: 'text-gray-500' };
     };
 
     const roleInfo = getRoleDisplay();
 
     const menuItems = [
-        { path: '/dashboard', label: 'Management Overview', icon: <FaHome className="w-4 h-4" /> },
-        { path: '/dashboard/profile', label: 'Identity Settings', icon: <FaCog className="w-4 h-4" /> },
+        { path: '/dashboard', label: 'Management Overview', icon: <FaHome /> },
+        { path: '/dashboard/profile', label: 'Identity Settings', icon: <FaUser /> },
     ];
 
     return (
-        <aside className="w-72 bg-white border-r border-gray-100 min-h-screen sticky top-0 flex flex-col">
-            <div className="p-8 border-b border-gray-50 mb-8">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
-                        {user?.photoURL ? (
-                            <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover grayscale" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-sm font-bold text-gray-400">
-                                {user?.displayName?.charAt(0) || 'U'}
+        <aside className="w-72 bg-white border-r border-gray-100 h-full flex flex-col flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] overflow-y-auto scrollbar-hide">
+            {/* User Profile Section */}
+            <div className="p-8 mb-4">
+                <div className="flex flex-col items-center text-center p-6 bg-gray-50/50 rounded-2xl border border-gray-100/50">
+                    <div className="relative mb-4">
+                        <div className="w-20 h-20 rounded-2xl bg-white p-1.5 shadow-sm border border-gray-100">
+                            <div className="w-full h-full rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
+                                {user?.photoURL ? (
+                                    <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="text-2xl font-black text-teal-600">
+                                        {user?.displayName?.charAt(0) || 'U'}
+                                    </span>
+                                )}
                             </div>
-                        )}
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-teal-500 border-4 border-white rounded-full"></div>
                     </div>
-                    <div>
-                        <h3 className="text-sm font-bold text-gray-900 truncate max-w-[140px]">{user?.displayName || 'User'}</h3>
-                        <p className={`text-[10px] font-bold uppercase tracking-widest ${roleInfo.color}`}>{roleInfo.label}</p>
-                    </div>
+
+                    <h3 className="text-sm font-black text-gray-900 mb-1 truncate w-full">{user?.displayName || 'Authorized User'}</h3>
+                    <p className={`text-[9px] font-black uppercase tracking-[0.15em] px-2 py-1 rounded-md bg-white border border-gray-100 ${roleInfo.color === 'text-red-500' ? 'text-red-500' : 'text-teal-600'}`}>
+                        {roleInfo.label}
+                    </p>
                 </div>
             </div>
 
-            <nav className="flex-grow px-4">
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 px-4 mb-4">Operations</div>
-                <ul className="space-y-1">
+            {/* Navigation */}
+            <nav className="flex-grow px-6">
+                <div className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 px-4 mb-6">Operations</div>
+                <ul className="space-y-2">
                     {menuItems.map((item) => {
                         const isActive = location.pathname === item.path;
                         return (
                             <li key={item.path}>
                                 <Link
                                     to={item.path}
-                                    className={`flex items-center gap-3 px-4 py-3 text-sm font-bold transition-all duration-200 group ${isActive
-                                            ? 'bg-gray-50 text-indigo-600'
-                                            : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50/50'
+                                    className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-300 relative group overflow-hidden ${isActive
+                                        ? 'bg-teal-50 text-teal-700 shadow-[0_4px_12px_rgba(13,148,136,0.08)]'
+                                        : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50'
                                         }`}
                                 >
-                                    <span className={isActive ? 'text-indigo-600' : 'text-gray-300 group-hover:text-gray-900'}>
+                                    {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-600 rounded-r-full"></div>}
+                                    <span className={`text-lg transition-colors ${isActive ? 'text-teal-600' : 'text-gray-300 group-hover:text-gray-600'}`}>
                                         {item.icon}
                                     </span>
-                                    {item.label}
+                                    <span className="tracking-tight">{item.label}</span>
                                 </Link>
                             </li>
                         );
@@ -65,9 +74,13 @@ const DashboardSidebar = ({ role }) => {
                 </ul>
             </nav>
 
-            <div className="p-8 mt-auto">
-                <div className="p-6 bg-gray-50 border border-gray-100 italic text-[11px] leading-relaxed text-gray-500">
-                    "Precision in management leads to excellence in results."
+            {/* Footer Quote */}
+            <div className="p-8">
+                <div className="p-5 bg-teal-900/[0.02] rounded-2xl border border-teal-900/5 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-12 h-12 bg-teal-500/5 rounded-bl-3xl transform translate-x-4 -translate-y-4 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform"></div>
+                    <p className="relative z-10 italic text-[10px] leading-relaxed text-gray-500 font-medium tracking-wide">
+                        "Precision in management leads to excellence in results."
+                    </p>
                 </div>
             </div>
         </aside>

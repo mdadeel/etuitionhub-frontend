@@ -63,7 +63,7 @@ const Navbar = () => {
                                 key={link.path}
                                 to={link.path}
                                 className={({ isActive }) =>
-                                    `text-sm font-medium transition-colors ${isActive ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-900'}`
+                                    `text-sm font-medium transition-colors ${isActive ? 'text-teal-600' : 'text-gray-500 hover:text-gray-900'}`
                                 }
                             >
                                 {link.label}

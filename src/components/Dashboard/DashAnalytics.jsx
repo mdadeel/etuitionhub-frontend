@@ -79,18 +79,47 @@ const DashAnalytics = () => {
     if (isLoading) return <LoadingSpinner />;
 
     return (
-        <div className="space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <StatCard title="Total Capacity" value={stats.totalUsers} unit="Users" />
-                <StatCard title="Marketplace Volume" value={stats.totalTuitions} unit="Posts" />
-                <StatCard title="Active Pipeline" value={stats.pendingTuitions} unit="Pending" />
-                <StatCard title="System Yield" value={`৳${stats.totalRevenue}`} unit="BDT" />
+        <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <StatCard
+                    title="Capacity"
+                    value={stats.totalUsers}
+                    unit="Identities"
+                    icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>}
+                    color="teal"
+                />
+                <StatCard
+                    title="Velocity"
+                    value={stats.totalTuitions}
+                    unit="Operations"
+                    icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>}
+                    color="violet"
+                />
+                <StatCard
+                    title="Pipeline"
+                    value={stats.pendingTuitions}
+                    unit="Pending"
+                    icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                    color="amber"
+                />
+                <StatCard
+                    title="Yield"
+                    value={`৳${stats.totalRevenue}`}
+                    unit="Revenue"
+                    icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>}
+                    color="teal"
+                />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-white border border-gray-200 p-8 rounded-sm">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-8 pb-4 border-b border-gray-50">Identity Distribution</h3>
-                    <ResponsiveContainer width="100%" height={300}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-xs font-black text-gray-900 tracking-tight">Identity Distribution</h3>
+                            <p className="text-[9px] font-medium text-gray-400 uppercase tracking-widest mt-0.5">User segmentation</p>
+                        </div>
+                    </div>
+                    <ResponsiveContainer width="100%" height={260}>
                         <PieChart>
                             <Pie
                                 data={userDist}
@@ -99,62 +128,102 @@ const DashAnalytics = () => {
                                 labelLine={false}
                                 innerRadius={60}
                                 outerRadius={80}
-                                paddingAngle={5}
+                                paddingAngle={6}
                                 dataKey="value"
                             >
                                 {userDist.map((entry, i) => (
                                     <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
                                 ))}
                             </Pie>
-                            <Tooltip />
-                            <Legend iconType="circle" />
+                            <Tooltip
+                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '10px' }}
+                                itemStyle={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '9px' }}
+                            />
+                            <Legend iconType="circle" wrapperStyle={{ paddingTop: '16px', fontSize: '9px', fontWeight: 900, textTransform: 'uppercase' }} />
                         </PieChart>
                     </ResponsiveContainer>
                 </div>
 
-                <div className="bg-white border border-gray-200 p-8 rounded-sm">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-8 pb-4 border-b border-gray-50">Operations Status</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={tuitionStatus} barSize={40}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#9ca3af' }} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#9ca3af' }} />
-                            <Tooltip cursor={{ fill: '#f9fafb' }} />
-                            <Bar dataKey="count" radius={[2, 2, 0, 0]} />
+                <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-xs font-black text-gray-900 tracking-tight">Post Operations</h3>
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mt-0.5">Lifecycle status</p>
+                        </div>
+                    </div>
+                    <ResponsiveContainer width="100%" height={260}>
+                        <BarChart data={tuitionStatus} barSize={32}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f8fafc" />
+                            <XAxis
+                                dataKey="name"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 9, fontWeight: 900, fill: '#94a3b8' }}
+                            />
+                            <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 9, fontWeight: 900, fill: '#94a3b8' }}
+                            />
+                            <Tooltip
+                                cursor={{ fill: '#f8fafc' }}
+                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                            />
+                            <Bar dataKey="count" radius={[8, 8, 0, 0]} fill="#0d9488">
+                                {tuitionStatus.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                            </Bar>
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-sm overflow-hidden">
-                <div className="p-8 border-b border-gray-100 bg-gray-50/30">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-900">Global Yield Logs</h3>
+            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-8 py-5 border-b border-gray-100 bg-gray-50/20 flex items-center justify-between">
+                    <div>
+                        <h3 className="text-xs font-black text-gray-900 tracking-tight">Yield Logs</h3>
+                        <p className="text-[9px] font-medium text-gray-400 uppercase tracking-widest mt-0.5">Real-time sync</p>
+                    </div>
+                    <span className="px-3 py-1 bg-white rounded-full border border-gray-100 text-[8px] font-black uppercase tracking-widest text-teal-600 flex items-center gap-2">
+                        <span className="w-1 h-1 rounded-full bg-teal-500"></span>
+                        Live
+                    </span>
                 </div>
                 {transactions.length === 0 ? (
                     <div className="p-20 text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Zero transaction records available.</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">No yield records identified.</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto scrollbar-hide">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="bg-gray-50/50 border-b border-gray-100">
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Ref</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Client</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Professional</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Yield</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 text-right">Status</th>
+                                <tr className="bg-gray-50/10 border-b border-gray-100">
+                                    <th className="px-8 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">ID</th>
+                                    <th className="px-8 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Header</th>
+                                    <th className="px-8 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 text-center">Yield</th>
+                                    <th className="px-8 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 text-right">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {transactions.slice(0, 10).map((tx, i) => (
-                                    <tr key={tx._id} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-6 py-4 text-xs font-bold text-gray-400">#0{i + 1}</td>
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{tx.studentEmail}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">{tx.tutorEmail}</td>
-                                        <td className="px-6 py-4 text-sm font-extrabold text-gray-900">৳{tx.amount}</td>
-                                        <td className="px-6 py-4 text-right">
-                                            <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide border ${tx.status === 'completed' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-yellow-50 text-yellow-700 border-yellow-100'
+                                {transactions.slice(0, 8).map((tx, i) => (
+                                    <tr key={tx._id} className="hover:bg-teal-50/10 transition-colors group">
+                                        <td className="px-8 py-4">
+                                            <span className="text-[10px] font-black text-gray-300 group-hover:text-teal-600 transition-colors">T-00{i + 1}</span>
+                                        </td>
+                                        <td className="px-8 py-4">
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-black text-gray-800 leading-none mb-0.5">{tx.studentEmail.split('@')[0]}</span>
+                                                <span className="text-[9px] font-medium text-gray-400">{tx.studentEmail}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-4 text-center">
+                                            <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded border border-teal-100/50">৳{tx.amount}</span>
+                                        </td>
+                                        <td className="px-8 py-4 text-right">
+                                            <span className={`px-2.5 py-1 text-[8px] font-black uppercase tracking-wider rounded-lg border ${tx.status === 'completed'
+                                                ? 'bg-green-50 text-green-700 border-green-100'
+                                                : 'bg-amber-50 text-amber-700 border-amber-100'
                                                 }`}>
                                                 {tx.status}
                                             </span>
@@ -170,14 +239,36 @@ const DashAnalytics = () => {
     );
 };
 
-const StatCard = ({ title, value, unit }) => (
-    <div className="p-8 bg-white border border-gray-200 rounded-sm shadow-sm transition-transform hover:-translate-y-1">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">{title}</p>
-        <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-gray-900 tracking-tight">{value}</span>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{unit}</span>
+const StatCard = ({ title, value, unit, icon, color = 'teal' }) => {
+    const colorMap = {
+        teal: 'text-teal-600 bg-teal-50 border-teal-100/50',
+        violet: 'text-violet-600 bg-violet-50 border-violet-100/50',
+        amber: 'text-amber-600 bg-amber-50 border-amber-100/50',
+    };
+
+    return (
+        <div className="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 group relative overflow-hidden">
+            <div className="relative z-10">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-5 border transition-transform duration-500 group-hover:rotate-3 ${colorMap[color]}`}>
+                    {icon}
+                </div>
+
+                <p className="text-[8px] font-black uppercase tracking-[0.25em] text-gray-400 mb-1.5 group-hover:text-teal-600 transition-colors">
+                    {title}
+                </p>
+
+                <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-black text-gray-900 tracking-tight leading-none">{value}</span>
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{unit}</span>
+                </div>
+
+                <div className="mt-5 h-1 w-full bg-gray-50 rounded-full overflow-hidden">
+                    <div className={`h-full transition-all duration-1000 w-2/3 ${color === 'teal' ? 'bg-teal-500' : color === 'violet' ? 'bg-violet-500' : 'bg-amber-500'}`}></div>
+                </div>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default DashAnalytics;
+

@@ -61,7 +61,7 @@ const FilterBar = ({
                 <div className="flex items-center gap-3">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Area</span>
                     <select
-                        className="p-1 border-b border-gray-200 text-sm font-medium focus:border-indigo-600 outline-none transition-colors bg-transparent cursor-pointer"
+                        className="p-1 border-b border-gray-200 text-sm font-medium focus:border-teal-600 outline-none transition-colors bg-transparent cursor-pointer"
                         value={filters.locationFilter}
                         onChange={(e) => onFilterChange('locationFilter', e.target.value)}
                     >

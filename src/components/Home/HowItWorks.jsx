@@ -21,7 +21,7 @@ const HowItWorks = () => {
         <section className="py-32 bg-gray-50 border-y border-gray-100">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="mb-20 max-w-xl">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">The Process</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-600 mb-2 block">The Process</span>
                     <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 mb-4">A structured approach to finding expertise.</h2>
                     <p className="text-gray-500 text-sm">We've removed the noise, leaving only the essential steps to connect you with the right tutor.</p>
                 </div>

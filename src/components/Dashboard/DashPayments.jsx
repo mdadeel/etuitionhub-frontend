@@ -77,37 +77,47 @@ const DashPayments = () => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="fade-up">
+        <div className="fade-up space-y-6">
             {/* Header */}
-            <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">Payment Verification</h2>
-                    <p className="text-xs text-gray-500 mt-1">Review and verify manual payment submissions</p>
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 shadow-sm border border-teal-100/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black text-gray-900 tracking-tight">Payment Verification</h2>
+                        <p className="text-[9px] font-black uppercase tracking-[0.1em] text-gray-400">Systems Audit Interface</p>
+                    </div>
                 </div>
                 {pendingCount > 0 && (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-100 rounded-sm">
-                        <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-700">
-                            {pendingCount} Pending Review
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-100/50 rounded-lg">
+                        <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+                        </span>
+                        <span className="text-[9px] font-black uppercase tracking-wider text-amber-700">
+                            {pendingCount} Critical
                         </span>
                     </div>
                 )}
             </header>
 
             {/* Filter Tabs */}
-            <div className="flex bg-gray-100 p-1 rounded-sm gap-1 mb-8">
+            <div className="flex bg-gray-50/50 p-1 rounded-xl gap-1 border border-gray-100/50 w-fit">
                 {[
                     { id: 'pending_verification', label: 'Pending' },
                     { id: 'verified', label: 'Verified' },
                     { id: 'rejected', label: 'Rejected' },
-                    { id: 'all', label: 'All' }
+                    { id: 'all', label: 'All Logs' }
                 ].map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setFilter(tab.id)}
-                        className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${filter === tab.id
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-400 hover:text-gray-600'
+                        className={`px-4 py-1.5 text-[8px] font-black uppercase tracking-wider rounded-lg transition-all duration-300 ${filter === tab.id
+                            ? 'bg-white text-teal-600 shadow-sm ring-1 ring-black/5'
+                            : 'text-gray-400 hover:text-gray-600 hover:bg-white/50'
                             }`}
                     >
                         {tab.label}
@@ -117,88 +127,90 @@ const DashPayments = () => {
 
             {/* Payments Table */}
             {filteredPayments.length === 0 ? (
-                <div className="py-20 text-center bg-gray-50 border border-dashed border-gray-200 rounded-sm">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">
-                        No payments in this category
+                <div className="py-20 text-center bg-gray-50/30 border border-dashed border-gray-200 rounded-xl">
+                    <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest italic">
+                        No transactions found
                     </p>
                 </div>
             ) : (
-                <div className="bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Date</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Student</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Tutor</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Method</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Transaction</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Amount</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">Status</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-500 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {filteredPayments.map((payment) => {
-                                const method = PAYMENT_METHOD_LABELS[payment.paymentMethod] || { name: payment.paymentMethod, color: 'bg-gray-500' };
-                                const status = STATUS_STYLES[payment.status] || STATUS_STYLES.pending_verification;
+                <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto scrollbar-hide">
+                        <table className="w-full text-left">
+                            <thead>
+                                <tr className="bg-gray-50/30 border-b border-gray-100">
+                                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Date</th>
+                                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Sender</th>
+                                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Tutor</th>
+                                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Protocol</th>
+                                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">Reference</th>
+                                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Yield</th>
+                                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Status</th>
+                                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right">Ops</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {filteredPayments.map((payment) => {
+                                    const method = PAYMENT_METHOD_LABELS[payment.paymentMethod] || { name: payment.paymentMethod, color: 'bg-gray-500' };
+                                    const status = STATUS_STYLES[payment.status] || STATUS_STYLES.pending_verification;
 
-                                return (
-                                    <tr key={payment._id} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-6 py-5 text-xs font-mono text-gray-500">
-                                            {new Date(payment.createdAt).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <p className="text-xs font-bold text-gray-900">{payment.studentEmail}</p>
-                                            <p className="text-[10px] text-gray-400 font-mono">{payment.senderNumber}</p>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <p className="text-xs font-bold text-gray-900">{payment.tutorName}</p>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`w-2 h-2 rounded-full ${method.color}`}></span>
-                                                <span className="text-xs font-medium text-gray-700">{method.name}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <p className="text-xs font-mono font-bold text-gray-900">{payment.transactionId}</p>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <p className="text-sm font-extrabold text-gray-900">৳{payment.amount}</p>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 ${status.bg} ${status.text} border ${status.border} rounded-sm`}>
-                                                {status.label}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-right">
-                                            {payment.status === 'pending_verification' && (
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => handleVerify(payment._id)}
-                                                        disabled={processingId === payment._id}
-                                                        className="text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 bg-green-50 text-green-700 border border-green-100 rounded-sm hover:bg-green-100 transition-colors disabled:opacity-50"
-                                                    >
-                                                        Verify
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleReject(payment._id)}
-                                                        disabled={processingId === payment._id}
-                                                        className="text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 bg-red-50 text-red-700 border border-red-100 rounded-sm hover:bg-red-100 transition-colors disabled:opacity-50"
-                                                    >
-                                                        Reject
-                                                    </button>
+                                    return (
+                                        <tr key={payment._id} className="hover:bg-teal-50/10 transition-colors">
+                                            <td className="px-6 py-3.5 text-[10px] font-black text-gray-300">
+                                                {new Date(payment.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                            </td>
+                                            <td className="px-6 py-3.5">
+                                                <p className="text-[11px] font-black text-gray-800 leading-none">{payment.studentEmail.split('@')[0]}</p>
+                                                <p className="text-[8px] text-gray-400 font-bold mt-0.5">{payment.senderNumber}</p>
+                                            </td>
+                                            <td className="px-6 py-3.5">
+                                                <p className="text-[11px] font-black text-gray-800">{payment.tutorName || '—'}</p>
+                                            </td>
+                                            <td className="px-6 py-3.5">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className={`w-1 h-1 rounded-full ${method.color}`}></span>
+                                                    <span className="text-[9px] font-black text-gray-700 uppercase">{method.name}</span>
                                                 </div>
-                                            )}
-                                            {payment.status !== 'pending_verification' && (
-                                                <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">—</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                            </td>
+                                            <td className="px-6 py-3.5 text-center">
+                                                <span className="text-[9px] font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded border border-teal-100/30 uppercase">{payment.transactionId}</span>
+                                            </td>
+                                            <td className="px-6 py-3.5">
+                                                <p className="text-xs font-black text-gray-900 tracking-tight">৳{payment.amount}</p>
+                                            </td>
+                                            <td className="px-6 py-3.5">
+                                                <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 ${status.bg} ${status.text} border ${status.border} rounded shadow-sm opacity-90`}>
+                                                    {status.label}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-3.5 text-right">
+                                                {payment.status === 'pending_verification' && (
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={() => handleVerify(payment._id)}
+                                                            disabled={processingId === payment._id}
+                                                            className="text-[8px] font-black uppercase tracking-widest px-3 py-1.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-all disabled:opacity-50"
+                                                        >
+                                                            Verify
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleReject(payment._id)}
+                                                            disabled={processingId === payment._id}
+                                                            className="text-[8px] font-black uppercase tracking-widest px-3 py-1.5 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition-all disabled:opacity-50"
+                                                        >
+                                                            Drop
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {payment.status !== 'pending_verification' && (
+                                                    <span className="text-[9px] font-black text-gray-200 uppercase tracking-widest">Done</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>

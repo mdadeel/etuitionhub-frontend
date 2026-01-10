@@ -30,7 +30,7 @@ const FAQ = () => {
         <section className="py-20 bg-white">
             <div className="max-w-4xl mx-auto px-6">
                 <div className="text-center mb-16">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Common Queries</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-600 mb-2 block">Common Queries</span>
                     <h2 className="text-3xl font-extrabold text-gray-900">Frequently Asked Questions</h2>
                 </div>
 
@@ -48,7 +48,7 @@ const FAQ = () => {
                                     </svg>
                                 </span>
                             </button>
-                            <div 
+                            <div
                                 className={`overflow-hidden transition-all duration-300 ease-in-out ${activeIndex === idx ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}
                             >
                                 <div className="p-6 pt-0 text-sm text-gray-600 leading-relaxed bg-gray-50">

@@ -27,7 +27,7 @@ const FeaturedCategories = () => {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                     <div>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Explore</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-600 mb-2 block">Explore</span>
                         <h2 className="text-3xl font-extrabold text-gray-900">Popular Categories</h2>
                     </div>
                     <Link to="/tuitions" className="btn-quiet-secondary">

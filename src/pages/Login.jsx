@@ -78,7 +78,7 @@ let Login = () => {
 
     const fillDemo = (role) => {
         const creds = role === 'admin'
-            ? { email: 'admin@etuition.com', password: 'password123' }
+            ? { email: 'demoadmin@etuition.com', password: 'password123' }
             : { email: 'student1@email.com', password: 'password123' };
 
         setValue('email', creds.email);
@@ -132,10 +132,10 @@ let Login = () => {
                             </button>
                             <button
                                 type="button"
-                                onClick={() => fillDemo('admin')}
+                                onClick={() => navigate('/admin-login')}
                                 className="btn btn-sm btn-ghost border-gray-200 font-normal text-xs"
                             >
-                                Demo Admin
+                                Admin Portal →
                             </button>
                         </div>
                     </form>

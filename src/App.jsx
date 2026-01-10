@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound"
 import Checkout from './pages/Checkout'
 import PaymentSuccess from "./pages/PaymentSuccess"
 import PaymentHistory from './pages/PaymentHistory'
+import AdminLogin from './pages/AdminLogin'
 // rutes setup
 let App = () => {
   console.log('app rendering')
@@ -43,6 +44,7 @@ let App = () => {
 
 
               <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+              <Route path="/admin-login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
               <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 
               <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />

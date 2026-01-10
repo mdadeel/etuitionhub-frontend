@@ -1,7 +1,7 @@
 // payment history page
 import { useState, useEffect } from "react"
 import { useAuth } from '../contexts/AuthContext'
-import API_URL from '../config/api';
+import api from '../services/api';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import toast from 'react-hot-toast';
 
@@ -17,9 +17,8 @@ const PaymentHistory = () => {
 
     const fetchPayments = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/payments/student/${user.email}`);
-            const data = await res.json();
-            setPayments(data);
+            const res = await api.get(`/api/payments/student/${user.email}`);
+            setPayments(res.data);
         } catch (error) {
             toast.error('Log recovery failure: Could not sync transaction history.');
         } finally {

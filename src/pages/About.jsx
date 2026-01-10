@@ -5,7 +5,7 @@ import React from 'react';
 
 const About = () => {
     return (
-        <div className="fade-up container mx-auto px-8 py-20 lg:px-12 max-w-4xl">
+        <div className="fade-up container mx-auto px-8 py-10 lg:px-12 max-w-4xl">
             <header className="mb-16 border-b border-gray-200 pb-12 text-center md:text-left">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-4 block">Institutional Profile</span>
                 <h1 className="text-5xl font-extrabold text-gray-900 tracking-tighter">Educational Infrastructure</h1>
