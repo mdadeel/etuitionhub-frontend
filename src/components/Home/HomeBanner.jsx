@@ -10,7 +10,7 @@ import { ArrowRight } from "lucide-react";
  */
 const HomeBanner = () => {
     return (
-        <section className="bg-background pt-20 pb-16 md:pt-32 md:pb-24 border-b border-border/40">
+        <section className="bg-background pt-10 pb-16 md:pt-18 md:pb-24 border-b border-border/40">
             <div className="container mx-auto px-6 md:px-12 max-w-6xl">
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
