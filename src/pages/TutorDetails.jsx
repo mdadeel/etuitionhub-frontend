@@ -1,7 +1,3 @@
-/**
- * Tutor Details Page
- * Displays full tutor profile information - Compact redesign
- */
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import demoTutors from '../data/demoTutors.json';
@@ -9,7 +5,27 @@ import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import TutorCard from '../components/Home/TutorCard';
 import toast from 'react-hot-toast';
+import { 
+    ArrowLeft, 
+    Star, 
+    Clock, 
+    Banknote, 
+    CheckCircle2, 
+    MapPin, 
+    Calendar, 
+    ShieldCheck, 
+    Award,
+    Send,
+    Bookmark
+} from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
+/**
+ * Tutor Details Page
+ * Refactored to "Technical Emerald Minimalism"
+ * Features: Sharp geometry, technical metrics, high-contrast typography
+ */
 const TutorDetails = () => {
     const { id } = useParams();
     const { user } = useAuth();
@@ -17,182 +33,200 @@ const TutorDetails = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             const found = demoTutors.find(t => t._id === id);
             setTutor(found);
             setLoading(false);
         }, 300);
+        return () => clearTimeout(timer);
     }, [id]);
 
     const handleContact = () => {
-        toast.success(`Contact request sent to ${tutor.displayName}! They will reach out via email.`);
+        toast.success(`Contact request sent to ${tutor.displayName}! Awaiting response.`);
     };
 
     const handleSave = () => {
-        toast.success('Profile saved to your favorites!');
+        toast.success('Node saved to favorites.');
     };
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center bg-background">
+            <LoadingSpinner />
+        </div>
+    );
 
     if (!tutor) {
         return (
-            <div className="max-w-7xl mx-auto px-6 py-12 text-center">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-4 block">Error 404</span>
-                <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Expert profile not found.</h1>
-                <Link to="/tutors" className="btn-quiet-secondary inline-block px-8">
-                    Return to Professionals
-                </Link>
+            <div className="max-w-7xl mx-auto px-6 py-20 text-center bg-background min-h-screen">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4 block">Error 404 // NODE_NOT_FOUND</span>
+                <h1 className="text-4xl font-black text-foreground mb-8 uppercase italic">Expert profile not found.</h1>
+                <Button asChild variant="outline" className="rounded-none px-8 font-black uppercase tracking-widest border-primary text-primary">
+                    <Link to="/tutors">Return to Directory</Link>
+                </Button>
             </div>
         );
     }
 
     return (
-        <div className="bg-[var(--color-surface)] min-h-screen text-[var(--color-text-primary)] transition-colors duration-300">
-            <div className="max-w-7xl mx-auto px-6 py-6 pb-20">
+        <div className="bg-background min-h-screen py-10 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary">
+            {/* Background Technical Grid Element */}
+            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
+                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
+            </div>
+
+            <div className="max-w-7xl mx-auto relative z-10">
                 {/* Breadcrumb */}
-                <div className="mb-6">
-                    <Link to="/tutors" className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)] hover:text-indigo-600 transition-colors flex items-center gap-2">
-                        <span>←</span> Back to Professionals
+                <div className="mb-10">
+                    <Link to="/tutors" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 group italic">
+                        <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> 
+                        Back to Specialist Directory
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
                     {/* Left Column: Profile Info */}
-                    <div className="lg:col-span-8 space-y-8">
-                        <header className="bg-[var(--color-surface)] border border-[var(--color-border)] p-8 rounded-xl shadow-sm relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-bl-full -z-0"></div>
+                    <div className="lg:col-span-8 space-y-10">
+                        <header className="bg-background border border-border p-10 rounded-none relative overflow-hidden shadow-sm">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-none -mr-24 -mt-24 rotate-45"></div>
 
-                            <div className="relative z-10 flex flex-col md:flex-row gap-8">
+                            <div className="relative z-10 flex flex-col md:flex-row gap-10">
                                 {/* Avatar */}
-                                <div className="w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-2xl overflow-hidden border-4 border-[var(--color-surface)] shadow-xl bg-[var(--color-surface-muted)]">
+                                <div className="w-40 h-40 md:w-56 md:h-56 shrink-0 rounded-none overflow-hidden border border-border shadow-lg bg-muted p-1">
                                     <img
                                         src={tutor.photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
                                         alt={tutor.displayName}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
                                     />
                                 </div>
 
-                                <div className="flex-grow">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <span className="px-2 py-0.5 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider rounded">
-                                            Pro Tutor
-                                        </span>
+                                <div className="flex-grow flex flex-col justify-center">
+                                    <div className="flex flex-wrap items-center gap-3 mb-6">
+                                        <Badge className="rounded-none bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest px-3 py-1">
+                                            PRO_SPECIALIST
+                                        </Badge>
                                         {tutor.isVerified && (
-                                            <span className="px-2 py-0.5 bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-wide border border-green-500/20 rounded">
-                                                Verified
-                                            </span>
+                                            <Badge variant="outline" className="rounded-none border-primary text-primary bg-primary/5 text-[9px] font-black uppercase tracking-widest px-3 py-1 flex items-center gap-1">
+                                                <ShieldCheck size={10} /> VERIFIED_NODE
+                                            </Badge>
                                         )}
                                     </div>
 
-                                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--color-text-primary)] mb-2">{tutor.displayName}</h1>
-                                    <p className="text-sm text-[var(--color-text-secondary)] font-medium mb-6">{tutor.qualification}</p>
+                                    <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-foreground mb-4 uppercase italic leading-none">{tutor.displayName}</h1>
+                                    <p className="text-lg text-muted-foreground font-bold mb-8 uppercase tracking-tight max-w-xl border-l-2 border-primary pl-4">
+                                        {tutor.qualification}
+                                    </p>
 
-                                    <div className="grid grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-3 gap-8 pt-8 border-t border-border">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-1">Experience</span>
-                                            <span className="text-lg font-extrabold text-[var(--color-text-primary)]">{tutor.experience}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2 flex items-center gap-1">
+                                                <Clock size={10} className="text-primary" /> Experience
+                                            </span>
+                                            <span className="text-2xl font-black text-foreground tabular-nums uppercase">{tutor.experience}</span>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-1">Rating</span>
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2 flex items-center gap-1">
+                                                <Star size={10} className="text-primary" /> Metrics
+                                            </span>
                                             <div className="flex items-center gap-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
-                                                <span className="text-lg font-extrabold text-yellow-500">{tutor.ratings}/5</span>
+                                                <span className="text-2xl font-black text-foreground tabular-nums">{tutor.ratings}/5</span>
                                             </div>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-1">Fee / month</span>
-                                            <span className="text-lg font-extrabold text-teal-600">৳{tutor.expectedSalary}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2 flex items-center gap-1">
+                                                <Banknote size={10} className="text-primary" /> Rate / mo
+                                            </span>
+                                            <span className="text-2xl font-black text-primary tabular-nums italic">৳{tutor.expectedSalary}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </header>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <section className="bg-[var(--color-surface-muted)]/50 border border-[var(--color-border)] p-6 rounded-xl">
-                                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-[var(--color-text-primary)] mb-6 flex items-center gap-2">
-                                    <span className="w-1.5 h-4 bg-teal-500 rounded-full"></span>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <section className="bg-muted/10 border border-border p-8 rounded-none">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground mb-8 flex items-center gap-3">
+                                    <div className="w-1 h-4 bg-primary"></div>
                                     Specializations
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
                                     {tutor.subjects?.map((subject, idx) => (
-                                        <span key={idx} className="px-3 py-1.5 bg-[var(--color-surface)] border border-[var(--color-border)] text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-tight rounded-lg">
+                                        <Badge key={idx} variant="secondary" className="rounded-none bg-background border border-border text-[10px] font-black text-muted-foreground uppercase tracking-tight px-3 py-2">
                                             {subject}
-                                        </span>
+                                        </Badge>
                                     ))}
                                 </div>
                             </section>
 
-                            <section className="bg-[var(--color-surface-muted)]/50 border border-[var(--color-border)] p-6 rounded-xl">
-                                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-[var(--color-text-primary)] mb-6 flex items-center gap-2">
-                                    <span className="w-1.5 h-4 bg-teal-500 rounded-full"></span>
-                                    Availability
+                            <section className="bg-muted/10 border border-border p-8 rounded-none">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground mb-8 flex items-center gap-3">
+                                    <div className="w-1 h-4 bg-primary"></div>
+                                    Availability Matrix
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
                                     {tutor.availableDays?.map((day, idx) => (
-                                        <span key={idx} className="px-3 py-1.5 bg-[var(--color-surface)] border border-[var(--color-border)] text-xs font-bold text-[var(--color-text-secondary)] rounded-lg">
+                                        <Badge key={idx} variant="outline" className="rounded-none border-border bg-background text-[10px] font-black text-muted-foreground uppercase tracking-tight px-3 py-2">
                                             {day}
-                                        </span>
+                                        </Badge>
                                     ))}
                                 </div>
                             </section>
                         </div>
 
                         {/* Location */}
-                        <section className="bg-[var(--color-surface-muted)]/50 border border-[var(--color-border)] p-6 rounded-xl">
-                            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
-                                <span className="w-1.5 h-4 bg-red-500 rounded-full"></span>
-                                Location
+                        <section className="bg-muted/10 border border-border p-8 rounded-none">
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground mb-6 flex items-center gap-3">
+                                <div className="w-1 h-4 bg-primary"></div>
+                                Geospacial Coordinates
                             </h2>
-                            <p className="text-sm font-medium text-[var(--color-text-secondary)]">{tutor.location}</p>
+                            <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                                <MapPin size={14} className="text-primary" /> {tutor.location}
+                            </p>
                         </section>
                     </div>
 
                     {/* Right Column: Sticky Action Panel */}
                     <div className="lg:col-span-4 lg:sticky lg:top-24">
-                        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] p-8 rounded-xl shadow-lg relative overflow-hidden">
-                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-500/5 rounded-full -z-0"></div>
+                        <div className="bg-background border border-border p-10 rounded-none shadow-xl relative overflow-hidden">
+                            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/5 rounded-none -rotate-12"></div>
 
                             <div className="relative z-10">
-                                <h3 className="text-xl font-extrabold text-[var(--color-text-primary)] mb-2">Connect with {tutor.displayName.split(' ')[0]}</h3>
-                                <p className="text-xs text-[var(--color-text-muted)] mb-8 leading-relaxed font-medium">Request a professional engagement. The tutor will respond within 24 hours.</p>
+                                <h3 className="text-2xl font-black text-foreground mb-4 uppercase italic tracking-tighter">Connect Protocol</h3>
+                                <p className="text-[10px] text-muted-foreground mb-10 leading-relaxed font-bold uppercase tracking-widest">
+                                    Initiate professional engagement. Target node will receive transmission within 24 standard hours.
+                                </p>
 
                                 <div className="space-y-4">
                                     {!user ? (
-                                        <Link
-                                            to="/login"
-                                            className="w-full h-14 flex items-center justify-center gap-2 bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-text-secondary)] font-bold rounded-lg hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all font-mono tracking-tighter"
-                                        >
-                                            Login to Connect
-                                        </Link>
+                                        <Button asChild variant="secondary" className="w-full h-16 rounded-none text-xs font-black uppercase tracking-[0.2em] border border-border shadow-sm">
+                                            <Link to="/login" className="flex items-center gap-2">
+                                                Login to Connect
+                                            </Link>
+                                        </Button>
                                     ) : (
-                                        <button
+                                        <Button 
                                             onClick={handleContact}
-                                            className="w-full h-14 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold rounded-lg shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all"
+                                            className="w-full h-16 rounded-none text-xs font-black uppercase tracking-[0.2em] shadow-lg flex items-center justify-center gap-2"
                                         >
-                                            Contact Professional
-                                        </button>
+                                            <Send size={18} /> Contact Specialist
+                                        </Button>
                                     )}
 
-                                    <button
+                                    <Button 
+                                        variant="outline"
                                         onClick={handleSave}
-                                        className="w-full h-14 bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] font-bold rounded-lg hover:bg-[var(--color-surface-muted)] transition-all text-sm uppercase tracking-widest"
+                                        className="w-full h-16 rounded-none text-xs font-black uppercase tracking-[0.2em] border-border hover:bg-muted transition-all flex items-center justify-center gap-2"
                                     >
-                                        Save Profile
-                                    </button>
+                                        <Bookmark size={18} /> Save Identity
+                                    </Button>
                                 </div>
 
-                                <div className="mt-8 pt-8 border-t border-[var(--color-border)] flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
+                                <div className="mt-10 pt-10 border-t border-border flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-none bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                                        <Award size={24} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black uppercase text-[var(--color-text-primary)]">Identity Verified</p>
-                                        <p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-tighter">Background check passed</p>
+                                        <p className="text-[10px] font-black uppercase text-foreground tracking-widest">Identity Validated</p>
+                                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest">Node background verification: PASS</p>
                                     </div>
                                 </div>
                             </div>
@@ -201,23 +235,27 @@ const TutorDetails = () => {
                 </div>
 
                 {/* Find More Section */}
-                <div className="mt-20 border-t border-[var(--color-border)] pt-16">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                <div className="mt-32 pt-20 border-t border-border">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
                         <div>
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Curation</span>
-                            <h2 className="text-3xl font-extrabold tracking-tight text-[var(--color-text-primary)]">Find More Tutors</h2>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2 block italic">Curation Pipeline</span>
+                            <h2 className="text-5xl font-black tracking-tighter text-foreground uppercase italic">Simmilar Nodes.</h2>
                         </div>
-                        <Link to="/tutors" className="text-sm font-bold text-indigo-600 hover:underline flex items-center gap-2">
-                            Browse All Professionals <span>→</span>
-                        </Link>
+                        <Button asChild variant="ghost" className="rounded-none font-black text-xs uppercase tracking-[0.2em] group h-auto p-0">
+                            <Link to="/tutors" className="flex items-center gap-2 italic">
+                                Browse All Specialists <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                            </Link>
+                        </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t border-l border-border bg-border">
                         {demoTutors
                             .filter(t => t._id !== id)
                             .slice(0, 3)
                             .map(item => (
-                                <TutorCard key={item._id} tutor={item} />
+                                <div key={item._id} className="bg-background border-r border-b border-border hover:bg-muted/30 transition-colors">
+                                    <TutorCard tutor={item} />
+                                </div>
                             ))}
                     </div>
                 </div>
@@ -226,4 +264,4 @@ const TutorDetails = () => {
     );
 };
 
-        export default TutorDetails;
+export default TutorDetails;

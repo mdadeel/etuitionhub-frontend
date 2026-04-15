@@ -1,52 +1,73 @@
-import {
-    MdFunctions,
-    MdScience,
-    MdTranslate,
-    MdBrush,
-    MdComputer,
-    MdBusinessCenter,
-    MdMusicNote,
-    MdPublic
-} from 'react-icons/md';
+import { 
+    Calculator, 
+    FlaskConical, 
+    Languages, 
+    Palette, 
+    Monitor, 
+    Briefcase, 
+    Music, 
+    Globe,
+    ArrowUpRight
+} from "lucide-react";
 import { Link } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
+/**
+ * FeaturedCategories Component
+ * Technical Emerald Minimalism Refactor
+ */
 const FeaturedCategories = () => {
     const categories = [
-        { icon: MdFunctions, label: "Mathematics", count: "1,200+ Tutors", color: "bg-blue-500/10 text-blue-600" },
-        { icon: MdScience, label: "Physics & Science", count: "850+ Tutors", color: "bg-purple-500/10 text-purple-600" },
-        { icon: MdTranslate, label: "English & Languages", count: "2,000+ Tutors", color: "bg-pink-500/10 text-pink-600" },
-        { icon: MdBrush, label: "Arts & Humanities", count: "450+ Tutors", color: "bg-orange-500/10 text-orange-600" },
-        { icon: MdComputer, label: "ICT & Programming", count: "600+ Tutors", color: "bg-teal-500/10 text-teal-600" },
-        { icon: MdBusinessCenter, label: "Business Studies", count: "500+ Tutors", color: "bg-indigo-500/10 text-indigo-600" },
-        { icon: MdMusicNote, label: "Music & Dance", count: "120+ Tutors", color: "bg-red-500/10 text-red-600" },
-        { icon: MdPublic, label: "Religious Studies", count: "300+ Tutors", color: "bg-green-500/10 text-green-600" },
+        { icon: Calculator, label: "Mathematics", count: "1,200+ Tutors" },
+        { icon: FlaskConical, label: "Physics & Science", count: "850+ Tutors" },
+        { icon: Languages, label: "English & Languages", count: "2,000+ Tutors" },
+        { icon: Palette, label: "Arts & Humanities", count: "450+ Tutors" },
+        { icon: Monitor, label: "ICT & Programming", count: "600+ Tutors" },
+        { icon: Briefcase, label: "Business Studies", count: "500+ Tutors" },
+        { icon: Music, label: "Music & Dance", count: "120+ Tutors" },
+        { icon: Globe, label: "Religious Studies", count: "300+ Tutors" },
     ];
 
     return (
-        <section className="py-20 bg-[var(--color-surface-muted)]/50">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-                    <div>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-600 mb-2 block">Explore</span>
-                        <h2 className="text-3xl font-extrabold text-[var(--color-text-primary)]">Popular Categories</h2>
+        <section className="py-32 bg-background border-b border-border">
+            <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
+                    <div className="max-w-xl">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-4 block">Categories</span>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground uppercase leading-[0.9]">
+                            Subject <br />
+                            <span className="text-muted-foreground">Specializations</span>
+                        </h2>
                     </div>
-                    <Link to="/tuitions" className="btn-quiet-secondary">
-                        View All Subjects
-                    </Link>
+                    <Button variant="outline" asChild size="lg" className="h-12 px-8 text-xs font-bold tracking-widest uppercase rounded-lg border-2">
+                        <Link to="/tuitions">
+                            View All <ArrowUpRight className="ml-2 w-4 h-4" />
+                        </Link>
+                    </Button>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {categories.map((cat, idx) => (
                         <Link
                             to={`/tuitions?category=${cat.label}`}
                             key={idx}
-                            className="bg-[var(--color-surface)] p-6 rounded-lg border border-[var(--color-border)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group"
+                            className="group relative glass-card p-6 rounded-xl"
                         >
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${cat.color} group-hover:scale-110 transition-transform`}>
-                                <cat.icon className="text-2xl" />
+                            <div className="flex flex-col h-full">
+                                <div className="mb-4 group-hover:-translate-y-1 transition-transform duration-500">
+                                    <cat.icon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-500" strokeWidth={1.5} />
+                                </div>
+                                <h3 className="text-base font-bold text-foreground transition-colors leading-tight">
+                                    {cat.label}
+                                </h3>
+                                <p className="text-[10px] font-medium text-muted-foreground mt-1">
+                                    {cat.count}
+                                </p>
                             </div>
-                            <h3 className="font-bold text-[var(--color-text-primary)] mb-1">{cat.label}</h3>
-                            <p className="text-xs text-[var(--color-text-secondary)] font-medium">{cat.count}</p>
+                            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
+                            </div>
                         </Link>
                     ))}
                 </div>

@@ -1,10 +1,28 @@
-// tutor dashboard - revenue tracking and stuff
 import { useState, useEffect } from 'react'
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
+import { 
+    Activity, 
+    FileText, 
+    Zap, 
+    Banknote, 
+    ShieldCheck, 
+    ArrowUpRight,
+    Trash2,
+    Database,
+    Clock,
+    UserCheck
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
+/**
+ * TutorDashboard Component
+ * Refactored to "Technical Emerald Minimalism"
+ */
 const TutorDashboard = () => {
     const { user, dbUser } = useAuth();
     const [activeTab, setActiveTab] = useState("overview");
@@ -27,7 +45,6 @@ const TutorDashboard = () => {
                 const revenueRes = await api.get(`/api/payments/tutor/${user.email}`);
                 setRevenue(revenueRes.data || []);
             } catch (e) {
-                // Revenue fetch may fail if no payments yet
                 console.log('Revenue fetch:', e.message);
             }
         } catch (e) {
@@ -38,7 +55,7 @@ const TutorDashboard = () => {
     };
 
     const totalEarnings = revenue.reduce((sum, p) => sum + (p.amount || 0), 0);
-    const activeStudents = apps.filter(a => a.status === 'approved').length;
+    const activeEngagements = apps.filter(a => a.status === 'approved').length;
 
     const handleDelete = async (id) => {
         if (!confirm('Permanently remove this application documentation?')) return;
@@ -61,34 +78,37 @@ const TutorDashboard = () => {
     if (loading) return <LoadingSpinner />;
 
     const tabs = [
-        { id: 'overview', label: 'Strategic Overview' },
-        { id: 'applications', label: 'Active Pipeline' },
-        { id: 'ongoing', label: 'Ongoing Engagements' },
-        { id: 'revenue', label: 'Financial History' }
+        { id: 'overview', label: 'STRATEGIC_OVERVIEW', icon: Activity },
+        { id: 'applications', label: 'ACTIVE_PIPELINE', icon: FileText },
+        { id: 'ongoing', label: 'VERIFIED_ENGAGEMENTS', icon: UserCheck },
+        { id: 'revenue', label: 'YIELD_MANIFEST', icon: Banknote }
     ];
 
     return (
-        <div className="fade-up space-y-12">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="space-y-12 animate-in fade-in duration-700">
+            <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-10 bg-background border-b border-border pb-12">
                 <div>
-                    <div className="flex items-center gap-2 mb-3">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-teal-600">Professional Architecture</span>
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-1 bg-primary"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary text-balance">Specialist Intelligence Interface</span>
                     </div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight leading-none">Strategic Dashboard</h1>
-                    <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.1em] mt-3">{dbUser?.displayName} // SESSION: {new Date().toLocaleDateString()}</p>
+                    <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-none">Command Center.</h1>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-6 flex items-center gap-2">
+                        <Database size={12} className="text-primary" /> NODE_{dbUser?.displayName?.toUpperCase().replace(' ', '_')} // {new Date().toLocaleDateString()}
+                    </p>
                 </div>
 
-                <div className="flex bg-gray-50 p-1.5 rounded-2xl gap-1 border border-gray-100/50 overflow-x-auto shrink-0">
+                <div className="flex flex-wrap bg-muted/20 p-1 rounded-none border border-border gap-1 overflow-x-auto shrink-0">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-6 py-3 text-[9px] font-black uppercase tracking-[0.15em] rounded-xl transition-all duration-300 ${activeTab === tab.id
-                                ? 'bg-white text-teal-600 shadow-md ring-1 ring-black/5'
-                                : 'text-gray-400 hover:text-gray-600 hover:bg-white/50'
+                            className={`flex items-center gap-3 px-6 py-3 text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 rounded-none ${activeTab === tab.id
+                                ? 'bg-background text-primary shadow-sm border border-border'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                                 }`}
                         >
+                            <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-50'} />
                             {tab.label}
                         </button>
                     ))}
@@ -96,84 +116,82 @@ const TutorDashboard = () => {
             </header>
 
             {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="p-10 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
-                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 mb-8 group-hover:text-teal-600 transition-colors">Pipeline Volume</p>
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-5xl font-black text-gray-900 tracking-tighter">{apps.length}</span>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Active Requests</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-l border-border bg-border">
+                    <div className="p-12 bg-background border-r border-b border-border group hover:bg-muted/20 transition-colors">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-10 group-hover:text-primary transition-colors">Pipeline Volume</p>
+                        <div className="flex items-baseline gap-3">
+                            <span className="text-6xl font-black text-foreground tracking-tighter tabular-nums italic leading-none">{apps.length}</span>
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Records</span>
                         </div>
                     </div>
-                    <div className="p-10 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
-                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 mb-8 group-hover:text-teal-600 transition-colors">Current Tenure</p>
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-5xl font-black text-teal-600 tracking-tighter">{activeStudents}</span>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Engagements</span>
+                    <div className="p-12 bg-background border-r border-b border-border group hover:bg-muted/20 transition-colors">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-10 group-hover:text-primary transition-colors">Active Tenure</p>
+                        <div className="flex items-baseline gap-3">
+                            <span className="text-6xl font-black text-primary tracking-tighter tabular-nums italic leading-none">{activeEngagements}</span>
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Nodes</span>
                         </div>
                     </div>
-                    <div className="p-10 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
-                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 mb-8 group-hover:text-teal-600 transition-colors">Cumulative Yield</p>
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-5xl font-black text-gray-900 tracking-tighter">৳{totalEarnings}</span>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Protocol BDT</span>
+                    <div className="p-12 bg-background border-r border-b border-border group hover:bg-muted/20 transition-colors">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-10 group-hover:text-primary transition-colors">Cumulative Yield</p>
+                        <div className="flex items-baseline gap-3">
+                            <span className="text-6xl font-black text-foreground tracking-tighter tabular-nums italic leading-none">৳{totalEarnings}</span>
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Protocol BDT</span>
                         </div>
                     </div>
                 </div>
             )}
 
             {activeTab === 'applications' && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="bg-background border border-border shadow-2xl overflow-hidden relative selection:bg-primary/30 selection:text-primary">
                     {apps.length === 0 ? (
-                        <div className="p-24 text-center">
-                            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-200 mx-auto border border-gray-100 shadow-sm mb-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 italic">No pipeline records available within this infrastructure.</p>
+                        <div className="p-32 text-center bg-muted/10 border-b border-border">
+                            <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">No pipeline records available within this infrastructure.</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left">
+                            <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-gray-50/50 border-b border-gray-100">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Reference</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Academic Target</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 text-center">Protocol Yield</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 text-center">Verification</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 text-right">Operations</th>
+                                    <tr className="bg-muted border-b border-border">
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Reference</th>
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Academic Target</th>
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Yield</th>
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Protocol Status</th>
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-right">Operations</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-border">
                                     {apps.map((app, idx) => (
-                                        <tr key={app._id} className="hover:bg-teal-50/20 transition-colors">
-                                            <td className="px-8 py-6 text-xs font-black text-gray-400">#PROTO-0{idx + 1}</td>
-                                            <td className="px-8 py-6">
-                                                <p className="text-sm font-black text-gray-900 tracking-tight">{app.tuitionId?.subject}</p>
-                                                <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tight">{app.studentEmail}</p>
+                                        <tr key={app._id} className="hover:bg-muted/30 transition-colors group">
+                                            <td className="px-10 py-8 text-[10px] font-black text-muted-foreground tabular-nums tracking-widest">PROTO_{idx + 1001}</td>
+                                            <td className="px-10 py-8">
+                                                <p className="text-sm font-black text-foreground tracking-tighter uppercase italic">{app.tuitionId?.subject}</p>
+                                                <p className="text-[9px] text-muted-foreground font-black mt-1 uppercase tracking-widest">{app.studentEmail}</p>
                                             </td>
-                                            <td className="px-8 py-6 text-center">
-                                                 <p className="text-sm font-black text-teal-600 tracking-tighter">৳{app.expectedSalary}</p>
+                                            <td className="px-10 py-8 text-center">
+                                                 <p className="text-sm font-black text-primary tabular-nums italic">৳{app.expectedSalary}</p>
                                             </td>
-                                            <td className="px-8 py-6 text-center">
-                                                <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-md border shadow-sm ${app.status === 'approved' ? 'bg-teal-50 text-teal-700 border-teal-100' :
-                                                    app.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-100' :
-                                                        'bg-gray-50 text-gray-400 border-gray-100'
-                                                    }`}>
+                                            <td className="px-10 py-8 text-center">
+                                                <Badge variant="outline" className={`rounded-none px-3 py-1 text-[9px] font-black uppercase tracking-widest border-border ${
+                                                    app.status === 'approved' ? 'text-primary border-primary bg-primary/5' :
+                                                    app.status === 'rejected' ? 'text-destructive border-destructive/20 bg-destructive/5' :
+                                                    'text-muted-foreground bg-muted'
+                                                }`}>
                                                     {app.status}
-                                                </span>
+                                                </Badge>
                                             </td>
-                                            <td className="px-8 py-6 text-right">
-                                                {app.status === 'pending' && (
-                                                    <button
-                                                        className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition-all px-4 py-2 hover:bg-red-50 rounded-lg"
+                                            <td className="px-10 py-8 text-right">
+                                                {app.status === 'pending' ? (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-[9px] font-black uppercase tracking-widest text-destructive hover:text-destructive hover:bg-destructive/5 rounded-none"
                                                         onClick={() => handleDelete(app._id)}
                                                     >
-                                                        Recall
-                                                    </button>
-                                                )}
-                                                {app.status !== 'pending' && (
-                                                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">— FINALIZED —</span>
+                                                        <Trash2 size={14} className="mr-2" /> Recall Transmission
+                                                    </Button>
+                                                ) : (
+                                                    <span className="text-[9px] font-black text-muted-foreground/30 uppercase tracking-[0.2em] italic">— LOCKED —</span>
                                                 )}
                                             </td>
                                         </tr>
@@ -186,39 +204,44 @@ const TutorDashboard = () => {
             )}
 
             {activeTab === 'ongoing' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     {apps.filter(a => a.status === 'approved').length === 0 ? (
-                        <div className="col-span-full p-24 bg-white border border-dashed border-gray-100 rounded-3xl text-center">
-                             <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-200 mx-auto border border-gray-100 shadow-sm mb-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                            </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 italic">No active engagements identified within system nodes.</p>
+                        <div className="col-span-full p-32 bg-muted/10 border border-dashed border-border text-center rounded-none relative overflow-hidden">
+                             <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">No active engagements identified within system nodes.</p>
                         </div>
                     ) : (
                         apps.filter(a => a.status === 'approved').map(app => (
-                            <div key={app._id} className="p-10 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-50/50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
-                                <div className="relative">
-                                    <div className="flex items-center gap-2 mb-6">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600">Verified Protocol</span>
+                            <div key={app._id} className="p-12 bg-background border border-border rounded-none shadow-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-500">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-none -mr-20 -mt-20 rotate-45 group-hover:scale-110 transition-transform duration-700"></div>
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <div className="w-1.5 h-1.5 bg-primary"></div>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Verified Connection Active</span>
                                     </div>
-                                    <h3 className="text-2xl font-black text-gray-900 mb-6 tracking-tight leading-none">{app.tuitionId?.subject}</h3>
-                                    <div className="space-y-4 pt-6 border-t border-gray-50">
+                                    <h3 className="text-3xl font-black text-foreground mb-10 tracking-tighter uppercase italic leading-none border-l-4 border-primary pl-6">{app.tuitionId?.subject}</h3>
+                                    
+                                    <div className="space-y-6 pt-8 border-t border-border">
                                         <div className="flex justify-between items-center group/row">
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Client Identity</span>
-                                            <span className="text-xs font-black text-gray-900 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">{app.studentEmail}</span>
+                                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
+                                                <Zap size={12} className="text-primary" /> Target Node
+                                            </span>
+                                            <span className="text-[10px] font-black text-foreground bg-muted px-4 py-2 border border-border uppercase tracking-widest">{app.studentEmail}</span>
                                         </div>
                                         <div className="flex justify-between items-center group/row">
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Deployment Locale</span>
-                                            <span className="text-xs font-black text-gray-500 italic lowercase">{app.tuitionId?.location}</span>
+                                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
+                                                <Clock size={12} className="text-primary" /> Yield Cycle
+                                            </span>
+                                            <span className="text-sm font-black text-primary tabular-nums italic">৳{app.expectedSalary} <span className="text-[9px] text-muted-foreground font-black ml-1 uppercase">/ cycle</span></span>
                                         </div>
-                                        <div className="flex justify-between items-center group/row">
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Revenue Rate</span>
-                                            <span className="text-sm font-black text-teal-600 tracking-tighter">৳{app.expectedSalary} <span className="text-[10px] text-gray-400 font-bold ml-1 uppercase">/ cycle</span></span>
-                                        </div>
+                                    </div>
+                                    
+                                    <div className="mt-10 pt-10 border-t border-border">
+                                        <Button asChild variant="outline" className="w-full h-14 rounded-none border-border text-[10px] font-black uppercase tracking-[0.2em] hover:bg-muted group/btn">
+                                            <a href={`mailto:${app.studentEmail}`} className="flex items-center justify-center gap-2">
+                                                Initiate Direct Transmission <ArrowUpRight size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                            </a>
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -228,57 +251,57 @@ const TutorDashboard = () => {
             )}
 
             {activeTab === 'revenue' && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="p-10 border-b border-gray-100 bg-gray-50/20 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="bg-background border border-border shadow-2xl overflow-hidden relative">
+                    <div className="p-12 border-b border-border bg-muted/10 flex flex-col md:flex-row justify-between items-center gap-8">
                         <div>
-                             <h2 className="text-sm font-black uppercase tracking-[0.2em] text-gray-900 flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                                Yield Manifest
+                             <h2 className="text-sm font-black uppercase tracking-[0.3em] text-foreground flex items-center gap-3">
+                                <div className="w-1.5 h-1.5 bg-primary"></div>
+                                Yield Audit Manifest
                             </h2>
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] mt-1">Audit of financial protocol transmissions</p>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-3">Comprehensive audit of all financial protocol transmissions</p>
                         </div>
-                        <div className="text-right bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-100">
-                            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 mb-1">Total System Yield</p>
-                            <p className="text-2xl font-black text-teal-600 tracking-tighter">৳{totalEarnings}</p>
+                        <div className="bg-background px-10 py-6 border border-border relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-full h-full bg-primary/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-700"></div>
+                            <p className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground mb-2 relative z-10">Accumulated Node Yield</p>
+                            <p className="text-4xl font-black text-primary tracking-tighter tabular-nums italic relative z-10 leading-none">৳{totalEarnings}</p>
                         </div>
                     </div>
 
                     {revenue.length === 0 ? (
-                        <div className="p-24 text-center">
-                            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-200 mx-auto border border-gray-100 shadow-sm mb-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 italic">No financial history logs identified.</p>
+                        <div className="p-32 text-center bg-muted/10">
+                            <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">No financial history logs identified.</p>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
+                        <div className="overflow-x-auto selection:bg-primary/30 selection:text-primary">
+                            <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-gray-50/50 border-b border-gray-100">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Timestamp</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Allocation Target</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Yield Amount</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 text-right">Verification</th>
+                                    <tr className="bg-muted border-b border-border">
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Log Timestamp</th>
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Allocation Target</th>
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Transmission Yield</th>
+                                        <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-right">Verification</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-border">
                                     {revenue.map((payment) => (
-                                        <tr key={payment._id} className="hover:bg-teal-50/20 transition-colors">
-                                            <td className="px-8 py-6 text-xs font-black text-gray-400">
+                                        <tr key={payment._id} className="hover:bg-muted/30 transition-colors">
+                                            <td className="px-10 py-8 text-[10px] font-black text-muted-foreground uppercase tabular-nums tracking-widest">
                                                 {new Date(payment.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <p className="text-sm font-black text-gray-900 tracking-tight">{payment.tuitionId?.subject || 'External Transmission'}</p>
-                                                <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tight">Source: {payment.studentEmail}</p>
+                                            <td className="px-10 py-8">
+                                                <p className="text-sm font-black text-foreground tracking-tighter uppercase italic">{payment.tuitionId?.subject || 'External Cluster'}</p>
+                                                <p className="text-[9px] text-muted-foreground font-black mt-1 uppercase tracking-widest italic">Source Node: {payment.studentEmail}</p>
                                             </td>
-                                            <td className="px-8 py-6 text-sm font-black text-teal-600 tracking-tighter">৳{payment.amount}</td>
-                                            <td className="px-8 py-6 text-right">
-                                                <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-md border shadow-sm ${payment.status === 'completed' ? 'bg-teal-50 text-teal-700 border-teal-100' : 'bg-amber-50 text-amber-700 border-amber-100'
-                                                    }`}>
-                                                    {payment.status}
-                                                </span>
+                                            <td className="px-10 py-8 text-center">
+                                                <p className="text-sm font-black text-primary tabular-nums italic">৳{payment.amount}</p>
+                                            </td>
+                                            <td className="px-10 py-8 text-right">
+                                                <Badge variant="outline" className={`rounded-none px-3 py-1 text-[9px] font-black uppercase tracking-widest ${
+                                                    payment.status === 'completed' ? 'text-primary border-primary bg-primary/5' : 'text-amber-500 border-amber-500/20 bg-amber-500/5'
+                                                }`}>
+                                                    {payment.status.toUpperCase()}
+                                                </Badge>
                                             </td>
                                         </tr>
                                     ))}
@@ -292,4 +315,4 @@ const TutorDashboard = () => {
     );
 };
 
-export default TutorDashboard
+export default TutorDashboard;

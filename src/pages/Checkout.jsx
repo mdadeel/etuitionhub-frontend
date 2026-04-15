@@ -1,18 +1,36 @@
-// Manual Payment Checkout - replaces Stripe with transaction ID submission
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from "react-router-dom"
 import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
 import api from '../services/api';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
+import { 
+    Banknote, 
+    ArrowLeft, 
+    ShieldCheck, 
+    CreditCard, 
+    Zap, 
+    Database, 
+    Send,
+    AlertCircle
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 const PAYMENT_METHODS = [
-    { id: 'bkash', name: 'bKash', color: 'bg-pink-500' },
-    { id: 'nagad', name: 'Nagad', color: 'bg-orange-500' },
-    { id: 'rocket', name: 'Rocket', color: 'bg-purple-500' },
-    { id: 'bank', name: 'Bank Transfer', color: 'bg-blue-500' }
+    { id: 'bkash', name: 'bKash', color: 'bg-[#D12053]' },
+    { id: 'nagad', name: 'Nagad', color: 'bg-[#F7941D]' },
+    { id: 'rocket', name: 'Rocket', color: 'bg-[#8C3494]' },
+    { id: 'bank', name: 'Bank Transfer', color: 'bg-primary' }
 ];
 
+/**
+ * Checkout Page
+ * Refactored to "Technical Emerald Minimalism"
+ */
 const Checkout = () => {
     const { id } = useParams();
     const { user } = useAuth();
@@ -62,11 +80,11 @@ const Checkout = () => {
         e.preventDefault();
 
         if (!formData.transactionId.trim()) {
-            toast.error('Transaction ID is required');
+            toast.error('Transaction ID required');
             return;
         }
         if (!formData.senderNumber.trim()) {
-            toast.error('Sender number is required');
+            toast.error('Sender number required');
             return;
         }
 
@@ -99,23 +117,19 @@ const Checkout = () => {
         }
     };
 
-    if (loading && !application) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50/30">
-                <LoadingSpinner />
-            </div>
-        );
-    }
+    if (loading && !application) return <LoadingSpinner />;
 
     if (error && !application) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50/30 p-8">
-                <div className="max-w-md w-full text-center">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500 mb-4 italic">System Alert</p>
-                    <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">{error}</h2>
-                    <div className="mt-12 flex flex-col gap-4">
-                        <button onClick={() => navigate('/dashboard')} className="btn-quiet-secondary w-full">Return to Management</button>
-                        <button onClick={fetchApplication} className="btn-quiet-primary w-full">Retry Synchronization</button>
+            <div className="min-h-screen flex items-center justify-center bg-background p-8 selection:bg-primary/30 selection:text-primary">
+                <div className="max-w-md w-full text-center border border-border p-12 bg-muted/10 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-destructive"></div>
+                    <AlertCircle size={48} className="text-destructive mx-auto mb-8 opacity-20" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-destructive mb-4 italic">System Alert</p>
+                    <h2 className="text-2xl font-black text-foreground tracking-tighter uppercase italic mb-12">{error}</h2>
+                    <div className="flex flex-col gap-4">
+                        <Button onClick={() => navigate('/dashboard')} variant="outline" className="h-14 rounded-none border-border font-black uppercase tracking-widest text-[10px]">Return to Management</Button>
+                        <Button onClick={fetchApplication} className="h-14 rounded-none font-black uppercase tracking-widest text-[10px]">Retry Synchronization</Button>
                     </div>
                 </div>
             </div>
@@ -123,127 +137,155 @@ const Checkout = () => {
     }
 
     return (
-        <div className="fade-up min-h-screen py-20 px-8 bg-gray-50/30">
-            <div className="max-w-2xl mx-auto">
-                <header className="mb-12 border-b border-gray-200 pb-8">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">Transaction Infrastructure</span>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Payment Submission</h1>
-                    <p className="mt-2 text-sm text-gray-500">Submit your payment details for admin verification</p>
+        <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary animate-in fade-in duration-700">
+            {/* Background Technical Grid Element */}
+            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
+                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
+            </div>
+
+            <div className="max-w-5xl mx-auto relative z-10">
+                <header className="mb-16 border-b border-border pb-12 flex flex-col md:flex-row md:items-end justify-between gap-10">
+                    <div>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-1 bg-primary"></div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Transaction Infrastructure</span>
+                        </div>
+                        <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">Payment Submission.</h1>
+                        <p className="mt-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] italic">Submit transaction parameters for administrative verification.</p>
+                    </div>
+                    <Button variant="ghost" onClick={() => navigate(-1)} className="text-[10px] font-black uppercase tracking-[0.3em] h-auto p-0 hover:bg-transparent hover:text-primary group">
+                        <ArrowLeft size={14} className="mr-2 transition-transform group-hover:-translate-x-1" /> Abort Transaction
+                    </Button>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
                     {/* Payment Form */}
-                    <div className="lg:col-span-3">
-                        <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="lg:col-span-7">
+                        <form onSubmit={handleSubmit} className="space-y-12">
                             {/* Payment Method Selection */}
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-900 block">Payment Method</label>
-                                <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-6">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Payment Protocol</Label>
+                                <div className="grid grid-cols-2 gap-4">
                                     {PAYMENT_METHODS.map(method => (
                                         <button
                                             key={method.id}
                                             type="button"
                                             onClick={() => setFormData(prev => ({ ...prev, paymentMethod: method.id }))}
-                                            className={`p-4 border rounded-sm text-left transition-all ${formData.paymentMethod === method.id
-                                                ? 'border-indigo-600 bg-indigo-50'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                            className={`p-6 border rounded-none text-left transition-all relative overflow-hidden group ${formData.paymentMethod === method.id
+                                                ? 'border-primary bg-primary/5'
+                                                : 'border-border bg-background hover:border-primary/30'
                                                 }`}
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <span className={`w-3 h-3 rounded-full ${method.color}`}></span>
-                                                <span className="text-sm font-bold text-gray-900">{method.name}</span>
+                                            <div className="relative z-10 flex items-center gap-4">
+                                                <div className={`w-2 h-2 rounded-none ${method.color}`}></div>
+                                                <span className={`text-[11px] font-black uppercase tracking-[0.15em] ${formData.paymentMethod === method.id ? 'text-primary' : 'text-foreground'}`}>
+                                                    {method.name}
+                                                </span>
                                             </div>
+                                            {formData.paymentMethod === method.id && (
+                                                <div className="absolute bottom-0 right-0 p-1 bg-primary text-primary-foreground">
+                                                    <ShieldCheck size={10} />
+                                                </div>
+                                            )}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Transaction ID */}
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-900">Transaction ID / Reference</label>
-                                <input
-                                    type="text"
-                                    name="transactionId"
-                                    value={formData.transactionId}
-                                    onChange={handleChange}
-                                    className="input-quiet w-full font-mono"
-                                    placeholder="e.g., TXN123456789"
-                                    required
-                                />
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Enter the transaction ID from your payment confirmation</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                                <div className="space-y-4">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Transaction Hash (ID)</Label>
+                                    <Input
+                                        type="text"
+                                        name="transactionId"
+                                        value={formData.transactionId}
+                                        onChange={handleChange}
+                                        className="h-14 rounded-none border-border bg-muted/20 font-mono text-xs font-bold text-primary focus-visible:ring-primary uppercase tracking-widest"
+                                        placeholder="E.G. TXN_99882211"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-4">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Origin Phone Node</Label>
+                                    <Input
+                                        type="text"
+                                        name="senderNumber"
+                                        value={formData.senderNumber}
+                                        onChange={handleChange}
+                                        className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary tabular-nums"
+                                        placeholder="01XXXXXXXXX"
+                                        required
+                                    />
+                                </div>
                             </div>
 
-                            {/* Sender Number */}
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-900">Sender Phone Number</label>
-                                <input
-                                    type="text"
-                                    name="senderNumber"
-                                    value={formData.senderNumber}
-                                    onChange={handleChange}
-                                    className="input-quiet w-full"
-                                    placeholder="01XXXXXXXXX"
-                                    required
-                                />
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">The phone number used to send payment</p>
-                            </div>
-
-                            {/* Notes */}
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Additional Notes (Optional)</label>
-                                <textarea
+                            <div className="space-y-4">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Additional Parameters (Optional)</Label>
+                                <Textarea
                                     name="notes"
                                     value={formData.notes}
                                     onChange={handleChange}
-                                    className="textarea-quiet w-full h-24 resize-none"
-                                    placeholder="Any additional information..."
+                                    className="min-h-[120px] rounded-none border-border bg-muted/20 font-medium focus-visible:ring-primary resize-none p-6 text-sm"
+                                    placeholder="DETAIL_SPECIFIC_TRANSACTION_CONTEXT..."
                                 />
                             </div>
 
-                            {/* Submit */}
-                            <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    onClick={() => navigate('/dashboard')}
-                                    className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
+                            <div className="pt-8 border-t border-border">
+                                <Button
                                     type="submit"
-                                    className="btn-quiet-primary px-12 py-4 text-[10px]"
+                                    className="w-full h-16 rounded-none text-[11px] font-black uppercase tracking-[0.3em] shadow-lg flex items-center justify-center gap-3 group/btn"
                                     disabled={submitting}
                                 >
-                                    {submitting ? 'Submitting...' : 'Submit Payment'}
-                                </button>
+                                    {submitting ? (
+                                        <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
+                                    ) : (
+                                        <>
+                                            Synchronize Payment <Send size={18} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                        </>
+                                    )}
+                                </Button>
                             </div>
                         </form>
                     </div>
 
                     {/* Summary Sidebar */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-white border border-gray-200 rounded-sm shadow-sm sticky top-8">
-                            <div className="p-6 border-b border-gray-100 bg-gray-50/30">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-900">Payment Summary</h3>
+                    <div className="lg:col-span-5">
+                        <div className="bg-background border border-border rounded-none shadow-2xl sticky top-24 overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-none -mr-16 -mt-16 rotate-45 transition-transform duration-700 group-hover:scale-110"></div>
+                            
+                            <div className="p-10 border-b border-border bg-muted/10 relative z-10">
+                                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-foreground flex items-center gap-3">
+                                    <Database size={14} className="text-primary" /> Yield Summary
+                                </h3>
                             </div>
-                            <div className="p-6 space-y-4">
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Professional</p>
-                                    <p className="text-sm font-bold text-gray-900">{application?.tutorName}</p>
+                            
+                            <div className="p-10 space-y-8 relative z-10">
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Specialist Entity</p>
+                                    <p className="text-sm font-black text-foreground uppercase tracking-tight italic">{application?.tutorName}</p>
                                 </div>
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Reference</p>
-                                    <p className="text-xs font-mono text-gray-500">#{id?.slice(-8).toUpperCase()}</p>
+                                
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Reference Node</p>
+                                    <p className="text-xs font-mono font-bold text-primary uppercase tracking-widest">#{id?.slice(-12).toUpperCase()}</p>
                                 </div>
-                                <div className="pt-4 border-t border-gray-100">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Amount Due</p>
-                                    <p className="text-2xl font-extrabold text-indigo-600">৳{application?.expectedSalary}</p>
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">Monthly Fee</p>
+                                
+                                <div className="pt-10 border-t border-border">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">Total Protocol Yield</p>
+                                    <p className="text-5xl font-black text-primary tabular-nums tracking-tighter italic leading-none">
+                                        ৳{application?.expectedSalary}
+                                    </p>
+                                    <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-[0.2em] mt-4 italic">Assigned Monthly Honorarium</p>
                                 </div>
                             </div>
-                            <div className="p-6 bg-yellow-50 border-t border-yellow-100">
-                                <p className="text-[9px] font-bold text-yellow-700 uppercase tracking-widest">
-                                    ⚠️ Payment will be verified by admin within 24-48 hours
+                            
+                            <div className="p-8 bg-primary/5 border-t border-primary/20 flex items-center gap-4 relative z-10">
+                                <div className="w-10 h-10 rounded-none bg-primary/10 flex items-center justify-center text-primary">
+                                    <ShieldCheck size={20} />
+                                </div>
+                                <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] leading-relaxed">
+                                    Verification Protocol Active. Manual audit completed within 24-48 standard hours.
                                 </p>
                             </div>
                         </div>

@@ -1,4 +1,3 @@
-// home page comp
 import HomeBanner from '../components/Home/HomeBanner'
 import { useEffect } from "react"
 import PopularTutors from '../components/Home/PopularTutors'
@@ -8,58 +7,62 @@ import Statistics from "../components/Home/Statistics"
 import HowItWorks from '../components/Home/HowItWorks'
 import WhyChooseUs from "../components/Home/WhyChooseUs"
 import Testimonials from "../components/Home/Testimonials"
-// import { motion } from 'framer-motion';
 import FeaturedCategories from '../components/Home/FeaturedCategories';
 import CallToAction from '../components/Home/CallToAction';
 import Newsletter from '../components/Home/Newsletter';
 import FAQ from '../components/Home/FAQ';
 
-
+/**
+ * Home Page - Main Entry Point
+ * Refactored to "Technical Emerald Minimalism"
+ */
 const Home = () => {
     useEffect(() => {
         AOS.init({
             duration: 800,
             once: true,
+            easing: 'ease-out-quart'
         })
     }, [])
 
     return (
-        <div className="bg-white">
+        <div className="bg-background selection:bg-primary/30 selection:text-primary">
             <HomeBanner />
 
-            <div className="fade-up">
+            <div data-aos="fade-up">
                 <Statistics />
             </div>
 
-            <div className="fade-up">
+            <div data-aos="fade-up">
                 <FeaturedCategories />
             </div>
 
-            <div className="fade-up">
+            <div data-aos="fade-up">
                 <PopularTutors />
             </div>
 
-            <div className="fade-up">
+            <div data-aos="fade-up">
                 <WhyChooseUs />
             </div>
 
-            <div className="fade-up">
+            <div data-aos="fade-up">
                 <HowItWorks />
             </div>
 
-            <div className="fade-up">
+            <div data-aos="fade-up">
                 <CallToAction />
             </div>
 
-            <div className="fade-up">
+            {/* Testimonials refactor pending, using standard for now */}
+            <div data-aos="fade-up">
                 <Testimonials />
             </div>
 
-            <div className="fade-up">
+            <div data-aos="fade-up">
                 <FAQ />
             </div>
 
-            <div className="fade-up">
+            <div data-aos="fade-up">
                 <Newsletter />
             </div>
         </div>

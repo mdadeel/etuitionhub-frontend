@@ -1,39 +1,51 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Mail, Send } from "lucide-react";
+
+/**
+ * Newsletter Component
+ * Technical Emerald Minimalism Refactor
+ */
 const Newsletter = () => {
     return (
-        <section className="py-20 bg-[var(--color-surface)]">
-            <div className="max-w-6xl mx-auto px-6">
-                <div className="bg-indigo-900 dark:bg-indigo-950/50 border border-indigo-500/10 rounded-2xl p-8 md:p-16 text-center relative overflow-hidden transition-colors duration-300">
-                    {/* Background Pattern */}
-                    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1" />
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#grid)" />
-                        </svg>
+        <section className="py-32 bg-background border-b border-border">
+            <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+                <div className="relative bg-foreground dark:bg-muted text-background dark:text-foreground overflow-hidden p-12 lg:p-24 border-8 border-primary/20 shadow-[20px_20px_0px_0px_oklch(var(--primary))]">
+                    
+                    {/* Technical Grid Background */}
+                    <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" 
+                         style={{ backgroundImage: 'linear-gradient(90deg, currentColor 1px, transparent 0), linear-gradient(currentColor 1px, transparent 0)', backgroundSize: '30px 30px' }}>
                     </div>
 
-                    <div className="relative z-10 max-w-2xl mx-auto">
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6">
-                            Stay Updated with Opportunities
+                    <div className="relative z-10 max-w-3xl">
+                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary mb-6 block">Stay Synchronized</span>
+                        <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-[0.85] mb-10">
+                            Receive Critical <br />
+                            <span className="text-primary italic">Updates</span>
                         </h2>
-                        <p className="text-indigo-200 mb-10 text-lg">
-                            Get the latest tuition jobs, tutor tips, and platform updates delivered directly to your inbox. No spam, we promise.
+                        <p className="text-[11px] font-black uppercase tracking-[0.1em] text-background/60 dark:text-muted-foreground mb-12 max-w-xl leading-relaxed">
+                            Get the latest tuition opportunities, tutor strategies, and platform evolution delivered directly to your terminal. Zero overhead.
                         </p>
 
-                        <form className="flex flex-col sm:flex-row gap-4" onSubmit={(e) => e.preventDefault()}>
-                            <input
-                                type="email"
-                                placeholder="Enter your email address"
-                                className="flex-1 px-6 py-4 rounded-full bg-white/10 border border-white/20 text-white placeholder-indigo-300 focus:outline-none focus:bg-white/20 transition-all backdrop-blur-sm"
-                                required
-                            />
-                            <button className="px-8 py-4 bg-white text-indigo-900 font-bold rounded-full hover:bg-gray-100 transition-colors shadow-lg">
-                                Subscribe Now
-                            </button>
+                        <form className="flex flex-col sm:flex-row gap-0 max-w-2xl" onSubmit={(e) => e.preventDefault()}>
+                            <div className="relative flex-grow">
+                                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                                <Input
+                                    type="email"
+                                    placeholder="ENTER_EMAIL_ADDRESS"
+                                    className="h-16 pl-16 pr-6 bg-background text-foreground border-none rounded-none text-[11px] font-black tracking-widest uppercase focus-visible:ring-primary placeholder:opacity-30"
+                                    required
+                                />
+                            </div>
+                            <Button className="h-16 px-12 bg-primary hover:bg-primary/90 text-primary-foreground font-black text-[11px] tracking-[0.2em] uppercase rounded-none transition-all hover:translate-x-1 group">
+                                Subscribe <Send size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Button>
                         </form>
+                    </div>
+                    
+                    {/* Decorative Elements */}
+                    <div className="absolute top-12 right-12 hidden lg:block opacity-20">
+                        <div className="text-[120px] font-black tracking-tighter leading-none select-none">RSS</div>
                     </div>
                 </div>
             </div>

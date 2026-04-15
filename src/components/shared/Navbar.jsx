@@ -1,38 +1,32 @@
-// navbar - sticky top with daisy ui
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useState } from 'react';
-import { MdDashboard, MdLogin, MdLogout, MdLightMode, MdDarkMode } from "react-icons/md";
-import { ImProfile } from "react-icons/im";
+import { 
+    LayoutDashboard, 
+    User, 
+    LogOut, 
+    Sun, 
+    Moon, 
+    Menu, 
+    X, 
+    ChevronDown,
+    MapPin,
+    Search
+} from "lucide-react";
 import { toast } from 'react-hot-toast';
 import Cookies from 'js-cookie';
 import logo from '../../assets/logo.png';
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 const Navbar = () => {
     const router = useNavigate();
     const location = useLocation();
-    const pathname = location.pathname;
-
     const { user, logout, userRole, setLoading } = useAuth();
     const { theme, toggleTheme } = useTheme();
-
-    const currentUserName = user?.displayName;
-    const currentUserEmail = user?.email;
-    const currentUserPhotoURL = user?.photoURL;
-
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const navLinks = [
-        { path: '/', label: 'Home' },
-        { path: '/tuitions', label: 'Find Tuition' },
-        { path: '/tutors', label: 'Find Tutors' },
-    ];
-
-    const secondaryLinks = [
-        { path: '/about', label: 'About' },
-        { path: '/contact', label: 'Contact' },
-    ];
 
     const handleLogout = async () => {
         const toastId = toast.loading("Logging out...");
@@ -40,7 +34,7 @@ const Navbar = () => {
             await logout();
             Cookies.set('token', '');
             toast.dismiss(toastId);
-            toast.success("Logout successful!");
+            toast.success("Session ended.");
             setLoading(false);
             setTimeout(() => router('/login'), 500);
         } catch (error) {
@@ -50,128 +44,140 @@ const Navbar = () => {
         }
     };
 
+    const navLinks = [
+        { path: '/tuitions', label: 'FIND TUITION' },
+        { path: '/tutors', label: 'FIND TUTORS' },
+        { path: '/about', label: 'ABOUT' },
+        { path: '/contact', label: 'CONTACT' },
+    ];
+
     return (
-        <nav className="sticky top-0 z-50 bg-[var(--color-surface)] border-b border-[var(--color-border)] px-6 py-3 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-                {/* Logo */}
-                <div className="flex items-center gap-12">
-                    <Link to="/" className="flex items-center gap-2">
-                        <img src={logo} alt="e-tuitionBD Logo" className={`h-10 w-auto ${theme === 'dark' ? 'invert brightness-150' : ''}`} />
-                    </Link>
+        <header className="sticky top-0 z-50 glass transition-all duration-300">
+            <div className="max-w-[1400px] mx-auto flex items-center h-16 px-6 lg:px-12">
+                
+                {/* Brand Logo */}
+                <Link to="/" className="flex items-center gap-2 mr-10">
+                    <img src={logo} alt="e-tuitionBD" className={`h-7 w-auto ${theme === 'dark' ? 'invert' : ''}`} />
+                    <span className="text-base font-bold tracking-tighter uppercase text-foreground">
+                        E-TUITION<span className="text-primary">BD</span>
+                    </span>
+                </Link>
 
-                    {/* Desktop Nav */}
-                    <div className="hidden lg:flex items-center gap-8">
-                        {navLinks.map(link => (
-                            <NavLink
-                                key={link.path}
-                                to={link.path}
-                                className={({ isActive }) =>
-                                    `text-sm font-medium transition-colors ${isActive ? 'text-teal-600' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`
-                                }
-                            >
-                                {link.label}
-                            </NavLink>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Auth & Secondary Section */}
-                <div className="flex items-center gap-6">
-                    <div className="hidden lg:flex items-center gap-6 mr-6 border-r border-[var(--color-border)] pr-6">
-                        {/* Theme Toggle */}
-                        <button 
-                            onClick={toggleTheme}
-                            className="p-2 rounded-full hover:bg-[var(--color-surface-muted)] text-[var(--color-text-secondary)] transition-all"
-                            title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                {/* Primary Navigation */}
+                <nav className="hidden lg:flex items-center gap-8">
+                    {navLinks.map(link => (
+                        <NavLink
+                            key={link.path}
+                            to={link.path}
+                            className={({ isActive }) =>
+                                `text-[10px] font-bold tracking-[0.15em] transition-all hover:text-primary ${
+                                    isActive ? 'text-primary' : 'text-muted-foreground'
+                                }`
+                            }
                         >
-                            {theme === 'light' ? <MdDarkMode size={20} /> : <MdLightMode size={20} />}
-                        </button>
+                            {link.label}
+                        </NavLink>
+                    ))}
+                </nav>
 
-                        {secondaryLinks.map(link => (
-                            <Link key={link.path} to={link.path} className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
-                                {link.label}
-                            </Link>
-                        ))}
-                    </div>
+                <div className="flex-grow"></div>
+
+                {/* Actions Section */}
+                <div className="flex items-center gap-4">
+                    {/* Theme Toggle */}
+                    <button 
+                        onClick={toggleTheme}
+                        className="p-2.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors group"
+                        title="Toggle appearance"
+                    >
+                        {theme === 'light' ? <Moon size={18} className="group-active:scale-90" /> : <Sun size={18} className="group-active:scale-90" />}
+                    </button>
+
+                    <Separator orientation="vertical" className="h-6 hidden md:block" />
 
                     {user ? (
-                        <div className="relative">
-                            <button
-                                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="flex items-center gap-2 focus:outline-none"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-[var(--color-surface-muted)] overflow-hidden border border-[var(--color-border)]">
-                                    <img
-                                        src={currentUserPhotoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
-                                        alt={currentUserName}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <span className="text-sm font-medium text-[var(--color-text-secondary)] hidden sm:block">{currentUserName?.split(' ')[0]}</span>
-                            </button>
+                        <div className="flex items-center gap-4">
+                            <div className="hidden md:flex flex-col items-end">
+                                <span className="text-[11px] font-black tracking-tight text-foreground uppercase">
+                                    {user.displayName?.split(' ')[0]}
+                                </span>
+                                <span className="text-[9px] font-bold text-muted-foreground tracking-widest uppercase">
+                                    {userRole || 'USER'}
+                                </span>
+                            </div>
+                            
+                            <div className="relative group">
+                                <Avatar className="h-9 w-9 border border-border cursor-pointer group-hover:border-primary transition-colors">
+                                    <AvatarImage src={user.photoURL} />
+                                    <AvatarFallback className="text-[10px] font-black">{user.displayName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
 
-                            {isMenuOpen && (
-                                <div className="absolute right-0 mt-3 w-56 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-sm shadow-xl py-2 fade-up">
-                                    <div className="px-4 py-2 border-b border-[var(--color-border)] mb-2">
-                                        <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{currentUserName}</p>
-                                        <p className="text-xs text-[var(--color-text-secondary)] truncate">{currentUserEmail}</p>
-                                        {userRole && (
-                                            <span className="inline-block mt-2 px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider bg-[var(--color-surface-muted)] text-[var(--color-text-secondary)] rounded-sm border border-[var(--color-border)]">
-                                                {userRole}
-                                            </span>
-                                        )}
+                                {/* Simple Hover Menu */}
+                                <div className="absolute right-0 top-full pt-4 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all translate-y-2 group-hover:translate-y-0 z-[60]">
+                                    <div className="w-56 bg-background border border-border shadow-2xl p-2">
+                                        <Link to="/dashboard" className="flex items-center gap-3 px-4 py-3 text-[11px] font-black tracking-[0.1em] text-muted-foreground hover:text-primary hover:bg-muted transition-colors uppercase">
+                                            <LayoutDashboard size={14} /> Dashboard
+                                        </Link>
+                                        <Link to="/dashboard/profile" className="flex items-center gap-3 px-4 py-3 text-[11px] font-black tracking-[0.1em] text-muted-foreground hover:text-primary hover:bg-muted transition-colors uppercase">
+                                            <User size={14} /> Profile
+                                        </Link>
+                                        <Separator className="my-1" />
+                                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-black tracking-[0.1em] text-destructive hover:bg-destructive/5 transition-colors uppercase">
+                                            <LogOut size={14} /> Logout
+                                        </button>
                                     </div>
-                                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] flex items-center gap-2">
-                                        <MdDashboard className="text-lg opacity-60" /> Dashboard
-                                    </Link>
-                                    <Link to="/dashboard/profile" onClick={() => setIsMenuOpen(false)} className="block px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-muted)] flex items-center gap-2">
-                                        <ImProfile className="text-lg opacity-60" /> Profile
-                                    </Link>
-                                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50/10 flex items-center gap-2">
-                                        <MdLogout className="text-lg opacity-60" /> Logout
-                                    </button>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     ) : (
-                        <div className="flex items-center gap-4">
-                            {/* Mobile/Small Screen Theme Toggle */}
-                            <button 
-                                onClick={toggleTheme}
-                                className="lg:hidden p-2 rounded-full hover:bg-[var(--color-surface-muted)] text-[var(--color-text-secondary)] transition-all"
-                            >
-                                {theme === 'light' ? <MdDarkMode size={20} /> : <MdLightMode size={20} />}
-                            </button>
-                            <Link to="/login" className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Login</Link>
-                            <Link to="/register" className="btn-quiet-primary">Register</Link>
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" asChild className="hidden sm:inline-flex text-[11px] font-black tracking-[0.2em] uppercase">
+                                <Link to="/login">Login</Link>
+                            </Button>
+                            <Button asChild className="text-[11px] font-black tracking-[0.2em] px-6 uppercase h-10">
+                                <Link to="/register">Join Platform</Link>
+                            </Button>
                         </div>
                     )}
 
-                    {/* Mobile Menu Toggle */}
-                    <button className="lg:hidden p-2 text-[var(--color-text-secondary)]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
+                    {/* Mobile Menu Button */}
+                    <button 
+                        className="lg:hidden p-2 text-foreground" 
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    >
+                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
             </div>
 
-            {/* Mobile Menu */}
-            {isMenuOpen && !user && (
-                <div className="lg:hidden border-t border-[var(--color-border)] mt-3 pt-3 flex flex-col gap-4">
-                    {[...navLinks, ...secondaryLinks].map(link => (
-                        <Link
-                            key={link.path}
-                            to={link.path}
-                            onClick={() => setIsMenuOpen(false)}
-                            className="text-sm font-medium text-[var(--color-text-secondary)] px-2"
-                        >
-                            {link.label}
-                        </Link>
-                    ))}
+            {/* Mobile Navigation Overly */}
+            {isMenuOpen && (
+                <div className="lg:hidden absolute top-full left-0 w-full bg-background border-b border-border p-6 animate-in slide-in-from-top-4 duration-300">
+                    <div className="flex flex-col gap-6">
+                        {navLinks.map(link => (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-xl font-black tracking-tighter text-foreground uppercase"
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                        {!user && (
+                            <div className="flex flex-col gap-3 pt-6 border-t border-border">
+                                <Button asChild variant="outline" className="font-black tracking-widest h-12 uppercase">
+                                    <Link to="/login" onClick={() => setIsMenuOpen(false)}>Login</Link>
+                                </Button>
+                                <Button asChild className="font-black tracking-widest h-12 uppercase">
+                                    <Link to="/register" onClick={() => setIsMenuOpen(false)}>Join Platform</Link>
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
-        </nav>
+        </header>
     );
 };
 

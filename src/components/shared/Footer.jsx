@@ -1,73 +1,108 @@
-// footer comp - links and contact info
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaLinkedin, FaYoutube } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
-import { AiOutlineMail, AiOutlinePhone } from 'react-icons/ai';
-import { BiCurrentLocation } from 'react-icons/bi';
+import { 
+    Mail, 
+    Phone, 
+    MapPin,
+    ArrowUpRight
+} from "lucide-react";
+import { 
+    FaFacebook as Facebook, 
+    FaTwitter as Twitter, 
+    FaLinkedin as Linkedin, 
+    FaYoutube as Youtube 
+} from "react-icons/fa";
+import logo from '../../assets/logo.png';
 
+/**
+ * Footer Component
+ * Technical Emerald Minimalism Refactor
+ */
 const Footer = () => {
     return (
-        <footer className="bg-white border-t border-gray-100 py-16 mt-24">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-                    {/* Brand Section */}
-                    <div className="md:col-span-4">
-                        <Link to="/" className="text-xl font-bold tracking-tight text-gray-900 flex items-center gap-2 mb-4">
-                            <span className="w-8 h-8 bg-indigo-600 rounded-sm flex items-center justify-center text-white text-xs">ET</span>
-                            e-tuitionBD
+        <footer className="bg-background border-t border-border pt-32 pb-16 mt-32">
+            <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-20">
+                    
+                    {/* Brand Identity Section */}
+                    <div className="md:col-span-5">
+                        <Link to="/" className="flex items-center gap-3 mb-10 group">
+                            <img src={logo} alt="e-tuitionBD" className="h-8 w-auto dark:invert transition-transform group-hover:scale-110" />
+                            <span className="text-2xl font-black tracking-tighter uppercase text-foreground">
+                                E-TUITION<span className="text-primary italic">BD</span>
+                            </span>
                         </Link>
-                        <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
-                            A high-signal educational marketplace connecting people with specialized talent across Bangladesh.
+                        <p className="text-[11px] font-black uppercase tracking-[0.1em] text-muted-foreground max-w-sm leading-relaxed mb-12">
+                            A high-signal educational marketplace engineered to connect specialized talent with elite students across Bangladesh. Structured growth through curated matching.
                         </p>
 
-                        <div className="flex gap-4 mt-8">
-                            {[FaFacebook, FaXTwitter, FaLinkedin, FaYoutube].map((Icon, i) => (
-                                <a key={i} href="#" className="text-gray-400 hover:text-gray-900 transition-colors">
-                                    <Icon className="text-lg" />
+                        <div className="flex gap-6">
+                            {[Facebook, Twitter, Linkedin, Youtube].map((Icon, i) => (
+                                <a key={i} href="#" className="p-3 border border-border text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300">
+                                    <Icon size={18} strokeWidth={1.5} />
                                 </a>
                             ))}
                         </div>
                     </div>
 
-                    {/* Navigation */}
+                    {/* Navigation Clusters */}
                     <div className="md:col-span-2">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-6">Product</h4>
-                        <ul className="space-y-3">
-                            <li><Link to="/tuitions" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Find Tuition</Link></li>
-                            <li><Link to="/tutors" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Find Tutors</Link></li>
-                            <li><Link to="/dashboard" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Dashboard</Link></li>
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground mb-10">Platform</h4>
+                        <ul className="space-y-6">
+                            {['Find Tuition', 'Find Tutors', 'Dashboard', 'Verification'].map((label) => (
+                                <li key={label}>
+                                    <Link to="#" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 group">
+                                        {label} <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
                     <div className="md:col-span-2">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-6">Company</h4>
-                        <ul className="space-y-3">
-                            <li><Link to="/about" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">About Us</Link></li>
-                            <li><Link to="/contact" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Contact</Link></li>
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground mb-10">Company</h4>
+                        <ul className="space-y-6">
+                            {['About System', 'Contact', 'Terms', 'Privacy'].map((label) => (
+                                <li key={label}>
+                                    <Link to="#" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 group">
+                                        {label} <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    {/* Contact Info */}
-                    <div className="md:col-span-4">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-6">Office</h4>
-                        <div className="space-y-4">
-                            <div className="flex items-start gap-3">
-                                <BiCurrentLocation className="text-gray-400 text-lg shrink-0 mt-0.5" />
-                                <span className="text-sm text-gray-500">Gulshan-2, Dhaka-1212</span>
+                    {/* Geographical Context */}
+                    <div className="md:col-span-3">
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground mb-10">HQ</h4>
+                        <div className="space-y-8">
+                            <div className="flex items-start gap-4">
+                                <MapPin size={16} className="text-primary shrink-0" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-relaxed">
+                                    GULSHAN-2, DHAKA-1212 <br /> BANGLADESH_REGION_01
+                                </span>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <AiOutlineMail className="text-gray-400 text-lg shrink-0" />
-                                <span className="text-sm text-gray-500">hello@e-tuitionbd.com</span>
+                            <div className="flex items-center gap-4">
+                                <Mail size={16} className="text-primary shrink-0" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                                    OPS@E-TUITIONBD.COM
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-16 pt-8 border-t border-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-xs text-gray-400">© 2025 e-tuitionBD. All rights reserved.</p>
-                    <div className="flex gap-6">
-                        <Link to="#" className="text-xs text-gray-400 hover:text-gray-900">Privacy Policy</Link>
-                        <Link to="#" className="text-xs text-gray-400 hover:text-gray-900">Terms of Service</Link>
+                {/* Final Legal Disclaimer */}
+                <div className="mt-32 pt-12 border-t border-border flex flex-col md:flex-row justify-between items-center gap-8">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/50">
+                        © 2026 E-TUITIONBD SYSTEMS. ALL_RIGHTS_RESERVED.
+                    </p>
+                    <div className="flex gap-10">
+                        <Link to="#" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-foreground transition-colors">
+                            ENCRYPTION_STANDARDS
+                        </Link>
+                        <Link to="#" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 hover:text-foreground transition-colors">
+                            USER_AGREEMENT
+                        </Link>
                     </div>
                 </div>
             </div>
