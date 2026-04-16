@@ -1,136 +1,122 @@
-# eTuitionBD
+# e-TuitionBD 🎓
 
-A complete tuition management platform connecting students with qualified tutors in Bangladesh.
+> **A Modern Online Tuition Marketplace** connecting the best tutors with students in Bangladesh. Built with the **Antigravity Kit** (20+ Specialist Agents) for peak performance and design.
 
-## Live Demo
+---
 
-- **Live Site:** [https://e-tuitionhub.vercel.app](https://e-tuitionhub.vercel.app)
-- **Backend API:** [https://e-tuitionbd-api.vercel.app](https://e-tuitionbd-api.vercel.app)
+## 🚀 Overview
 
-## Admin Credentials
+**e-TuitionBD** is a comprehensive full-stack platform designed to revolutionize the private tutoring landscape. Inspired by the marketplace dynamics of **Airbnb** and the professional precision of **Linear**, it offers a seamless experience for both tutors and students.
 
-- **Email:** admin@etuitionbd.com
-- **Password:** Admin123#
+With a focus on trust, clarity, and ease of use, the platform features a robust tuition listing system, dual-mode payments (Stripe + Local), and a sophisticated backend for managing applications and bookings.
 
-## Project Purpose
+---
 
-eTuitionBD solves the real problem of finding qualified tutors and verified tuition opportunities. The platform:
-- Reduces friction between students and tutors with automated workflows
-- Enables digital tracking, transparent payments, and structured communication
-- Helps admins monitor and regulate all platform activities
+## ✨ Key Features
 
-## Key Features
+- **👤 Dual User Roles**: Dedicated flows for Tutors (profile management, applications) and Students (searching, booking).
+- **📚 Tuition Marketplace**: Advanced filtering and search for tuitions and tutors.
+- **💳 Integrated Payments**: 
+  - **Stripe**: Instant card payments for global reach.
+  - **Local (bKash/Nagad)**: Manual verification system for regional convenience.
+- **📊 Real-time Dashboard**: Track applications, payments, and active bookings.
+- **🛡️ Secure Auth**: JWT-based authentication with Firebase integration for storage and social auth.
+- **🤖 Agent-Driven Dev**: Built using the **Antigravity Kit**, featuring 20+ specialist AI agents for code quality, security, and UI/UX excellence.
+- **🎨 Modern UI/UX**: "Technical Emerald Minimalism" theme with full dark mode support, built with Tailwind CSS and Framer Motion.
 
-### For Students
-- Post tuition requirements (class, subject, location, budget, schedule)
-- View and manage posted tuitions
-- Review tutor applications
-- Accept tutors and make payments via Stripe
-- View payment history
+---
 
-### For Tutors
-- Browse available tuition posts
-- Apply to suitable tuitions with qualifications
-- Track application status
-- View approved/ongoing tuitions
-- See revenue and earnings history
-
-### For Admin
-- User management (view, update, delete, change roles)
-- Tuition post moderation (approve/reject)
-- Platform analytics and reports
-- Transaction history monitoring
-
-## Technologies Used
+## 🛠️ Tech Stack
 
 ### Frontend
-- React 18 with Vite
-- Tailwind CSS + DaisyUI
-- React Router DOM
-- React Hook Form
-- Firebase Authentication
-- Framer Motion (animations)
-- Axios
-- React Hot Toast
+- **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [DaisyUI](https://daisyui.com/) + [Shadcn UI](https://ui.shadcn.com/)
+- **State & Logic**: React Hook Form, Axios, React Router Dom
+- **Animations**: Framer Motion, AOS (Animate on Scroll)
+- **Charts**: Recharts for analytics
 
 ### Backend
-- Node.js + Express
-- MongoDB with Mongoose
-- JWT Authentication
-- Stripe Payment Integration
-- Cookie Parser
-- CORS
+- **Runtime**: Node.js (Express)
+- **Database**: MongoDB (Mongoose)
+- **Security**: Helmet, Express Rate Limit, BcryptJS, JWT
+- **Payments**: Stripe SDK
+- **Logging**: Winston
+- **Validation**: Joi
 
-## Pages
+### The "Antigravity Kit" (Agent System)
+- **20 Specialist Agents**: Orchestrator, Security Auditor, Frontend Specialist, etc.
+- **36 Skills**: From `react-best-practices` to `vulnerability-scanner`.
+- **Validation**: Automated core checks (`checklist.py`) and full suite verification (`verify_all.py`).
 
-- Home (Hero, Latest Tuitions, Latest Tutors, How It Works, Why Choose Us)
-- Tuitions Listing (with search, filter, pagination)
-- Tuition Details
-- Tutors Listing
-- Tutor Profile
-- Login / Register
-- Contact / About
-- Dashboard (Student / Tutor / Admin)
-- Payment History
-- Profile Settings
-- 404 Error Page
+---
 
-## Run Locally
+## 📂 Project Structure
 
-### Prerequisites
-- Node.js 18+
-- MongoDB Atlas account
-- Firebase project
-- Stripe account
-
-### Frontend Setup
-```bash
-cd frontend-client
-npm install
-cp .env.example .env.local
-# Add your Firebase config to .env.local
-npm run dev
+```plaintext
+.
+├── backend-api/          # Express API (Auth, Payments, Logic)
+├── frontend-client/      # React/Vite Frontend (UI/UX)
+├── .agent/               # Antigravity Kit (Agents, Skills, Workflows)
+├── awesome-design-md/    # Design system inspiration & tokens
+├── DESIGN.md             # Project design philosophy
+└── package.json          # Root workspace configuration
 ```
 
-### Backend Setup
+---
+
+## ⚙️ Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- MongoDB (Local or Atlas)
+- Stripe Account (for payments)
+
+### 1. Setup Backend
 ```bash
 cd backend-api
 npm install
 cp .env.example .env
-# Add MongoDB URI, JWT Secret, Stripe keys to .env
+# Update .env with your MONGODB_URI and STRIPE_SECRET_KEY
 npm run dev
 ```
 
-## Environment Variables
-
-### Frontend (.env.local)
-```
-VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
-VITE_FIREBASE_PROJECT_ID=
-VITE_API_URL=http://localhost:5000
-```
-
-### Backend (.env)
-```
-MONGODB_URI=
-JWT_SECRET=
-STRIPE_SECRET_KEY=
-NODE_ENV=development
-PORT=5000
+### 2. Setup Frontend
+```bash
+cd frontend-client
+npm install
+cp .env.example .env.local
+# Update .env.local with:
+# - VITE_FIREBASE_API_KEY (and other Firebase variables)
+# - VITE_STRIPE_PUBLISHABLE_KEY
+# - (Optional) VITE_API_URL if it's not defaulted to localhost:5000
+npm run dev
 ```
 
-## GitHub Repositories
+### 3. (Optional) Run Agent Checks
+```bash
+# Core validation
+python .agent/scripts/checklist.py .
 
-- **Client:** [Frontend Repository](https://github.com/mdadeel/etuitionhub-frontend)
-- **Server:** [Backend Repository](https://github.com/mdadeel/etuitionhub--backend)
-
-## Deployment
-
-- Frontend deployed on Vercel
-- Backend deployed on Vercel (Serverless Functions)
-- Database on MongoDB Atlas
+# Full verification
+python .agent/scripts/verify_all.py . --url http://localhost:5173
+```
 
 ---
 
-© 2024 eTuitionBD. All rights reserved.
+## 🎨 Design Philosophy
+
+Our design system focuses on **Emerald Trust**. We avoid sharp edges (using 12-16px radius) and prioritize high-quality human-centric photography. 
+
+- **Primary**: `#10b981` (Emerald 500)
+- **Secondary**: `#ff5a5f` (Coral)
+- **Typography**: Inter Variable for clarity, Geist Mono for technical meta-info.
+
+---
+
+## 📄 License
+
+This project is licensed under the **ISC License**.
+
+---
+
+*Built with ❤️ by the e-TuitionBD Development Team and the Antigravity Agent Kit.*
