@@ -119,4 +119,4 @@ This project is licensed under the **ISC License**.
 
 ---
 
-*Built with ❤️ by the e-TuitionBD Development Team and the Antigravity Agent Kit.*
+*Built with ❤️ by the mdadeel*
