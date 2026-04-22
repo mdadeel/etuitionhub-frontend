@@ -17,7 +17,8 @@ const AdminDashboard = () => {
         { id: 'analytics', label: 'Overview' },
         { id: 'payments', label: 'Payments' },
         { id: 'users', label: 'Users' },
-        { id: 'tuitions', label: 'Tuitions' }
+        { id: 'tuitions', label: 'Tuitions' },
+        { id: 'settings', label: 'Settings' }
     ];
 
     return (
@@ -59,6 +60,7 @@ const AdminDashboard = () => {
                     {activeTab === 'payments' && <DashPayments />}
                     {activeTab === 'users' && <DashUsers />}
                     {activeTab === 'tuitions' && <DashTuitions />}
+                    {activeTab === 'settings' && <DashSettings />}
                 </div>
             </AppleCard>
         </div>
