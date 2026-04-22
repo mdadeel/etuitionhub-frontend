@@ -12,7 +12,7 @@
 
 ## 🖼️ Homescreen Preview
 
-![e-TuitionBD Homescreen](./docs/screenshots/homescreen.png)
+![e-TuitionBD Homescreen](./public/homescreen.png)
 
 *The new "Precision Learning" hero section featuring dynamic image shuffling and verified expert networking.*
 
