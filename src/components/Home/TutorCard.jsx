@@ -18,10 +18,17 @@ const TutorCard = ({ tutor }) => {
                 
                 {/* Status Badges */}
                 <div className="absolute top-3 left-3 z-10">
-                    <AppleBadge variant="primary" className="backdrop-blur-md bg-background/50 border-border/50 flex items-center gap-1 py-1">
-                        {isVerified && <ShieldCheck size={10} className="text-primary" />}
-                        <span className="text-[9px]">Verified</span>
-                    </AppleBadge>
+                    {tutor.verificationStatus === 'verified_premium' ? (
+                        <AppleBadge variant="primary" className="backdrop-blur-md bg-primary/20 border-primary/30 flex items-center gap-1 py-1 text-primary-foreground">
+                            <Star size={10} className="fill-current" />
+                            <span className="text-[9px] font-black uppercase tracking-wider">Premium Specialist</span>
+                        </AppleBadge>
+                    ) : (tutor.verificationStatus === 'verified_basic' || tutor.isVerified) ? (
+                        <AppleBadge variant="primary" className="backdrop-blur-md bg-background/50 border-border/50 flex items-center gap-1 py-1">
+                            <ShieldCheck size={10} className="text-primary" />
+                            <span className="text-[9px]">Verified</span>
+                        </AppleBadge>
+                    ) : null}
                 </div>
 
                 {/* Pricing Overlay */}
