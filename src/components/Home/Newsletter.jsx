@@ -1,53 +1,41 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Mail, Send } from "lucide-react";
+import { AppleBadge, AppleCard, AppleInput } from "../shared/AppleUI";
 
-/**
- * Newsletter Component
- * Technical Emerald Minimalism Refactor
- */
 const Newsletter = () => {
     return (
-        <section className="py-32 bg-background border-b border-border">
-            <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-                <div className="relative bg-foreground dark:bg-muted text-background dark:text-foreground overflow-hidden p-12 lg:p-24 border-8 border-primary/20 shadow-[20px_20px_0px_0px_oklch(var(--primary))]">
+        <section className="py-40 bg-white dark:bg-apple-gray-950 overflow-hidden">
+            <div className="max-w-[1200px] mx-auto px-6">
+                <AppleCard className="relative overflow-hidden p-12 md:p-24 border-none bg-apple-gray-50 dark:bg-apple-gray-900" data-aos="zoom-in">
+                    {/* Subtle Ambient Background */}
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
                     
-                    {/* Technical Grid Background */}
-                    <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" 
-                         style={{ backgroundImage: 'linear-gradient(90deg, currentColor 1px, transparent 0), linear-gradient(currentColor 1px, transparent 0)', backgroundSize: '30px 30px' }}>
-                    </div>
-
-                    <div className="relative z-10 max-w-3xl">
-                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary mb-6 block">Stay Synchronized</span>
-                        <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-[0.85] mb-10">
-                            Receive Critical <br />
-                            <span className="text-primary italic">Updates</span>
+                    <div className="relative z-10 max-w-2xl">
+                        <AppleBadge variant="primary" className="mb-8">Newsletter</AppleBadge>
+                        <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-black dark:text-white leading-[0.95] mb-10">
+                            Stay in the loop. <br />
+                            <span className="text-black/20 dark:text-white/20">Never miss a beat.</span>
                         </h2>
-                        <p className="text-[11px] font-black uppercase tracking-[0.1em] text-background/60 dark:text-muted-foreground mb-12 max-w-xl leading-relaxed">
-                            Get the latest tuition opportunities, tutor strategies, and platform evolution delivered directly to your terminal. Zero overhead.
+                        <p className="text-xl text-black/50 dark:text-white/50 mb-12 leading-relaxed tracking-tight font-medium">
+                            Get the latest tutor profiles, tuition opportunities, and educational insights delivered directly to your inbox.
                         </p>
 
-                        <form className="flex flex-col sm:flex-row gap-0 max-w-2xl" onSubmit={(e) => e.preventDefault()}>
+                        <form className="flex flex-col sm:flex-row gap-4 max-w-xl" onSubmit={(e) => e.preventDefault()}>
                             <div className="relative flex-grow">
-                                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
-                                <Input
+                                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-black/20 dark:text-white/20" />
+                                <AppleInput
                                     type="email"
-                                    placeholder="ENTER_EMAIL_ADDRESS"
-                                    className="h-16 pl-16 pr-6 bg-background text-foreground border-none rounded-none text-[11px] font-black tracking-widest uppercase focus-visible:ring-primary placeholder:opacity-30"
+                                    placeholder="Enter your email address"
+                                    className="h-16 pl-14 pr-6"
                                     required
                                 />
                             </div>
-                            <Button className="h-16 px-12 bg-primary hover:bg-primary/90 text-primary-foreground font-black text-[11px] tracking-[0.2em] uppercase rounded-none transition-all hover:translate-x-1 group">
-                                Subscribe <Send size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                            <Button className="h-16 px-10 rounded-2xl bg-black dark:bg-white text-white dark:text-black font-bold text-sm hover:opacity-90 transition-all active:scale-[0.95] group">
+                                Subscribe <Send size={16} className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                             </Button>
                         </form>
                     </div>
-                    
-                    {/* Decorative Elements */}
-                    <div className="absolute top-12 right-12 hidden lg:block opacity-20">
-                        <div className="text-[120px] font-black tracking-tighter leading-none select-none">RSS</div>
-                    </div>
-                </div>
+                </AppleCard>
             </div>
         </section>
     );

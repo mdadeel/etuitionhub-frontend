@@ -1,79 +1,69 @@
 import { useState } from 'react';
-import { Plus, Minus, HelpCircle } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
+import { AppleBadge } from '../shared/AppleUI';
 
-/**
- * FAQ Component
- * Technical Emerald Minimalism Refactor
- */
 const FAQ = () => {
     const faqs = [
         {
-            question: "CREDENTIAL_VERIFICATION_PROCESS",
-            answer: "We manually verify every tutor's background, including academic records and national ID, before profile activation."
+            question: "How do you verify your mentors?",
+            answer: "We manually verify every tutor's background, including academic records and national ID, before profile activation to ensure the highest quality of education."
         },
         {
-            question: "TUITION_POSTING_FEES",
-            answer: "No, initializing a tuition requirement is completely free for students and parents."
+            question: "Is there a fee for students or parents?",
+            answer: "No, posting a tuition requirement and browsing our database of mentors is completely free for students and parents."
         },
         {
-            question: "TRANSACTION_AND_ESCROW_SYSTEM",
-            answer: "We support secure payments via bKash, Nagad, and bank transfers. Funds are held in escrow until the first month is completed."
+            question: "How does the payment system work?",
+            answer: "We support secure payments via bKash, Nagad, and bank transfers. For your security, funds are held in escrow until the first month of tutoring is successfully completed."
         },
         {
-            question: "SATISFACTION_GUARANTEE_REPLACEMENT",
-            answer: "You can request a tutor replacement within the first week of sessions at no extra cost."
+            question: "What if I'm not satisfied with the tutor?",
+            answer: "Your satisfaction is our priority. You can request a tutor replacement within the first week of sessions at no extra cost."
         },
         {
-            question: "NEGOTIATION_OF_INDICATIVE_RATES",
-            answer: "Rates shown are indicative. Final salary negotiation with the tutor is encouraged before confirmation."
+            question: "Can I negotiate the monthly salary?",
+            answer: "Yes. While we provide indicative rates based on subject and level, final salary negotiation between you and the mentor is encouraged before confirmation."
         }
     ];
 
     const [activeIndex, setActiveIndex] = useState(null);
 
     return (
-        <section className="py-32 bg-background border-b border-border">
-            <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+        <section className="py-32 bg-white dark:bg-apple-gray-950">
+            <div className="max-w-[1200px] mx-auto px-6">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
                     
-                    <div className="lg:col-span-5">
-                        <span className="text-[11px] font-black uppercase tracking-[0.3em] text-primary mb-6 block">Queries</span>
-                        <h2 className="text-5xl md:text-6xl font-black tracking-tighter text-foreground uppercase leading-[0.9] mb-10">
-                            Common <br />
-                            <span className="text-muted-foreground italic">Protocols</span>
+                    <div className="lg:col-span-5" data-aos="fade-right">
+                        <AppleBadge variant="secondary" className="mb-6">Assurance</AppleBadge>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-black dark:text-white leading-[1.1] mb-8">
+                            Everything you <br />
+                            <span className="text-black/20 dark:text-white/20">need to know.</span>
                         </h2>
-                        <p className="text-[11px] font-black uppercase tracking-[0.15em] text-muted-foreground leading-relaxed max-w-sm">
-                            Technical specifications and operational standards for the e-tuitionBD platform ecosystem.
+                        <p className="text-lg text-black/50 dark:text-white/50 leading-relaxed max-w-sm">
+                            Clear answers to common questions about our platform and operational standards.
                         </p>
                     </div>
 
-                    <div className="lg:col-span-7 border-l border-border pl-0 lg:pl-12">
-                        <div className="divide-y divide-border border-y border-border">
+                    <div className="lg:col-span-7" data-aos="fade-left">
+                        <div className="divide-y divide-black/[0.05] dark:divide-white/[0.05] border-y border-black/[0.05] dark:border-white/[0.05]">
                             {faqs.map((faq, idx) => (
-                                <div key={idx} className="group overflow-hidden">
+                                <div key={idx} className="group">
                                     <button
-                                        className="w-full flex items-center justify-between py-10 text-left transition-all"
+                                        className="w-full flex items-center justify-between py-8 text-left transition-all"
                                         onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}
                                     >
-                                        <div className="flex items-center gap-6">
-                                            <span className="text-[10px] font-black text-primary opacity-50 tabular-nums tracking-widest">
-                                                0{idx + 1}
-                                            </span>
-                                            <span className={`text-sm font-black tracking-[0.05em] uppercase transition-colors ${activeIndex === idx ? 'text-primary' : 'text-foreground'}`}>
-                                                {faq.question}
-                                            </span>
-                                        </div>
-                                        <div className={`transition-all duration-300 ${activeIndex === idx ? 'rotate-180 text-primary' : 'text-muted-foreground group-hover:text-foreground'}`}>
+                                        <span className={`text-lg font-bold tracking-tight transition-colors ${activeIndex === idx ? 'text-primary' : 'text-black dark:text-white'}`}>
+                                            {faq.question}
+                                        </span>
+                                        <div className={`transition-all duration-300 ${activeIndex === idx ? 'rotate-180 text-primary' : 'text-black/20 dark:text-white/20'}`}>
                                             {activeIndex === idx ? <Minus size={20} /> : <Plus size={20} />}
                                         </div>
                                     </button>
                                     <div
-                                        className={`overflow-hidden transition-all duration-500 ease-in-out ${activeIndex === idx ? 'max-h-96 opacity-100 mb-10' : 'max-h-0 opacity-0'}`}
+                                        className={`overflow-hidden transition-all duration-500 ease-in-out ${activeIndex === idx ? 'max-h-96 opacity-100 mb-8' : 'max-h-0 opacity-0'}`}
                                     >
-                                        <div className="pl-16 pr-10 text-[11px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
-                                            <div className="p-8 bg-muted/50 border-l-4 border-primary">
-                                                {faq.answer}
-                                            </div>
+                                        <div className="text-base text-black/50 dark:text-white/50 leading-relaxed pr-10">
+                                            {faq.answer}
                                         </div>
                                     </div>
                                 </div>

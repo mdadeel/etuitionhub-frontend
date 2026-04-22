@@ -11,12 +11,8 @@ import {
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
+import { AppleBadge, AppleCard } from "../shared/AppleUI";
 
-/**
- * FeaturedCategories Component
- * Refactored to "Apple macOS App Icons Grid"
- * Features: High-precision layout, compact metadata, Apple Blue interactive states.
- */
 const FeaturedCategories = () => {
     const categories = [
         { icon: Calculator, label: "Mathematics", count: "1,200+ Specialists" },
@@ -30,47 +26,42 @@ const FeaturedCategories = () => {
     ];
 
     return (
-        <section className="py-24 bg-white dark:bg-apple-gray-900 border-b border-apple-gray-100 dark:border-apple-gray-800">
-            <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
-                    <div className="max-w-xl">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-apple-blue mb-3 block">Categories</span>
-                        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-apple-gray-900 dark:text-white leading-tight">
-                            Subject Directory. <br />
-                            <span className="text-apple-gray-400">Node Classes.</span>
+        <section className="py-32 bg-white dark:bg-apple-gray-950">
+            <div className="max-w-[1200px] mx-auto px-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
+                    <div className="max-w-xl" data-aos="fade-right">
+                        <AppleBadge variant="secondary" className="mb-4">Directory</AppleBadge>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-black dark:text-white leading-[1.1]">
+                            Explore your interests. <br />
+                            <span className="text-black/20 dark:text-white/20">Master your subject.</span>
                         </h2>
                     </div>
-                    <Button variant="ghost" asChild className="p-0 h-auto text-[11px] font-bold tracking-widest uppercase text-apple-blue hover:text-apple-blue/80 hover:bg-transparent group">
+                    <Button variant="ghost" asChild className="p-0 h-auto text-xs font-bold tracking-widest uppercase text-primary hover:text-primary/80 hover:bg-transparent group" data-aos="fade-left">
                         <Link to="/tuitions" className="flex items-center gap-2">
-                            Explore All Categories <ArrowUpRight className="w-4 h-4 ml-1 opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                            Explore All <ArrowUpRight className="w-4 h-4 ml-1 opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                         </Link>
                     </Button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {categories.map((cat, idx) => (
                         <Link
                             to={`/tuitions?q=${encodeURIComponent(cat.label)}`}
                             key={idx}
-                            className="group apple-card p-6 bg-white dark:bg-apple-gray-800 border-apple-gray-200 dark:border-apple-gray-700 hover:border-apple-blue/50 transition-all duration-300 relative overflow-hidden"
+                            data-aos="fade-up"
+                            data-aos-delay={idx * 50}
                         >
-                            {/* Subtle hover background glow */}
-                            <div className="absolute inset-0 bg-apple-blue/[0.02] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            
-                            <div className="relative z-10">
-                                <div className="mb-6">
-                                    <cat.icon className="w-8 h-8 text-apple-gray-900 dark:text-white group-hover:text-apple-blue transition-colors duration-300" strokeWidth={1.5} />
+                            <AppleCard className="p-8 group hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all duration-300">
+                                <div className="mb-8">
+                                    <cat.icon className="w-10 h-10 text-black/80 dark:text-white/80 group-hover:text-primary transition-colors duration-300" strokeWidth={1.5} />
                                 </div>
-                                <h3 className="text-[15px] font-bold text-apple-gray-900 dark:text-white tracking-tight leading-tight">
+                                <h3 className="text-lg font-bold text-black dark:text-white tracking-tight leading-tight">
                                     {cat.label}
                                 </h3>
-                                <p className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-tight mt-1.5">
+                                <p className="text-[10px] font-bold text-black/30 dark:text-white/30 uppercase tracking-[0.1em] mt-2">
                                     {cat.count}
                                 </p>
-                            </div>
-                            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-1 -translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0">
-                                <ArrowUpRight className="w-3.5 h-3.5 text-apple-blue" />
-                            </div>
+                            </AppleCard>
                         </Link>
                     ))}
                 </div>

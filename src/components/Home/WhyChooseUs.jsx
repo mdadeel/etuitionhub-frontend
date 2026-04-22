@@ -1,56 +1,54 @@
-import { ShieldCheck, Banknote, Clock, Star, Zap } from 'lucide-react';
-import { Card, CardContent } from "@/components/ui/card";
+import { ShieldCheck, Banknote, Clock, Zap } from 'lucide-react';
+import { AppleBadge, AppleCard } from '../shared/AppleUI';
 
 const features = [
     {
         icon: ShieldCheck,
-        title: "VERIFIED EXPERTISE",
+        title: "Verified Expertise",
         description: "Every tutor undergoes a rigorous vetting process before platform inclusion."
     },
     {
         icon: Banknote,
-        title: "TRANSPARENT RATES",
+        title: "Transparent Rates",
         description: "Clear, upfront pricing structures with zero hidden administrative fees."
     },
     { 
         icon: Clock, 
-        title: "TEMPORAL FLEXIBILITY", 
+        title: "Flexible Scheduling", 
         description: "Schedule sessions around your specific availability and time constraints." 
     },
     {
         icon: Zap,
-        title: "HIGH-SIGNAL MATCH",
+        title: "Smart Matching",
         description: "Advanced filtering to connect you with the precise expertise required."
     }
 ];
 
-/**
- * WhyChooseUs Component
- * Technical Emerald Minimalism Refactor
- */
-function WhyChooseUs() {
+const WhyChooseUs = () => {
     return (
-        <section className="py-32 bg-background border-b border-border">
-            <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-                <div className="mb-24 text-center">
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary mb-4 block">Values</span>
-                    <h2 className="text-5xl md:text-6xl font-black tracking-tighter text-foreground uppercase leading-[0.9]">
-                        Operational <br />
-                        <span className="text-muted-foreground">Excellence</span>
+        <section className="py-32 bg-white dark:bg-apple-gray-950">
+            <div className="max-w-[1200px] mx-auto px-6">
+                <div className="mb-24" data-aos="fade-right">
+                    <AppleBadge variant="primary" className="mb-4">Chapter 5: The Edge</AppleBadge>
+                    <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-black dark:text-white leading-[1.1]">
+                        Operational excellence. <br />
+                        <span className="text-black/20 dark:text-white/20">Built for you.</span>
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border-t border-l border-border">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {features.map((feature, idx) => (
-                        <div key={idx} className="p-12 border-r border-b border-border hover:bg-muted/50 transition-colors group">
-                            <div className="mb-8 p-3 w-fit border border-border bg-muted group-hover:border-primary/50 transition-colors">
-                                <feature.icon size={28} strokeWidth={1.5} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                        <AppleCard key={idx} className="p-10 group" data-aos="fade-up" data-aos-delay={idx * 100}>
+                            <div className="mb-10 w-14 h-14 rounded-2xl bg-black/[0.03] dark:bg-white/[0.05] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                                <feature.icon size={28} strokeWidth={1.5} className="text-primary" />
                             </div>
-                            <h3 className="text-sm font-black text-foreground mb-4 uppercase tracking-widest">{feature.title}</h3>
-                            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
+                            <h3 className="text-lg font-bold text-black dark:text-white mb-4 tracking-tight">
+                                {feature.title}
+                            </h3>
+                            <p className="text-sm text-black/50 dark:text-white/50 leading-relaxed">
                                 {feature.description}
                             </p>
-                        </div>
+                        </AppleCard>
                     ))}
                 </div>
             </div>
