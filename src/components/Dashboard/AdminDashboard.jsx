@@ -3,6 +3,7 @@ import DashUsers from './DashUsers';
 import DashTuitions from './DashTuitions';
 import DashAnalytics from './DashAnalytics';
 import DashPayments from './DashPayments';
+import DashSettings from './DashSettings';
 import { 
     AppleCard, 
     AppleBadge, 
