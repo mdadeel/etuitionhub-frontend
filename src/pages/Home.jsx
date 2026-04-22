@@ -1,8 +1,5 @@
 import HomeBanner from '../components/Home/HomeBanner'
-import { useEffect } from "react"
 import PopularTutors from '../components/Home/PopularTutors'
-import AOS from 'aos'
-import 'aos/dist/aos.css'
 import Statistics from "../components/Home/Statistics"
 import HowItWorks from '../components/Home/HowItWorks'
 import WhyChooseUs from "../components/Home/WhyChooseUs"
@@ -19,16 +16,8 @@ import FeatureSpotlight from '../components/Home/FeatureSpotlight';
  * Refactored to "Apple Design System" with Storytelling additions
  */
 const Home = () => {
-    useEffect(() => {
-        AOS.init({
-            duration: 800,
-            once: true,
-            easing: 'ease-out-quart'
-        })
-    }, [])
-
     return (
-        <div className="bg-white dark:bg-apple-gray-950 selection:bg-apple-blue/20 selection:text-apple-blue">
+        <div className="bg-background selection:bg-primary/20 selection:text-primary">
             <HomeBanner />
 
             <div data-aos="fade-up">

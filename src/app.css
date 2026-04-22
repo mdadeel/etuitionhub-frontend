@@ -23,26 +23,26 @@
     --border: 240 5% 92%;
     --input: 240 5% 92%;
     --ring: 210 100% 45%;
-    --radius: 16px;
+    --radius: 20px;
   }
 
   .dark {
-    --background: 240 5% 10%;
+    --background: 240 5% 6%;
     --foreground: 240 5% 98%;
-    --card: 240 5% 12%;
+    --card: 240 5% 9%;
     --card-foreground: 240 5% 98%;
-    --popover: 240 5% 12%;
+    --popover: 240 5% 9%;
     --popover-foreground: 240 5% 98%;
     --primary: 210 100% 55%;
     --primary-foreground: 240 5% 10%;
-    --secondary: 240 5% 18%;
+    --secondary: 240 5% 15%;
     --secondary-foreground: 240 5% 98%;
-    --muted: 240 5% 18%;
+    --muted: 240 5% 15%;
     --muted-foreground: 240 5% 65%;
-    --accent: 240 5% 18%;
+    --accent: 240 5% 15%;
     --accent-foreground: 240 5% 98%;
-    --border: 240 5% 22%;
-    --input: 240 5% 22%;
+    --border: 240 5% 15%;
+    --input: 240 5% 15%;
     --ring: 210 100% 55%;
   }
 }
@@ -53,35 +53,29 @@
   }
   
   body {
-    background-color: #F5F5F7;
-    color: #1D1D1F;
+    @apply bg-background text-foreground;
     font-family: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.011em;
   }
 
-  .dark body {
-    background-color: #1D1D1F;
-    color: #F5F5F7;
-  }
-
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tighter;
+    @apply font-bold tracking-tight;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 dark:bg-black/70 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-apple-sm;
+    @apply bg-background/70 backdrop-blur-xl border border-border shadow-apple-sm;
   }
   
   .glass-card {
-    @apply bg-white dark:bg-apple-gray-800 border border-apple-gray-200 dark:border-apple-gray-700 shadow-apple-sm hover:shadow-apple-md transition-all duration-300 rounded-container;
+    @apply bg-card border border-border shadow-apple-sm hover:shadow-apple-md transition-all duration-300 rounded-container;
   }
   
   .apple-card {
-    @apply bg-white dark:bg-apple-gray-800 border border-apple-gray-200 dark:border-apple-gray-700 shadow-apple-sm rounded-container overflow-hidden;
+    @apply bg-card border border-border shadow-apple-sm rounded-container overflow-hidden;
   }
 
   .mac-compact {
@@ -93,6 +87,6 @@
   }
 
   .mac-input {
-    @apply bg-apple-gray-50 dark:bg-apple-gray-900 border-none ring-1 ring-apple-gray-200 dark:ring-apple-gray-700 focus:ring-2 focus:ring-apple-blue transition-all rounded-md px-3 py-1.5 text-xs;
+    @apply bg-muted border-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all rounded-md px-3 py-1.5 text-xs;
   }
 }

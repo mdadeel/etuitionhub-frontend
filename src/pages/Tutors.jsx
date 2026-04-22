@@ -4,7 +4,7 @@ import TutorCard from "../components/Home/TutorCard"
 import demoTutors from '../data/demoTutors.json'
 import LoadingSpinner from '../components/shared/LoadingSpinner'
 import EmptyState from '../components/shared/EmptyState'
-import { SlidersHorizontal, UserCheck, ShieldCheck, Filter, X } from 'lucide-react'
+import { SlidersHorizontal, ShieldCheck, Filter, X } from 'lucide-react'
 import {
     Select,
     SelectContent,
@@ -12,13 +12,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
+import { AppleBadge, AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
+import AOS from 'aos'
 
-/**
- * Tutors Page
- * Refactored to "Apple macOS Sidebar Layout"
- * Features: Left sidebar filters, search integration with Nav, compact grid.
- */
 const Tutors = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [tutors, setTutors] = useState([])
@@ -38,30 +34,37 @@ const Tutors = () => {
 
     const allSubjects = useMemo(() => {
         const subjects = new Set(['All']);
-        demoTutors.forEach(t => t.subjects.forEach(s => subjects.add(s)));
+        if (Array.isArray(demoTutors)) {
+            demoTutors.forEach(t => {
+                if (t && Array.isArray(t.subjects)) {
+                    t.subjects.forEach(s => subjects.add(s));
+                }
+            });
+        }
         return Array.from(subjects);
     }, []);
 
     const filteredAndSortedTutors = useMemo(() => {
+        if (!Array.isArray(tutors)) return [];
         let result = [...tutors]
 
         if (searchQuery) {
             result = result.filter(t =>
-                t.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                t.subjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
+                (t.displayName?.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                (Array.isArray(t.subjects) && t.subjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())))
             )
         }
 
         if (selectedSubject !== 'All') {
-            result = result.filter(t => t.subjects.includes(selectedSubject));
+            result = result.filter(t => Array.isArray(t.subjects) && t.subjects.includes(selectedSubject));
         }
 
         switch (sortBy) {
             case 'name-az':
-                result.sort((a, b) => a.displayName.localeCompare(b.displayName))
+                result.sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''))
                 break
             case 'name-za':
-                result.sort((a, b) => b.displayName.localeCompare(a.displayName))
+                result.sort((a, b) => (b.displayName || '').localeCompare(a.displayName || ''))
                 break
             case 'exp-high':
                 result.sort((a, b) => {
@@ -71,7 +74,7 @@ const Tutors = () => {
                 })
                 break
             case 'salary-low':
-                result.sort((a, b) => a.expectedSalary - b.expectedSalary)
+                result.sort((a, b) => (a.expectedSalary || 0) - (b.expectedSalary || 0))
                 break
             default:
                 break
@@ -80,6 +83,12 @@ const Tutors = () => {
         return result
     }, [tutors, searchQuery, sortBy, selectedSubject])
 
+    useEffect(() => {
+        if (typeof AOS !== 'undefined' && AOS.refresh) {
+            AOS.refresh();
+        }
+    }, [filteredAndSortedTutors.length]);
+
     const handleClear = () => {
         setSearchParams({});
         setSortBy('name-az');
@@ -87,79 +96,75 @@ const Tutors = () => {
     }
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-apple-gray-100 dark:bg-apple-gray-900">
+        <div className="min-h-screen flex items-center justify-center bg-background">
             <LoadingSpinner />
         </div>
     )
 
     return (
-        <div className="bg-apple-gray-100 dark:bg-apple-gray-950 min-h-screen">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-background min-h-screen">
+            <div className="w-full px-6 md:px-12 py-4">
                 
-                {/* Header (Apple Style) */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                    <div>
-                        <h1 className="text-2xl font-bold text-apple-gray-900 dark:text-white tracking-tight">
-                            Specialist Directory
-                        </h1>
-                        <p className="text-[13px] text-apple-gray-500 font-medium mt-1">
-                            Browse through our verified network of academic professionals.
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-apple-gray-900 rounded-lg border border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-sm">
-                            <span className="text-lg font-bold text-apple-gray-900 dark:text-white tabular-nums">{filteredAndSortedTutors.length}</span>
-                            <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-tight">Nodes</span>
+                {/* Header */}
+                <AppleHeader 
+                    title="Find a Tutor"
+                    subtitle="Browse through our verified network of academic professionals across the nation."
+                   
+                    action={
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-2xl border border-border/50">
+                                <span className="text-xl font-bold text-foreground tabular-nums">{filteredAndSortedTutors.length}</span>
+                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Tutors</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-2xl border border-border/50">
+                                <ShieldCheck size={16} className="text-primary" />
+                                <span className="text-xl font-bold text-foreground tracking-tight">98%</span>
+                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Verified</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-apple-gray-900 rounded-lg border border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-sm">
-                            <ShieldCheck size={14} className="text-apple-blue" />
-                            <span className="text-lg font-bold text-apple-gray-900 dark:text-white tracking-tight">98%</span>
-                            <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-tight">Verified</span>
-                        </div>
-                    </div>
-                </div>
+                    }
+                />
 
-                <div className="flex flex-col md:grid md:grid-cols-12 gap-8">
+                <div className="flex flex-col md:grid md:grid-cols-12 gap-10">
                     
-                    {/* Left Sidebar Filters (macOS Style) */}
-                    <aside className="md:col-span-3 lg:col-span-2 space-y-6">
-                        <div className="apple-card p-4 bg-white/50 dark:bg-apple-gray-900/50 backdrop-blur-sm">
-                            <h3 className="text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Filter size={12} /> Filters
+                    {/* Left Sidebar Filters */}
+                    <aside className="md:col-span-3 space-y-6">
+                        <AppleCard className="p-6 sticky top-24" hover={false}>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                                <Filter size={14} /> Filters
                             </h3>
                             
                             {/* Sort Filter */}
-                            <div className="mb-6">
-                                <label className="text-[10px] font-bold text-apple-gray-500 uppercase mb-2 block">Sort By</label>
+                            <div className="mb-8">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Sort by</label>
                                 <Select value={sortBy} onValueChange={setSortBy}>
-                                    <SelectTrigger className="mac-input h-8 border-none bg-white dark:bg-apple-gray-800 shadow-apple-sm">
-                                        <div className="flex items-center gap-2 overflow-hidden">
-                                            <SlidersHorizontal size={10} className="text-apple-gray-400 shrink-0" />
-                                            <SelectValue placeholder="Sort" className="text-xs" />
+                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
+                                        <div className="flex items-center gap-2">
+                                            <SlidersHorizontal size={12} className="text-muted-foreground" />
+                                            <SelectValue placeholder="Sort" />
                                         </div>
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
-                                        <SelectItem value="name-az" className="rounded-md text-[11px] font-medium py-1.5">A to Z</SelectItem>
-                                        <SelectItem value="name-za" className="rounded-md text-[11px] font-medium py-1.5">Z to A</SelectItem>
-                                        <SelectItem value="exp-high" className="rounded-md text-[11px] font-medium py-1.5">Exp: High</SelectItem>
-                                        <SelectItem value="salary-low" className="rounded-md text-[11px] font-medium py-1.5">Fee: Low</SelectItem>
+                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl">
+                                        <SelectItem value="name-az" className="rounded-xl text-xs font-medium py-2 px-3">Alphabetical: A-Z</SelectItem>
+                                        <SelectItem value="name-za" className="rounded-xl text-xs font-medium py-2 px-3">Alphabetical: Z-A</SelectItem>
+                                        <SelectItem value="exp-high" className="rounded-xl text-xs font-medium py-2 px-3">Experience: High</SelectItem>
+                                        <SelectItem value="salary-low" className="rounded-xl text-xs font-medium py-2 px-3">Fee: Low to High</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             {/* Subjects Filter */}
                             <div>
-                                <label className="text-[10px] font-bold text-apple-gray-500 uppercase mb-2 block">Specialization</label>
-                                <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Subjects</label>
+                                <div className="space-y-1.5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                     {allSubjects.map(subject => (
                                         <button
                                             key={subject}
                                             onClick={() => setSelectedSubject(subject)}
-                                            className={`w-full text-left px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
+                                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                                                 selectedSubject === subject 
-                                                ? 'bg-apple-blue text-white' 
-                                                : 'text-apple-gray-600 dark:text-apple-gray-400 hover:bg-apple-gray-100 dark:hover:bg-apple-gray-800'
+                                                ? 'bg-primary text-primary-foreground shadow-sm' 
+                                                : 'text-muted-foreground hover:bg-muted/50'
                                             }`}
                                         >
                                             {subject}
@@ -170,37 +175,38 @@ const Tutors = () => {
 
                             {/* Clear All */}
                             {(searchQuery || sortBy !== 'name-az' || selectedSubject !== 'All') && (
-                                <button
+                                <AppleButton
                                     onClick={handleClear}
-                                    className="w-full mt-6 flex items-center justify-center gap-1.5 text-[10px] font-bold text-apple-blue hover:text-apple-blue/80 py-2 border border-apple-blue/20 rounded-lg hover:bg-apple-blue/5 transition-all uppercase tracking-tight"
+                                    variant="ghost"
+                                    className="w-full mt-8 text-[10px] font-bold uppercase tracking-widest border border-border/50 hover:bg-muted/50 rounded-xl"
                                 >
-                                    <X size={10} /> Reset All
-                                </button>
+                                    <X size={12} className="mr-2" /> Clear All
+                                </AppleButton>
                             )}
-                        </div>
+                        </AppleCard>
                     </aside>
 
-                    {/* Main Content (Cols-9) */}
-                    <main className="md:col-span-9 lg:col-span-10">
+                    {/* Main Content */}
+                    <main className="md:col-span-9">
                         {searchQuery && (
-                            <div className="mb-6 flex items-center gap-2">
-                                <span className="text-[11px] font-bold text-apple-gray-400 uppercase tracking-tight">Results for:</span>
-                                <span className="px-2 py-0.5 bg-apple-blue/10 text-apple-blue text-[11px] font-bold rounded-md">"{searchQuery}"</span>
+                            <div className="mb-8 flex items-center gap-3">
+                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Searching for:</span>
+                                <AppleBadge variant="primary" className="px-3 py-1 normal-case text-sm tracking-normal">"{searchQuery}"</AppleBadge>
                             </div>
                         )}
 
                         {filteredAndSortedTutors.length === 0 ? (
-                            <div className="py-20 bg-white dark:bg-apple-gray-900 rounded-container border border-dashed border-apple-gray-200 dark:border-apple-gray-800">
+                            <div className="py-32">
                                 <EmptyState
                                     message="No specialists found matching your current parameters."
                                     onAction={handleClear}
-                                    actionLabel="Clear Selection"
+                                    actionLabel="Reset Filters"
                                 />
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
-                                {filteredAndSortedTutors.map(tutor => (
-                                    <div key={tutor._id} className="transform hover:scale-[1.01] transition-all duration-300">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredAndSortedTutors.map((tutor, idx) => (
+                                    <div key={tutor._id} data-aos="fade-up" data-aos-delay={idx * 50}>
                                         <TutorCard tutor={tutor} />
                                     </div>
                                 ))}

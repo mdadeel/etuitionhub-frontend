@@ -14,20 +14,15 @@ import {
     Calendar, 
     Clock, 
     User, 
-    CheckCircle2, 
     ShieldCheck, 
-    FileText, 
     Send,
-    Database,
-    ChevronRight,
     ArrowRight,
-    Award
+    Award,
+    CheckCircle,
+    Info,
+    ShieldAlert,
+    Lock
 } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -37,11 +32,11 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { AppleBadge, AppleCard, AppleButton, AppleInput } from '../components/shared/AppleUI';
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import AOS from 'aos';
 
-/**
- * Tuition Details Page
- * Refactored to "Technical Emerald Minimalism"
- */
 const TuitionDetails = () => {
     const { id } = useParams();
     const { user, dbUser } = useAuth();
@@ -67,7 +62,7 @@ const TuitionDetails = () => {
                 if (demoTuition) {
                     setTuition(demoTuition);
                 } else {
-                    toast.error('Requirement node not found.');
+                    toast.error('Tuition post not found.');
                 }
             } finally {
                 setLoading(false);
@@ -75,6 +70,12 @@ const TuitionDetails = () => {
         };
         fetchTuitionDetails();
     }, [id]);
+
+    useEffect(() => {
+        if (typeof AOS !== 'undefined' && AOS.refresh) {
+            AOS.refresh();
+        }
+    }, [tuition]);
 
     const handleChange = (e) => {
         setFormData({
@@ -87,23 +88,23 @@ const TuitionDetails = () => {
         e.preventDefault();
 
         if (!user || !dbUser) {
-            toast.error('Session required.');
+            toast.error('Please login first.');
             navigate('/login');
             return;
         }
 
         if (!formData.qualifications || !formData.experience || !formData.expectedSalary) {
-            toast.error("All parameters required.");
+            toast.error("Please fill all fields.");
             return;
         }
 
         if (formData.expectedSalary < 1000) {
-            toast.error('Minimum salary threshold not met.');
+            toast.error('Salary is too low.');
             return;
         }
 
         if (!isValidObjectId(id)) {
-            toast.error('Demo data interaction restricted.');
+            toast.error('Cannot apply to demo data.');
             return;
         }
 
@@ -121,12 +122,12 @@ const TuitionDetails = () => {
         try {
             const response = await api.post('/api/applications', applicationData);
             if (response.status === 201) {
-                toast.success("Application registered. Awaiting validation.");
+                toast.success("Applied successfully! Wait for approval.");
                 setShowModal(false);
                 setFormData({ qualifications: '', experience: "", expectedSalary: '' });
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.error || "Submission failure.";
+            const errorMessage = error.response?.data?.error || "Failed to apply.";
             toast.error(errorMessage);
         }
     };
@@ -139,277 +140,268 @@ const TuitionDetails = () => {
 
     if (!tuition) {
         return (
-            <div className="max-w-7xl mx-auto px-6 py-20 text-center bg-background min-h-screen">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4 block">Error 404 // NODE_NOT_FOUND</span>
-                <h1 className="text-4xl font-black text-foreground mb-8 uppercase italic">Requirement not found.</h1>
-                <Button asChild variant="outline" className="rounded-none px-8 font-black uppercase tracking-widest border-primary text-primary">
-                    <Link to="/tuitions">Return to Marketplace</Link>
-                </Button>
+            <div className="max-w-xl mx-auto px-6 py-20 text-center bg-background min-h-screen flex flex-col items-center justify-center">
+                <h1 className="text-2xl font-bold text-foreground mb-2">Post Unavailable</h1>
+                <p className="text-muted-foreground mb-8 text-sm">This tuition post doesn't exist or was removed.</p>
+                <AppleButton asChild variant="primary">
+                    <Link to="/tuitions">Back to Jobs</Link>
+                </AppleButton>
             </div>
         );
     }
 
     return (
-        <div className="bg-background min-h-screen py-10 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary">
-            {/* Background Technical Grid Element */}
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
-                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
-            </div>
-
-            <div className="max-w-7xl mx-auto relative z-10">
-                {/* Breadcrumb */}
-                <div className="mb-10">
-                    <Link to="/tuitions" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 group italic">
+        <div className="bg-background min-h-screen py-8 px-6 selection:bg-primary/20 selection:text-primary">
+            <div className="max-w-[1100px] mx-auto">
+                {/* Simple Breadcrumb */}
+                <div className="mb-6">
+                    <Link to="/tuitions" className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors group">
                         <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> 
-                        Back to Requirement Marketplace
+                        Back to Tuition Jobs
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-                    {/* Left Column: Visuals & Core Info */}
-                    <div className="lg:col-span-8 space-y-10">
-                        <header className="bg-background border border-border p-10 rounded-none relative overflow-hidden shadow-sm">
-                            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-none -mr-24 -mt-24 rotate-45"></div>
-
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    {/* Main Content */}
+                    <div className="lg:col-span-8 space-y-6">
+                        
+                        {/* Compact Hero Card */}
+                        <AppleCard className="p-8 relative overflow-hidden" hover={false}>
                             <div className="relative z-10">
-                                <div className="flex flex-wrap items-center gap-3 mb-8">
-                                    <Badge className="rounded-none bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest px-3 py-1">
-                                        CLASS_{tuition.class_name.toUpperCase()}
-                                    </Badge>
-                                    <Badge variant="outline" className={`rounded-none border-border text-[9px] font-black uppercase tracking-widest px-3 py-1 ${
-                                        tuition.status === 'approved' ? 'text-primary border-primary bg-primary/5' : 'text-muted-foreground'
-                                    }`}>
-                                        STATUS: {tuition.status.toUpperCase()}
-                                    </Badge>
+                                <div className="flex flex-wrap items-center gap-2 mb-6">
+                                    <AppleBadge variant="primary" className="text-[9px]">Class {tuition.class_name}</AppleBadge>
+                                    <AppleBadge variant="success" className="text-[9px]">Verified Job</AppleBadge>
                                 </div>
 
-                                <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-foreground mb-10 uppercase italic leading-none">
-                                    {tuition.subject}
+                                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-8">
+                                    {tuition.subject} Tutor Needed
                                 </h1>
 
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-8 pt-10 border-t border-border">
-                                    <div className="flex flex-col">
-                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2 flex items-center gap-1">
-                                            <Banknote size={10} className="text-primary" /> Budget / mo
-                                        </span>
-                                        <span className="text-2xl font-black text-primary tabular-nums italic">৳{tuition.salary}</span>
+                                <div className="grid grid-cols-3 gap-4 py-6 border-t border-border/50">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                            <Banknote size={10} className="text-primary" /> Monthly Salary
+                                        </p>
+                                        <p className="text-xl font-bold text-foreground tabular-nums">৳{tuition.salary}</p>
                                     </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2 flex items-center gap-1">
-                                            <MapPin size={10} className="text-primary" /> Coordinates
-                                        </span>
-                                        <span className="text-lg font-black text-foreground uppercase tracking-tight">{tuition.location}</span>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                            <MapPin size={10} className="text-primary" /> Location
+                                        </p>
+                                        <p className="text-lg font-bold text-foreground">{tuition.location}</p>
                                     </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2 flex items-center gap-1">
-                                            <Calendar size={10} className="text-primary" /> Intensity
-                                        </span>
-                                        <span className="text-lg font-black text-foreground uppercase tracking-tight">{tuition.days_per_week} DAYS_PER_WEEK</span>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                            <Calendar size={10} className="text-primary" /> Schedule
+                                        </p>
+                                        <p className="text-lg font-bold text-foreground">{tuition.days_per_week} Days/Wk</p>
                                     </div>
                                 </div>
                             </div>
-                        </header>
+                        </AppleCard>
 
-                        {/* Compact Image Gallery */}
-                        <div className="grid grid-cols-3 gap-4 h-64">
-                            <div className="col-span-2 relative group overflow-hidden border border-border">
-                                <img
-                                    src={tuition.image || `https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop`}
-                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-                                    alt="Education"
-                                />
-                                <div className="absolute inset-0 bg-primary/10 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            </div>
-                            <div className="grid grid-rows-2 gap-4">
-                                <div className="overflow-hidden border border-border group">
-                                    <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="Classroom" />
-                                </div>
-                                <div className="overflow-hidden border border-border group">
-                                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=400&auto=format&fit=crop" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="Books" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <section className="bg-muted/10 border border-border p-8 rounded-none">
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground mb-8 flex items-center gap-3">
-                                    <div className="w-1 h-4 bg-primary"></div>
-                                    Node Requirements
+                        {/* Summary & Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <AppleCard className="p-6" hover={false}>
+                                <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <Info size={14} className="text-primary" /> Student Profile
                                 </h2>
-                                <div className="space-y-6">
-                                    <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest border-b border-border pb-4">
-                                        <span className="text-muted-foreground flex items-center gap-2"><User size={12} className="text-primary" /> Gender Preference</span>
-                                        <span className="text-foreground italic">{tuition.gender || 'Any'}</span>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center py-2 border-b border-border/30">
+                                        <span className="text-xs font-medium text-muted-foreground">Tutor Gender</span>
+                                        <span className="text-xs font-bold text-foreground">{tuition.gender || 'Any'}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest">
-                                        <span className="text-muted-foreground flex items-center gap-2"><Clock size={12} className="text-primary" /> Operational Days</span>
+                                    <div className="flex justify-between items-center py-2">
+                                        <span className="text-xs font-medium text-muted-foreground">Preferred Days</span>
                                         <div className="flex gap-1">
                                             {tuition.available_days?.slice(0, 3).map((day, idx) => (
-                                                <Badge key={idx} variant="secondary" className="rounded-none bg-background border border-border text-[9px] font-black px-2 py-0.5">{day.slice(0, 3).toUpperCase()}</Badge>
+                                                <span key={idx} className="bg-muted px-2 py-0.5 rounded text-[9px] font-bold text-foreground">{day.slice(0, 3)}</span>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
-                            </section>
+                            </AppleCard>
 
-                            <section className="bg-muted/10 border border-border p-8 rounded-none">
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground mb-8 flex items-center gap-3">
-                                    <div className="w-1 h-4 bg-primary"></div>
-                                    Strategic Context
+                            <AppleCard className="p-6" hover={false}>
+                                <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <Clock size={14} className="text-primary" /> Job Description
                                 </h2>
-                                <p className="text-sm text-muted-foreground leading-relaxed font-medium">
-                                    {tuition.description || "The client is looking for a professional who can deliver high-quality pedagogical support for the specified subject. Reliability and subject-matter expertise are the primary selection criteria for this position."}
+                                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                                    {tuition.description || "The student needs help with their studies. Looking for a tutor who is regular and has good knowledge in the subject."}
                                 </p>
-                            </section>
+                            </AppleCard>
                         </div>
+
+                        {/* New Trust Section */}
+                        <AppleCard className="p-8 bg-primary/5 border-primary/10" hover={false}>
+                            <div className="flex items-start gap-6">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                    <ShieldCheck size={24} />
+                                </div>
+                                <div className="space-y-3">
+                                    <h3 className="text-lg font-bold text-foreground">Safe & Secure Process</h3>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        This job is verified by e-TuitionBD. We ensure that the student info is real and your payment is safe. 
+                                        Apply with confidence and grow your career.
+                                    </p>
+                                    <div className="flex flex-wrap gap-4 pt-2">
+                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary">
+                                            <CheckCircle size={12} /> Verified Student
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary">
+                                            <Lock size={12} /> Privacy Protected
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary">
+                                            <ShieldAlert size={12} /> No Advance Payment Needed
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </AppleCard>
                     </div>
 
                     {/* Right Column: Sticky Action Profile */}
-                    <div className="lg:col-span-4 lg:sticky lg:top-24">
-                        <div className="bg-background border border-border p-10 rounded-none shadow-xl relative overflow-hidden">
-                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/5 rounded-none -rotate-12"></div>
-
+                    <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+                        <AppleCard className="p-8 bg-card shadow-xl border-border/50 relative overflow-hidden" hover={false}>
                             <div className="relative z-10">
-                                <h3 className="text-2xl font-black text-foreground mb-4 uppercase italic tracking-tighter">Engagement Protocol</h3>
-                                <p className="text-[10px] text-muted-foreground mb-10 leading-relaxed font-bold uppercase tracking-widest">
-                                    Register your professional interest. Profile node will be transmitted to the client for immediate validation.
+                                <h3 className="text-xl font-bold text-foreground mb-2">Apply for this Job</h3>
+                                <p className="text-xs text-muted-foreground mb-8 leading-relaxed">
+                                    Ready to teach? Send your application to the student now.
                                 </p>
 
                                 <div className="space-y-4">
                                     {!user ? (
-                                        <Button asChild variant="secondary" className="w-full h-16 rounded-none text-xs font-black uppercase tracking-[0.2em] border border-border shadow-sm">
-                                            <Link to="/login" className="flex items-center gap-2">
-                                                Login to Apply
-                                            </Link>
-                                        </Button>
+                                        <AppleButton asChild variant="secondary" className="w-full h-12 text-xs">
+                                            <Link to="/login">Login to Apply</Link>
+                                        </AppleButton>
                                     ) : !dbUser ? (
-                                        <Button disabled className="w-full h-16 rounded-none text-xs font-black uppercase tracking-[0.2em] opacity-50">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
-                                                Synchronizing...
-                                            </div>
-                                        </Button>
+                                        <AppleButton disabled className="w-full h-12 text-xs opacity-50">
+                                            Please wait...
+                                        </AppleButton>
                                     ) : dbUser?.role === 'tutor' && tuition.status === "approved" ? (
                                         <Dialog open={showModal} onOpenChange={setShowModal}>
                                             <DialogTrigger asChild>
-                                                <Button 
-                                                    className="w-full h-16 rounded-none text-xs font-black uppercase tracking-[0.2em] shadow-lg flex items-center justify-center gap-2"
-                                                >
-                                                    <Send size={18} /> Register Interest
-                                                </Button>
+                                                <AppleButton size="lg" className="w-full h-14 shadow-apple-md">
+                                                    Apply Now
+                                                </AppleButton>
                                             </DialogTrigger>
-                                            <DialogContent className="max-w-2xl rounded-none border-border p-0 gap-0 selection:bg-primary/30 selection:text-primary">
-                                                <DialogHeader className="p-10 border-b border-border bg-muted/20">
-                                                    <div className="flex items-center justify-between mb-4">
-                                                        <DialogTitle className="text-2xl font-black text-foreground uppercase italic tracking-tighter">Professional Submission</DialogTitle>
-                                                        <Badge variant="outline" className="rounded-none border-primary text-primary px-3 py-1 text-[9px] font-black">PROTOCOL: APP_01</Badge>
-                                                    </div>
-                                                    <DialogDescription className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] flex items-center gap-2">
-                                                        <Database size={12} className="text-primary" /> {tuition.subject} // {tuition.class_name.toUpperCase()}
+                                            <DialogContent className="max-w-xl rounded-[2rem] border-border p-0 overflow-hidden bg-card shadow-2xl">
+                                                <DialogHeader className="p-8 border-b border-border/50 bg-muted/20">
+                                                    <DialogTitle className="text-2xl font-bold text-foreground">Apply as Tutor</DialogTitle>
+                                                    <DialogDescription className="text-xs font-semibold text-muted-foreground mt-1">
+                                                        You are applying for: {tuition.subject}
                                                     </DialogDescription>
                                                 </DialogHeader>
 
-                                                <form onSubmit={handleSubmit} className="p-10 space-y-10">
-                                                    <div className="space-y-8">
-                                                        <div className="space-y-3">
-                                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                                                <Award size={14} className="text-primary" /> Professional Qualifications
+                                                <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                                                    <div className="space-y-5">
+                                                        <div className="space-y-2">
+                                                            <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                                                                Your Education
                                                             </Label>
                                                             <Textarea
                                                                 name="qualifications"
                                                                 value={formData.qualifications}
                                                                 onChange={handleChange}
-                                                                className="min-h-[120px] rounded-none bg-muted/20 border-border font-medium focus-visible:ring-primary transition-all resize-none"
-                                                                placeholder="DESCRIBE_ACADEMIC_CERTIFICATIONS..."
+                                                                className="min-h-[100px] rounded-xl bg-muted/30 border-border/50 text-sm focus-visible:ring-primary/20 resize-none"
+                                                                placeholder="e.g. BSc in Math from DU..."
                                                                 required
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-3">
-                                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                                                <FileText size={14} className="text-primary" /> Specialized Experience
+                                                        <div className="space-y-2">
+                                                            <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                                                                Experience
                                                             </Label>
                                                             <Textarea
                                                                 name="experience"
                                                                 value={formData.experience}
                                                                 onChange={handleChange}
-                                                                className="min-h-[120px] rounded-none bg-muted/20 border-border font-medium focus-visible:ring-primary transition-all resize-none"
-                                                                placeholder="DESCRIBE_PREVIOUS_PEDAGOGICAL_RESULTS..."
+                                                                className="min-h-[100px] rounded-xl bg-muted/30 border-border/50 text-sm focus-visible:ring-primary/20 resize-none"
+                                                                placeholder="e.g. 2 years of teaching experience..."
                                                                 required
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-3">
-                                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                                                <Banknote size={14} className="text-primary" /> Expected Honorarium (BDT/mo)
+                                                        <div className="space-y-2">
+                                                            <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                                                                Monthly Salary (৳)
                                                             </Label>
-                                                            <div className="relative">
-                                                                <Input
-                                                                    type="number"
-                                                                    name="expectedSalary"
-                                                                    value={formData.expectedSalary}
-                                                                    onChange={handleChange}
-                                                                    className="h-14 rounded-none border-border bg-muted/20 font-black tabular-nums pl-10 focus-visible:ring-primary"
-                                                                    placeholder={`MIN_THRESHOLD: ৳${tuition.salary}`}
-                                                                    required
-                                                                />
-                                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-bold">৳</span>
-                                                            </div>
+                                                            <AppleInput
+                                                                type="number"
+                                                                name="expectedSalary"
+                                                                value={formData.expectedSalary}
+                                                                onChange={handleChange}
+                                                                className="h-12 shadow-none"
+                                                                placeholder={`Min: ৳${tuition.salary}`}
+                                                                required
+                                                            />
                                                         </div>
                                                     </div>
 
-                                                    <DialogFooter className="flex flex-col sm:flex-row gap-4 pt-4">
-                                                        <Button type="button" variant="ghost" className="flex-1 h-14 rounded-none text-[10px] font-black uppercase tracking-[0.2em]" onClick={() => setShowModal(false)}>
-                                                            Abort Transmission
-                                                        </Button>
-                                                        <Button type="submit" className="flex-1 h-14 rounded-none text-[10px] font-black uppercase tracking-[0.2em] shadow-lg flex items-center justify-center gap-2">
-                                                            <Send size={16} /> Execute Submission
-                                                        </Button>
+                                                    <DialogFooter className="flex gap-3 pt-4">
+                                                        <AppleButton type="button" variant="ghost" className="flex-1 h-12" onClick={() => setShowModal(false)}>
+                                                            Cancel
+                                                        </AppleButton>
+                                                        <AppleButton type="submit" className="flex-1 h-12 shadow-apple-md">
+                                                            Send Application
+                                                        </AppleButton>
                                                     </DialogFooter>
                                                 </form>
                                             </DialogContent>
                                         </Dialog>
                                     ) : (
-                                        <div className="p-6 bg-primary/5 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest leading-relaxed text-center">
-                                            {dbUser?.role !== 'tutor' ? "Specialist validation required." : "Transmission channel closed."}
+                                        <div className="p-4 bg-muted/50 border border-border/50 rounded-xl text-muted-foreground text-[10px] font-bold uppercase tracking-widest text-center">
+                                            {dbUser?.role !== 'tutor' ? "Tutor Profile Required" : "Applications Closed"}
                                         </div>
                                     )}
                                 </div>
-
-                                <div className="mt-10 pt-10 border-t border-border flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-none bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                                        <ShieldCheck size={24} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase text-foreground tracking-widest">Verified Client</p>
-                                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest">Safe Engagement Guaranteed</p>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
+                        </AppleCard>
+
+                        {/* Safety Tips Card */}
+                        <AppleCard className="p-6 bg-muted/20 border-dashed" hover={false}>
+                            <h4 className="text-[10px] font-bold text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <ShieldAlert size={14} className="text-orange-500" /> Safety Tips
+                            </h4>
+                            <ul className="space-y-3">
+                                <li className="text-[11px] text-muted-foreground flex gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 mt-1 shrink-0"></div>
+                                    Never pay any "matching fee" or "registration fee" in advance.
+                                </li>
+                                <li className="text-[11px] text-muted-foreground flex gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 mt-1 shrink-0"></div>
+                                    Always teach in a safe and public location for the first trial.
+                                </li>
+                                <li className="text-[11px] text-muted-foreground flex gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 mt-1 shrink-0"></div>
+                                    Report any suspicious activity to our support team immediately.
+                                </li>
+                            </ul>
+                        </AppleCard>
                     </div>
                 </div>
 
-                {/* Find More Section */}
-                <div className="mt-32 pt-20 border-t border-border">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
+                {/* Similar Jobs */}
+                <div className="mt-20 pt-12 border-t border-border/50">
+                    <div className="flex items-end justify-between mb-8">
                         <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2 block italic">Curation Pipeline</span>
-                            <h2 className="text-5xl font-black tracking-tighter text-foreground uppercase italic">Active Nodes.</h2>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1 block">Recommendations</span>
+                            <h2 className="text-2xl font-bold text-foreground tracking-tight">Similar Tuition Jobs</h2>
                         </div>
-                        <Button asChild variant="ghost" className="rounded-none font-black text-xs uppercase tracking-[0.2em] group h-auto p-0">
-                            <Link to="/tuitions" className="flex items-center gap-2 italic">
-                                Browse Marketplace <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                        <AppleButton asChild variant="ghost" size="sm" className="group text-xs">
+                            <Link to="/tuitions" className="flex items-center gap-2">
+                                View All <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                             </Link>
-                        </Button>
+                        </AppleButton>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t border-l border-border bg-border">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {demoTuitions
                             .filter(t => t._id !== id)
                             .slice(0, 3)
-                            .map(item => (
-                                <div key={item._id} className="bg-background border-r border-b border-border hover:bg-muted/30 transition-colors">
+                            .map((item, idx) => (
+                                <div key={item._id} data-aos="fade-up" data-aos-delay={idx * 100}>
                                     <TuitionCard tuition={item} />
                                 </div>
                             ))}

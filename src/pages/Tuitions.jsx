@@ -7,8 +7,7 @@ import Pagination from '../components/Tuitions/Pagination';
 import { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
 import EmptyState from '../components/Tuitions/EmptyState';
 import { useAuth } from '../contexts/AuthContext';
-import { Badge } from "@/components/ui/badge";
-import { SlidersHorizontal, UserCheck, ShieldCheck, Filter, X, Grid3X3 } from 'lucide-react';
+import { SlidersHorizontal, Filter, X } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -16,12 +15,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { AppleBadge, AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
+import AOS from 'aos'
 
-/**
- * Tuitions Page
- * Refactored to "Apple macOS Sidebar Layout"
- * Consistent with Tutors page: Left sidebar filters, search integration with Nav, compact grid.
- */
 const Tuitions = () => {
     const { userRole } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -35,18 +31,22 @@ const Tuitions = () => {
         clearFilters
     } = useTuitionFilters(searchQuery);
 
-    // Reset page to 1 when filters change
     useEffect(() => {
         setPage(1);
-    }, [filters, searchQuery]);
+    }, [filters.search, filters.classFilter, filters.locationFilter, filters.sortBy]);
 
     const { tuitions, pagination, filterOptions, loading, error } = useTuitions({
         ...filters,
-        search: searchQuery,
         page,
         limit: 8,
         status: 'approved'
     });
+
+    useEffect(() => {
+        if (typeof AOS !== 'undefined' && AOS.refresh) {
+            AOS.refresh();
+        }
+    }, [tuitions]);
 
     const currentPage = pagination?.currentPage || 1;
     const totalPages = pagination?.totalPages || 1;
@@ -64,150 +64,137 @@ const Tuitions = () => {
     };
 
     if (loading && tuitions.length === 0) return (
-        <div className="min-h-screen flex items-center justify-center bg-apple-gray-100 dark:bg-apple-gray-900">
+        <div className="min-h-screen flex items-center justify-center bg-background">
             <TuitionGridSkeleton />
         </div>
     );
 
     return (
-        <div className="bg-apple-gray-100 dark:bg-apple-gray-950 min-h-screen">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-background min-h-screen">
+            <div className="w-full px-6 md:px-12 py-4">
                 
-                {/* Header (Apple Style) */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-apple-blue">Requirement Stream</span>
-                            {userRole === 'admin' && (
-                                <Badge className="bg-apple-gray-800 text-white hover:bg-apple-gray-800 rounded-md text-[9px] px-2 py-0.5 font-bold tracking-tight">
-                                    ADMIN ACCESS
-                                </Badge>
-                            )}
-                        </div>
-                        <h1 className="text-2xl font-bold text-apple-gray-900 dark:text-white tracking-tight">
-                            Tuition Directory
-                        </h1>
-                        <p className="text-[13px] text-apple-gray-500 font-medium mt-1">
-                            Access our high-precision stream of academic requirements.
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-apple-gray-900 rounded-lg border border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-sm">
-                            <span className="text-lg font-bold text-apple-gray-900 dark:text-white tabular-nums">{pagination?.totalItems || 0}</span>
-                            <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-tight">Nodes</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-apple-gray-900 rounded-lg border border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-sm">
-                            <span className="text-lg font-bold text-apple-gray-900 dark:text-white tabular-nums">{totalPages}</span>
-                            <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-tight">Pages</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col md:grid md:grid-cols-12 gap-8">
+                {/* Header */}
+                <AppleHeader 
+                    title="Available Tuition Jobs"
+                    subtitle="Find the perfect teaching opportunity that matches your skills and location."
                     
-                    {/* Left Sidebar Filters (macOS Style) */}
-                    <aside className="md:col-span-3 lg:col-span-2 space-y-6">
-                        <div className="apple-card p-4 bg-white/50 dark:bg-apple-gray-900/50 backdrop-blur-sm">
-                            <h3 className="text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Filter size={12} /> Parameters
+                    action={
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-2xl border border-border/50">
+                                <span className="text-xl font-bold text-foreground tabular-nums">{pagination?.totalItems || 0}</span>
+                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Jobs</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-2xl border border-border/50">
+                                <span className="text-xl font-bold text-foreground tabular-nums">{totalPages}</span>
+                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pages</span>
+                            </div>
+                        </div>
+                    }
+                />
+
+                <div className="flex flex-col md:grid md:grid-cols-12 gap-10">
+                    
+                    {/* Left Sidebar Filters */}
+                    <aside className="md:col-span-3 space-y-6">
+                        <AppleCard className="p-6 sticky top-24" hover={false}>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                                <Filter size={14} /> Filters
                             </h3>
                             
                             {/* Sort Filter */}
-                            <div className="mb-6">
-                                <label className="text-[10px] font-bold text-apple-gray-500 uppercase mb-2 block">Sort Strategy</label>
+                            <div className="mb-8">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Sort by</label>
                                 <Select value={filters.sortBy} onValueChange={(val) => updateFilter('sortBy', val)}>
-                                    <SelectTrigger className="mac-input h-8 border-none bg-white dark:bg-apple-gray-800 shadow-apple-sm">
-                                        <div className="flex items-center gap-2 overflow-hidden">
-                                            <SlidersHorizontal size={10} className="text-apple-gray-400 shrink-0" />
-                                            <SelectValue placeholder="Sort" className="text-xs" />
+                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
+                                        <div className="flex items-center gap-2">
+                                            <SlidersHorizontal size={12} className="text-muted-foreground" />
+                                            <SelectValue placeholder="Sort" />
                                         </div>
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
-                                        <SelectItem value="newest" className="rounded-md text-[11px] font-medium py-1.5">Latest</SelectItem>
-                                        <SelectItem value="oldest" className="rounded-md text-[11px] font-medium py-1.5">Oldest</SelectItem>
-                                        <SelectItem value="salary-high" className="rounded-md text-[11px] font-medium py-1.5">Yield: High</SelectItem>
-                                        <SelectItem value="salary-low" className="rounded-md text-[11px] font-medium py-1.5">Yield: Low</SelectItem>
+                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl">
+                                        <SelectItem value="newest" className="rounded-xl text-xs font-medium py-2 px-3">Latest First</SelectItem>
+                                        <SelectItem value="oldest" className="rounded-xl text-xs font-medium py-2 px-3">Oldest First</SelectItem>
+                                        <SelectItem value="salary-high" className="rounded-xl text-xs font-medium py-2 px-3">Salary: High to Low</SelectItem>
+                                        <SelectItem value="salary-low" className="rounded-xl text-xs font-medium py-2 px-3">Salary: Low to High</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             {/* Class Filter */}
-                            <div className="mb-6">
-                                <label className="text-[10px] font-bold text-apple-gray-500 uppercase mb-2 block">Node Class</label>
+                            <div className="mb-8">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Class</label>
                                 <Select value={filters.classFilter || 'all'} onValueChange={(val) => updateFilter('classFilter', val === 'all' ? '' : val)}>
-                                    <SelectTrigger className="mac-input h-8 border-none bg-white dark:bg-apple-gray-800 shadow-apple-sm">
-                                        <SelectValue placeholder="All Classes" className="text-xs" />
+                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
+                                        <SelectValue placeholder="All Classes" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
-                                        <SelectItem value="all" className="rounded-md text-[11px] font-medium py-1.5">All Protocols</SelectItem>
+                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl">
+                                        <SelectItem value="all" className="rounded-xl text-xs font-medium py-2 px-3">All Classes</SelectItem>
                                         {filterOptions?.classes?.map(cls => (
-                                            <SelectItem key={cls} value={cls} className="rounded-md text-[11px] font-medium py-1.5">Class {cls}</SelectItem>
+                                            <SelectItem key={cls} value={cls} className="rounded-xl text-xs font-medium py-2 px-3">Class {cls}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            {/* Spatial Area (Location) Filter */}
-                            <div className="mb-6">
-                                <label className="text-[10px] font-bold text-apple-gray-500 uppercase mb-2 block">Spatial Area</label>
+                            {/* Location Filter */}
+                            <div className="mb-8">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Location</label>
                                 <Select value={filters.locationFilter || 'all'} onValueChange={(val) => updateFilter('locationFilter', val === 'all' ? '' : val)}>
-                                    <SelectTrigger className="mac-input h-8 border-none bg-white dark:bg-apple-gray-800 shadow-apple-sm">
-                                        <SelectValue placeholder="All Zones" className="text-xs" />
+                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
+                                        <SelectValue placeholder="All Locations" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
-                                        <SelectItem value="all" className="rounded-md text-[11px] font-medium py-1.5">All Zones</SelectItem>
-                                        {filterOptions?.locations?.map(loc => (loc && (
-                                            <SelectItem key={loc} value={loc} className="rounded-md text-[11px] font-medium py-1.5">{loc}</SelectItem>
-                                        )))}
+                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl max-h-[300px]">
+                                        <SelectItem value="all" className="rounded-xl text-xs font-medium py-2 px-3">All Locations</SelectItem>
+                                        {filterOptions?.locations?.map(loc => loc && (
+                                            <SelectItem key={loc} value={loc} className="rounded-xl text-xs font-medium py-2 px-3">{loc}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             {/* Clear All */}
                             {(searchQuery || filters.classFilter || filters.locationFilter || filters.sortBy !== 'newest') && (
-                                <button
+                                <AppleButton
                                     onClick={handleClearAll}
-                                    className="w-full mt-2 flex items-center justify-center gap-1.5 text-[10px] font-bold text-apple-blue hover:text-apple-blue/80 py-2 border border-apple-blue/20 rounded-lg hover:bg-apple-blue/5 transition-all uppercase tracking-tight"
+                                    variant="ghost"
+                                    className="w-full mt-2 text-[10px] font-bold uppercase tracking-widest border border-border/50 hover:bg-muted/50 rounded-xl"
                                 >
-                                    <X size={10} /> Reset Matrix
-                                </button>
+                                    <X size={12} className="mr-2" /> Clear Filters
+                                </AppleButton>
                             )}
-                        </div>
+                        </AppleCard>
                     </aside>
 
-                    {/* Main Content (Cols-9) */}
-                    <main className="md:col-span-9 lg:col-span-10">
+                    {/* Main Content */}
+                    <main className="md:col-span-9">
                         {searchQuery && (
-                            <div className="mb-6 flex items-center gap-2">
-                                <span className="text-[11px] font-bold text-apple-gray-400 uppercase tracking-tight">Active Query:</span>
-                                <span className="px-2 py-0.5 bg-apple-blue/10 text-apple-blue text-[11px] font-bold rounded-md">"{searchQuery}"</span>
+                            <div className="mb-8 flex items-center gap-3">
+                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Searching for:</span>
+                                <AppleBadge variant="primary" className="px-3 py-1 normal-case text-sm tracking-normal">"{searchQuery}"</AppleBadge>
                             </div>
                         )}
 
-                        {loading ? (
-                            <TuitionGridSkeleton />
-                        ) : error ? (
-                            <div className="py-20 text-center bg-white dark:bg-apple-gray-900 rounded-container border border-dashed border-red-200 dark:border-red-800/30">
-                                <h3 className="text-xl font-bold text-red-500 mb-2">Failed to Load Tuitions</h3>
-                                <p className="text-apple-gray-500 text-sm max-w-md mx-auto">{error}</p>
+                        {error ? (
+                            <div className="py-32 text-center">
+                                <h3 className="text-xl font-bold text-destructive mb-2">Error</h3>
+                                <p className="text-muted-foreground text-sm max-w-md mx-auto">{error}</p>
                             </div>
                         ) : tuitions.length === 0 ? (
-                            <div className="py-20 bg-white dark:bg-apple-gray-900 rounded-container border border-dashed border-apple-gray-200 dark:border-apple-gray-800">
+                            <div className="py-32">
                                 <EmptyState onReset={handleClearAll} />
                             </div>
                         ) : (
                             <div className="space-y-12">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
-                                    {tuitions.map(tuition => (
-                                        <div key={tuition._id} className="transform hover:scale-[1.01] transition-all duration-300">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {tuitions.map((tuition, idx) => (
+                                        <div key={tuition._id} data-aos="fade-up" data-aos-delay={idx * 50}>
                                             <TuitionCard tuition={tuition} />
                                         </div>
                                     ))}
                                 </div>
 
                                 {totalPages > 1 && (
-                                    <div className="pt-8 border-t border-apple-gray-200 dark:border-apple-gray-800">
+                                    <div className="pt-10 border-t border-border/50">
                                         <Pagination
                                             currentPage={currentPage}
                                             totalPages={totalPages}

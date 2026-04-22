@@ -26,14 +26,14 @@ const FeaturedCategories = () => {
     ];
 
     return (
-        <section className="py-32 bg-white dark:bg-apple-gray-950">
+        <section className="py-32 bg-background">
             <div className="max-w-[1200px] mx-auto px-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
                     <div className="max-w-xl" data-aos="fade-right">
                         <AppleBadge variant="secondary" className="mb-4">Directory</AppleBadge>
-                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-black dark:text-white leading-[1.1]">
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
                             Explore your interests. <br />
-                            <span className="text-black/20 dark:text-white/20">Master your subject.</span>
+                            <span className="text-muted-foreground/30">Master your subject.</span>
                         </h2>
                     </div>
                     <Button variant="ghost" asChild className="p-0 h-auto text-xs font-bold tracking-widest uppercase text-primary hover:text-primary/80 hover:bg-transparent group" data-aos="fade-left">
@@ -51,14 +51,14 @@ const FeaturedCategories = () => {
                             data-aos="fade-up"
                             data-aos-delay={idx * 50}
                         >
-                            <AppleCard className="p-8 group hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all duration-300">
+                            <AppleCard className="p-8 group hover:bg-muted transition-all duration-300">
                                 <div className="mb-8">
-                                    <cat.icon className="w-10 h-10 text-black/80 dark:text-white/80 group-hover:text-primary transition-colors duration-300" strokeWidth={1.5} />
+                                    <cat.icon className="w-10 h-10 text-foreground group-hover:text-primary transition-colors duration-300" strokeWidth={1.5} />
                                 </div>
-                                <h3 className="text-lg font-bold text-black dark:text-white tracking-tight leading-tight">
+                                <h3 className="text-lg font-bold text-foreground tracking-tight leading-tight">
                                     {cat.label}
                                 </h3>
-                                <p className="text-[10px] font-bold text-black/30 dark:text-white/30 uppercase tracking-[0.1em] mt-2">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.1em] mt-2">
                                     {cat.count}
                                 </p>
                             </AppleCard>

@@ -27,21 +27,21 @@ const features = [
 
 const FeatureSpotlight = () => {
     return (
-        <section className="py-32 bg-apple-gray-50 dark:bg-black/20">
+        <section className="py-32 bg-muted/30">
             <div className="container mx-auto px-6 max-w-[1200px]">
-                <div className="mb-20 text-center">
+                <div className="mb-20 text-center" data-aos="fade-up">
                     <AppleBadge variant="secondary" className="mb-4">The Infrastructure</AppleBadge>
-                    <h2 className="text-4xl font-bold tracking-tight text-black dark:text-white">Built for Excellence.</h2>
+                    <h2 className="text-4xl font-bold tracking-tight text-foreground">Built for Excellence.</h2>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, i) => (
-                        <AppleCard key={i} className="p-8 hover:bg-white dark:hover:bg-apple-gray-900 transition-all duration-500" data-aos="fade-up" data-aos-delay={i * 100}>
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                                <feature.icon className="text-primary" size={24} />
+                        <AppleCard key={i} className="p-10 group" data-aos="fade-up" data-aos-delay={i * 100}>
+                            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+                                <feature.icon className="text-primary" size={28} strokeWidth={1.5} />
                             </div>
-                            <h3 className="text-lg font-bold text-black dark:text-white mb-3 tracking-tight">{feature.title}</h3>
-                            <p className="text-sm text-black/50 dark:text-white/50 leading-relaxed">
+                            <h3 className="text-lg font-bold text-foreground mb-4 tracking-tight">{feature.title}</h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 {feature.description}
                             </p>
                         </AppleCard>

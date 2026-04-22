@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export const useTuitionFilters = (initialSearchQuery = '') => {
     const [filters, setFilters] = useState({
@@ -7,6 +7,11 @@ export const useTuitionFilters = (initialSearchQuery = '') => {
         locationFilter: '',
         sortBy: 'newest'
     });
+
+    // Update search filter when URL query changes
+    useEffect(() => {
+        setFilters(prev => ({ ...prev, search: initialSearchQuery }));
+    }, [initialSearchQuery]);
 
     const updateFilter = useCallback((key, val) => {
         setFilters(prev => ({ ...prev, [key]: val }));

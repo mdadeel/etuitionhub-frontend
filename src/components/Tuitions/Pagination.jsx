@@ -1,4 +1,7 @@
 import React from 'react';
+import { AppleButton } from '../shared/AppleUI';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Pagination = ({ 
     currentPage, 
@@ -46,50 +49,51 @@ const Pagination = ({
 
     const pageNumbers = getPageNumbers();
 
+    if (totalPages <= 1) return null;
+
     return (
-        <div className="flex items-center justify-center space-x-2 mt-12">
-            <button
+        <div className="flex items-center justify-center gap-3 mt-16 pb-12">
+            <AppleButton
+                variant="outline"
+                size="sm"
                 onClick={onPrev}
                 disabled={!hasPrev}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    hasPrev
-                        ? 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] cursor-pointer'
-                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                }`}
+                className="h-10 w-10 p-0 rounded-xl"
             >
-                Previous
-            </button>
+                <ChevronLeft size={16} />
+            </AppleButton>
             
-            {pageNumbers.map((page, index) => (
-                <React.Fragment key={index}>
-                    {page === '...' ? (
-                        <span className="px-3 py-2 text-sm font-medium text-gray-500">...</span>
-                    ) : (
-                        <button
-                            onClick={() => onPageChange(page)}
-                            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                currentPage === page
-                                    ? 'bg-[var(--color-primary)] text-white'
-                                    : 'hover:bg-[var(--color-surface-muted)] text-[var(--color-text-primary)]'
-                            }`}
-                        >
-                            {page}
-                        </button>
-                    )}
-                </React.Fragment>
-            ))}
+            <div className="flex items-center gap-1.5 bg-muted/30 p-1.5 rounded-2xl border border-border/50 backdrop-blur-sm">
+                {pageNumbers.map((page, index) => (
+                    <React.Fragment key={index}>
+                        {page === '...' ? (
+                            <span className="px-3 text-xs font-bold text-muted-foreground/50 tracking-widest">...</span>
+                        ) : (
+                            <button
+                                onClick={() => onPageChange(page)}
+                                className={cn(
+                                    "min-w-[40px] h-9 px-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-300",
+                                    currentPage === page
+                                        ? "bg-primary text-primary-foreground shadow-apple-sm scale-105"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                                )}
+                            >
+                                {page}
+                            </button>
+                        )}
+                    </React.Fragment>
+                ))}
+            </div>
             
-            <button
+            <AppleButton
+                variant="outline"
+                size="sm"
                 onClick={onNext}
                 disabled={!hasNext}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    hasNext
-                        ? 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] cursor-pointer'
-                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                }`}
+                className="h-10 w-10 p-0 rounded-xl"
             >
-                Next
-            </button>
+                <ChevronRight size={16} />
+            </AppleButton>
         </div>
     );
 };

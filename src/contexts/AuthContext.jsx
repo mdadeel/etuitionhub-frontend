@@ -11,11 +11,9 @@ import {
     sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth } from '../utils/firebase';
-import axios from 'axios';
+import api from '../services/api';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
-
-import API_URL from '../config/api';
 
 // Export auth context for app-wide access
 export const AuthContext = createContext(null);
@@ -57,7 +55,7 @@ export const AuthProvider = ({ children }) => {
             };
 
             console.log('Posting user to DB:', userData);
-            const res = await axios.post(`${API_URL}/api/users`, userData);
+            const res = await api.post('/api/users', userData);
             console.log('Backend response:', res.data);
 
             toast.dismiss(toastId);
@@ -88,7 +86,7 @@ export const AuthProvider = ({ children }) => {
     const refreshUserFromDB = async (email) => {
         try {
             console.log('Refreshing user data for:', email);
-            let res = await axios.get(`${API_URL}/api/users/${email}`);
+            let res = await api.get(`/api/users/${email}`);
             setDbUser(res.data);
             setUserRole(res.data.role);
             console.log('Refreshed User Role:', res.data.role);
@@ -107,7 +105,7 @@ export const AuthProvider = ({ children }) => {
 
         const fetchUserFromDB = async (email) => {
             try {
-                let res = await axios.get(`${API_URL}/api/users/${email}`);
+                let res = await api.get(`/api/users/${email}`);
                 if (isMounted) {
                     setDbUser(res.data);
                     setUserRole(res.data.role);
@@ -144,9 +142,7 @@ export const AuthProvider = ({ children }) => {
         if (!email) return;
         try {
             console.log('Generating JWT for:', email);
-            let res = await axios.post(`${API_URL}/api/auth/jwt`, { email }, {
-                withCredentials: true
-            });
+            let res = await api.post('/api/auth/jwt', { email });
             if (res.data.token) {
                 Cookies.set('token', res.data.token, { expires: 7 }); // expires in 7 days
                 console.log('JWT Token set in cookies');

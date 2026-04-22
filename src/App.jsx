@@ -1,5 +1,8 @@
 // main app comp
 import './app.css'
+import AOS from 'aos'
+import 'aos/dist/aos.css'
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Navbar from './components/shared/Navbar'
 import { Toaster } from 'react-hot-toast'
@@ -27,13 +30,20 @@ import AdminLogin from './pages/AdminLogin'
 
 // rutes setup
 let App = () => {
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+      easing: 'ease-out-quart'
+    })
+  }, [])
   console.log('app rendering')
 
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
-          <div className="min-h-screen flex flex-col bg-[var(--color-surface)] text-[var(--color-text-primary)] transition-colors duration-300">
+          <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500">
             <Navbar />
             <main className="flex-grow">
               <Routes>

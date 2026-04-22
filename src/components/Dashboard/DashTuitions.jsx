@@ -3,19 +3,26 @@ import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
-
-var isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
-
-// demo data fallback
-var demoTuitions = [
-    { _id: 'demo1', subject: 'Mathematics', class_name: 'Class 10', location: 'Dhanmondi', salary: 5000, student_email: 'student@demo.com', status: 'pending' },
-    { _id: 'demo2', subject: 'Physics', class_name: 'HSC', location: 'Uttara', salary: 7000, student_email: 'student2@demo.com', status: 'approved' }
-];
+import { AppleBadge, AppleButton } from '../shared/AppleUI';
+import { Check, X, ShieldAlert, Edit2 } from 'lucide-react';
+import EditModal from './EditModal';
 
 const DashTuitions = () => {
     const [tuitions, setTuitions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    
+    // Edit Modal State
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedTuition, setSelectedTuition] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
+
+    const tuitionFields = [
+        { name: 'subject', label: 'Subject', placeholder: 'e.g. Mathematics' },
+        { name: 'class_name', label: 'Class', placeholder: 'e.g. Class 10' },
+        { name: 'location', label: 'Location', placeholder: 'e.g. Dhanmondi, Dhaka' },
+        { name: 'salary', label: 'Salary (BDT)', type: 'number', placeholder: 'e.g. 5000' }
+    ];
 
     useEffect(() => {
         const loadTuitions = async () => {
@@ -25,7 +32,6 @@ const DashTuitions = () => {
             } catch (err) {
                 console.error('Core marketplace load failed');
                 toast.error('Marketplace status unavailable');
-                // setTuitions(demoTuitions); // Removed demo fallback for cleaner interface
             } finally {
                 setLoading(false);
             }
@@ -78,26 +84,51 @@ const DashTuitions = () => {
         }
     };
 
+    const handleEditClick = (tuition) => {
+        const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
+        if (!isValidId(tuition._id)) {
+            toast.error('Operational Integrity: Demo data is read-only');
+            return;
+        }
+        setSelectedTuition(tuition);
+        setIsEditModalOpen(true);
+    };
+
+    const handleEditSave = async (updatedData) => {
+        setIsSaving(true);
+        try {
+            const res = await api.patch(`/api/tuitions/${selectedTuition._id}`, updatedData);
+            setTuitions(prev => prev.map(t => t._id === selectedTuition._id ? res.data : t));
+            toast.success('Metadata updated successfully.');
+            setIsEditModalOpen(false);
+        } catch (err) {
+            toast.error('Failed to update requirement.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden border-none p-0">
-            <header className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-transparent">
+            <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <h2 className="text-xs font-black uppercase tracking-widest text-gray-900 flex items-center gap-2">
-                        <span className="w-1 h-1 rounded-full bg-teal-500"></span>
-                        Marketplace Operations
+                    <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
+                        Marketplace Streams
                     </h2>
-                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{tuitions.length} Requirements</p>
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
+                        {tuitions.length} active metadata nodes detected
+                    </p>
                 </div>
 
-                <div className="flex bg-gray-50/50 p-1 rounded-xl gap-1 border border-gray-100/50 w-fit">
+                <div className="flex bg-muted/50 p-1 rounded-2xl gap-1 border border-border/50 w-fit backdrop-blur-md">
                     {['all', 'pending', 'approved'].map(f => (
                         <button
                             key={f}
-                            className={`px-4 py-1.5 text-[8px] font-black uppercase tracking-wider rounded-lg transition-all duration-300 ${filter === f
-                                ? 'bg-white text-teal-600 shadow-sm ring-1 ring-black/5'
-                                : 'text-gray-400 hover:text-gray-600 hover:bg-white/50'
+                            className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${filter === f
+                                ? 'bg-background text-primary shadow-apple-sm ring-1 ring-border/50'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                             onClick={() => setFilter(f)}
                         >
@@ -107,63 +138,80 @@ const DashTuitions = () => {
                 </div>
             </header>
 
-            <div className="overflow-x-auto scrollbar-hide">
-                <table className="w-full text-left">
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-separate border-spacing-y-3">
                     <thead>
-                        <tr className="bg-gray-50/30 border-b border-gray-100">
-                            <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Academic Scope</th>
-                            <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400">Geography</th>
-                            <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">Yield</th>
-                            <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">State</th>
-                            <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-gray-400 text-right">Ops</th>
+                        <tr className="text-muted-foreground">
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Academic Scope</th>
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Geography</th>
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-center">Yield</th>
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-center">State</th>
+                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-right">Ops</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody>
                         {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan="5" className="px-6 py-20 text-center">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-300 italic">Universal records empty</p>
+                                <td colSpan="5" className="px-6 py-24 text-center">
+                                    <div className="flex flex-col items-center gap-4 opacity-30">
+                                        <ShieldAlert size={48} strokeWidth={1} />
+                                        <p className="text-[10px] font-bold uppercase tracking-widest italic">Universal records empty</p>
+                                    </div>
                                 </td>
                             </tr>
                         ) : (
                             filtered.map((t) => (
-                                <tr key={t._id} className="hover:bg-teal-50/10 transition-colors">
-                                    <td className="px-6 py-3.5">
-                                        <p className="text-[11px] font-black text-gray-800 leading-tight">{t.subject}</p>
-                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-wider mt-0.5">{t.class_name}</p>
+                                <tr key={t._id} className="group">
+                                    <td className="px-6 py-5 bg-muted/20 border-y border-l border-border/50 first:rounded-l-2xl">
+                                        <p className="text-sm font-bold text-foreground leading-tight">{t.subject}</p>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{t.class_name}</p>
                                     </td>
-                                    <td className="px-6 py-3.5 text-[10px] font-black text-gray-400 lowercase italic">{t.location}</td>
-                                    <td className="px-6 py-3.5 text-center">
-                                        <span className="text-xs font-black text-teal-600">৳{t.salary}</span>
+                                    <td className="px-6 py-5 bg-muted/20 border-y border-border/50">
+                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t.location}</p>
                                     </td>
-                                    <td className="px-6 py-3.5 text-center">
-                                        <span className={`px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded shadow-sm border ${t.status === 'approved' ? 'bg-teal-50 text-teal-700 border-teal-100' :
-                                            t.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-100' :
-                                                'bg-amber-50 text-amber-700 border-amber-100'
-                                            }`}>
-                                            {t.status}
-                                        </span>
+                                    <td className="px-6 py-5 bg-muted/20 border-y border-border/50 text-center">
+                                        <span className="text-sm font-bold text-primary tabular-nums">৳{t.salary}</span>
                                     </td>
-                                    <td className="px-6 py-3.5 text-right">
-                                        {t.status === 'pending' && (
-                                            <div className="flex justify-end gap-2">
-                                                <button
-                                                    className="text-[8px] font-black uppercase tracking-widest px-3 py-1.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-all"
-                                                    onClick={() => handleApprove(t._id)}
-                                                >
-                                                    Verify
-                                                </button>
-                                                <button
-                                                    className="text-[8px] font-black uppercase tracking-widest px-3 py-1.5 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition-all"
-                                                    onClick={() => handleReject(t._id)}
-                                                >
-                                                    Drop
-                                                </button>
-                                            </div>
-                                        )}
-                                        {t.status !== 'pending' && (
-                                            <span className="text-[9px] font-black text-gray-200 uppercase tracking-widest">Done</span>
-                                        )}
+                                    <td className="px-6 py-5 bg-muted/20 border-y border-border/50 text-center">
+                                        <AppleBadge variant={t.status === 'approved' ? 'success' : t.status === 'rejected' ? 'error' : 'primary'} className="scale-90">
+                                            {t.status.toUpperCase()}
+                                        </AppleBadge>
+                                    </td>
+                                    <td className="px-6 py-5 bg-muted/20 border-y border-r border-border/50 last:rounded-r-2xl text-right">
+                                        <div className="flex justify-end gap-3">
+                                            <AppleButton
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/5"
+                                                onClick={() => handleEditClick(t)}
+                                            >
+                                                <Edit2 size={14} />
+                                            </AppleButton>
+
+                                            {t.status === 'pending' && (
+                                                <>
+                                                    <AppleButton
+                                                        size="sm"
+                                                        variant="primary"
+                                                        className="h-8 px-4 text-[10px]"
+                                                        onClick={() => handleApprove(t._id)}
+                                                    >
+                                                        <Check size={14} className="mr-1.5" /> Verify
+                                                    </AppleButton>
+                                                    <AppleButton
+                                                        size="sm"
+                                                        variant="secondary"
+                                                        className="h-8 px-4 text-[10px] bg-destructive/10 text-destructive hover:bg-destructive hover:text-white"
+                                                        onClick={() => handleReject(t._id)}
+                                                    >
+                                                        <X size={14} className="mr-1.5" /> Drop
+                                                    </AppleButton>
+                                                </>
+                                            )}
+                                            {t.status !== 'pending' && (
+                                                <span className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.2em] px-4 self-center">Archived</span>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -171,6 +219,16 @@ const DashTuitions = () => {
                     </tbody>
                 </table>
             </div>
+
+            <EditModal 
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                title="Edit Tuition Requirement"
+                data={selectedTuition}
+                fields={tuitionFields}
+                onSave={handleEditSave}
+                isLoading={isSaving}
+            />
         </div>
     );
 };

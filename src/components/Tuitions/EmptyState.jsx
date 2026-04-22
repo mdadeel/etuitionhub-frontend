@@ -1,39 +1,35 @@
 import React from 'react';
+import { AppleButton, AppleBadge } from '../shared/AppleUI';
+import { SearchX } from 'lucide-react';
 
 const EmptyState = ({ onReset }) => {
     return (
-        <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-            <div className="mb-8">
-                <svg 
-                    className="w-24 h-24 mx-auto text-[var(--color-text-muted)]" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24" 
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={1.5} 
-                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                </svg>
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center animate-in fade-in zoom-in-95 duration-700">
+            <div className="mb-10 relative">
+                <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full"></div>
+                <div className="relative w-24 h-24 bg-muted/50 border border-border/50 rounded-[2rem] flex items-center justify-center shadow-apple-sm">
+                    <SearchX size={40} className="text-muted-foreground/40" strokeWidth={1.5} />
+                </div>
             </div>
             
-            <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">
-                No Tuitions Found
+            <AppleBadge variant="secondary" className="mb-6">Protocol Alert</AppleBadge>
+            
+            <h3 className="text-2xl font-bold text-foreground mb-3 tracking-tight">
+                No Stream Detected
             </h3>
             
-            <p className="text-[var(--color-text-secondary)] mb-8 max-w-md">
-                We couldn't find any tuitions matching your current filters. Try adjusting your search criteria.
+            <p className="text-sm font-medium text-muted-foreground mb-12 max-w-sm leading-relaxed">
+                We couldn't locate any academic requirements matching your current filtering parameters. 
             </p>
             
-            <button
+            <AppleButton
                 onClick={onReset}
-                className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors"
+                variant="primary"
+                size="lg"
+                className="h-14 px-10 shadow-apple-md"
             >
-                Reset Filters
-            </button>
+                Reset Parameters
+            </AppleButton>
         </div>
     );
 };

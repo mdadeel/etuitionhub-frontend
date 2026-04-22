@@ -1,28 +1,33 @@
-/**
- * LoadingSpinner Component
- * Refactored to "Technical Emerald Minimalism"
- */
 const LoadingSpinner = ({ size = 'lg', fullScreen = true }) => {
     const containerClass = fullScreen
         ? 'min-h-[70vh] flex items-center justify-center bg-background'
         : 'flex justify-center py-24';
 
-    const sizeClass = size === 'lg' ? 'w-16 h-16' : 'w-8 h-8';
+    const sizeClass = size === 'lg' ? 'w-12 h-12' : 'w-6 h-6';
 
     return (
         <div className={containerClass}>
-            <div className="relative">
-                {/* Outer Technical Ring */}
-                <div className={`${sizeClass} border-4 border-primary/10 border-t-primary rounded-none animate-spin transition-all duration-1000`}></div>
-                
-                {/* Inner Static Protocol Indicator */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-1 h-1 bg-primary animate-pulse"></div>
+            <div className="flex flex-col items-center gap-6">
+                <div className="relative">
+                    {/* Primary Spinner */}
+                    <div className={`${sizeClass} border-2 border-primary/20 border-t-primary rounded-full animate-spin transition-all duration-1000 ease-in-out`}></div>
+                    
+                    {/* Center Dot */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full opacity-40 animate-pulse"></div>
+                    </div>
                 </div>
 
-                <p className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-[9px] font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap opacity-50 animate-pulse">
-                    Synchronizing...
-                </p>
+                <div className="flex flex-col items-center">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em] animate-pulse">
+                        Synchronizing
+                    </p>
+                    <div className="flex gap-1 mt-2">
+                        <div className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-1 h-1 bg-primary/40 rounded-full animate-bounce"></div>
+                    </div>
+                </div>
             </div>
         </div>
     );

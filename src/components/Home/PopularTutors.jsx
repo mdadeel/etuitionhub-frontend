@@ -24,15 +24,15 @@ const PopularTutors = () => {
 
     if (isLoading) {
         return (
-            <section className="py-32 bg-apple-gray-50 dark:bg-apple-gray-950/50">
+            <section className="py-32 bg-muted/30">
                 <div className="max-w-[1200px] mx-auto px-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[1, 2, 3].map((i) => (
-                            <AppleCard key={i} className="p-4 bg-white dark:bg-apple-gray-900">
-                                <Skeleton className="aspect-video w-full rounded-2xl bg-black/5 dark:bg-white/5" />
+                            <AppleCard key={i} className="p-4 bg-card">
+                                <Skeleton className="aspect-video w-full rounded-2xl bg-muted" />
                                 <div className="mt-4 space-y-3">
-                                    <Skeleton className="h-5 w-3/4 bg-black/5 dark:bg-white/5" />
-                                    <Skeleton className="h-4 w-1/2 bg-black/5 dark:bg-white/5" />
+                                    <Skeleton className="h-5 w-3/4 bg-muted" />
+                                    <Skeleton className="h-4 w-1/2 bg-muted" />
                                 </div>
                             </AppleCard>
                         ))}
@@ -43,7 +43,7 @@ const PopularTutors = () => {
     }
 
     return (
-        <section className="py-32 bg-apple-gray-50 dark:bg-apple-gray-950/50">
+        <section className="py-32 bg-muted/30">
             <div className="max-w-[1200px] mx-auto px-6">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
                     <div className="max-w-2xl" data-aos="fade-right">
@@ -51,9 +51,9 @@ const PopularTutors = () => {
                             <Star size={12} className="text-primary fill-primary" />
                             <AppleBadge variant="primary">Chapter 4: The Mentors</AppleBadge>
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-black dark:text-white leading-[1.1]">
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
                             Expert Guidance. <br />
-                            <span className="text-black/20 dark:text-white/20">Human Connection.</span>
+                            <span className="text-muted-foreground/30">Human Connection.</span>
                         </h2>
                     </div>
                     <Button variant="ghost" asChild className="p-0 h-auto text-xs font-bold tracking-widest uppercase text-primary hover:text-primary/80 hover:bg-transparent group" data-aos="fade-left">

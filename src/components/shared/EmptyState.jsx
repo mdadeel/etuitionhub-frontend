@@ -1,31 +1,27 @@
-import { Database, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { SearchX, RefreshCw } from "lucide-react";
+import { AppleButton } from "./AppleUI";
 
-/**
- * EmptyState Component
- * Refactored to "Technical Emerald Minimalism"
- */
-const EmptyState = ({ message = 'No data nodes located', onAction, actionLabel = 'Reset Matrix' }) => {
+const EmptyState = ({ message = 'No specialists found', onAction, actionLabel = 'Reset Filters' }) => {
     return (
-        <div className="text-center py-40 bg-muted/10 border border-dashed border-border rounded-none relative overflow-hidden group">
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
-                 style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 0.5px, transparent 0)', backgroundSize: '24px 24px' }}>
-            </div>
-            
+        <div className="text-center py-32 bg-muted/20 border border-dashed border-border rounded-[2rem] relative overflow-hidden group">
             <div className="relative z-10 flex flex-col items-center">
-                <Database size={48} className="text-muted-foreground/30 mb-8 group-hover:text-primary/30 transition-colors duration-500" strokeWidth={1} />
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] mb-10 max-w-xs leading-relaxed">
-                    {message.toUpperCase()}
+                <div className="w-20 h-20 bg-background border border-border shadow-apple-sm rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+                    <SearchX size={32} className="text-muted-foreground/30 group-hover:text-primary transition-colors duration-500" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-3 tracking-tight">No Results Found</h3>
+                <p className="text-sm font-medium text-muted-foreground mb-10 max-w-xs mx-auto leading-relaxed">
+                    {message}
                 </p>
                 {onAction && (
-                    <Button
-                        variant="outline"
-                        className="h-12 px-8 rounded-none border-border text-[10px] font-black uppercase tracking-[0.2em] hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all group/btn"
+                    <AppleButton
+                        variant="secondary"
+                        size="md"
+                        className="shadow-apple-sm"
                         onClick={onAction}
                     >
-                        <RefreshCw size={14} className="mr-2 group-hover/btn:rotate-180 transition-transform duration-700" />
+                        <RefreshCw size={14} className="mr-2 opacity-50" />
                         {actionLabel}
-                    </Button>
+                    </AppleButton>
                 )}
             </div>
         </div>

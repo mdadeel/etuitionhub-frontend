@@ -26,26 +26,26 @@ const features = [
 
 const WhyChooseUs = () => {
     return (
-        <section className="py-32 bg-white dark:bg-apple-gray-950">
+        <section className="py-32 bg-background">
             <div className="max-w-[1200px] mx-auto px-6">
                 <div className="mb-24" data-aos="fade-right">
                     <AppleBadge variant="primary" className="mb-4">Chapter 5: The Edge</AppleBadge>
-                    <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-black dark:text-white leading-[1.1]">
+                    <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
                         Operational excellence. <br />
-                        <span className="text-black/20 dark:text-white/20">Built for you.</span>
+                        <span className="text-muted-foreground/30">Built for you.</span>
                     </h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {features.map((feature, idx) => (
                         <AppleCard key={idx} className="p-10 group" data-aos="fade-up" data-aos-delay={idx * 100}>
-                            <div className="mb-10 w-14 h-14 rounded-2xl bg-black/[0.03] dark:bg-white/[0.05] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                            <div className="mb-10 w-14 h-14 rounded-2xl bg-muted flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                                 <feature.icon size={28} strokeWidth={1.5} className="text-primary" />
                             </div>
-                            <h3 className="text-lg font-bold text-black dark:text-white mb-4 tracking-tight">
+                            <h3 className="text-lg font-bold text-foreground mb-4 tracking-tight">
                                 {feature.title}
                             </h3>
-                            <p className="text-sm text-black/50 dark:text-white/50 leading-relaxed">
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 {feature.description}
                             </p>
                         </AppleCard>
