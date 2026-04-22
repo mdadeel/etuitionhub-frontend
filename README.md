@@ -1,115 +1,83 @@
 # e-TuitionBD 🎓
 
-> **A Modern Online Tuition Marketplace** connecting the best tutors with students in Bangladesh. Built with the **Antigravity Kit** (20+ Specialist Agents) for peak performance and design.
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=flat-square&logo=nodedotjs)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Latest-47A248?style=flat-square&logo=mongodb)](https://www.mongodb.com/)
+[![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](LICENSE)
+
+**e-TuitionBD** is a high-fidelity, online tuition marketplace designed for the modern academic landscape in Bangladesh. It connects verified specialists with students who demand excellence through a precision-engineered interface.
 
 ---
 
-## 🚀 Overview
+## 🖼️ Homescreen Preview
 
-**e-TuitionBD** is a comprehensive full-stack platform designed to revolutionize the private tutoring landscape. Inspired by the marketplace dynamics of **Airbnb** and the professional precision of **Linear**, it offers a seamless experience for both tutors and students.
+![e-TuitionBD Homescreen](./docs/screenshots/homescreen.png)
 
-With a focus on trust, clarity, and ease of use, the platform features a robust tuition listing system, dual-mode payments (Stripe + Local), and a sophisticated backend for managing applications and bookings.
+*The new "Precision Learning" hero section featuring dynamic image shuffling and verified expert networking.*
 
 ---
 
 ## ✨ Key Features
 
-- **👤 Dual User Roles**: Dedicated flows for Tutors (profile management, applications) and Students (searching, booking).
-- **📚 Tuition Marketplace**: Advanced filtering and search for tuitions and tutors.
-- **💳 Integrated Payments**: 
-  - **Stripe**: Instant card payments for global reach.
-  - **Local (bKash/Nagad)**: Manual verification system for regional convenience.
-- **📊 Real-time Dashboard**: Track applications, payments, and active bookings.
-- **🛡️ Secure Auth**: JWT-based authentication with Firebase integration for storage and social auth.
-- **🤖 Agent-Driven Dev**: Built using the **Antigravity Kit**, featuring 20+ specialist AI agents for code quality, security, and UI/UX excellence.
-- **🎨 Modern UI/UX**: "Technical Emerald Minimalism" theme with full dark mode support, built with Tailwind CSS and Framer Motion.
+- **👤 Dual-Node Ecosystem**: Specialized workflows for **Tutors** (profile optimization, lead tracking) and **Students** (specialist discovery, secure booking).
+- **📚 Intelligent Marketplace**: Advanced filtering by subject, location, and class with real-time search integration.
+- **💳 Multi-Channel Payments**: 
+  - **Global**: Seamless Stripe integration for instant card transactions.
+  - **Local**: Manual verification flow for bKash and Nagad payments.
+- **📊 Unified Dashboard**: Comprehensive tracking for applications, active streams, and payment history.
+- **🛡️ Enterprise-Grade Security**: JWT-based auth protocols, Firebase storage integration, and role-based access control (RBAC).
+- **🤖 AI-Orchestrated Dev**: Engineered using the **Antigravity Kit**, leveraging 20+ specialist agents to ensure peak code quality and UX performance.
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend
+### Frontend Architecture
 - **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [DaisyUI](https://daisyui.com/) + [Shadcn UI](https://ui.shadcn.com/)
-- **State & Logic**: React Hook Form, Axios, React Router Dom
-- **Animations**: Framer Motion, AOS (Animate on Scroll)
-- **Charts**: Recharts for analytics
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
+- **Animation**: [Framer Motion](https://www.framer.com/motion/) + [AOS](https://michalsnik.github.io/aos/)
+- **State Management**: React Hook Form + Context API
 
-### Backend
-- **Runtime**: Node.js (Express)
-- **Database**: MongoDB (Mongoose)
-- **Security**: Helmet, Express Rate Limit, BcryptJS, JWT
-- **Payments**: Stripe SDK
-- **Logging**: Winston
-- **Validation**: Joi
-
-### The "Antigravity Kit" (Agent System)
-- **20 Specialist Agents**: Orchestrator, Security Auditor, Frontend Specialist, etc.
-- **36 Skills**: From `react-best-practices` to `vulnerability-scanner`.
-- **Validation**: Automated core checks (`checklist.py`) and full suite verification (`verify_all.py`).
+### Backend Infrastructure
+- **Runtime**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
+- **Database**: [MongoDB](https://www.mongodb.com/) (Mongoose ORM)
+- **Security**: Helmet, Rate Limiting, BcryptJS
+- **Analytics**: Winston Logging + Recharts
 
 ---
 
-## 📂 Project Structure
+## ⚙️ Quick Start
 
-```plaintext
-.
-├── backend-api/          # Express API (Auth, Payments, Logic)
-├── frontend-client/      # React/Vite Frontend (UI/UX)
-├── .agent/               # Antigravity Kit (Agents, Skills, Workflows)
-├── awesome-design-md/    # Design system inspiration & tokens
-├── DESIGN.md             # Project design philosophy
-└── package.json          # Root workspace configuration
+### 1. Clone & Install
+```bash
+git clone https://github.com/mdadeel/e-tuitionBD.git
+npm install
 ```
 
----
+### 2. Configure Environment
+Create `.env` files in both `backend-api` and `frontend-client` (see `.env.example` in respective folders).
 
-## ⚙️ Getting Started
-
-### Prerequisites
-- Node.js (v18+)
-- MongoDB (Local or Atlas)
-- Stripe Account (for payments)
-
-### 1. Setup Backend
+### 3. Launch Development
 ```bash
-cd backend-api
-npm install
-cp .env.example .env
-# Update .env with your MONGODB_URI and STRIPE_SECRET_KEY
+# Start Backend
+cd etuitionhub--backend
+npm run dev
+
+# Start Frontend
+cd etuitionhub-frontend
 npm run dev
 ```
 
-### 2. Setup Frontend
-```bash
-cd frontend-client
-npm install
-cp .env.example .env.local
-# Update .env.local with:
-# - VITE_FIREBASE_API_KEY (and other Firebase variables)
-# - VITE_STRIPE_PUBLISHABLE_KEY
-# - (Optional) VITE_API_URL if it's not defaulted to localhost:5000
-npm run dev
-```
-
-### 3. (Optional) Run Agent Checks
-```bash
-# Core validation
-python .agent/scripts/checklist.py .
-
-# Full verification
-python .agent/scripts/verify_all.py . --url http://localhost:5173
-```
-
 ---
 
-## 🎨 Design Philosophy
+## 🎨 Design Philosophy: "Emerald Trust"
 
-Our design system focuses on **Emerald Trust**. We avoid sharp edges (using 12-16px radius) and prioritize high-quality human-centric photography. 
+The platform adheres to a **Technical Minimalist** aesthetic, prioritizing clarity and trust signals. 
 
-- **Primary**: `#10b981` (Emerald 500)
-- **Secondary**: `#ff5a5f` (Coral)
-- **Typography**: Inter Variable for clarity, Geist Mono for technical meta-info.
+- **Border Radius**: 16px (Apple-inspired smoothness)
+- **Primary Color**: `#10b981` (Emerald 500) — Represents growth and precision.
+- **Typography**: `Inter Variable` for UI, `Geist Mono` for metadata.
 
 ---
 
@@ -119,4 +87,4 @@ This project is licensed under the **ISC License**.
 
 ---
 
-*Built with ❤️ by the mdadeel*
+*Built with ❤️ by the e-TuitionBD Development Team.*
