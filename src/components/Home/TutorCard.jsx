@@ -1,92 +1,90 @@
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { MapPin, Star, GraduationCap, ChevronRight } from "lucide-react";
+import { MapPin, Star, ShieldCheck, ArrowRight } from "lucide-react";
 
 /**
  * TutorCard Component
- * Refactored to "Figma-inspired Human Crafted"
- * Features: Restrained geometry, subtle shadows, crisp typography
+ * Refactored to standard div-based layout to avoid shadcn card conflicts.
+ * Features: Apple High-precision typography, translucent glass, pill-shaped UI.
  */
 const TutorCard = ({ tutor }) => {
     if (!tutor) return null;
 
-    const { _id, displayName, photoURL, qualification, location, ratings, subjects, expectedSalary } = tutor;
+    const { _id, displayName, photoURL, qualification, location, ratings, subjects, expectedSalary, isVerified } = tutor;
 
     return (
-        <Card className="group h-full flex flex-col bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-border transition-all duration-200">
-            <div className="relative aspect-[3/2] overflow-hidden bg-muted/30">
+        <div className="apple-card group h-full flex flex-col bg-white dark:bg-apple-gray-800 border-apple-gray-200 dark:border-apple-gray-700 shadow-apple-sm hover:shadow-apple-md transition-all duration-300 overflow-hidden">
+            <div className="relative aspect-[4/3] overflow-hidden bg-apple-gray-50 dark:bg-apple-gray-900">
                 <img 
-                    src={photoURL} 
+                    src={photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
                     alt={displayName}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]" 
                 />
                 
-                {/* Status Badges */}
-                <div className="absolute top-3 left-3 z-10">
-                    <Badge variant="secondary" className="bg-background/95 backdrop-blur-sm border-none text-[10px] font-medium text-foreground rounded px-2 py-0.5 shadow-sm">
-                        Verified
-                    </Badge>
+                {/* Status Badges (Apple Style) */}
+                <div className="absolute top-2 left-2 z-10">
+                    <div className="glass px-2 py-0.5 rounded-md flex items-center gap-1">
+                        {isVerified && <ShieldCheck size={10} className="text-apple-blue" />}
+                        <span className="text-[9px] font-bold text-apple-gray-700 dark:text-apple-gray-200 uppercase tracking-tight">Verified</span>
+                    </div>
                 </div>
 
-                {/* Pricing Overlay */}
+                {/* Pricing Overlay (Apple Style) */}
                 {expectedSalary && (
-                    <div className="absolute bottom-3 right-3 z-10">
-                        <div className="px-2.5 py-1 bg-background/95 backdrop-blur-sm text-foreground text-xs font-semibold shadow-sm rounded-md border border-border/50">
-                            ৳{expectedSalary}/mo
+                    <div className="absolute bottom-2 right-2 z-10">
+                        <div className="glass px-2 py-1 text-apple-gray-900 dark:text-white text-[11px] font-bold rounded-md border-white/40">
+                            ৳{expectedSalary}<span className="text-[9px] font-medium opacity-60">/mo</span>
                         </div>
                     </div>
                 )}
             </div>
 
-            <CardContent className="p-4 flex-grow flex flex-col">
-                <div className="mb-3">
+            <div className="p-3.5 flex-grow flex flex-col">
+                <div className="mb-2">
                     <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors leading-tight">
+                        <h3 className="text-[15px] font-bold text-apple-gray-900 dark:text-white group-hover:text-apple-blue transition-colors leading-tight tracking-tight">
                             {displayName}
                         </h3>
-                        <div className="flex items-center gap-1 shrink-0 mt-0.5">
-                            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                            <span className="text-xs font-medium text-muted-foreground">{ratings || '4.9'}</span>
+                        <div className="flex items-center gap-0.5 shrink-0 mt-0.5">
+                            <span className="text-[13px] font-bold text-apple-gray-800 dark:text-apple-gray-100">{ratings || '4.9'}</span>
+                            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-1.5 mb-5 flex-grow">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                        <GraduationCap size={14} className="shrink-0 opacity-70" />
-                        <p className="text-xs font-medium truncate">
-                            {qualification || 'Certified Tutor'}
+                <div className="space-y-1 mb-4 flex-grow">
+                    <div className="flex items-center gap-1.5 text-apple-gray-500 dark:text-apple-gray-400">
+                        <p className="text-[11px] font-medium truncate">
+                            {qualification || 'Certified Educator'}
                         </p>
                     </div>
                     
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin size={14} className="shrink-0 opacity-70" />
-                        <p className="text-xs font-medium truncate">
+                    <div className="flex items-center gap-1.5 text-apple-gray-400 dark:text-apple-gray-500">
+                        <MapPin size={11} className="shrink-0" />
+                        <p className="text-[10px] font-medium truncate">
                             {location || 'Dhaka'}
                         </p>
                     </div>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 mt-auto">
+                <div className="flex flex-wrap gap-1 mt-auto">
                     {subjects && Array.isArray(subjects) && subjects.slice(0, 3).map((sub, i) => (
-                        <Badge key={i} variant="outline" className="rounded-md border-border/50 bg-muted/20 text-[10px] font-medium text-muted-foreground px-1.5 py-0.5">
+                        <Badge key={i} className="bg-apple-gray-50 dark:bg-apple-gray-900/50 text-apple-gray-500 dark:text-apple-gray-400 border-none rounded-md text-[9px] font-bold uppercase tracking-tight px-1.5 py-0.5">
                             {sub}
                         </Badge>
                     ))}
                 </div>
-            </CardContent>
+            </div>
 
-            <CardFooter className="p-4 pt-0">
-                <Button asChild variant="outline" className="w-full h-9 text-xs font-medium rounded-md bg-transparent border-border/80 hover:bg-muted/40 transition-colors">
-                    <Link to={`/tutor/${_id}`} className="flex items-center justify-center gap-1.5">
-                        View Profile
+            <div className="p-3.5 pt-0">
+                <Button asChild className="w-full mac-pill bg-apple-gray-100 dark:bg-apple-gray-900 text-apple-gray-800 dark:text-apple-gray-200 hover:bg-apple-gray-200 dark:hover:bg-apple-gray-800 border-none shadow-apple-sm group/btn">
+                    <Link to={`/tutor/${_id}`} className="flex items-center justify-center gap-1">
+                        View Profile <ArrowRight size={12} className="transition-transform group-hover/btn:translate-x-0.5" />
                     </Link>
                 </Button>
-            </CardFooter>
-        </Card>
+            </div>
+        </div>
     );
 };
 

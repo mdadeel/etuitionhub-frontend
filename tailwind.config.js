@@ -2,74 +2,93 @@ import tailwindAnimate from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    darkMode: ["class"],
-    content: [
+  darkMode: ["class"],
+  content: [
     "./index.html",
     "./src/**/*.{js,jsx}",
   ],
   theme: {
-  	extend: {
-  		fontFamily: {
-  			sans: [
-  				'Inter Variable',
-  				'Inter',
-  				'system-ui',
-  				'-apple-system',
-  				'sans-serif'
-  			],
-  			mono: [
-  				'Geist Mono',
-  				'monospace'
-  			]
-  		},
-  		colors: {
-  			background: 'oklch(var(--background) / <alpha-value>)',
-  			foreground: 'oklch(var(--foreground) / <alpha-value>)',
-  			card: {
-  				DEFAULT: 'oklch(var(--card) / <alpha-value>)',
-  				foreground: 'oklch(var(--card-foreground) / <alpha-value>)'
-  			},
-  			popover: {
-  				DEFAULT: 'oklch(var(--popover) / <alpha-value>)',
-  				foreground: 'oklch(var(--popover-foreground) / <alpha-value>)'
-  			},
-  			primary: {
-  				DEFAULT: 'oklch(var(--primary) / <alpha-value>)',
-  				foreground: 'oklch(var(--primary-foreground) / <alpha-value>)'
-  			},
-  			secondary: {
-  				DEFAULT: 'oklch(var(--secondary) / <alpha-value>)',
-  				foreground: 'oklch(var(--secondary-foreground) / <alpha-value>)'
-  			},
-  			muted: {
-  				DEFAULT: 'oklch(var(--muted) / <alpha-value>)',
-  				foreground: 'oklch(var(--muted-foreground) / <alpha-value>)'
-  			},
-  			accent: {
-  				DEFAULT: 'oklch(var(--accent) / <alpha-value>)',
-  				foreground: 'oklch(var(--accent-foreground) / <alpha-value>)'
-  			},
-  			destructive: {
-  				DEFAULT: 'oklch(var(--destructive) / <alpha-value>)',
-  				foreground: 'oklch(var(--destructive-foreground) / <alpha-value>)'
-  			},
-  			border: 'oklch(var(--border) / <alpha-value>)',
-  			input: 'oklch(var(--input) / <alpha-value>)',
-  			ring: 'oklch(var(--ring) / <alpha-value>)',
-  			chart: {
-  				'1': 'oklch(var(--chart-1) / <alpha-value>)',
-  				'2': 'oklch(var(--chart-2) / <alpha-value>)',
-  				'3': 'oklch(var(--chart-3) / <alpha-value>)',
-  				'4': 'oklch(var(--chart-4) / <alpha-value>)',
-  				'5': 'oklch(var(--chart-5) / <alpha-value>)'
-  			}
-  		},
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		}
-  	}
+    extend: {
+      fontFamily: {
+        sans: [
+          'Inter Variable',
+          'Inter',
+          'system-ui',
+          '-apple-system',
+          'sans-serif'
+        ],
+        mono: [
+          'Geist Mono',
+          'monospace'
+        ]
+      },
+      colors: {
+        // Core Shadcn variables using HSL
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        
+        // Apple Design System - Explicit Hex for stability
+        'apple-gray': {
+          50: '#FBFBFD',
+          100: '#F5F5F7',
+          200: '#E8E8ED',
+          300: '#D2D2D7',
+          400: '#A1A1A6',
+          500: '#86868B',
+          600: '#6E6E73',
+          700: '#424245',
+          800: '#1D1D1F',
+          900: '#000000',
+        },
+        'apple-blue': {
+          DEFAULT: '#0071E3',
+          dark: '#007AFF',
+        }
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+        'container': '16px',
+        'pill': '9999px',
+      },
+      boxShadow: {
+        'apple-sm': '0 2px 4px rgba(0, 0, 0, 0.04)',
+        'apple-md': '0 4px 8px rgba(0, 0, 0, 0.08)',
+        'apple-lg': '0 12px 24px rgba(0, 0, 0, 0.12)',
+      }
+    },
   },
   plugins: [tailwindAnimate],
 }

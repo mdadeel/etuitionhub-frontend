@@ -1,21 +1,31 @@
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTuitions, useTuitionFilters, usePagination } from '../hooks/useTuitions';
-import FilterBar from '../components/Tuitions/FilterBar';
 import TuitionCard from '../components/Tuitions/TuitionCard';
 import Pagination from '../components/Tuitions/Pagination';
 import { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
 import EmptyState from '../components/Tuitions/EmptyState';
 import { useAuth } from '../contexts/AuthContext';
 import { Badge } from "@/components/ui/badge";
-import { Search, Grid3X3, Database } from 'lucide-react';
+import { SlidersHorizontal, UserCheck, ShieldCheck, Filter, X, Grid3X3 } from 'lucide-react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 /**
  * Tuitions Page
- * Refactored to "Technical Emerald Minimalism"
- * Features: High-density data grid, sharp geometry, technical labels
+ * Refactored to "Apple macOS Sidebar Layout"
+ * Consistent with Tutors page: Left sidebar filters, search integration with Nav, compact grid.
  */
 const Tuitions = () => {
     const { userRole } = useAuth();
-    const { tuitions, loading, error } = useTuitions();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { tuitions, loading } = useTuitions();
+    
     const {
         filters,
         updateFilter,
@@ -23,6 +33,15 @@ const Tuitions = () => {
         filteredTuitions,
         filterOptions
     } = useTuitionFilters(tuitions);
+
+    const searchQuery = searchParams.get('q') || '';
+
+    // Synchronize URL search param with internal filter state
+    useEffect(() => {
+        if (filters.search !== searchQuery) {
+            updateFilter('search', searchQuery);
+        }
+    }, [searchQuery, updateFilter, filters.search]);
 
     const {
         currentPage,
@@ -35,107 +54,165 @@ const Tuitions = () => {
         hasPrevPage
     } = usePagination(filteredTuitions, 8);
 
-    return (
-        <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary">
-            {/* Background Technical Grid Element */}
-            <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
-            </div>
+    const handleClearAll = () => {
+        setSearchParams({});
+        clearFilters();
+    };
 
-            <div className="max-w-7xl mx-auto relative z-10">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20 border-b border-border pb-12">
-                    <div className="max-w-3xl">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-1 bg-primary"></div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Requirement Database</span>
+    if (loading && tuitions.length === 0) return (
+        <div className="min-h-screen flex items-center justify-center bg-apple-gray-100 dark:bg-apple-gray-900">
+            <TuitionGridSkeleton />
+        </div>
+    );
+
+    return (
+        <div className="bg-apple-gray-100 dark:bg-apple-gray-950 min-h-screen">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                
+                {/* Header (Apple Style) */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-apple-blue">Requirement Stream</span>
+                            {userRole === 'admin' && (
+                                <Badge className="bg-apple-gray-800 text-white hover:bg-apple-gray-800 rounded-md text-[9px] px-2 py-0.5 font-bold tracking-tight">
+                                    ADMIN ACCESS
+                                </Badge>
+                            )}
                         </div>
-                        <h1 className="text-6xl md:text-7xl lg:text-8xl font-black text-foreground leading-[0.85] mb-8 uppercase tracking-tighter">
-                            Tuition <br />
-                            <span className="text-primary italic">Matrix.</span>
+                        <h1 className="text-2xl font-bold text-apple-gray-900 dark:text-white tracking-tight">
+                            Tuition Directory
                         </h1>
-                        <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl font-medium">
-                            Access our high-density stream of academic requirements. Filter by subject, node class, or geographic coordinates.
+                        <p className="text-[13px] text-apple-gray-500 font-medium mt-1">
+                            Access our high-precision stream of academic requirements.
                         </p>
                     </div>
+
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-apple-gray-900 rounded-lg border border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-sm">
+                            <span className="text-lg font-bold text-apple-gray-900 dark:text-white tabular-nums">{filteredTuitions.length}</span>
+                            <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-tight">Nodes</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-apple-gray-900 rounded-lg border border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-sm">
+                            <span className="text-lg font-bold text-apple-gray-900 dark:text-white tabular-nums">{totalPages}</span>
+                            <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-tight">Pages</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:grid md:grid-cols-12 gap-8">
                     
-                    <div className="flex flex-col items-start md:items-end gap-4">
-                        {userRole === 'admin' && (
-                            <Badge variant="outline" className="rounded-none border-primary text-primary text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 bg-primary/5">
-                                Admin Protocol Active
-                            </Badge>
+                    {/* Left Sidebar Filters (macOS Style) */}
+                    <aside className="md:col-span-3 lg:col-span-2 space-y-6">
+                        <div className="apple-card p-4 bg-white/50 dark:bg-apple-gray-900/50 backdrop-blur-sm">
+                            <h3 className="text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <Filter size={12} /> Parameters
+                            </h3>
+                            
+                            {/* Sort Filter */}
+                            <div className="mb-6">
+                                <label className="text-[10px] font-bold text-apple-gray-500 uppercase mb-2 block">Sort Strategy</label>
+                                <Select value={filters.sortBy} onValueChange={(val) => updateFilter('sortBy', val)}>
+                                    <SelectTrigger className="mac-input h-8 border-none bg-white dark:bg-apple-gray-800 shadow-apple-sm">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            <SlidersHorizontal size={10} className="text-apple-gray-400 shrink-0" />
+                                            <SelectValue placeholder="Sort" className="text-xs" />
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
+                                        <SelectItem value="newest" className="rounded-md text-[11px] font-medium py-1.5">Latest</SelectItem>
+                                        <SelectItem value="oldest" className="rounded-md text-[11px] font-medium py-1.5">Oldest</SelectItem>
+                                        <SelectItem value="salary-high" className="rounded-md text-[11px] font-medium py-1.5">Yield: High</SelectItem>
+                                        <SelectItem value="salary-low" className="rounded-md text-[11px] font-medium py-1.5">Yield: Low</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Class Filter */}
+                            <div className="mb-6">
+                                <label className="text-[10px] font-bold text-apple-gray-500 uppercase mb-2 block">Node Class</label>
+                                <Select value={filters.classFilter || 'all'} onValueChange={(val) => updateFilter('classFilter', val === 'all' ? '' : val)}>
+                                    <SelectTrigger className="mac-input h-8 border-none bg-white dark:bg-apple-gray-800 shadow-apple-sm">
+                                        <SelectValue placeholder="All Classes" className="text-xs" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
+                                        <SelectItem value="all" className="rounded-md text-[11px] font-medium py-1.5">All Protocols</SelectItem>
+                                        {filterOptions.classes.map(cls => (
+                                            <SelectItem key={cls} value={cls} className="rounded-md text-[11px] font-medium py-1.5">Class {cls}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Spatial Area (Location) Filter */}
+                            <div className="mb-6">
+                                <label className="text-[10px] font-bold text-apple-gray-500 uppercase mb-2 block">Spatial Area</label>
+                                <Select value={filters.locationFilter || 'all'} onValueChange={(val) => updateFilter('locationFilter', val === 'all' ? '' : val)}>
+                                    <SelectTrigger className="mac-input h-8 border-none bg-white dark:bg-apple-gray-800 shadow-apple-sm">
+                                        <SelectValue placeholder="All Zones" className="text-xs" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
+                                        <SelectItem value="all" className="rounded-md text-[11px] font-medium py-1.5">All Zones</SelectItem>
+                                        {filterOptions.locations.map(loc => (loc && (
+                                            <SelectItem key={loc} value={loc} className="rounded-md text-[11px] font-medium py-1.5">{loc}</SelectItem>
+                                        )))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Clear All */}
+                            {(searchQuery || filters.classFilter || filters.locationFilter || filters.sortBy !== 'newest') && (
+                                <button
+                                    onClick={handleClearAll}
+                                    className="w-full mt-2 flex items-center justify-center gap-1.5 text-[10px] font-bold text-apple-blue hover:text-apple-blue/80 py-2 border border-apple-blue/20 rounded-lg hover:bg-apple-blue/5 transition-all uppercase tracking-tight"
+                                >
+                                    <X size={10} /> Reset Matrix
+                                </button>
+                            )}
+                        </div>
+                    </aside>
+
+                    {/* Main Content (Cols-9) */}
+                    <main className="md:col-span-9 lg:col-span-10">
+                        {searchQuery && (
+                            <div className="mb-6 flex items-center gap-2">
+                                <span className="text-[11px] font-bold text-apple-gray-400 uppercase tracking-tight">Active Query:</span>
+                                <span className="px-2 py-0.5 bg-apple-blue/10 text-apple-blue text-[11px] font-bold rounded-md">"{searchQuery}"</span>
+                            </div>
                         )}
-                        <div className="flex items-center gap-6 text-muted-foreground">
-                            <div className="text-right">
-                                <p className="text-3xl font-black text-foreground tabular-nums">{filteredTuitions.length}</p>
-                                <p className="text-[9px] uppercase tracking-[0.2em] font-bold">Active Nodes</p>
+
+                        {loading ? (
+                            <TuitionGridSkeleton />
+                        ) : filteredTuitions.length === 0 ? (
+                            <div className="py-20 bg-white dark:bg-apple-gray-900 rounded-container border border-dashed border-apple-gray-200 dark:border-apple-gray-800">
+                                <EmptyState onReset={handleClearAll} />
                             </div>
-                            <div className="w-px h-10 bg-border"></div>
-                            <div className="text-right">
-                                <p className="text-3xl font-black text-foreground tabular-nums">{totalPages}</p>
-                                <p className="text-[9px] uppercase tracking-[0.2em] font-bold">Data Pages</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        ) : (
+                            <div className="space-y-12">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+                                    {paginatedItems.map(tuition => (
+                                        <div key={tuition._id} className="transform hover:scale-[1.01] transition-all duration-300">
+                                            <TuitionCard tuition={tuition} />
+                                        </div>
+                                    ))}
+                                </div>
 
-                {/* Filter Section */}
-                <div className="mb-16">
-                    <div className="flex items-center gap-2 mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        <Search size={14} className="text-primary" /> 
-                        Parameter Filtering
-                    </div>
-                    <FilterBar
-                        filters={filters}
-                        onFilterChange={updateFilter}
-                        onClear={clearFilters}
-                        classOptions={filterOptions.classes}
-                        locationOptions={filterOptions.locations}
-                    />
-                </div>
-
-                {/* Content Section */}
-                {loading ? (
-                    <TuitionGridSkeleton />
-                ) : filteredTuitions.length === 0 ? (
-                    <EmptyState onReset={clearFilters} />
-                ) : (
-                    <div className="space-y-24">
-                        <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                            <Grid3X3 size={14} className="text-primary" /> 
-                            Data Stream Output
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {paginatedItems.map(tuition => (
-                                <TuitionCard key={tuition._id} tuition={tuition} />
-                            ))}
-                        </div>
-
-                        {totalPages > 1 && (
-                            <div className="pt-12 border-t border-border">
-                                <Pagination
-                                    currentPage={currentPage}
-                                    totalPages={totalPages}
-                                    onPageChange={goToPage}
-                                    onNext={nextPage}
-                                    onPrev={prevPage}
-                                    hasNext={hasNextPage}
-                                    hasPrev={hasPrevPage}
-                                />
+                                {totalPages > 1 && (
+                                    <div className="pt-8 border-t border-apple-gray-200 dark:border-apple-gray-800">
+                                        <Pagination
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={goToPage}
+                                            onNext={nextPage}
+                                            onPrev={prevPage}
+                                            hasNext={hasNextPage}
+                                            hasPrev={hasPrevPage}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
-                    </div>
-                )}
-                
-                {/* System Footer Info */}
-                <div className="mt-40 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 opacity-50">
-                    <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-[0.3em]">
-                        <Database size={12} className="text-primary" />
-                        Live Synchronized Database
-                    </div>
-                    <div className="text-[9px] font-black uppercase tracking-[0.3em]">
-                        Buffer Status: Stable // latency: 24ms
-                    </div>
+                    </main>
                 </div>
             </div>
         </div>

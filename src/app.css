@@ -1,0 +1,98 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  :root {
+    --background: 240 10% 98%;
+    --foreground: 240 5% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 5% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 5% 15%;
+    --primary: 210 100% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 5% 25%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 45%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 5% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5% 92%;
+    --input: 240 5% 92%;
+    --ring: 210 100% 45%;
+    --radius: 16px;
+  }
+
+  .dark {
+    --background: 240 5% 10%;
+    --foreground: 240 5% 98%;
+    --card: 240 5% 12%;
+    --card-foreground: 240 5% 98%;
+    --popover: 240 5% 12%;
+    --popover-foreground: 240 5% 98%;
+    --primary: 210 100% 55%;
+    --primary-foreground: 240 5% 10%;
+    --secondary: 240 5% 18%;
+    --secondary-foreground: 240 5% 98%;
+    --muted: 240 5% 18%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 5% 18%;
+    --accent-foreground: 240 5% 98%;
+    --border: 240 5% 22%;
+    --input: 240 5% 22%;
+    --ring: 210 100% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    background-color: #F5F5F7;
+    color: #1D1D1F;
+    font-family: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.011em;
+  }
+
+  .dark body {
+    background-color: #1D1D1F;
+    color: #F5F5F7;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tighter;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 dark:bg-black/70 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-apple-sm;
+  }
+  
+  .glass-card {
+    @apply bg-white dark:bg-apple-gray-800 border border-apple-gray-200 dark:border-apple-gray-700 shadow-apple-sm hover:shadow-apple-md transition-all duration-300 rounded-container;
+  }
+  
+  .apple-card {
+    @apply bg-white dark:bg-apple-gray-800 border border-apple-gray-200 dark:border-apple-gray-700 shadow-apple-sm rounded-container overflow-hidden;
+  }
+
+  .mac-compact {
+    @apply py-1.5 px-3 text-[11px] leading-tight font-medium;
+  }
+
+  .mac-pill {
+    @apply rounded-pill px-4 py-1.5 text-xs font-semibold transition-all active:scale-[0.96];
+  }
+
+  .mac-input {
+    @apply bg-apple-gray-50 dark:bg-apple-gray-900 border-none ring-1 ring-apple-gray-200 dark:ring-apple-gray-700 focus:ring-2 focus:ring-apple-blue transition-all rounded-md px-3 py-1.5 text-xs;
+  }
+}

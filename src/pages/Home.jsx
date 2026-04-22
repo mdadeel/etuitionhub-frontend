@@ -14,7 +14,7 @@ import FAQ from '../components/Home/FAQ';
 
 /**
  * Home Page - Main Entry Point
- * Refactored to "Technical Emerald Minimalism"
+ * Refactored to "Apple Design System"
  */
 const Home = () => {
     useEffect(() => {
@@ -26,7 +26,7 @@ const Home = () => {
     }, [])
 
     return (
-        <div className="bg-background selection:bg-primary/30 selection:text-primary">
+        <div className="bg-white dark:bg-apple-gray-950 selection:bg-apple-blue/20 selection:text-apple-blue">
             <HomeBanner />
 
             <div data-aos="fade-up">

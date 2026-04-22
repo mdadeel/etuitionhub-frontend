@@ -1,5 +1,5 @@
 // main app comp
-import './index.css'
+import './app.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Navbar from './components/shared/Navbar'
 import { Toaster } from 'react-hot-toast'
