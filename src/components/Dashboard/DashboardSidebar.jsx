@@ -6,109 +6,107 @@ import {
     Users, 
     ShieldCheck, 
     ChevronRight,
-    Circle,
-    Activity
+    Settings
 } from "lucide-react";
 import { useAuth } from '../../contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { AppleBadge } from '../shared/AppleUI';
+import { cn } from '@/lib/utils';
 
-/**
- * DashboardSidebar Component
- * Refactored to "Modern Educational Marketplace"
- * Features: Professional navigation, refined profile section, clean UI
- */
 const DashboardSidebar = ({ role }) => {
     const location = useLocation();
     const { user } = useAuth();
 
     const getRoleInfo = () => {
-        if (role?.toLowerCase() === 'admin') return { label: 'Administrator', accent: 'text-destructive bg-destructive/5' };
-        if (role?.toLowerCase() === 'tutor') return { label: 'Specialist Tutor', accent: 'text-primary bg-primary/5' };
-        return { label: 'Student / Client', accent: 'text-muted-foreground bg-muted/30' };
+        if (role?.toLowerCase() === 'admin') return { label: 'Admin', variant: 'error' };
+        if (role?.toLowerCase() === 'tutor') return { label: 'Tutor', variant: 'primary' };
+        return { label: 'Student', variant: 'default' };
     };
 
     const roleInfo = getRoleInfo();
 
     const menuItems = [
         { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-        { path: '/dashboard/profile', label: 'My Profile', icon: User },
+        { path: '/dashboard/profile', label: 'Profile', icon: User },
     ];
 
     if (role?.toLowerCase() === 'admin') {
-        menuItems.push({ path: '/dashboard/users', label: 'Users & Roles', icon: Users });
+        menuItems.push({ path: '/dashboard/users', label: 'Users', icon: Users });
     } else if (role?.toLowerCase() === 'tutor') {
-        menuItems.push({ path: '/dashboard/my-applications', label: 'My Applications', icon: FileText });
+        menuItems.push({ path: '/dashboard/my-applications', label: 'Applications', icon: FileText });
     }
 
     return (
-        <aside className="w-72 bg-card border-r border-border h-full flex flex-col flex-shrink-0 relative selection:bg-primary/20 selection:text-primary">
+        <aside className="w-64 h-full flex flex-col flex-shrink-0 relative border-r border-black/[0.05] dark:border-white/[0.05] bg-white/50 dark:bg-black/20 backdrop-blur-2xl">
             <div className="flex flex-col h-full">
                 {/* Profile Section */}
-                <div className="p-8 pb-10 border-b border-border">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="relative">
-                            <Avatar className="h-16 w-16 rounded-2xl border-2 border-primary/20 shadow-xl transition-all duration-300 hover:border-primary">
-                                <AvatarImage src={user?.photoURL} />
-                                <AvatarFallback className="rounded-2xl text-xl font-bold bg-muted text-primary">{user?.displayName?.charAt(0)}</AvatarFallback>
+                <div className="p-6 pb-8">
+                    <div className="flex flex-col items-center text-center space-y-4 pt-4">
+                        <div className="relative group">
+                            <Avatar className="h-20 w-20 rounded-3xl border-4 border-white/50 dark:border-zinc-800/50 shadow-lg transition-all duration-500 group-hover:scale-105">
+                                <AvatarImage src={user?.photoURL} className="object-cover" />
+                                <AvatarFallback className="rounded-3xl text-xl font-bold bg-black/[0.03] dark:bg-white/[0.05] text-black/70 dark:text-white/70">{user?.displayName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary border-2 border-background rounded-full"></div>
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full shadow-sm"></div>
                         </div>
                         <div>
-                            <h3 className="text-base font-bold text-foreground truncate max-w-[120px]">
-                                {user?.displayName || 'Authorized User'}
+                            <h3 className="text-sm font-bold text-black/80 dark:text-white/80 truncate max-w-[180px]">
+                                {user?.displayName || 'Guest User'}
                             </h3>
-                            <Badge variant="outline" className={`rounded-full border-none px-2.5 py-0.5 text-[10px] font-bold tracking-tight mt-1.5 ${roleInfo.accent}`}>
+                            <AppleBadge variant={roleInfo.variant} className="mt-1.5 opacity-80">
                                 {roleInfo.label}
-                            </Badge>
+                            </AppleBadge>
                         </div>
                     </div>
                 </div>
 
-                {/* Operations Terminal */}
-                <nav className="flex-grow p-6">
-                    <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 mb-6 px-4 flex items-center gap-2">
-                        Main Navigation
+                {/* Navigation */}
+                <nav className="flex-grow px-4 space-y-8">
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-black/30 dark:text-white/30 mb-4 px-3">
+                            Menu
+                        </p>
+                        <ul className="space-y-1">
+                            {menuItems.map((item) => {
+                                const isActive = location.pathname === item.path;
+                                return (
+                                    <li key={item.path}>
+                                        <Link
+                                            to={item.path}
+                                            className={cn(
+                                                "flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group",
+                                                isActive
+                                                    ? "bg-black/[0.03] dark:bg-white/[0.05] text-black dark:text-white shadow-sm ring-1 ring-black/5 dark:ring-white/5"
+                                                    : "text-black/50 dark:text-white/50 hover:bg-black/[0.02] dark:hover:bg-white/[0.02] hover:text-black dark:hover:text-white"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <item.icon size={18} className={cn("transition-colors", isActive ? "text-primary" : "opacity-50 group-hover:opacity-100")} />
+                                                <span className="text-[13px] font-semibold tracking-tight">{item.label}</span>
+                                            </div>
+                                            {isActive && <ChevronRight size={14} className="text-black/20 dark:text-white/20" />}
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
                     </div>
-                    
-                    <ul className="space-y-2">
-                        {menuItems.map((item) => {
-                            const isActive = location.pathname === item.path;
-                            return (
-                                <li key={item.path}>
-                                    <Link
-                                        to={item.path}
-                                        className={`flex items-center justify-between px-4 py-3.5 rounded-xl border-none transition-all duration-300 group ${
-                                            isActive
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <item.icon size={18} className={`transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground/60 group-hover:text-primary/60'}`} />
-                                            <span className="text-sm font-bold tracking-tight">{item.label}</span>
-                                        </div>
-                                        {isActive && <div className="w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>}
-                                    </Link>
-                                </li>
-                            );
-                        })}
-                    </ul>
                 </nav>
 
-                {/* Footer Quote */}
-                <div className="p-8 border-t border-border">
-                    <div className="p-5 bg-muted/30 border border-border/50 rounded-2xl relative overflow-hidden group">
-                        <ShieldCheck className="absolute -bottom-4 -right-4 w-16 h-16 text-primary/5 group-hover:text-primary/10 transition-colors duration-500" strokeWidth={1} />
-                        <p className="relative z-10 text-[11px] font-medium leading-relaxed text-muted-foreground tracking-tight italic">
-                            "Excellence in education starts with trust and quality."
-                        </p>
+                {/* Logout / Footer */}
+                <div className="p-6">
+                    <div className="p-4 bg-black/[0.02] dark:bg-white/[0.02] rounded-2xl border border-black/[0.05] dark:border-white/[0.05] group cursor-pointer hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-all duration-300">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-black/[0.05] dark:bg-white/[0.1] flex items-center justify-center">
+                                <Settings size={16} className="text-black/50 dark:text-white/50 group-hover:rotate-45 transition-transform duration-500" />
+                            </div>
+                            <span className="text-xs font-bold text-black/60 dark:text-white/60">Settings</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </aside>
     );
 };
-
 
 export default DashboardSidebar;

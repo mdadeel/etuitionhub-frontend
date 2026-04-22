@@ -182,19 +182,19 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
 
         if (!email.includes('@')) {
-            toast.error('Email thik na!')
+            toast.error('Please enter a valid email address.')
             setLoading(false)
             return
         }
 
         if (password.length < 6) {
-            toast.error('Password 6 character ba beshi hote hobe')
+            toast.error('Password must be at least 6 characters long.')
             setLoading(false)
             return
         }
 
         if (!name || name.trim().length === 0) {
-            toast.error('Name dao')
+            toast.error('Name is required.')
             setLoading(false)
             return
         }

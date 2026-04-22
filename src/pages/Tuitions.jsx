@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useTuitions, useTuitionFilters, usePagination } from '../hooks/useTuitions';
+import { useTuitions } from '../hooks/useTuitions';
+import { useTuitionFilters } from '../hooks/useTuitionFilters';
 import TuitionCard from '../components/Tuitions/TuitionCard';
 import Pagination from '../components/Tuitions/Pagination';
 import { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
@@ -24,39 +25,42 @@ import {
 const Tuitions = () => {
     const { userRole } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
-    const { tuitions, loading } = useTuitions();
+    const searchQuery = searchParams.get('q') || '';
+    
+    const [page, setPage] = useState(1);
     
     const {
         filters,
         updateFilter,
-        clearFilters,
-        filteredTuitions,
-        filterOptions
-    } = useTuitionFilters(tuitions);
+        clearFilters
+    } = useTuitionFilters(searchQuery);
 
-    const searchQuery = searchParams.get('q') || '';
-
-    // Synchronize URL search param with internal filter state
+    // Reset page to 1 when filters change
     useEffect(() => {
-        if (filters.search !== searchQuery) {
-            updateFilter('search', searchQuery);
-        }
-    }, [searchQuery, updateFilter, filters.search]);
+        setPage(1);
+    }, [filters, searchQuery]);
 
-    const {
-        currentPage,
-        totalPages,
-        paginatedItems,
-        goToPage,
-        nextPage,
-        prevPage,
-        hasNextPage,
-        hasPrevPage
-    } = usePagination(filteredTuitions, 8);
+    const { tuitions, pagination, filterOptions, loading, error } = useTuitions({
+        ...filters,
+        search: searchQuery,
+        page,
+        limit: 8,
+        status: 'approved'
+    });
+
+    const currentPage = pagination?.currentPage || 1;
+    const totalPages = pagination?.totalPages || 1;
+    const hasNextPage = pagination?.hasNextPage || false;
+    const hasPrevPage = pagination?.hasPrevPage || false;
+
+    const goToPage = (p) => setPage(p);
+    const nextPage = () => setPage(p => Math.min(totalPages, p + 1));
+    const prevPage = () => setPage(p => Math.max(1, p - 1));
 
     const handleClearAll = () => {
         setSearchParams({});
         clearFilters();
+        setPage(1);
     };
 
     if (loading && tuitions.length === 0) return (
@@ -90,7 +94,7 @@ const Tuitions = () => {
 
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-apple-gray-900 rounded-lg border border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-sm">
-                            <span className="text-lg font-bold text-apple-gray-900 dark:text-white tabular-nums">{filteredTuitions.length}</span>
+                            <span className="text-lg font-bold text-apple-gray-900 dark:text-white tabular-nums">{pagination?.totalItems || 0}</span>
                             <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-tight">Nodes</span>
                         </div>
                         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-apple-gray-900 rounded-lg border border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-sm">
@@ -137,7 +141,7 @@ const Tuitions = () => {
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
                                         <SelectItem value="all" className="rounded-md text-[11px] font-medium py-1.5">All Protocols</SelectItem>
-                                        {filterOptions.classes.map(cls => (
+                                        {filterOptions?.classes?.map(cls => (
                                             <SelectItem key={cls} value={cls} className="rounded-md text-[11px] font-medium py-1.5">Class {cls}</SelectItem>
                                         ))}
                                     </SelectContent>
@@ -153,7 +157,7 @@ const Tuitions = () => {
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-apple-gray-200 dark:border-apple-gray-800 shadow-apple-lg p-1">
                                         <SelectItem value="all" className="rounded-md text-[11px] font-medium py-1.5">All Zones</SelectItem>
-                                        {filterOptions.locations.map(loc => (loc && (
+                                        {filterOptions?.locations?.map(loc => (loc && (
                                             <SelectItem key={loc} value={loc} className="rounded-md text-[11px] font-medium py-1.5">{loc}</SelectItem>
                                         )))}
                                     </SelectContent>
@@ -183,14 +187,19 @@ const Tuitions = () => {
 
                         {loading ? (
                             <TuitionGridSkeleton />
-                        ) : filteredTuitions.length === 0 ? (
+                        ) : error ? (
+                            <div className="py-20 text-center bg-white dark:bg-apple-gray-900 rounded-container border border-dashed border-red-200 dark:border-red-800/30">
+                                <h3 className="text-xl font-bold text-red-500 mb-2">Failed to Load Tuitions</h3>
+                                <p className="text-apple-gray-500 text-sm max-w-md mx-auto">{error}</p>
+                            </div>
+                        ) : tuitions.length === 0 ? (
                             <div className="py-20 bg-white dark:bg-apple-gray-900 rounded-container border border-dashed border-apple-gray-200 dark:border-apple-gray-800">
                                 <EmptyState onReset={handleClearAll} />
                             </div>
                         ) : (
                             <div className="space-y-12">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
-                                    {paginatedItems.map(tuition => (
+                                    {tuitions.map(tuition => (
                                         <div key={tuition._id} className="transform hover:scale-[1.01] transition-all duration-300">
                                             <TuitionCard tuition={tuition} />
                                         </div>

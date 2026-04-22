@@ -7,23 +7,20 @@ import LoadingSpinner from '../shared/LoadingSpinner';
 import { 
     User, 
     ShieldCheck, 
-    Database, 
     Link as LinkIcon, 
-    Activity, 
-    Zap,
     RefreshCw,
-    Edit3
+    Edit3,
+    Camera
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { 
+    AppleCard, 
+    AppleButton, 
+    AppleInput, 
+    AppleBadge, 
+    AppleHeader 
+} from '../shared/AppleUI';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-/**
- * Profile Settings Component
- * Refactored to "Technical Emerald Minimalism"
- */
 const Profile = () => {
     const { user, dbUser, loading: authLoading, refreshUserFromDB, updateUserProfile } = useAuth();
     const [loading, setLoading] = useState(false);
@@ -46,7 +43,7 @@ const Profile = () => {
     const onSubmit = async () => {
         setLoading(true);
         if (nameInput.length < 3) {
-            toast.error('Identity Error: Name must exceed 3 characters');
+            toast.error('Please use a name with at least 3 characters');
             setLoading(false);
             return;
         }
@@ -57,169 +54,132 @@ const Profile = () => {
                 photoURL: photoInput
             });
 
-            toast.success('Identity parameters synchronized.');
+            toast.success('Your profile has been updated');
             await refreshUserFromDB(user?.email);
             updateUserProfile({ displayName: nameInput, photoURL: photoInput });
         } catch (error) {
-            const errorMsg = error.response?.data?.error || 'Synchronization failed.';
-            toast.error(errorMsg);
+            toast.error('Something went wrong while saving');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="animate-in fade-in duration-700 space-y-12 max-w-5xl selection:bg-primary/30 selection:text-primary">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-10 bg-background border-b border-border pb-12">
-                <div>
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-1 bg-primary"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Identity Architecture</span>
+        <div className="animate-in fade-in duration-700 max-w-5xl mx-auto pb-20">
+            <AppleHeader 
+                title="Your Profile" 
+                subtitle="Manage your personal details and account settings here."
+                badge={<AppleBadge variant="primary">Account Settings</AppleBadge>}
+                action={
+                    <div className="flex items-center gap-3 bg-black/[0.03] dark:bg-white/[0.05] px-4 py-2 rounded-2xl border border-black/[0.05] dark:border-white/[0.05]">
+                        <span className="text-xs font-semibold text-black/50 dark:text-white/50">Your Role</span>
+                        <AppleBadge variant="success" className="bg-green-500 text-white border-none">
+                            {dbUser?.role || 'User'}
+                        </AppleBadge>
                     </div>
-                    <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-none">Security & Profile.</h1>
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-6 flex items-center gap-2">
-                        <Database size={12} className="text-primary" /> NODE_IDENTITY_MANAGEMENT // {user?.email}
-                    </p>
-                </div>
-                <div className="flex items-center gap-4 bg-muted/20 px-6 py-4 rounded-none border border-border shrink-0">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Permission</span>
-                    <Badge variant="outline" className="rounded-none border-primary text-primary bg-background px-4 py-1.5 text-[9px] font-black uppercase tracking-widest italic shadow-sm">
-                        {dbUser?.role?.toUpperCase() || 'CLIENT_ACCESS'}
-                    </Badge>
-                </div>
-            </header>
+                }
+            />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-                {/* Visual Identity Section */}
-                <div className="lg:col-span-4 border-border lg:pr-12">
-                    <div className="flex items-center gap-3 mb-10">
-                        <div className="w-1 h-4 bg-primary"></div>
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground">Visual Identity</h3>
-                    </div>
-                    
-                    <div className="flex flex-col items-center">
-                        <div className="relative group p-3 border-2 border-dashed border-border rounded-none transition-all duration-500 hover:border-primary/30">
-                            <Avatar className="h-48 w-48 rounded-none border border-border shadow-2xl p-1 bg-background overflow-hidden group-hover:shadow-primary/10 transition-all duration-500">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {/* Profile Photo Section */}
+                <div className="lg:col-span-4">
+                    <AppleCard className="p-8 flex flex-col items-center text-center space-y-6">
+                        <div className="relative group">
+                            <Avatar className="h-40 w-40 rounded-full border-4 border-white dark:border-zinc-900 shadow-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                                 <AvatarImage 
                                     src={photoInput || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
-                                    className="grayscale group-hover:grayscale-0 transition-all duration-1000 scale-110 group-hover:scale-100 object-cover"
+                                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
-                                <AvatarFallback className="rounded-none text-4xl font-black bg-muted uppercase">{user?.displayName?.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="text-4xl font-bold bg-zinc-200 dark:bg-zinc-700">
+                                    {user?.displayName?.charAt(0)}
+                                </AvatarFallback>
                             </Avatar>
-                            <div className="absolute -bottom-3 -right-3 w-12 h-12 bg-primary text-primary-foreground flex items-center justify-center shadow-2xl scale-0 group-hover:scale-100 transition-transform duration-500">
-                                <Edit3 size={20} />
+                            <div className="absolute bottom-1 right-1 w-10 h-10 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-lg border border-black/5 cursor-pointer hover:scale-110 transition-transform">
+                                <Camera size={18} className="text-black/70 dark:text-white/70" />
                             </div>
                         </div>
-                        <p className="mt-10 text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em] text-center leading-loose max-w-[240px] italic">
-                            Primary identity node identification. Asset synchronization active.
+                        <div>
+                            <h3 className="font-bold text-lg">{nameInput || 'Guest User'}</h3>
+                            <p className="text-sm text-black/50 dark:text-white/50 mt-1">{user?.email}</p>
+                        </div>
+                        <p className="text-xs text-black/40 dark:text-white/40 leading-relaxed italic">
+                            This is how you appear to others in the community.
                         </p>
-                    </div>
+                    </AppleCard>
                 </div>
 
-                {/* Parameters Section */}
+                {/* Edit Form Section */}
                 <div className="lg:col-span-8">
-                    <div className="flex items-center gap-3 mb-10">
-                        <div className="w-1 h-4 bg-primary"></div>
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground">Configuration Parameters</h3>
-                    </div>
-                    
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-12 bg-muted/10 p-10 border border-border relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                            <Activity size={120} className="text-foreground" />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 relative z-10">
-                            <div className="space-y-4">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Display Identity</Label>
-                                <Input
-                                    type="text"
-                                    className="h-14 rounded-none border-border bg-background font-bold focus-visible:ring-primary uppercase text-[11px] tracking-widest shadow-sm"
+                    <AppleCard className="p-10">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <AppleInput 
+                                    label="Full Name"
+                                    placeholder="Enter your name"
                                     value={nameInput}
                                     onChange={(e) => setNameInput(e.target.value)}
-                                    placeholder="LEGAL_NAME_OR_ALIAS"
                                 />
-                                <p className="text-[9px] font-black text-muted-foreground/50 uppercase tracking-widest mt-2 ml-1 italic">Visible across protocol transactions.</p>
-                            </div>
-
-                            <div className="space-y-4">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">System Key (Email)</Label>
-                                <div className="relative">
-                                    <Input
-                                        type="email"
-                                        className="h-14 rounded-none border-border bg-muted/50 font-bold text-muted-foreground cursor-not-allowed italic uppercase text-[11px] tracking-widest"
-                                        value={user?.email || ''}
-                                        readOnly
-                                    />
-                                    <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30" />
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-semibold text-black/50 dark:text-white/50 ml-1">Email Address</label>
+                                    <div className="relative">
+                                        <input 
+                                            type="email"
+                                            className="w-full bg-black/[0.02] dark:bg-white/[0.02] border-none ring-1 ring-black/[0.05] dark:ring-white/[0.05] px-4 py-3 rounded-xl text-sm text-black/40 dark:text-white/40 cursor-not-allowed italic"
+                                            value={user?.email || ''}
+                                            readOnly
+                                        />
+                                        <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/20" />
+                                    </div>
+                                    <p className="text-[10px] text-black/30 dark:text-white/30 ml-1">Your email cannot be changed.</p>
                                 </div>
-                                <p className="text-[9px] font-black text-muted-foreground/50 uppercase tracking-widest mt-2 ml-1 italic">Immutable session identifier.</p>
                             </div>
-                        </div>
 
-                        <div className="space-y-4 relative z-10">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Asset Pointer (Photo URL)</Label>
-                            <div className="relative">
-                                <Input
-                                    type="text"
-                                    className="h-14 rounded-none border-border bg-background font-mono text-xs font-bold text-primary focus-visible:ring-primary shadow-sm pl-12"
-                                    value={photoInput}
-                                    onChange={(e) => setPhotoInput(e.target.value)}
-                                    placeholder="HTTPS://CLOUD.STORAGE/PORTRAIT.JPG"
-                                />
-                                <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
-                            </div>
-                            <p className="text-[9px] font-black text-muted-foreground/50 uppercase tracking-widest mt-2 ml-1 italic">Secure external linkage for identity assets.</p>
-                        </div>
+                            <AppleInput 
+                                label="Profile Picture URL"
+                                placeholder="https://example.com/photo.jpg"
+                                value={photoInput}
+                                onChange={(e) => setPhotoInput(e.target.value)}
+                            />
 
-                        <div className="pt-12 flex flex-col sm:flex-row items-center justify-between gap-8 border-t border-border relative z-10">
-                            <div className="flex items-center gap-4">
-                                <div className="relative h-2 w-2">
-                                    <div className="absolute inset-0 bg-primary rounded-full animate-ping opacity-20"></div>
-                                    <div className="relative h-2 w-2 bg-primary"></div>
+                            <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-black/[0.05] dark:border-white/[0.05]">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span className="text-[11px] font-medium text-black/40 dark:text-white/40">Your changes will be saved instantly.</span>
                                 </div>
-                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Sync Pipeline Available</span>
+                                <AppleButton
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full sm:w-auto min-w-[200px]"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <RefreshCw className="w-4 h-4 animate-spin" />
+                                            Saving Changes...
+                                        </>
+                                    ) : (
+                                        'Save Changes'
+                                    )}
+                                </AppleButton>
                             </div>
-                            <Button
-                                type="submit"
-                                className="w-full sm:w-auto px-12 h-16 rounded-none text-[11px] font-black uppercase tracking-[0.2em] shadow-lg group/btn"
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <RefreshCw className="w-4 h-4 animate-spin mr-3" />
-                                ) : (
-                                    <Zap size={16} className="mr-3 group-hover/btn:fill-current" />
-                                )}
-                                {loading ? 'Synchronizing Node...' : 'Update Identity Protocol'}
-                            </Button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                        </form>
+                    </AppleCard>
 
-            {/* Security Section */}
-            <div className="mt-20 group">
-                <div className="flex items-center gap-3 mb-10">
-                    <div className="w-1 h-4 bg-primary"></div>
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground">Security Architecture</h3>
-                </div>
-
-                <div className="p-12 bg-background border border-border rounded-none shadow-2xl relative overflow-hidden group hover:border-primary/30 transition-all duration-500">
-                    <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-none -mr-24 -mt-24 rotate-45 transition-transform duration-1000 group-hover:scale-110"></div>
-                    <div className="relative flex flex-col md:flex-row items-center justify-between gap-10">
-                        <div className="flex items-center gap-8 text-center md:text-left">
-                            <div className="w-16 h-16 rounded-none bg-muted/50 border border-border flex items-center justify-center text-primary shadow-inner">
-                                <ShieldCheck size={32} strokeWidth={1.5} />
+                    {/* Security Tip */}
+                    <div className="mt-8">
+                        <AppleCard className="p-6 bg-blue-500/[0.03] border-blue-500/10" hover={false}>
+                            <div className="flex items-start gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+                                    <ShieldCheck className="text-blue-600 dark:text-blue-400" size={20} />
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-bold text-blue-900 dark:text-blue-100">Security Recommendation</h4>
+                                    <p className="text-xs text-blue-800/60 dark:text-blue-200/60 mt-1">
+                                        Keep your profile information accurate to ensure smooth communication with tutors and students. 
+                                        Your account is protected by industry-standard encryption.
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h4 className="text-base font-black text-foreground uppercase tracking-tight italic">Authentication Integrity</h4>
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-2 leading-loose max-w-md">
-                                    Secured via industrial-strength system protocols. All sensitive credentials are encrypted using AES-256 standards.
-                                </p>
-                            </div>
-                        </div>
-                        <Button variant="outline" className="h-14 px-10 rounded-none border-border text-[10px] font-black uppercase tracking-[0.3em] hover:bg-muted transition-all">
-                            Modify Protocol
-                        </Button>
+                        </AppleCard>
                     </div>
                 </div>
             </div>
