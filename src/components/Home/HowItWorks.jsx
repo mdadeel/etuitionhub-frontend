@@ -48,7 +48,7 @@ const HowItWorks = () => {
                     ))}
                 </div>
             </div>
-            
+
             {/* Background Decorative Element */}
             <div className="absolute top-0 right-0 w-1/2 h-full bg-muted/30 -skew-x-12 translate-x-1/2 z-0 pointer-events-none"></div>
         </section>

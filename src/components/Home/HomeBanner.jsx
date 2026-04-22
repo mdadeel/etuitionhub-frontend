@@ -13,7 +13,7 @@ const HomeBanner = () => {
         <section className="bg-white dark:bg-apple-gray-900 pt-16 pb-24 md:pt-24 md:pb-32 border-b border-apple-gray-200/50 dark:border-apple-gray-800/50 relative overflow-hidden">
             {/* Subtle Apple Glow */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-apple-blue/5 blur-[120px] -mr-64 -mt-64 rounded-full"></div>
-            
+
             <div className="container mx-auto px-6 md:px-12 max-w-[1400px] relative z-10">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -34,7 +34,7 @@ const HomeBanner = () => {
                     </h1>
 
                     <p className="text-lg md:text-xl text-apple-gray-500 dark:text-apple-gray-400 mb-12 max-w-2xl font-medium leading-tight tracking-tight">
-                        Connect with the most qualified academic professionals across the nation. 
+                        Connect with the most qualified academic professionals across the nation.
                         A high-fidelity platform for students who demand excellence.
                     </p>
 
