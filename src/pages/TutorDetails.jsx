@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import TutorCard from '../components/shared/TutorCard';
 import toast from 'react-hot-toast';
+import api from '../services/api';
 import { 
     ArrowLeft, 
     ArrowRight,
@@ -32,12 +33,25 @@ const TutorDetails = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            const found = demoTutors.find(t => t._id === id);
-            setTutor(found);
-            setLoading(false);
-        }, 300);
-        return () => clearTimeout(timer);
+        const fetchTutorDetails = async () => {
+            try {
+                // Try fetching from real database first
+                const response = await api.get(`/api/tutors/${id}`);
+                setTutor(response.data);
+            } catch (error) {
+                // If not found in DB, try demo data
+                const found = demoTutors.find(t => t._id === id);
+                if (found) {
+                    setTutor(found);
+                } else {
+                    console.error("Tutor not found in API or Demo:", id);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTutorDetails();
     }, [id]);
 
     const handleContact = () => {

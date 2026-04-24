@@ -27,15 +27,14 @@ const TuitionCard = ({ tuition, className }) => {
             onClick={handleViewDetails}
         >
             <div className="p-6 flex-grow flex flex-col bg-card">
-                {/* Top Section: Time & Subject Group */}
-                <div className="flex flex-col gap-0.5 mb-4">
-                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.15em] flex items-center gap-1.5">
-                        <Clock size={12} className="shrink-0" />
-                        {formatRelativeTime(tuition.createdAt)}
-                    </p>
-                    <h2 className="text-3xl font-black text-foreground group-hover:text-primary transition-colors leading-tight tracking-tighter">
+                {/* Top Section: Subject & Time */}
+                <div className="flex justify-between items-start gap-4 mb-4">
+                    <h2 className="text-2xl font-black text-foreground group-hover:text-primary transition-colors leading-none tracking-tight">
                         {tuition.subject}
                     </h2>
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest shrink-0 mt-1">
+                        {formatRelativeTime(tuition.createdAt)}
+                    </p>
                 </div>
                 
                 {/* Qualification & Location in same block/line area */}
@@ -65,7 +64,7 @@ const TuitionCard = ({ tuition, className }) => {
                     <AppleButton
                         variant="primary"
                         size="sm"
-                        className="rounded-2xl font-black text-[11px] uppercase tracking-widest px-8 py-2.5 group/btn h-11 shadow-apple-lg"
+                        className="rounded-2xl font-black text-[11px] uppercase tracking-widest px-8 py-2.5 group/btn h-11 bg-black text-white hover:bg-black/90 border-none shadow-apple-lg transition-all"
                         onClick={handleViewDetails}
                     >
                         Apply <ArrowRight size={14} className="ml-1 transition-transform group-hover/btn:translate-x-1" />

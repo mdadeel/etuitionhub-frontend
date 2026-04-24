@@ -21,8 +21,12 @@ const Tutors = () => {
     const [tutors, setTutors] = useState([])
     const [loading, setLoading] = useState(true)
     const [sortBy, setSortBy] = useState('name-az')
-    const [selectedSubject, setSelectedSubject] = useState('All');
-    const [allSubjects, setAllSubjects] = useState(['All']);
+    const [selectedSubjects, setSelectedSubjects] = useState([]);
+    const [selectedClass, setSelectedClass] = useState('All');
+    const [selectedArea, setSelectedArea] = useState('All');
+    const [allSubjects, setAllSubjects] = useState([]);
+    const [allClasses, setAllClasses] = useState(['All']);
+    const [allAreas, setAllAreas] = useState(['All']);
 
     const searchQuery = searchParams.get('q') || '';
 
@@ -32,7 +36,13 @@ const Tutors = () => {
             try {
                 let params = new URLSearchParams();
                 if (searchQuery) params.append('q', searchQuery);
-                if (selectedSubject !== 'All') params.append('subject', selectedSubject);
+                
+                // For multi-subjects, we'll append each one
+                selectedSubjects.forEach(sub => params.append('subject', sub));
+                
+                if (selectedClass !== 'All') params.append('class_name', selectedClass);
+                if (selectedArea !== 'All') params.append('location', selectedArea);
+                
                 if (sortBy === 'ratings' || sortBy === 'salary-low') {
                     params.append('sort', sortBy);
                 }
@@ -40,11 +50,31 @@ const Tutors = () => {
                 const response = await axios.get(`${API_URL}/api/tutors?${params.toString()}`);
                 setTutors(response.data);
 
-                const subjectsSet = new Set(['All']);
+                // Populate filter options dynamically from results if they are not already set
+                const subjectsSet = new Set();
+                const classesSet = new Set(['All']);
+                const areasSet = new Set(['All']);
+                
                 response.data.forEach(t => {
-                    if (t.subjects) t.subjects.forEach(s => subjectsSet.add(s));
+                    if (t.subjects) {
+                        t.subjects.forEach(s => {
+                            if (typeof s === 'string') {
+                                s.split(',').forEach(sub => subjectsSet.add(sub.trim()));
+                            } else {
+                                subjectsSet.add(s);
+                            }
+                        });
+                    }
+                    if (t.class_name) classesSet.add(t.class_name);
+                    if (t.location) {
+                        const area = t.location.split(',').pop().trim();
+                        if (area) areasSet.add(area);
+                    }
                 });
-                setAllSubjects(Array.from(subjectsSet));
+                
+                setAllSubjects(prev => prev.length === 0 ? Array.from(subjectsSet) : prev);
+                setAllClasses(prev => prev.length <= 1 ? Array.from(classesSet) : prev);
+                setAllAreas(prev => prev.length <= 1 ? Array.from(areasSet) : prev);
             } catch (error) {
                 console.error("Error fetching tutors", error);
             } finally {
@@ -52,7 +82,7 @@ const Tutors = () => {
             }
         };
         fetchTutors();
-    }, [searchQuery, selectedSubject, sortBy]);
+    }, [searchQuery, selectedSubjects, selectedClass, selectedArea, sortBy]);
 
     const filteredAndSortedTutors = useMemo(() => {
         if (!Array.isArray(tutors)) return [];
@@ -82,8 +112,16 @@ const Tutors = () => {
     const handleClear = () => {
         setSearchParams({});
         setSortBy('name-az');
-        setSelectedSubject('All');
+        setSelectedSubjects([]);
+        setSelectedClass('All');
+        setSelectedArea('All');
     }
+
+    const toggleSubject = (sub) => {
+        setSelectedSubjects(prev => 
+            prev.includes(sub) ? prev.filter(s => s !== sub) : [...prev, sub]
+        );
+    };
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-background">
@@ -160,16 +198,49 @@ const Tutors = () => {
                                 </Select>
                             </div>
 
+                            <div className="mb-8">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Class</label>
+                                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
+                                        <SelectValue placeholder="Select Class" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl max-h-[300px]">
+                                        {allClasses.map(cls => (
+                                            <SelectItem key={cls} value={cls} className="rounded-xl text-xs font-medium py-2 px-3">{cls}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="mb-8">
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Area / Location</label>
+                                <Select value={selectedArea} onValueChange={setSelectedArea}>
+                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
+                                        <SelectValue placeholder="Select Area" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl max-h-[300px]">
+                                        {allAreas.map(area => (
+                                            <SelectItem key={area} value={area} className="rounded-xl text-xs font-medium py-2 px-3">{area}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
                             <div>
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Subjects</label>
-                                <div className="space-y-1.5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                <div className="flex items-center justify-between mb-3">
+                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Subjects</label>
+                                    {selectedSubjects.length > 0 && (
+                                        <button onClick={() => setSelectedSubjects([])} className="text-[9px] font-bold text-primary hover:underline uppercase">Reset</button>
+                                    )}
+                                </div>
+                                <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar py-1">
                                     {allSubjects.map(subject => (
                                         <button
                                             key={subject}
-                                            onClick={() => setSelectedSubject(subject)}
-                                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all ${selectedSubject === subject
-                                                ? 'bg-primary text-primary-foreground shadow-sm'
-                                                : 'text-muted-foreground hover:bg-muted/50'
+                                            onClick={() => toggleSubject(subject)}
+                                            className={`px-3 py-1.5 rounded-full text-[10px] font-black transition-all border ${selectedSubjects.includes(subject)
+                                                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                                                : 'bg-muted/30 text-muted-foreground border-border/40 hover:bg-muted/60 hover:text-foreground'
                                                 }`}
                                         >
                                             {subject}
@@ -178,7 +249,7 @@ const Tutors = () => {
                                 </div>
                             </div>
 
-                            {(searchQuery || sortBy !== 'name-az' || selectedSubject !== 'All') && (
+                            {(searchQuery || sortBy !== 'name-az' || selectedSubjects.length > 0 || selectedClass !== 'All' || selectedArea !== 'All') && (
                                 <AppleButton
                                     onClick={handleClear}
                                     variant="ghost"

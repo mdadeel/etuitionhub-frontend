@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 /**
  * AppleCard: A glassmorphic card with subtle depth and smooth transitions.
  */
-export const AppleCard = ({ children, className, hover = true, glass = true, tonal = false, onClick, ...props }) => (
+export const AppleCard = ({ children, className, hover = true, moveOnHover = false, glass = true, tonal = false, onClick, ...props }) => (
     <motion.div 
-        whileHover={hover ? { y: -4, transition: { duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] } } : {}}
+        whileHover={hover ? { y: moveOnHover ? -4 : 0, transition: { duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] } } : {}}
         className={cn(
             "relative overflow-hidden transition-all duration-300",
             tonal ? "bg-apple-gray-100 border-none" : "bg-card border border-border shadow-sm",

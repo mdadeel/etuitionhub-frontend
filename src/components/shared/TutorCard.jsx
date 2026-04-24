@@ -44,101 +44,108 @@ const TutorCard = ({
 
     return (
         <AppleCard 
-            className="h-full flex flex-col group" 
+            className="flex flex-col group overflow-hidden relative" 
             hover={true}
             onClick={handleCardClick}
         >
-            {/* Image Section */}
-            <div className="relative aspect-[16/10] overflow-hidden">
-                <motion.img 
-                    src={photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
-                    alt={displayName}
-                    className="w-full h-full object-cover" 
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.6 }}
-                />
-                
-                {/* Badges Overlay - Left Side */}
-                <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
-                    {verificationStatus === 'verified_premium' ? (
-                        <AppleBadge variant="glass" className="py-1 px-2.5 text-[9px] font-black uppercase tracking-wider">
-                            <Award size={10} className="text-yellow-400 fill-yellow-400" />
-                            Elite Pro
-                        </AppleBadge>
-                    ) : (isVerified || verificationStatus === 'verified_basic') ? (
-                        <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-apple-sm">
-                            <ShieldCheck size={18} className="text-primary fill-primary/10" />
+            {/* Save Button Overlay */}
+            <motion.button 
+                whileTap={{ scale: 0.9 }}
+                onClick={handleSaveClick}
+                className={cn(
+                    "absolute top-4 right-4 z-20 p-2 rounded-full border transition-all shadow-apple-sm",
+                    isSaved ? "bg-primary text-white border-primary" : "bg-white/80 backdrop-blur-md text-muted-foreground border-border/40 hover:text-primary"
+                )}
+            >
+                <Bookmark size={12} className={isSaved ? "fill-current" : ""} />
+            </motion.button>
+
+            {/* Top Section: Horizontal Info */}
+            <div className="p-4 flex gap-4 items-start">
+                {/* Square Image - Left */}
+                <div className="relative shrink-0">
+                    <div className="w-20 h-20 rounded-xl overflow-hidden border border-border/30 shadow-apple-sm">
+                        <motion.img 
+                            src={photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
+                            alt={displayName}
+                            className="w-full h-full object-cover" 
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.6 }}
+                        />
+                    </div>
+                    {isVerified && (
+                        <div className="absolute -bottom-1 -right-1 bg-primary text-white p-0.5 rounded-lg shadow-lg border-2 border-background">
+                            <ShieldCheck size={10} />
                         </div>
-                    ) : null}
+                    )}
                 </div>
 
-                {/* Ratings Overlay */}
-                <div className="absolute top-4 right-4 z-20 flex items-center gap-1 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
-                    <span className="text-[11px] font-black text-white tabular-nums">{rating.toFixed(1)}</span>
-                    <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                </div>
-            </div>
-
-            {/* Content Section */}
-            <div className="p-6 flex-grow flex flex-col">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex flex-col gap-0.5 min-w-0">
-                        <h3 className="text-3xl font-black text-foreground group-hover:text-primary transition-colors leading-tight tracking-tighter truncate">
+                {/* Info - Right */}
+                <div className="flex-grow min-w-0">
+                    <div className="flex flex-col gap-0.5">
+                        <h3 className="text-lg font-black text-foreground group-hover:text-primary transition-colors leading-tight tracking-tight truncate pr-8">
                             {displayName}
                         </h3>
-                        {/* Qualification - Black & Bold as requested */}
-                        <p className="text-[13px] font-black text-foreground leading-snug truncate">
+                        <p className="text-[11px] font-black text-foreground/70 truncate">
                             {qualification || 'Academic Specialist'}
                         </p>
                     </div>
                     
-                    <div className="shrink-0 text-right">
-                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.15em] whitespace-nowrap">
-                            {formatRelativeTime(createdAt)}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex items-center justify-between gap-4 mb-6">
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-black">
-                        <MapPin size={13} className="text-primary/60 shrink-0" />
-                        <span className="truncate max-w-[140px]">{location || 'Dhaka'}</span>
+                    <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground font-black">
+                        <MapPin size={10} className="text-primary/60 shrink-0" />
+                        <span className="truncate">{location || 'Dhaka'}</span>
                     </div>
 
-                    <motion.button 
-                        whileTap={{ scale: 0.9 }}
-                        onClick={handleSaveClick}
-                        className={cn(
-                            "p-2.5 rounded-full border transition-all shadow-apple-sm",
-                            isSaved ? "bg-primary text-white border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-white hover:text-primary"
-                        )}
-                    >
-                        <Bookmark size={14} className={isSaved ? "fill-current" : ""} />
-                    </motion.button>
-                </div>
-
-                {/* Subjects with more breathing room */}
-                <div className="flex flex-wrap gap-1.5 mb-8">
-                    {subjects.slice(0, 3).map((sub, i) => (
-                        <AppleBadge key={i} variant="muted" className="px-3 py-1 text-[9px] font-black bg-muted/80 border-none uppercase tracking-tighter">
-                            {sub}
-                        </AppleBadge>
-                    ))}
-                </div>
-
-                {/* Footer Row */}
-                <div className="mt-auto pt-5 border-t border-border/30 flex items-center justify-between gap-4">
-                    <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-black text-foreground tabular-nums tracking-tighter">৳{salary}</span>
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{priceUnit}</span>
+                    <div className="flex flex-wrap gap-1 mt-2.5">
+                        {subjects.slice(0, 2).map((sub, i) => (
+                            <span key={i} className="text-[8px] font-black text-primary/70 uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded-md border border-primary/10">
+                                {sub}
+                            </span>
+                        ))}
                     </div>
+                </div>
+            </div>
 
+            {/* Bottom Section: Action & Stats */}
+            <div className="mt-auto border-t border-border/30 grid grid-cols-4 divide-x divide-border/30 bg-muted/5">
+                {/* Rating Stat */}
+                <div className="p-2.5 flex flex-col items-center justify-center text-center">
+                    <span className="text-xs font-black text-foreground tabular-nums leading-none">
+                        {rating.toFixed(1)}
+                    </span>
+                    <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-widest mt-1">
+                        Rating
+                    </span>
+                </div>
+
+                {/* Experience Stat */}
+                <div className="p-2.5 flex flex-col items-center justify-center text-center">
+                    <span className="text-xs font-black text-foreground leading-none">
+                        {tutor.experience?.split(' ')[0] || '3'}+
+                    </span>
+                    <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-widest mt-1">
+                        Years
+                    </span>
+                </div>
+
+                {/* Salary Stat */}
+                <div className="p-2.5 flex flex-col items-center justify-center text-center">
+                    <span className="text-xs font-black text-foreground tabular-nums leading-none">
+                        ৳{(salary / 1000).toFixed(1)}k
+                    </span>
+                    <span className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-widest mt-1">
+                        Salary
+                    </span>
+                </div>
+
+                {/* View Button Column - Now on the right */}
+                <div className="p-2.5 flex items-center justify-center">
                     <AppleButton 
-                        variant="secondary" 
+                        variant="primary" 
                         size="sm" 
-                        className="rounded-2xl font-black text-[11px] uppercase tracking-widest px-8 py-2.5 group/btn h-11 bg-muted/50 hover:bg-primary/10 hover:text-primary transition-all border border-border/50"
+                        className="w-full h-9 rounded-lg font-black text-[9px] uppercase tracking-[0.2em] bg-black text-white hover:bg-black/90 border-none transition-all shadow-apple-lg"
                     >
-                        View <ArrowRight size={14} className="ml-1 transition-transform group-hover/btn:translate-x-1" />
+                        View
                     </AppleButton>
                 </div>
             </div>

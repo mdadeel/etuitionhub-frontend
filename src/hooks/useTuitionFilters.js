@@ -5,6 +5,7 @@ export const useTuitionFilters = (initialSearchQuery = '') => {
         search: initialSearchQuery,
         classFilter: '',
         locationFilter: '',
+        subjects: [],
         sortBy: 'newest'
     });
 
@@ -18,11 +19,11 @@ export const useTuitionFilters = (initialSearchQuery = '') => {
     }, []);
 
     const clearFilters = useCallback(() => {
-        setFilters({ search: '', classFilter: '', locationFilter: '', sortBy: 'newest' });
+        setFilters({ search: '', classFilter: '', locationFilter: '', subjects: [], sortBy: 'newest' });
     }, []);
 
     const hasActiveFilters = Boolean(
-        filters.search || filters.classFilter || filters.locationFilter || filters.sortBy !== 'newest'
+        filters.search || filters.classFilter || filters.locationFilter || filters.subjects.length > 0 || filters.sortBy !== 'newest'
     );
 
     return {

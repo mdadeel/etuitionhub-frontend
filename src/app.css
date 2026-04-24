@@ -2,6 +2,10 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+html, body {
+  scrollbar-gutter: stable;
+}
+
 @layer base {
   :root {
     --background: 240 10% 98%;

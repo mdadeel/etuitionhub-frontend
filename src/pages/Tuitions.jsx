@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTuitions } from '../hooks/useTuitions';
 import { useTuitionFilters } from '../hooks/useTuitionFilters';
@@ -41,6 +41,20 @@ const Tuitions = () => {
         limit: 8,
         status: 'approved'
     });
+
+    // Process subjects to handle comma-separated strings from the backend
+    const processedSubjects = useMemo(() => {
+        if (!filterOptions?.subjects) return [];
+        const subjectsSet = new Set();
+        filterOptions.subjects.forEach(s => {
+            if (typeof s === 'string' && s.includes(',')) {
+                s.split(',').forEach(sub => subjectsSet.add(sub.trim()));
+            } else {
+                subjectsSet.add(s);
+            }
+        });
+        return Array.from(subjectsSet);
+    }, [filterOptions?.subjects]);
 
     const currentPage = pagination?.currentPage || 1;
     const totalPages = pagination?.totalPages || 1;
@@ -161,7 +175,41 @@ const Tuitions = () => {
                                 </Select>
                             </div>
 
-                            {(searchQuery || filters.classFilter || filters.locationFilter || filters.sortBy !== 'newest') && (
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Subjects</label>
+                                    {filters.subjects.length > 0 && (
+                                        <button 
+                                            onClick={() => updateFilter('subjects', [])} 
+                                            className="text-[9px] font-bold text-primary hover:underline uppercase"
+                                        >
+                                            Reset
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar py-1">
+                                    {processedSubjects.map(subject => (
+                                        <button
+                                            key={subject}
+                                            onClick={() => {
+                                                const current = filters.subjects;
+                                                const updated = current.includes(subject)
+                                                    ? current.filter(s => s !== subject)
+                                                    : [...current, subject];
+                                                updateFilter('subjects', updated);
+                                            }}
+                                            className={`px-3 py-1.5 rounded-full text-[10px] font-black transition-all border ${filters.subjects.includes(subject)
+                                                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                                                : 'bg-muted/30 text-muted-foreground border-border/40 hover:bg-muted/60 hover:text-foreground'
+                                                }`}
+                                        >
+                                            {subject}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {(searchQuery || filters.classFilter || filters.locationFilter || filters.subjects.length > 0 || filters.sortBy !== 'newest') && (
                                 <AppleButton
                                     onClick={handleClearAll}
                                     variant="ghost"
