@@ -11,17 +11,14 @@ import {
     Plus, 
     Database, 
     FileText, 
-    ShieldCheck, 
     Trash2, 
-    Settings,
     UserCheck,
     Phone,
-    MapPin,
     Zap,
-    ArrowUpRight
+    ArrowUpRight,
+    Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -32,10 +29,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { AppleCard, AppleBadge, AppleHeader, AppleButton } from '../shared/AppleUI';
+import { cn } from '@/lib/utils';
 
 /**
- * StudentDashboard Component
- * Refactored to "Technical Emerald Minimalism"
+ * StudentDashboard Component — Refined Apple Aesthetic
  */
 const StudentDashboard = () => {
     const { user } = useAuth();
@@ -143,200 +141,179 @@ const StudentDashboard = () => {
     };
 
     const tabs = [
-        { id: 'overview', label: 'STRATEGIC_OVERVIEW', icon: Activity },
-        { id: 'post-job', label: 'DRAFT_REQUIREMENT', icon: Plus },
-        { id: 'my-jobs', label: 'ACTIVE_REQUESTS', icon: Database },
-        { id: 'applications', label: 'CANDIDATE_PIPELINE', icon: FileText },
-        { id: 'booked', label: 'VERIFIED_ENGAGEMENTS', icon: UserCheck }
+        { id: 'overview', label: 'Overview', icon: Activity },
+        { id: 'post-job', label: 'Post Job', icon: Plus },
+        { id: 'my-jobs', label: 'My Requests', icon: Database },
+        { id: 'applications', label: 'Applications', icon: FileText },
+        { id: 'booked', label: 'Engagements', icon: UserCheck }
     ];
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-700 selection:bg-primary/30 selection:text-primary">
-            <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-10 bg-background border-b border-border pb-12">
-                <div>
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-1 bg-primary"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Client Infrastructure Interface</span>
-                    </div>
-                    <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-none">Management Hub.</h1>
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-6 flex items-center gap-2">
-                        <Database size={12} className="text-primary" /> SESSION_ACTIVE // {user?.email}
-                    </p>
-                </div>
+        <div className="space-y-10 animate-in fade-in duration-700">
+            
+            <AppleHeader 
+                title={`Hello, ${user?.displayName?.split(' ')[0]}`}
+                subtitle="Manage your tutoring requests and find the perfect match for your studies."
+                badge={<AppleBadge variant="secondary">Student Dashboard</AppleBadge>}
+            />
 
-                <div className="flex flex-wrap bg-muted/20 p-1 rounded-none border border-border gap-1 overflow-x-auto shrink-0 max-w-full">
-                    {tabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-3 px-6 py-3 text-[10px] whitespace-nowrap font-black uppercase tracking-[0.15em] transition-all duration-300 rounded-none ${activeTab === tab.id
-                                ? 'bg-background text-primary shadow-sm border border-border'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                                }`}
-                        >
-                            <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-50'} />
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
-            </header>
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-1 bg-muted/30 p-1.5 rounded-2xl border border-border/40 w-fit max-w-full overflow-x-auto scrollbar-hide">
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={cn(
+                            "flex items-center gap-2 px-5 py-2 text-xs font-semibold transition-all duration-300 rounded-xl whitespace-nowrap",
+                            activeTab === tab.id
+                                ? "bg-background text-primary shadow-sm shadow-primary/5 border border-border/40"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        )}
+                    >
+                        <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-50'} />
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
 
+            {/* Overview Content */}
             {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-l border-border bg-border">
-                    <div className="p-12 bg-background border-r border-b border-border group hover:bg-muted/20 transition-colors">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-10 group-hover:text-primary transition-colors">Request Volume</p>
-                        <div className="flex items-baseline gap-3">
-                            <span className="text-6xl font-black text-foreground tracking-tighter tabular-nums italic leading-none">{myTuitions.length}</span>
-                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Active Posts</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <AppleCard className="p-8 group">
+                        <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <Database size={20} />
                         </div>
-                    </div>
-                    <div className="p-12 bg-background border-r border-b border-border group hover:bg-muted/20 transition-colors">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-10 group-hover:text-primary transition-colors">Candidate Pipeline</p>
-                        <div className="flex items-baseline gap-3">
-                            <span className="text-6xl font-black text-primary tracking-tighter tabular-nums italic leading-none">{applications.length}</span>
-                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Verified Tutors</span>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Active Requests</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-bold text-foreground tracking-tight tabular-nums">{myTuitions.length}</span>
+                            <span className="text-xs font-medium text-muted-foreground">posts</span>
                         </div>
-                    </div>
-                    <div className="p-12 bg-background border-r border-b border-border group hover:bg-muted/20 transition-colors">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-10 group-hover:text-primary transition-colors">Secured Tenure</p>
-                        <div className="flex items-baseline gap-3">
-                            <span className="text-6xl font-black text-foreground tracking-tighter tabular-nums italic leading-none">{bookings.filter(b => b.isAccepted).length}</span>
-                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Engagements</span>
+                    </AppleCard>
+
+                    <AppleCard className="p-8 group">
+                        <div className="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <FileText size={20} />
                         </div>
-                    </div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Tutor Pipeline</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-bold text-foreground tracking-tight tabular-nums">{applications.length}</span>
+                            <span className="text-xs font-medium text-muted-foreground">profiles</span>
+                        </div>
+                    </AppleCard>
+
+                    <AppleCard className="p-8 group">
+                        <div className="w-10 h-10 rounded-2xl bg-green-500/10 text-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <UserCheck size={20} />
+                        </div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Active Sessions</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-bold text-foreground tracking-tight tabular-nums">{bookings.filter(b => b.isAccepted).length}</span>
+                            <span className="text-xs font-medium text-muted-foreground">verified</span>
+                        </div>
+                    </AppleCard>
                 </div>
             )}
 
+            {/* Post Job Tab */}
             {activeTab === 'post-job' && (
-                <div className="bg-background border border-border p-12 rounded-none max-w-4xl mx-auto shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-none -mr-24 -mt-24 rotate-45 transition-transform duration-700 group-hover:scale-110"></div>
+                <AppleCard className="p-8 md:p-12 max-w-4xl mx-auto relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
                     <div className="relative z-10">
-                        <div className="flex items-center gap-4 mb-12 pb-8 border-b border-border">
-                            <div className="w-12 h-12 rounded-none bg-primary text-primary-foreground flex items-center justify-center shadow-lg">
+                        <div className="flex items-center gap-4 mb-10">
+                            <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
                                 <Plus size={24} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-foreground tracking-tighter uppercase italic leading-none">Draft Strategic Requirement</h2>
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-2">Initialize new marketplace recruitment protocol</p>
+                                <h2 className="text-xl font-bold text-foreground tracking-tight">Post a New Request</h2>
+                                <p className="text-xs text-muted-foreground mt-0.5">Define your academic requirements to find the best tutor.</p>
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit(onPostTuition)} className="space-y-12">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-1">Academic Target</Label>
-                                    <Input {...register('subject', { required: true })} placeholder="E.G. HIGHER_MATHEMATICS" className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary uppercase text-[11px] tracking-widest" />
+                        <form onSubmit={handleSubmit(onPostTuition)} className="space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-2">
+                                    <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Subject / Topic</Label>
+                                    <Input {...register('subject', { required: true })} placeholder="e.g. Higher Mathematics" className="h-11 rounded-xl bg-muted/20 border-border/40" />
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-1">Complexity Level</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Class Level</Label>
                                     <Select onValueChange={(val) => setValue('class_name', val)}>
-                                        <SelectTrigger className="h-14 rounded-none border-border bg-muted/20 font-bold focus:ring-primary uppercase text-[11px] tracking-widest">
-                                            <SelectValue placeholder="SELECT_CLASS" />
+                                        <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-border/40">
+                                            <SelectValue placeholder="Select Class" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-border">
+                                        <SelectContent className="rounded-xl border-border/40">
                                             {['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'HSC'].map(c => (
-                                                <SelectItem key={c} value={c} className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">{c}</SelectItem>
+                                                <SelectItem key={c} value={c}>{c}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-1">Proposed Yield (BDT/mo)</Label>
-                                    <div className="relative">
-                                        <Input {...register('salary', { required: true, min: 1000 })} type="number" placeholder="5000" className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary pl-12 tabular-nums" />
-                                        <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-primary italic">৳</span>
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Monthly Budget (BDT)</Label>
+                                    <Input {...register('salary', { required: true })} type="number" placeholder="5000" className="h-11 rounded-xl bg-muted/20 border-border/40" />
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-1">Instructional Medium</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Curriculum</Label>
                                     <Select onValueChange={(val) => setValue('medium', val)}>
-                                        <SelectTrigger className="h-14 rounded-none border-border bg-muted/20 font-bold focus:ring-primary uppercase text-[11px] tracking-widest">
-                                            <SelectValue placeholder="SELECT_MEDIUM" />
+                                        <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-border/40">
+                                            <SelectValue placeholder="Select Medium" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-border">
-                                            <SelectItem value="Bangla Medium" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">Bangla Medium</SelectItem>
-                                            <SelectItem value="English Medium" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">English Medium</SelectItem>
+                                        <SelectContent className="rounded-xl border-border/40">
+                                            <SelectItem value="Bangla Medium">Bangla Medium</SelectItem>
+                                            <SelectItem value="English Medium">English Medium</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
                             
-                            <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-1">Operations Frequency</Label>
-                                <Select onValueChange={(val) => setValue('days_per_week', Number(val))}>
-                                    <SelectTrigger className="h-14 rounded-none border-border bg-muted/20 font-bold focus:ring-primary uppercase text-[11px] tracking-widest">
-                                        <SelectValue placeholder="ENGAGEMENT_FREQUENCY" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-none border-border">
-                                        <SelectItem value="3" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">3 Days (Standard)</SelectItem>
-                                        <SelectItem value="4" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">4 Days (Intensive)</SelectItem>
-                                        <SelectItem value="5" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">5 Days (High Frequency)</SelectItem>
-                                        <SelectItem value="6" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">6 Days (Complete Immersion)</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                            <div className="space-y-2">
+                                <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Location Details</Label>
+                                <Textarea {...register('location', { required: true })} className="rounded-xl bg-muted/20 border-border/40 min-h-[100px] resize-none" placeholder="Provide full address for tutor reference..." />
                             </div>
 
-                            <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-1">Geographic Parameters</Label>
-                                <Textarea {...register('location', { required: true })} className="rounded-none border-border bg-muted/20 font-medium focus-visible:ring-primary min-h-[140px] resize-none p-6 text-sm" placeholder="PROVIDE_PRECISE_INSTRUCTION_DELIVERY_COORDINATES..." />
-                            </div>
-
-                            <Button className="w-full h-16 rounded-none text-[11px] font-black uppercase tracking-[0.3em] shadow-lg flex items-center justify-center gap-3 group/btn" disabled={loading}>
-                                {loading ? (
-                                    <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
-                                ) : (
-                                    <>
-                                        Broadcast Requirement <ArrowUpRight size={18} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                                    </>
-                                )}
-                            </Button>
+                            <AppleButton className="w-full h-12 rounded-xl shadow-lg shadow-primary/20" disabled={loading}>
+                                {loading ? "Broadcasting..." : "Publish Request"}
+                            </AppleButton>
                         </form>
                     </div>
-                </div>
+                </AppleCard>
             )}
 
+            {/* My Jobs Tab */}
             {activeTab === 'my-jobs' && (
-                <div className="bg-background border border-border shadow-2xl overflow-hidden relative">
+                <AppleCard className="overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-muted border-b border-border">
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">ID</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Requirement Target</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Financial Yield</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-right">Operations</th>
+                        <table className="w-full text-left">
+                            <thead className="bg-muted/30 border-b border-border/40">
+                                <tr>
+                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Subject</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Yield</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Status</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border">
+                            <tbody className="divide-y divide-border/40">
                                 {myTuitions.length === 0 ? (
                                     <tr>
-                                        <td colSpan="4" className="p-32 text-center bg-muted/10">
-                                             <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">No active requirements registered in this infrastructure.</p>
-                                        </td>
+                                        <td colSpan="4" className="p-20 text-center text-sm text-muted-foreground italic">No active requests.</td>
                                     </tr>
                                 ) : (
-                                    myTuitions.map((job, idx) => (
-                                        <tr key={job._id} className="hover:bg-muted/30 transition-colors group">
-                                            <td className="px-10 py-8 text-[10px] font-black text-muted-foreground tabular-nums tracking-widest">REQ_{idx + 1001}</td>
-                                            <td className="px-10 py-8">
-                                                <p className="text-sm font-black text-foreground tracking-tighter uppercase italic">{job.subject}</p>
-                                                <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mt-1">{job.class_name}</p>
+                                    myTuitions.map((job) => (
+                                        <tr key={job._id} className="hover:bg-muted/10 transition-colors">
+                                            <td className="px-8 py-6">
+                                                <p className="text-sm font-bold text-foreground">{job.subject}</p>
+                                                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest mt-1">{job.class_name}</p>
                                             </td>
-                                            <td className="px-10 py-8">
-                                                <div className="flex items-center gap-4">
-                                                    <span className="text-sm font-black text-primary tabular-nums italic">৳{job.salary}</span>
-                                                    <Badge variant="outline" className={`rounded-none px-3 py-1 text-[9px] font-black uppercase tracking-widest border-border ${
-                                                        job.status === 'approved' ? 'text-primary border-primary bg-primary/5' : 'text-amber-500 border-amber-500/20 bg-amber-500/5'
-                                                    }`}>
-                                                        {job.status === 'approved' ? 'VERIFIED' : 'PENDING'}
-                                                    </Badge>
-                                                </div>
+                                            <td className="px-8 py-6 text-sm font-bold text-primary tabular-nums">৳{job.salary}</td>
+                                            <td className="px-8 py-6">
+                                                <AppleBadge variant={job.status === 'approved' ? 'primary' : 'default'}>
+                                                    {job.status === 'approved' ? 'Active' : 'Pending'}
+                                                </AppleBadge>
                                             </td>
-                                            <td className="px-10 py-8 text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button variant="ghost" size="sm" className="rounded-none text-[9px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary" onClick={() => navigate(`/tuition/${job._id}`)}>Adjust</Button>
-                                                    <Button variant="ghost" size="sm" className="rounded-none text-[9px] font-black uppercase tracking-widest text-destructive hover:bg-destructive/5" onClick={() => handleDeleteTuition(job._id)}>Expunge</Button>
+                                            <td className="px-8 py-6 text-right">
+                                                <div className="flex justify-end gap-3">
+                                                    <button onClick={() => navigate(`/tuition/${job._id}`)} className="text-[10px] font-bold text-primary hover:underline">View</button>
+                                                    <button onClick={() => handleDeleteTuition(job._id)} className="text-[10px] font-bold text-destructive hover:underline">Remove</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -345,116 +322,94 @@ const StudentDashboard = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </AppleCard>
             )}
 
+            {/* Applications Tab */}
             {activeTab === 'applications' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {applications.length === 0 ? (
-                        <div className="col-span-full p-32 bg-muted/10 border border-dashed border-border text-center rounded-none relative overflow-hidden">
-                             <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">No incoming professional profiles in the pipeline.</p>
-                        </div>
+                        <AppleCard className="col-span-full p-32 text-center border-dashed">
+                             <Search size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
+                            <p className="text-sm font-medium text-muted-foreground italic">No incoming applications yet.</p>
+                        </AppleCard>
                     ) : (
                         applications.map(app => (
-                            <div key={app._id} className="p-12 bg-background border border-border rounded-none shadow-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-500">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-none -mr-20 -mt-20 rotate-45 group-hover:scale-110 transition-transform duration-700"></div>
+                            <AppleCard key={app._id} className="p-8 group relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
                                 <div className="relative z-10">
-                                    <header className="flex justify-between items-start mb-10">
+                                    <div className="flex justify-between items-start mb-6">
                                         <div>
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="w-1.5 h-1.5 bg-primary"></div>
-                                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Candidate Dossier</span>
-                                            </div>
-                                            <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase italic leading-none border-l-4 border-primary pl-6">{app.tutorName}</h3>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-4 ml-6">{app.tutorEmail}</p>
+                                            <h3 className="text-xl font-bold text-foreground tracking-tight">{app.tutorName}</h3>
+                                            <p className="text-xs text-muted-foreground mt-1">{app.tutorEmail}</p>
                                         </div>
-                                        <Badge variant="outline" className={`rounded-none px-3 py-1 text-[9px] font-black uppercase tracking-widest ${
-                                            app.status === 'approved' ? 'text-primary border-primary bg-primary/5' : 
-                                            app.status === 'rejected' ? 'text-destructive border-destructive/20 bg-destructive/5' : 
-                                            'text-muted-foreground bg-muted'
-                                        }`}>
+                                        <AppleBadge variant={app.status === 'approved' ? 'primary' : app.status === 'rejected' ? 'error' : 'default'}>
                                             {app.status}
-                                        </Badge>
-                                    </header>
-                                    <div className="space-y-8 mb-12">
-                                        <div>
-                                            <Label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-3 block">Academic Context</Label>
-                                            <div className="text-[11px] font-bold text-foreground bg-muted/50 p-6 border border-border leading-relaxed uppercase tracking-wide">
-                                                {app.qualifications}
-                                            </div>
+                                        </AppleBadge>
+                                    </div>
+                                    
+                                    <div className="space-y-4 mb-8">
+                                        <div className="p-4 rounded-xl bg-muted/30 border border-border/40 text-xs text-muted-foreground leading-relaxed italic">
+                                            "{app.qualifications}"
                                         </div>
-                                        <div>
-                                            <Label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-3 block">Specialized Background</Label>
-                                            <p className="text-[11px] font-bold text-muted-foreground italic border-l-2 border-primary/20 pl-6 leading-relaxed uppercase tracking-wide">
-                                                {app.experience || app.experiance}
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center justify-between pt-8 border-t border-border">
-                                            <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Expected Honorarium</Label>
-                                            <span className="text-2xl font-black text-primary tabular-nums italic">৳{app.expectedSalary}<span className="text-[10px] text-muted-foreground font-black ml-2 uppercase not-italic">/ cycle</span></span>
+                                        <div className="flex justify-between items-center pt-4 border-t border-border/40">
+                                            <span className="text-xs font-semibold text-muted-foreground">Expected Salary</span>
+                                            <span className="text-lg font-bold text-primary tabular-nums">৳{app.expectedSalary}</span>
                                         </div>
                                     </div>
+
                                     {app.status === 'pending' && (
-                                        <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border">
-                                            <Button variant="ghost" className="flex-1 h-14 rounded-none text-[10px] font-black uppercase tracking-[0.2em] hover:bg-destructive/5 hover:text-destructive" onClick={() => handleReject(app._id)}>Decline</Button>
-                                            <Button className="flex-1 h-14 rounded-none text-[10px] font-black uppercase tracking-[0.2em] shadow-lg flex items-center justify-center gap-2 group/btn" onClick={() => handleApprove(app._id)}>
-                                                Approve Connection <Zap size={14} className="group-hover/btn:fill-current" />
-                                            </Button>
+                                        <div className="flex gap-3">
+                                            <AppleButton variant="outline" className="flex-1 h-10 rounded-xl text-xs" onClick={() => handleReject(app._id)}>Decline</AppleButton>
+                                            <AppleButton className="flex-1 h-10 rounded-xl text-xs" onClick={() => handleApprove(app._id)}>Approve</AppleButton>
                                         </div>
                                     )}
                                 </div>
-                            </div>
+                            </AppleCard>
                         ))
                     )}
                 </div>
             )}
 
+            {/* Booked / Engagements Tab */}
             {activeTab === 'booked' && (
-                <div className="bg-background border border-border shadow-2xl overflow-hidden relative">
+                <AppleCard className="overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-muted border-b border-border">
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Target Engagement</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Assigned Specialist</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center">Channel</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-right">Verification</th>
+                        <table className="w-full text-left">
+                            <thead className="bg-muted/30 border-b border-border/40">
+                                <tr>
+                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Tutor Name</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Subject</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-center">Contact</th>
+                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-right">Verification</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border">
+                            <tbody className="divide-y divide-border/40">
                                 {bookings.length === 0 ? (
                                     <tr>
-                                        <td colSpan="4" className="p-32 text-center bg-muted/10">
-                                            <ShieldCheck size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">No active verified engagements identified.</p>
-                                        </td>
+                                        <td colSpan="4" className="p-20 text-center text-sm text-muted-foreground italic">No verified engagements yet.</td>
                                     </tr>
                                 ) : (
-                                    bookings.map((booking, idx) => (
-                                        <tr key={booking._id} className="hover:bg-muted/30 transition-colors">
-                                            <td className="px-10 py-8">
-                                                <p className="text-sm font-black text-foreground tracking-tighter uppercase italic">{booking.subject}</p>
-                                                <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mt-1">Verified Engagement</p>
+                                    bookings.map((booking) => (
+                                        <tr key={booking._id} className="hover:bg-muted/10 transition-colors">
+                                            <td className="px-8 py-6">
+                                                <p className="text-sm font-bold text-foreground">{booking.tutor_name || booking.tutorName}</p>
                                             </td>
-                                            <td className="px-10 py-8 text-center">
-                                                <Badge variant="outline" className="rounded-none px-4 py-2 border-border bg-muted/50 text-foreground font-black text-[9px] uppercase tracking-widest">
-                                                    {booking.tutor_name || booking.tutorName}
-                                                </Badge>
+                                            <td className="px-8 py-6 text-sm font-semibold text-muted-foreground">{booking.subject}</td>
+                                            <td className="px-8 py-6 text-center">
+                                                <a href={`tel:${booking.mobile}`} className="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1.5">
+                                                    <Phone size={12} /> {booking.mobile}
+                                                </a>
                                             </td>
-                                            <td className="px-10 py-8 text-center">
-                                                <Button asChild variant="ghost" className="h-10 px-4 rounded-none text-[10px] font-black text-primary uppercase tracking-[0.2em] hover:bg-primary/10">
-                                                    <a href={`tel:${booking.mobile}`}>
-                                                        <Phone size={12} className="mr-2" /> {booking.mobile}
-                                                    </a>
-                                                </Button>
-                                            </td>
-                                            <td className="px-10 py-8 text-right">
-                                                <Badge variant="outline" className={`rounded-none px-3 py-1 text-[9px] font-black uppercase tracking-widest border-primary text-primary bg-primary/5 ${
-                                                    booking.isAccepted ? 'border-primary' : 'opacity-50'
-                                                }`}>
-                                                    {booking.isAccepted ? 'PROTOCOL_ACTIVE' : 'AWAITING_SYNC'}
-                                                </Badge>
+                                            <td className="px-8 py-6 text-right">
+                                                <div className="flex flex-col items-end gap-2">
+                                                    <AppleBadge variant="primary" className="normal-case">Protocol Active</AppleBadge>
+                                                    {booking.isAccepted && (
+                                                        <AppleButton size="sm" className="h-7 px-3 text-[10px] rounded-lg" onClick={() => navigate(`/session/${booking._id}`)}>
+                                                            Join Room
+                                                        </AppleButton>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
@@ -462,7 +417,7 @@ const StudentDashboard = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </AppleCard>
             )}
         </div>
     );

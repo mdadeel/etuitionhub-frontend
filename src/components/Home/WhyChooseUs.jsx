@@ -4,23 +4,23 @@ import { AppleBadge, AppleCard } from '../shared/AppleUI';
 const features = [
     {
         icon: ShieldCheck,
-        title: "Verified Expertise",
-        description: "Every tutor undergoes a rigorous vetting process before platform inclusion."
+        title: "Verified Tutors",
+        description: "Every tutor is background-checked with verified academic credentials and national ID."
     },
     {
         icon: Banknote,
-        title: "Transparent Rates",
-        description: "Clear, upfront pricing structures with zero hidden administrative fees."
+        title: "Transparent Pricing",
+        description: "Clear monthly rates upfront. No hidden fees. bKash, Nagad, or bank transfer accepted."
     },
     { 
         icon: Clock, 
         title: "Flexible Scheduling", 
-        description: "Schedule sessions around your specific availability and time constraints." 
+        description: "Morning, evening, or weekend sessions. Match your routine, not the other way around." 
     },
     {
         icon: Zap,
-        title: "Smart Matching",
-        description: "Advanced filtering to connect you with the precise expertise required."
+        title: "Quick Match",
+        description: "Find a verified tutor in your area within 24 hours. Start learning faster."
     }
 ];
 
@@ -29,11 +29,12 @@ const WhyChooseUs = () => {
         <section className="py-32 bg-background">
             <div className="max-w-[1200px] mx-auto px-6">
                 <div className="mb-24" data-aos="fade-right">
-                    <AppleBadge variant="primary" className="mb-4">Chapter 5: The Edge</AppleBadge>
+                    <AppleBadge variant="primary" className="mb-4">Why e-TuitionBD</AppleBadge>
                     <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
-                        Operational excellence. <br />
-                        <span className="text-muted-foreground/30">Built for you.</span>
+                        Bangladesh's trusted <br />
+                        <span className="text-muted-foreground/30">tutoring platform.</span>
                     </h2>
+                    <p className="text-muted-foreground mt-4 max-w-lg">Thousands of students across Dhaka, Chittagong, Sylhet, and beyond have found their perfect tutor through e-TuitionBD.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

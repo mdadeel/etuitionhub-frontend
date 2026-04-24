@@ -23,6 +23,7 @@ import Dashboard from './pages/Dashboard'
 import PrivateRoute from "./components/shared/PrivateRoute"
 import PublicRoute from './components/shared/PublicRoute'
 import NotFound from "./pages/NotFound"
+import SessionRoom from "./pages/SessionRoom"
 import Checkout from './pages/Checkout'
 import PaymentSuccess from "./pages/PaymentSuccess"
 import PaymentHistory from './pages/PaymentHistory'
@@ -45,7 +46,7 @@ let App = () => {
         <BrowserRouter>
           <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500">
             <Navbar />
-            <main className="flex-grow">
+            <main className="flex-grow pt-14">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/tuitions" element={<Tuitions />} />
@@ -64,8 +65,8 @@ let App = () => {
 
                 <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
                 <Route path="/checkout/:id" element={<PrivateRoute><Checkout /></PrivateRoute>} />
+                <Route path="/session/:id" element={<PrivateRoute><SessionRoom /></PrivateRoute>} />
                 <Route path="/payment-success" element={<PrivateRoute><PaymentSuccess /></PrivateRoute>} />
-                {/* <Route path="/payment-history" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} /> */}
                 <Route path="/payment-history" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} />
                 {/* <Route path="/test-layout" element={<TestLayout />} /> */}
 

@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import TutorCard from "../components/Home/TutorCard"
-import demoTutors from '../data/demoTutors.json'
+import TutorCard from "../components/shared/TutorCard"
 import LoadingSpinner from '../components/shared/LoadingSpinner'
 import EmptyState from '../components/shared/EmptyState'
 import { SlidersHorizontal, ShieldCheck, Filter, X } from 'lucide-react'
@@ -13,7 +12,9 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { AppleBadge, AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
-import AOS from 'aos'
+import { motion, AnimatePresence } from 'framer-motion'
+import axios from 'axios'
+import API_URL from '../config/api'
 
 const Tutors = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -21,43 +22,41 @@ const Tutors = () => {
     const [loading, setLoading] = useState(true)
     const [sortBy, setSortBy] = useState('name-az')
     const [selectedSubject, setSelectedSubject] = useState('All');
+    const [allSubjects, setAllSubjects] = useState(['All']);
 
     const searchQuery = searchParams.get('q') || '';
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setTutors(demoTutors)
-            setLoading(false)
-        }, 400)
-        return () => clearTimeout(timer)
-    }, [])
-
-    const allSubjects = useMemo(() => {
-        const subjects = new Set(['All']);
-        if (Array.isArray(demoTutors)) {
-            demoTutors.forEach(t => {
-                if (t && Array.isArray(t.subjects)) {
-                    t.subjects.forEach(s => subjects.add(s));
+        const fetchTutors = async () => {
+            setLoading(true);
+            try {
+                let params = new URLSearchParams();
+                if (searchQuery) params.append('q', searchQuery);
+                if (selectedSubject !== 'All') params.append('subject', selectedSubject);
+                if (sortBy === 'ratings' || sortBy === 'salary-low') {
+                    params.append('sort', sortBy);
                 }
-            });
-        }
-        return Array.from(subjects);
-    }, []);
+
+                const response = await axios.get(`${API_URL}/api/tutors?${params.toString()}`);
+                setTutors(response.data);
+
+                const subjectsSet = new Set(['All']);
+                response.data.forEach(t => {
+                    if (t.subjects) t.subjects.forEach(s => subjectsSet.add(s));
+                });
+                setAllSubjects(Array.from(subjectsSet));
+            } catch (error) {
+                console.error("Error fetching tutors", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTutors();
+    }, [searchQuery, selectedSubject, sortBy]);
 
     const filteredAndSortedTutors = useMemo(() => {
         if (!Array.isArray(tutors)) return [];
         let result = [...tutors]
-
-        if (searchQuery) {
-            result = result.filter(t =>
-                (t.displayName?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                (Array.isArray(t.subjects) && t.subjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())))
-            )
-        }
-
-        if (selectedSubject !== 'All') {
-            result = result.filter(t => Array.isArray(t.subjects) && t.subjects.includes(selectedSubject));
-        }
 
         switch (sortBy) {
             case 'name-az':
@@ -73,21 +72,12 @@ const Tutors = () => {
                     return bExp - aExp
                 })
                 break
-            case 'salary-low':
-                result.sort((a, b) => (a.expectedSalary || 0) - (b.expectedSalary || 0))
-                break
             default:
                 break
         }
 
         return result
-    }, [tutors, searchQuery, sortBy, selectedSubject])
-
-    useEffect(() => {
-        if (typeof AOS !== 'undefined' && AOS.refresh) {
-            AOS.refresh();
-        }
-    }, [filteredAndSortedTutors.length]);
+    }, [tutors, sortBy])
 
     const handleClear = () => {
         setSearchParams({});
@@ -101,15 +91,35 @@ const Tutors = () => {
         </div>
     )
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.05
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { 
+            opacity: 1, 
+            y: 0,
+            transition: {
+                duration: 0.5,
+                ease: [0.21, 0.47, 0.32, 0.98]
+            }
+        }
+    };
+
     return (
         <div className="bg-background min-h-screen">
             <div className="w-full px-6 md:px-12 py-4">
-                
-                {/* Header */}
-                <AppleHeader 
+
+                <AppleHeader
                     title="Find a Tutor"
                     subtitle="Browse through our verified network of academic professionals across the nation."
-                   
                     action={
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-2xl border border-border/50">
@@ -126,15 +136,12 @@ const Tutors = () => {
                 />
 
                 <div className="flex flex-col md:grid md:grid-cols-12 gap-10">
-                    
-                    {/* Left Sidebar Filters */}
                     <aside className="md:col-span-3 space-y-6">
                         <AppleCard className="p-6 sticky top-24" hover={false}>
                             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
                                 <Filter size={14} /> Filters
                             </h3>
-                            
-                            {/* Sort Filter */}
+
                             <div className="mb-8">
                                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Sort by</label>
                                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -153,7 +160,6 @@ const Tutors = () => {
                                 </Select>
                             </div>
 
-                            {/* Subjects Filter */}
                             <div>
                                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Subjects</label>
                                 <div className="space-y-1.5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
@@ -161,11 +167,10 @@ const Tutors = () => {
                                         <button
                                             key={subject}
                                             onClick={() => setSelectedSubject(subject)}
-                                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                                                selectedSubject === subject 
-                                                ? 'bg-primary text-primary-foreground shadow-sm' 
+                                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all ${selectedSubject === subject
+                                                ? 'bg-primary text-primary-foreground shadow-sm'
                                                 : 'text-muted-foreground hover:bg-muted/50'
-                                            }`}
+                                                }`}
                                         >
                                             {subject}
                                         </button>
@@ -173,7 +178,6 @@ const Tutors = () => {
                                 </div>
                             </div>
 
-                            {/* Clear All */}
                             {(searchQuery || sortBy !== 'name-az' || selectedSubject !== 'All') && (
                                 <AppleButton
                                     onClick={handleClear}
@@ -186,7 +190,6 @@ const Tutors = () => {
                         </AppleCard>
                     </aside>
 
-                    {/* Main Content */}
                     <main className="md:col-span-9">
                         {searchQuery && (
                             <div className="mb-8 flex items-center gap-3">
@@ -196,7 +199,7 @@ const Tutors = () => {
                         )}
 
                         {filteredAndSortedTutors.length === 0 ? (
-                            <div className="py-32">
+                            <div className="py-18">
                                 <EmptyState
                                     message="No specialists found matching your current parameters."
                                     onAction={handleClear}
@@ -204,13 +207,18 @@ const Tutors = () => {
                                 />
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredAndSortedTutors.map((tutor, idx) => (
-                                    <div key={tutor._id} data-aos="fade-up" data-aos-delay={idx * 50}>
+                            <motion.div 
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="visible"
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                            >
+                                {filteredAndSortedTutors.map((tutor) => (
+                                    <motion.div key={tutor._id} variants={itemVariants}>
                                         <TutorCard tutor={tutor} />
-                                    </div>
+                                    </motion.div>
                                 ))}
-                            </div>
+                            </motion.div>
                         )}
                     </main>
                 </div>
@@ -220,3 +228,4 @@ const Tutors = () => {
 }
 
 export default Tutors
+

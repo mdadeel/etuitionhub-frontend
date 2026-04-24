@@ -29,9 +29,9 @@ const Testimonials = () => {
         <section className="py-32 bg-muted/20">
             <div className="max-w-[1200px] mx-auto px-6">
                 <div className="text-center mb-20" data-aos="fade-up">
-                    <AppleBadge variant="primary" className="mb-4">The Impact</AppleBadge>
+                    <AppleBadge variant="primary" className="mb-4">Student Stories</AppleBadge>
                     <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-                        Voices of Excellence.
+                        What students say.
                     </h2>
                 </div>
 

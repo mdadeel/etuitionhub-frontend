@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTuitions } from '../hooks/useTuitions';
 import { useTuitionFilters } from '../hooks/useTuitionFilters';
-import TuitionCard from '../components/Tuitions/TuitionCard';
-import Pagination from '../components/Tuitions/Pagination';
+import TuitionCard from '../components/shared/TuitionCard';
+import Pagination from '../components/shared/Pagination';
 import { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
-import EmptyState from '../components/Tuitions/EmptyState';
+import EmptyState from '../components/shared/EmptyState';
 import { useAuth } from '../contexts/AuthContext';
 import { SlidersHorizontal, Filter, X } from 'lucide-react';
 import {
@@ -16,15 +16,15 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { AppleBadge, AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
-import AOS from 'aos'
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Tuitions = () => {
     const { userRole } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
-    
-    const [page, setPage] = useState(1);
-    
+
+    const [page, setPage] = useState( page => 1);
+
     const {
         filters,
         updateFilter,
@@ -41,12 +41,6 @@ const Tuitions = () => {
         limit: 8,
         status: 'approved'
     });
-
-    useEffect(() => {
-        if (typeof AOS !== 'undefined' && AOS.refresh) {
-            AOS.refresh();
-        }
-    }, [tuitions]);
 
     const currentPage = pagination?.currentPage || 1;
     const totalPages = pagination?.totalPages || 1;
@@ -69,15 +63,35 @@ const Tuitions = () => {
         </div>
     );
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.05
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 15 },
+        visible: { 
+            opacity: 1, 
+            y: 0,
+            transition: {
+                duration: 0.4,
+                ease: [0.21, 0.47, 0.32, 0.98]
+            }
+        }
+    };
+
     return (
         <div className="bg-background min-h-screen">
-            <div className="w-full px-6 md:px-12 py-4">
-                
-                {/* Header */}
-                <AppleHeader 
+            <div className="w-full px-6 md:px-12 py-18">
+
+                <AppleHeader
                     title="Available Tuition Jobs"
                     subtitle="Find the perfect teaching opportunity that matches your skills and location."
-                    
                     action={
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-2xl border border-border/50">
@@ -93,15 +107,12 @@ const Tuitions = () => {
                 />
 
                 <div className="flex flex-col md:grid md:grid-cols-12 gap-10">
-                    
-                    {/* Left Sidebar Filters */}
                     <aside className="md:col-span-3 space-y-6">
                         <AppleCard className="p-6 sticky top-24" hover={false}>
                             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
                                 <Filter size={14} /> Filters
                             </h3>
-                            
-                            {/* Sort Filter */}
+
                             <div className="mb-8">
                                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Sort by</label>
                                 <Select value={filters.sortBy} onValueChange={(val) => updateFilter('sortBy', val)}>
@@ -120,7 +131,6 @@ const Tuitions = () => {
                                 </Select>
                             </div>
 
-                            {/* Class Filter */}
                             <div className="mb-8">
                                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Class</label>
                                 <Select value={filters.classFilter || 'all'} onValueChange={(val) => updateFilter('classFilter', val === 'all' ? '' : val)}>
@@ -136,7 +146,6 @@ const Tuitions = () => {
                                 </Select>
                             </div>
 
-                            {/* Location Filter */}
                             <div className="mb-8">
                                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Location</label>
                                 <Select value={filters.locationFilter || 'all'} onValueChange={(val) => updateFilter('locationFilter', val === 'all' ? '' : val)}>
@@ -152,7 +161,6 @@ const Tuitions = () => {
                                 </Select>
                             </div>
 
-                            {/* Clear All */}
                             {(searchQuery || filters.classFilter || filters.locationFilter || filters.sortBy !== 'newest') && (
                                 <AppleButton
                                     onClick={handleClearAll}
@@ -165,7 +173,6 @@ const Tuitions = () => {
                         </AppleCard>
                     </aside>
 
-                    {/* Main Content */}
                     <main className="md:col-span-9">
                         {searchQuery && (
                             <div className="mb-8 flex items-center gap-3">
@@ -181,17 +188,27 @@ const Tuitions = () => {
                             </div>
                         ) : tuitions.length === 0 ? (
                             <div className="py-32">
-                                <EmptyState onReset={handleClearAll} />
+                                <EmptyState
+                                    title="No Jobs Detected"
+                                    message="We couldn't locate any academic requirements matching your current filtering parameters."
+                                    onAction={handleClearAll}
+                                    actionLabel="Reset Parameters"
+                                />
                             </div>
                         ) : (
                             <div className="space-y-12">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {tuitions.map((tuition, idx) => (
-                                        <div key={tuition._id} data-aos="fade-up" data-aos-delay={idx * 50}>
+                                <motion.div 
+                                    variants={containerVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                                >
+                                    {tuitions.map((tuition) => (
+                                        <motion.div key={tuition._id} variants={itemVariants}>
                                             <TuitionCard tuition={tuition} />
-                                        </div>
+                                        </motion.div>
                                     ))}
-                                </div>
+                                </motion.div>
 
                                 {totalPages > 1 && (
                                     <div className="pt-10 border-t border-border/50">
@@ -216,3 +233,4 @@ const Tuitions = () => {
 };
 
 export default Tuitions;
+

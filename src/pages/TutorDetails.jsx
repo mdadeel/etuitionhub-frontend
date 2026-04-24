@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import demoTutors from '../data/demoTutors.json';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
-import TutorCard from '../components/Home/TutorCard';
+import TutorCard from '../components/shared/TutorCard';
 import toast from 'react-hot-toast';
 import { 
     ArrowLeft, 
@@ -18,10 +18,12 @@ import {
     ExternalLink,
     CheckCircle2,
     Briefcase,
-    Clock
+    Clock,
+    GraduationCap,
+    Heart
 } from 'lucide-react';
 import { AppleBadge, AppleCard, AppleButton } from '../components/shared/AppleUI';
-import AOS from 'aos';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const TutorDetails = () => {
     const { id } = useParams();
@@ -37,12 +39,6 @@ const TutorDetails = () => {
         }, 300);
         return () => clearTimeout(timer);
     }, [id]);
-
-    useEffect(() => {
-        if (typeof AOS !== 'undefined' && AOS.refresh) {
-            AOS.refresh();
-        }
-    }, [tutor]);
 
     const handleContact = () => {
         toast.success(`Message sent to ${tutor.displayName}.`);
@@ -70,24 +66,47 @@ const TutorDetails = () => {
         );
     }
 
+    const containerVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { 
+            opacity: 1, 
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: [0.21, 0.47, 0.32, 0.98],
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 10 },
+        visible: { opacity: 1, y: 0 }
+    };
+
     return (
-        <div className="bg-background min-h-screen py-8 px-6 selection:bg-primary/20 selection:text-primary">
-            <div className="max-w-[1100px] mx-auto">
+        <div className="bg-background min-h-screen py-12 px-6 selection:bg-primary/20 selection:text-primary">
+            <motion.div 
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+                className="max-w-[1100px] mx-auto"
+            >
                 {/* Back Link */}
-                <div className="mb-8">
+                <div className="mb-10">
                     <Link to="/tutors" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group">
                         <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> 
                         Back to Tutors
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
                     {/* Left Column */}
-                    <div className="lg:col-span-8 space-y-8">
+                    <div className="lg:col-span-8 space-y-10">
                         {/* Identity Card */}
-                        <AppleCard className="p-8 flex flex-col md:flex-row gap-8 items-start md:items-center" hover={false}>
+                        <AppleCard className="p-10 flex flex-col md:flex-row gap-10 items-start" hover={false}>
                             <div className="relative shrink-0">
-                                <div className="w-28 h-28 md:w-40 md:h-40 rounded-[2rem] overflow-hidden border border-border shadow-apple-md">
+                                <div className="w-32 h-32 md:w-48 md:h-48 rounded-[2.5rem] overflow-hidden border border-border/50 shadow-apple-lg">
                                     <img
                                         src={tutor.photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
                                         alt={tutor.displayName}
@@ -95,68 +114,71 @@ const TutorDetails = () => {
                                     />
                                 </div>
                                 {tutor.isVerified && (
-                                    <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground p-1.5 rounded-xl shadow-apple-lg border-2 border-background">
-                                        <ShieldCheck size={16} />
+                                    <div className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-2 rounded-2xl shadow-apple-lg border-4 border-background">
+                                        <ShieldCheck size={20} />
                                     </div>
                                 )}
                             </div>
 
-                            <div className="flex-grow">
-                                <div className="flex flex-wrap items-center gap-3 mb-3">
-                                    <AppleBadge variant="primary">Verified Tutor</AppleBadge>
-                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1">
+                            <div className="flex-grow pt-2">
+                                <div className="flex flex-wrap items-center gap-3 mb-4">
+                                    <AppleBadge variant="primary" className="px-3 py-1">Verified Expert</AppleBadge>
+                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 px-3 py-1 bg-muted/50 rounded-full border border-border/50">
                                         <MapPin size={10} className="text-primary" /> {tutor.location}
                                     </span>
                                 </div>
 
-                                <h1 className="text-3xl font-bold text-foreground mb-1 tracking-tight">{tutor.displayName}</h1>
-                                <p className="text-base text-muted-foreground font-medium mb-6">
+                                <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-2 tracking-tight">
+                                    {tutor.displayName}
+                                </h1>
+                                <p className="text-lg md:text-xl text-muted-foreground font-semibold mb-8 flex items-center gap-2">
+                                    <GraduationCap size={20} className="text-primary" />
                                     {tutor.qualification}
                                 </p>
 
-                                <div className="flex items-center gap-8 pt-6 border-t border-border/50">
+                                <div className="flex items-center gap-10 pt-8 border-t border-border/50">
                                     <div>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Monthly Fee</p>
-                                        <p className="text-xl font-bold text-foreground tabular-nums">৳{tutor.expectedSalary}</p>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Monthly Fee</p>
+                                        <p className="text-2xl font-bold text-foreground tabular-nums">৳{tutor.expectedSalary}</p>
                                     </div>
-                                    <div className="w-px h-8 bg-border/50"></div>
+                                    <div className="w-px h-10 bg-border/50"></div>
                                     <div>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Experience</p>
-                                        <p className="text-xl font-bold text-foreground">{tutor.experience}</p>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Experience</p>
+                                        <p className="text-2xl font-bold text-foreground">{tutor.experience}</p>
                                     </div>
-                                    <div className="w-px h-8 bg-border/50"></div>
+                                    <div className="w-px h-10 bg-border/50"></div>
                                     <div>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Rating</p>
-                                        <div className="flex items-center gap-1">
-                                            <p className="text-xl font-bold text-foreground">{tutor.ratings}</p>
-                                            <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Rating</p>
+                                        <div className="flex items-center gap-1.5">
+                                            <p className="text-2xl font-bold text-foreground">{tutor.ratings}</p>
+                                            <Star size={18} className="fill-yellow-400 text-yellow-400" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </AppleCard>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <AppleCard className="p-6" hover={false}>
-                                <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <Award size={14} className="text-primary" /> Subjects
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <AppleCard className="p-8" hover={false}>
+                                <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                                    <Award size={16} className="text-primary" /> Specialized Subjects
                                 </h2>
-                                <div className="flex flex-wrap gap-1.5">
+                                <div className="flex flex-wrap gap-2">
                                     {tutor.subjects?.map((subject, idx) => (
-                                        <span key={idx} className="bg-muted px-3 py-1 rounded-lg text-xs font-medium text-foreground">
+                                        <span key={idx} className="bg-muted text-foreground px-4 py-2 rounded-xl text-xs font-bold border border-border/50">
                                             {subject}
                                         </span>
                                     ))}
                                 </div>
                             </AppleCard>
 
-                            <AppleCard className="p-6" hover={false}>
-                                <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <Calendar size={14} className="text-primary" /> Availability
+                            <AppleCard className="p-8" hover={false}>
+                                <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                                    <Calendar size={16} className="text-primary" /> Weekly Availability
                                 </h2>
-                                <div className="flex flex-wrap gap-1.5">
+                                <div className="flex flex-wrap gap-2">
                                     {tutor.availableDays?.map((day, idx) => (
-                                        <span key={idx} className="bg-muted/50 border border-border/50 px-3 py-1 rounded-lg text-xs font-medium text-foreground">
+                                        <span key={idx} className="bg-muted/50 border border-border/50 px-4 py-2 rounded-xl text-xs font-bold text-foreground">
                                             {day}
                                         </span>
                                     ))}
@@ -165,12 +187,16 @@ const TutorDetails = () => {
                         </div>
 
                         {/* About Section */}
-                        <AppleCard className="p-8" hover={false}>
-                            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4">About the Tutor</h2>
-                            <p className="text-base text-muted-foreground leading-relaxed">
-                                {tutor.displayName} is a qualified teacher helping students in {tutor.subjects?.join(', ')}. 
-                                With {tutor.experience} of experience, they provide simple and effective learning 
-                                for students in {tutor.location}.
+                        <AppleCard className="p-10" hover={false}>
+                            <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6">About the Tutor</h2>
+                            <p className="text-lg text-foreground font-bold leading-relaxed">
+                                {tutor.displayName} is a highly qualified educator specialized in {tutor.subjects?.join(', ')}. 
+                                With {tutor.experience} of proven experience, they provide a structured and simplified 
+                                learning approach tailored for students in {tutor.location}.
+                            </p>
+                            <p className="text-base text-muted-foreground mt-4 leading-relaxed font-medium">
+                                Committed to academic excellence and student growth, {tutor.displayName.split(' ')[0]} 
+                                focuses on building strong conceptual foundations and problem-solving skills.
                             </p>
                         </AppleCard>
                     </div>

@@ -8,11 +8,10 @@ const CallToAction = () => {
         <section className="py-40 bg-background overflow-hidden">
             <div className="max-w-[1200px] mx-auto px-6">
                 <AppleCard className="relative p-12 md:p-24 overflow-hidden border-none bg-foreground text-background" data-aos="zoom-in">
-                    {/* Background Visual */}
-                    <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 z-0 overflow-hidden">
                         <img
                             src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1500&q=80"
-                            alt="Connection"
+                            alt="Students learning together"
                             className="w-full h-full object-cover opacity-20"
                         />
                         <div className="absolute inset-0 bg-gradient-to-r from-foreground via-foreground/80 to-transparent"></div>
@@ -21,7 +20,7 @@ const CallToAction = () => {
                     <div className="relative z-10 max-w-2xl">
                         <div className="flex items-center gap-2 mb-8">
                             <Sparkles size={16} className="text-primary animate-pulse" />
-                            <AppleBadge variant="primary">The Final Chapter</AppleBadge>
+                            <AppleBadge variant="primary">Ready to Start?</AppleBadge>
                         </div>
                         
                         <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-10 leading-[0.95]">
@@ -30,7 +29,7 @@ const CallToAction = () => {
                         </h2>
                         
                         <p className="text-xl opacity-60 mb-12 leading-relaxed tracking-tight font-medium">
-                            Join thousands of students and mentors who have already redefined their educational journey. e-TuitionBD is the foundation for your success.
+                            Join thousands of students and tutors across Bangladesh who have found their perfect match on e-TuitionBD.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-6">
@@ -47,7 +46,6 @@ const CallToAction = () => {
                         </div>
                     </div>
 
-                    {/* Stats Overlay */}
                     <div className="absolute bottom-12 right-12 hidden lg:block text-right">
                         <div className="text-4xl font-bold tracking-tighter mb-2">10,000+</div>
                         <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Successful Connections</div>

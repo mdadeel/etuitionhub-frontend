@@ -6,7 +6,7 @@ import demoTuitions from '../data/demoTuitions.json';
 import api from '../services/api';
 import { isValidObjectId } from '../utils/validators';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
-import TuitionCard from '../components/Tuitions/TuitionCard';
+import TuitionCard from '../components/shared/TuitionCard';
 import { 
     ArrowLeft, 
     Banknote, 

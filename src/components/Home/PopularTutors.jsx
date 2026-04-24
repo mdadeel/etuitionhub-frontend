@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import TutorCard from './TutorCard';
+import TutorCard from '../shared/TutorCard';
 import demoTutors from '../../data/demoTutors.json';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,11 +49,11 @@ const PopularTutors = () => {
                     <div className="max-w-2xl" data-aos="fade-right">
                         <div className="flex items-center gap-2 mb-4">
                             <Star size={12} className="text-primary fill-primary" />
-                            <AppleBadge variant="primary">Chapter 4: The Mentors</AppleBadge>
+                            <AppleBadge variant="primary">Top Rated Tutors</AppleBadge>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
-                            Expert Guidance. <br />
-                            <span className="text-muted-foreground/30">Human Connection.</span>
+                            Meet Bangladesh's <br />
+                            <span className="text-muted-foreground/30">best tutors.</span>
                         </h2>
                     </div>
                     <Button variant="ghost" asChild className="p-0 h-auto text-xs font-bold tracking-widest uppercase text-primary hover:text-primary/80 hover:bg-transparent group" data-aos="fade-left">

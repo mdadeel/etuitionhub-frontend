@@ -1,8 +1,8 @@
 import CountUp from 'react-countup';
 
 const stats = [
-    { value: 1200, label: 'Verified Nodes', suffix: '+' },
-    { value: 850, label: 'Active Streams', suffix: '+' },
+    { value: 1200, label: 'Verified Tutors', suffix: '+' },
+    { value: 850, label: 'Active Students', suffix: '+' },
     { value: 100, label: 'Specializations', suffix: '+' },
     { value: 4.9, label: 'Satisfaction', suffix: '/5', decimals: 1 }
 ];

@@ -1,109 +1,92 @@
 [
-    {
-        "_id": "tuition001",
-        "student_email": "student1@email.com",
-        "subject": "Mathematics",
-        "class_name": "Class 10 (SSC)",
-        "location": "Dhanmondi, Dhaka",
-        "salary": 5000,
-        "gender": "Any",
-        "days_per_week": 3,
-        "available_days": [
-            "Saturday",
-            "Monday",
-            "Wednesday"
-        ],
-        "description": "Looking for an experienced math tutor for SSC preparation. Need help with algebra and geometry.",
-        "status": "approved",
-        "createdAt": "2024-12-01T10:00:00Z"
-    },
-    {
-        "_id": "tuition002",
-        "student_email": "student2@email.com",
-        "subject": "English",
-        "class_name": "Class 8",
-        "location": "Uttara, Dhaka",
-        "salary": 4000,
-        "gender": "Female",
-        "days_per_week": 2,
-        "available_days": [
-            "Sunday",
-            "Thursday"
-        ],
-        "description": "Need English tutor to improve speaking and writing skills. Prefer female tutor.",
-        "status": "approved",
-        "createdAt": "2024-12-02T14:30:00Z"
-    },
-    {
-        "_id": "tuition003",
-        "student_email": "student3@email.com",
-        "subject": "Physics",
-        "class_name": "Class 11 (HSC)",
-        "location": "Mirpur, Dhaka",
-        "salary": 7000,
-        "gender": "Male",
-        "days_per_week": 4,
-        "available_days": [
-            "Saturday",
-            "Sunday",
-            "Tuesday",
-            "Thursday"
-        ],
-        "description": "HSC Physics preparation needed. Need someone who can explain complex topics simply.",
-        "status": "approved",
-        "createdAt": "2024-12-03T09:15:00Z"
-    },
-    {
-        "_id": "tuition004",
-        "student_email": "student4@email.com",
-        "subject": "Chemistry",
-        "class_name": "Class 12 (HSC)",
-        "location": "Gulshan, Dhaka",
-        "salary": 8000,
-        "gender": "Any",
-        "days_per_week": 3,
-        "available_days": [
-            "Monday",
-            "Wednesday",
-            "Friday"
-        ],
-        "description": "Need chemistry tutor for organic chemistry and admission test preparation.",
-        "status": "approved",
-        "createdAt": "2024-12-04T16:45:00Z"
-    },
-    {
-        "_id": "tuition005",
-        "student_email": "student5@email.com",
-        "subject": "ICT",
-        "class_name": "Class 9",
-        "location": "Mohammadpur, Dhaka",
-        "salary": 4500,
-        "gender": "Male",
-        "days_per_week": 2,
-        "available_days": [
-            "Friday",
-            "Saturday"
-        ],
-        "description": "Looking for ICT tutor who can teach programming basics and computer fundamentals.",
-        "status": "pending",
-        "createdAt": "2024-12-05T11:20:00Z"
-    },
-    {
-        "_id": "tuition006",
-        "student_email": "student6@email.com",
-        "subject": "Biology",
-        "class_name": "Class 11 (HSC)",
-        "location": "Banani, Dhaka",
-        "salary": 6000,
-        "gender": "Female",
-        "days_per_week": 3,
-        "available_days": [
-            "Sunday",
-            "Tuesday",
-            "Thursday"
-        ],
-        "description": "Need biology tutor for medical admission prep. Female tutor preferred.",
-        "status": "approved",
-        "createdAt": "2024-12-05T18:00:00Z"
-    }
+  {
+    "_id": "job_001",
+    "subject": "Physics & Higher Mathematics",
+    "class_name": "12 (HSC)",
+    "salary": 10000,
+    "location": "Dhanmondi 15, Dhaka",
+    "days_per_week": 3,
+    "tuition_type": "Home Visit",
+    "gender": "Any",
+    "description": "Looking for an experienced BUETian tutor for HSC Physics and Math. Must be able to explain concepts clearly.",
+    "status": "approved",
+    "available_days": ["Sat", "Mon", "Wed"],
+    "student_email": "student1@example.com",
+    "createdAt": "2026-04-24T09:00:00Z"
+  },
+  {
+    "_id": "job_002",
+    "subject": "ICT & Computer Programming",
+    "class_name": "HSC & Admission",
+    "salary": 12000,
+    "location": "Gulshan 1, Dhaka",
+    "days_per_week": 2,
+    "tuition_type": "Online",
+    "gender": "Any",
+    "description": "Need a tutor for HSC ICT and basic C programming. Should be proficient in explaining algorithmic concepts.",
+    "status": "approved",
+    "available_days": ["Fri", "Sat"],
+    "student_email": "student2@example.com",
+    "createdAt": "2026-04-24T14:30:00Z"
+  },
+  {
+    "_id": "job_003",
+    "subject": "General Science & Mathematics",
+    "class_name": "8 (JSC)",
+    "salary": 7000,
+    "location": "Mirpur 2, Dhaka",
+    "days_per_week": 4,
+    "tuition_type": "Home Visit",
+    "gender": "Female",
+    "description": "Requires a female tutor for a Class 8 student. Should cover Science, Math, and English.",
+    "status": "approved",
+    "available_days": ["Sun", "Mon", "Tue", "Wed"],
+    "student_email": "student3@example.com",
+    "createdAt": "2026-04-23T11:00:00Z"
+  },
+  {
+    "_id": "job_004",
+    "subject": "English & IELTS Prep",
+    "class_name": "Academic & Professional",
+    "salary": 15000,
+    "location": "Banani, Dhaka",
+    "days_per_week": 3,
+    "tuition_type": "Online",
+    "gender": "Any",
+    "description": "Looking for a high-scoring IELTS tutor for intensive speaking and writing practice.",
+    "status": "approved",
+    "available_days": ["Tue", "Thu", "Sat"],
+    "student_email": "student4@example.com",
+    "createdAt": "2026-04-24T16:00:00Z"
+  },
+  {
+    "_id": "job_005",
+    "subject": "Biology & Chemistry",
+    "class_name": "12 (HSC)",
+    "salary": 9000,
+    "location": "Uttara Sector 4, Dhaka",
+    "days_per_week": 3,
+    "tuition_type": "Home Visit",
+    "gender": "Any",
+    "description": "Need help with HSC Biology and Chemistry. Medical admission focus would be a plus.",
+    "status": "approved",
+    "available_days": ["Sun", "Tue", "Thu"],
+    "student_email": "student5@example.com",
+    "createdAt": "2026-04-22T10:00:00Z"
+  },
+  {
+    "_id": "job_006",
+    "subject": "Accounting & Finance",
+    "class_name": "HSC (Commerce)",
+    "salary": 8000,
+    "location": "Mohammadpur, Dhaka",
+    "days_per_week": 3,
+    "tuition_type": "Home Visit",
+    "gender": "Any",
+    "description": "Need a tutor for HSC Commerce group subjects, specifically Accounting and Finance.",
+    "status": "approved",
+    "available_days": ["Mon", "Wed", "Fri"],
+    "student_email": "student6@example.com",
+    "createdAt": "2026-04-24T15:20:00Z"
+  }
 ]

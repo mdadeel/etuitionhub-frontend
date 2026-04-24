@@ -5,24 +5,24 @@ import { AppleBadge } from '../shared/AppleUI';
 const FAQ = () => {
     const faqs = [
         {
-            question: "How do you verify your mentors?",
-            answer: "We manually verify every tutor's background, including academic records and national ID, before profile activation to ensure the highest quality of education."
+            question: "How do you verify tutors?",
+            answer: "Every tutor submits their academic certificates and national ID. We verify all documents manually before activating their profile. Only verified tutors appear in search results."
         },
         {
-            question: "Is there a fee for students or parents?",
-            answer: "No, posting a tuition requirement and browsing our database of mentors is completely free for students and parents."
+            question: "What boards and classes do you cover?",
+            answer: "We cover all 8 education boards of Bangladesh including Dhaka, Chittagong, Rajshahi, Sylhet, Barisal, Khulna, Rangpur, and Mymensingh. Our tutors teach from Class 1 to HSC level for all subjects."
         },
         {
-            question: "How does the payment system work?",
-            answer: "We support secure payments via bKash, Nagad, and bank transfers. For your security, funds are held in escrow until the first month of tutoring is successfully completed."
+            question: "How much does tutoring cost?",
+            answer: "Tutoring fees vary by subject, class level, and location. On average, SSC tutors charge ৳3,000-৳8,000/month and HSC tutors ৳5,000-৳15,000/month. Exact rates are discussed directly with the tutor."
         },
         {
-            question: "What if I'm not satisfied with the tutor?",
-            answer: "Your satisfaction is our priority. You can request a tutor replacement within the first week of sessions at no extra cost."
+            question: "How do payments work?",
+            answer: "Parents pay directly to tutors via bKash, Nagad, or bank transfer. We recommend paying monthly after the first satisfactory session. e-TuitionBD does not hold funds in escrow."
         },
         {
-            question: "Can I negotiate the monthly salary?",
-            answer: "Yes. While we provide indicative rates based on subject and level, final salary negotiation between you and the mentor is encouraged before confirmation."
+            question: "Can I change tutors if not satisfied?",
+            answer: "Yes. If you're not happy with your tutor within the first week, we help you find a replacement at no extra cost. Your satisfaction is our priority."
         }
     ];
 
@@ -34,13 +34,13 @@ const FAQ = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
                     
                     <div className="lg:col-span-5" data-aos="fade-right">
-                        <AppleBadge variant="secondary" className="mb-6">Assurance</AppleBadge>
+                        <AppleBadge variant="secondary" className="mb-6">FAQ</AppleBadge>
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1] mb-8">
-                            Everything you <br />
-                            <span className="text-muted-foreground/30">need to know.</span>
+                            Got questions? <br />
+                            <span className="text-muted-foreground/30">We've got answers.</span>
                         </h2>
                         <p className="text-lg text-muted-foreground leading-relaxed max-w-sm">
-                            Clear answers to common questions about our platform and operational standards.
+                            Everything you need to know about finding a tutor in Bangladesh.
                         </p>
                     </div>
 

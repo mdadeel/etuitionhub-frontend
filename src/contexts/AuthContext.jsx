@@ -236,22 +236,35 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // Google login - ALWAYS save/update role
+    // Google login - preserve existing role for returning users
     const googleLogin = async (selectedRole = 'student') => {
         setLoading(true);
         try {
             let result = await signInWithPopup(auth, googleProvider);
+            const email = result.user.email;
 
-            // Always save to DB - backend will update role if changed
-            console.log('Google login - requesting role:', selectedRole);
-            let savedUser = await saveUserToDB(result.user, selectedRole);
+            // Check if this user already exists so we don't downgrade their role
+            let existingRole = selectedRole;
+            try {
+                const existing = await api.get(`/api/users/${email}`);
+                if (existing.data?.role) {
+                    // Keep their existing role — never overwrite admin/tutor with student
+                    existingRole = existing.data.role;
+                    console.log('Google login - preserving existing role:', existingRole);
+                }
+            } catch {
+                // New user — use the selectedRole from the registration form
+                console.log('Google login - new user, assigning role:', selectedRole);
+            }
+
+            let savedUser = await saveUserToDB(result.user, existingRole);
             console.log('After Google Login - DB Role:', savedUser?.role);
 
             // Generate JWT immediately
-            await setJWT(result.user.email);
+            await setJWT(email);
 
             // Refresh to get updated data
-            await refreshUserFromDB(result.user.email);
+            await refreshUserFromDB(email);
 
             return result;
         } catch (error) {

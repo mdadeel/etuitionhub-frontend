@@ -1,152 +1,98 @@
 [
-    {
-        "_id": "tutor001",
-        "displayName": "Md. Rahim Khan",
-        "email": "rahim.tutor@email.com",
-        "photoURL": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-        "role": "tutor",
-        "qualification": "MSc in Mathematics, University of Dhaka",
-        "location": "Dhanmondi, Dhaka",
-        "subjects": [
-            "Mathematics",
-            "Physics",
-            "Higher Math"
-        ],
-        "ratings": 4.8,
-        "experience": "5+ years",
-        "availableDays": [
-            "Saturday",
-            "Monday",
-            "Wednesday"
-        ],
-        "expectedSalary": 8000,
-        "isVerified": true,
-        "mobileNumber": "+880171XXXXXX",
-        "gender": "Male"
-    },
-    {
-        "_id": "tutor002",
-        "displayName": "Fatima Begum",
-        "email": "fatima.edu@email.com",
-        "photoURL": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-        "role": "tutor",
-        "qualification": "BA in English, Jahangirnagar University",
-        "location": "Uttara, Dhaka",
-        "subjects": [
-            "English",
-            "Bangla",
-            "General Science"
-        ],
-        "ratings": 4.9,
-        "experience": "8 years",
-        "availableDays": [
-            "Sunday",
-            "Tuesday",
-            "Thursday"
-        ],
-        "expectedSalary": 7000,
-        "isVerified": true,
-        "mobileNumber": "+880181XXXXXX",
-        "gender": "Female"
-    },
-    {
-        "_id": "tutor003",
-        "displayName": "Karim Ahmed",
-        "email": "karim.physics@email.com",
-        "photoURL": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-        "role": "tutor",
-        "qualification": "BSc in Physics, BUET",
-        "location": "Mirpur, Dhaka",
-        "subjects": [
-            "Physics",
-            "Chemistry",
-            "ICT"
-        ],
-        "ratings": 4.7,
-        "experience": "3 years",
-        "availableDays": [
-            "Friday",
-            "Saturday",
-            "Sunday"
-        ],
-        "expectedSalary": 6000,
-        "isVerified": true,
-        "mobileNumber": "+880191XXXXXX",
-        "gender": "Male"
-    },
-    {
-        "_id": "tutor004",
-        "displayName": "Nusrat Jahan",
-        "email": "nusrat.bio@email.com",
-        "photoURL": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-        "role": "tutor",
-        "qualification": "MBBS (Student), Dhaka Medical College",
-        "location": "Mohammadpur, Dhaka",
-        "subjects": [
-            "Biology",
-            "Chemistry",
-            "General Science"
-        ],
-        "ratings": 4.6,
-        "experience": "2 years",
-        "availableDays": [
-            "Monday",
-            "Wednesday",
-            "Friday"
-        ],
-        "expectedSalary": 9000,
-        "isVerified": true,
-        "mobileNumber": "+880151XXXXXX",
-        "gender": "Female"
-    },
-    {
-        "_id": "tutor005",
-        "displayName": "Hasan Mahmud",
-        "email": "hasan.ict@email.com",
-        "photoURL": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-        "role": "tutor",
-        "qualification": "BSc in CSE, BRAC University",
-        "location": "Gulshan, Dhaka",
-        "subjects": [
-            "ICT",
-            "Computer Science",
-            "Programming"
-        ],
-        "ratings": 4.9,
-        "experience": "4 years",
-        "availableDays": [
-            "Saturday",
-            "Sunday",
-            "Tuesday"
-        ],
-        "expectedSalary": 10000,
-        "isVerified": true,
-        "mobileNumber": "+880161XXXXXX",
-        "gender": "Male"
-    },
-    {
-        "_id": "tutor006",
-        "displayName": "Ayesha Siddika",
-        "email": "ayesha.bangla@email.com",
-        "photoURL": "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-        "role": "tutor",
-        "qualification": "MA in Bangla, Rajshahi University",
-        "location": "Banani, Dhaka",
-        "subjects": [
-            "Bangla",
-            "Social Science",
-            "Religion"
-        ],
-        "ratings": 4.5,
-        "experience": "6 years",
-        "availableDays": [
-            "Sunday",
-            "Monday",
-            "Thursday"
-        ],
-        "expectedSalary": 5500,
-        "isVerified": true,
-        "mobileNumber": "+880131XXXXXX",
-        "gender": "Female"
-    }
+  {
+    "_id": "tutor_001",
+    "displayName": "Ahsanullah Kabir",
+    "photoURL": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400",
+    "qualification": "B.Sc in Civil Engineering, BUET",
+    "location": "Dhanmondi, Dhaka",
+    "subjects": ["Physics", "Higher Mathematics", "Further Pure Math"],
+    "expectedSalary": 12000,
+    "experience": "4+ Years",
+    "ratings": 4.9,
+    "isVerified": true,
+    "verificationStatus": "verified_premium",
+    "availableDays": ["Sat", "Sun", "Tue", "Thu"],
+    "isOnline": true,
+    "createdAt": "2026-04-24T08:00:00Z"
+  },
+  {
+    "_id": "tutor_002",
+    "displayName": "Tahsina Rahman",
+    "photoURL": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
+    "qualification": "MA in Applied Linguistics, Dhaka University",
+    "location": "Gulshan 2, Dhaka",
+    "subjects": ["English Literature", "IELTS Preparation", "Grammar"],
+    "expectedSalary": 15000,
+    "experience": "5 Years",
+    "ratings": 5.0,
+    "isVerified": true,
+    "verificationStatus": "verified_premium",
+    "availableDays": ["Mon", "Wed", "Fri"],
+    "isOnline": false,
+    "createdAt": "2026-04-23T14:30:00Z"
+  },
+  {
+    "_id": "tutor_003",
+    "displayName": "Sadman Sakib",
+    "photoURL": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
+    "qualification": "B.Sc in Computer Science, NSU",
+    "location": "Uttara Sector 7, Dhaka",
+    "subjects": ["ICT", "Programming (C/Java)", "General Science"],
+    "expectedSalary": 10000,
+    "experience": "2 Years",
+    "ratings": 4.8,
+    "isVerified": true,
+    "verificationStatus": "verified_basic",
+    "availableDays": ["Sat", "Mon", "Wed"],
+    "isOnline": true,
+    "createdAt": "2026-04-24T10:15:00Z"
+  },
+  {
+    "_id": "tutor_004",
+    "displayName": "Farhana Islam",
+    "photoURL": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
+    "qualification": "M.Sc in Organic Chemistry, Rajshahi University",
+    "location": "Mirpur 10, Dhaka",
+    "subjects": ["Chemistry", "Biology", "Organic Chemistry"],
+    "expectedSalary": 9000,
+    "experience": "3 Years",
+    "ratings": 4.7,
+    "isVerified": true,
+    "verificationStatus": "verified_basic",
+    "availableDays": ["Sun", "Tue", "Thu"],
+    "isOnline": false,
+    "createdAt": "2026-04-22T09:00:00Z"
+  },
+  {
+    "_id": "tutor_005",
+    "displayName": "Tanvir Ahmed",
+    "photoURL": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400",
+    "qualification": "BBA in Finance, BRAC University",
+    "location": "Banani, Dhaka",
+    "subjects": ["Accounting", "Economics", "Business Studies"],
+    "expectedSalary": 12000,
+    "experience": "3+ Years",
+    "ratings": 4.9,
+    "isVerified": true,
+    "verificationStatus": "verified_premium",
+    "availableDays": ["Mon", "Tue", "Wed", "Thu"],
+    "isOnline": true,
+    "createdAt": "2026-04-24T12:00:00Z"
+  },
+  {
+    "_id": "tutor_006",
+    "displayName": "Nusrat Jahan",
+    "photoURL": "https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&q=80&w=400",
+    "qualification": "MBBS Student (4th Year), Dhaka Medical College",
+    "location": "Bakshibazar, Dhaka",
+    "subjects": ["Medical Admission Biology", "Chemistry", "General Science"],
+    "expectedSalary": 15000,
+    "experience": "4 Years",
+    "ratings": 5.0,
+    "isVerified": true,
+    "verificationStatus": "verified_premium",
+    "availableDays": ["Fri", "Sat"],
+    "isOnline": true,
+    "createdAt": "2026-04-24T15:45:00Z"
+  }
 ]

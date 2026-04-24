@@ -13,11 +13,11 @@ const Newsletter = () => {
                     <div className="relative z-10 max-w-2xl">
                         <AppleBadge variant="primary" className="mb-8">Newsletter</AppleBadge>
                         <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground leading-[0.95] mb-10">
-                            Stay in the loop. <br />
-                            <span className="text-muted-foreground/30">Never miss a beat.</span>
+                            Stay updated. <br />
+                            <span className="text-muted-foreground/30">Get exam tips & tutor alerts.</span>
                         </h2>
                         <p className="text-xl text-muted-foreground mb-12 leading-relaxed tracking-tight font-medium">
-                            Get the latest tutor profiles, tuition opportunities, and educational insights delivered directly to your inbox.
+                            Subscribe for new tutor listings, exam preparation tips, and exclusive tutoring opportunities across Bangladesh.
                         </p>
 
                         <form className="flex flex-col sm:flex-row gap-4 max-w-xl" onSubmit={(e) => e.preventDefault()}>

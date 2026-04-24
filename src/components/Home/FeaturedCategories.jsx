@@ -15,14 +15,14 @@ import { AppleBadge, AppleCard } from "../shared/AppleUI";
 
 const FeaturedCategories = () => {
     const categories = [
-        { icon: Calculator, label: "Mathematics", count: "1,200+ Specialists" },
-        { icon: FlaskConical, label: "Physics & Science", count: "850+ Specialists" },
-        { icon: Languages, label: "English & Languages", count: "2,000+ Specialists" },
-        { icon: Palette, label: "Arts & Humanities", count: "450+ Specialists" },
-        { icon: Monitor, label: "ICT & Programming", count: "600+ Specialists" },
-        { icon: Briefcase, label: "Business Studies", count: "500+ Specialists" },
-        { icon: Music, label: "Music & Dance", count: "120+ Specialists" },
-        { icon: Globe, label: "Religious Studies", count: "300+ Specialists" },
+        { icon: Calculator, label: "Mathematics", count: "For SSC & HSC" },
+        { icon: FlaskConical, label: "Physics & Science", count: "Board Exam Prep" },
+        { icon: Languages, label: "English & Languages", count: "All Boards Covered" },
+        { icon: Palette, label: "Arts & Humanities", count: "Creative Learning" },
+        { icon: Monitor, label: "ICT & Programming", count: "Digital Skills" },
+        { icon: Briefcase, label: "Business Studies", count: "Commerce Focus" },
+        { icon: Music, label: "Music & Dance", count: "Extra Curricular" },
+        { icon: Globe, label: "Religious Studies", count: "All Religions" },
     ];
 
     return (
@@ -30,11 +30,12 @@ const FeaturedCategories = () => {
             <div className="max-w-[1200px] mx-auto px-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
                     <div className="max-w-xl" data-aos="fade-right">
-                        <AppleBadge variant="secondary" className="mb-4">Directory</AppleBadge>
+                        <AppleBadge variant="secondary" className="mb-4">Board Exam Prep</AppleBadge>
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1]">
-                            Explore your interests. <br />
-                            <span className="text-muted-foreground/30">Master your subject.</span>
+                            Every subject. <br />
+                            <span className="text-muted-foreground/30">Every board.</span>
                         </h2>
+                        <p className="text-muted-foreground mt-4">Expert tutors for Dhaka, Chittagong, Rajshahi, Sylhet, and all education boards in Bangladesh.</p>
                     </div>
                     <Button variant="ghost" asChild className="p-0 h-auto text-xs font-bold tracking-widest uppercase text-primary hover:text-primary/80 hover:bg-transparent group" data-aos="fade-left">
                         <Link to="/tuitions" className="flex items-center gap-2">
