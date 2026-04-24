@@ -15,12 +15,11 @@ const Home = () => {
     return (
         <div className="bg-background">
             <HomeBanner />
-            <MissionStatement />
-            <Statistics />
             <FeaturedCategories />
             <PopularTutors />
-            <FeatureSpotlight />
+            <MissionStatement />
             <WhyChooseUs />
+            <FeatureSpotlight />
             <HowItWorks />
             <CallToAction />
             <Testimonials />

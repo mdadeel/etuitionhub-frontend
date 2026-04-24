@@ -1,9 +1,6 @@
-// main app comp
 import './app.css'
-import AOS from 'aos'
-import 'aos/dist/aos.css'
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import Navbar from './components/shared/Navbar'
 import { Toaster } from 'react-hot-toast'
 import Home from "./pages/Home"
@@ -29,21 +26,20 @@ import PaymentSuccess from "./pages/PaymentSuccess"
 import PaymentHistory from './pages/PaymentHistory'
 import AdminLogin from './pages/AdminLogin'
 
-// rutes setup
-let App = () => {
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
   useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: 'ease-out-quart'
-    })
-  }, [])
-  console.log('app rendering')
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+};
 
+let App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500">
             <Navbar />
             <main className="flex-grow pt-14">
@@ -51,30 +47,23 @@ let App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/tuitions" element={<Tuitions />} />
                 <Route path="/tutors" element={<Tutors />} />
-
                 <Route path="/tutor/:id" element={<TutorDetails />} />
                 <Route path="/tuition/:id" element={<TuitionDetails />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/blog" element={<Blog />} />
-
-
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path="/admin-login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
                 <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-
                 <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
                 <Route path="/checkout/:id" element={<PrivateRoute><Checkout /></PrivateRoute>} />
                 <Route path="/session/:id" element={<PrivateRoute><SessionRoom /></PrivateRoute>} />
                 <Route path="/payment-success" element={<PrivateRoute><PaymentSuccess /></PrivateRoute>} />
                 <Route path="/payment-history" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} />
-                {/* <Route path="/test-layout" element={<TestLayout />} /> */}
-
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
             <Footer />
-
             <Toaster position="top-right" />
           </div>
         </BrowserRouter>

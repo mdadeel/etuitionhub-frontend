@@ -18,7 +18,7 @@ const Footer = () => {
     const { theme } = useTheme();
 
     return (
-        <footer className="bg-background border-t border-border pt-32 pb-16 mt-32 relative overflow-hidden">
+        <footer className="bg-background border-t border-border pt-32 pb-16 relative overflow-hidden">
             {/* Subtle Gradient Accent */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 

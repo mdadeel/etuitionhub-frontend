@@ -10,70 +10,47 @@ import { motion, useInView } from 'framer-motion';
 
 const PopularTutors = () => {
     const [tutors, setTutors] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true });
+    const isInView = useInView(ref, { once: true, margin: "-100px" });
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (demoTutors && Array.isArray(demoTutors)) {
-                const sorted = [...demoTutors].sort((a, b) => (b.ratings || b.rating || 5) - (a.ratings || a.rating || 5)).slice(0, 6);
-                setTutors(sorted);
-            }
-            setIsLoading(false);
-        }, 500);
-        return () => clearTimeout(timer);
+        // Direct assignment to avoid sorting issues if data structure varies
+        if (demoTutors && Array.isArray(demoTutors)) {
+            setTutors(demoTutors.slice(0, 6));
+        } else {
+            console.warn("PopularTutors: demoTutors is not an array", demoTutors);
+        }
     }, []);
 
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: { staggerChildren: 0.08 }
+            transition: { staggerChildren: 0.05 }
         }
     };
 
     const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } }
+        hidden: { opacity: 0, y: 10 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
     };
 
-    if (isLoading) {
-        return (
-            <section className="py-16 md:py-24 bg-muted/30">
-                <div className="max-w-[1200px] mx-auto px-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[1, 2, 3].map((i) => (
-                            <AppleCard key={i} className="p-4">
-                                <Skeleton className="aspect-[4/3] w-full rounded-xl bg-muted" />
-                                <div className="mt-4 space-y-2">
-                                    <Skeleton className="h-5 w-3/4" />
-                                    <Skeleton className="h-4 w-1/2" />
-                                </div>
-                            </AppleCard>
-                        ))}
-                    </div>
-                </div>
-            </section>
-        );
-    }
-
     return (
-        <section ref={ref} className="py-16 md:py-24 bg-muted/30">
-            <div className="max-w-[1200px] mx-auto px-6">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-                    <div>
+        <section ref={ref} className="py-20 bg-muted/20 border-t border-border/40">
+            <div className="max-w-[1400px] mx-auto px-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                    <div className="max-w-xl">
                         <div className="flex items-center gap-2 mb-3">
                             <Star size={12} className="text-primary fill-primary" />
-                            <AppleBadge variant="primary">Top Tutors</AppleBadge>
+                            <span className="text-[10px] font-black tracking-widest text-primary uppercase">Top Tier</span>
                         </div>
-                        <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
-                            Bangladesh's best tutors
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight uppercase">
+                            LEARN FROM <span className="text-primary italic">THE BEST.</span>
                         </h2>
                     </div>
-                    <Button variant="ghost" asChild className="text-sm text-primary">
-                        <Link to="/tutors" className="flex items-center gap-2">
-                            View All <ArrowRight size={14} />
+                    <Button variant="ghost" asChild className="text-[10px] font-black uppercase tracking-widest hover:bg-transparent p-0">
+                        <Link to="/tutors" className="flex items-center gap-2 group">
+                            Explore All <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"><ArrowRight className="w-4 h-4" /></div>
                         </Link>
                     </Button>
                 </div>
@@ -85,11 +62,17 @@ const PopularTutors = () => {
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
                     {tutors.map((tutor) => (
-                        <motion.div key={tutor._id} variants={itemVariants}>
+                        <motion.div key={tutor._id || tutor.id} variants={itemVariants}>
                             <TutorCard tutor={tutor} />
                         </motion.div>
                     ))}
                 </motion.div>
+                
+                {tutors.length === 0 && (
+                    <div className="text-center py-20 bg-white rounded-[2rem] border border-dashed">
+                        <p className="text-muted-foreground font-medium">Updating elite tutor listings...</p>
+                    </div>
+                )}
             </div>
         </section>
     );
