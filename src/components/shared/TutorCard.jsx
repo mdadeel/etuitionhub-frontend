@@ -59,60 +59,57 @@ const TutorCard = ({
                 />
                 
                 {/* Badges Overlay - Left Side */}
-                <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
                     {verificationStatus === 'verified_premium' ? (
-                        <AppleBadge variant="glass" className="py-1 px-2 text-[8px]">
+                        <AppleBadge variant="glass" className="py-1 px-2.5 text-[9px] font-black uppercase tracking-wider">
                             <Award size={10} className="text-yellow-400 fill-yellow-400" />
-                            Elite
+                            Elite Pro
                         </AppleBadge>
                     ) : (isVerified || verificationStatus === 'verified_basic') ? (
-                        <ShieldCheck size={18} className="text-primary drop-shadow-xl fill-white" />
+                        <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-apple-sm">
+                            <ShieldCheck size={18} className="text-primary fill-primary/10" />
+                        </div>
                     ) : null}
                 </div>
 
-                {/* Ratings Overlay - Replaces Save Button */}
-                <div className="absolute top-3 right-3 z-20 flex items-center gap-1 bg-black/40 backdrop-blur-md px-2 py-1 rounded-full border border-white/20">
+                {/* Ratings Overlay */}
+                <div className="absolute top-4 right-4 z-20 flex items-center gap-1 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
                     <span className="text-[11px] font-black text-white tabular-nums">{rating.toFixed(1)}</span>
                     <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                 </div>
             </div>
 
             {/* Content Section */}
-            <div className="p-5 flex-grow flex flex-col">
+            <div className="p-6 flex-grow flex flex-col">
                 <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex flex-col gap-1 min-w-0">
-                        <h3 className="text-2xl font-black text-foreground group-hover:text-primary transition-colors leading-none tracking-tighter truncate">
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                        <h3 className="text-3xl font-black text-foreground group-hover:text-primary transition-colors leading-tight tracking-tighter truncate">
                             {displayName}
                         </h3>
-                        {/* Qualification - Black & Bold */}
-                        <p className="text-sm font-bold text-foreground leading-tight truncate mt-1">
-                            {qualification || 'Specialist'}
+                        {/* Qualification - Black & Bold as requested */}
+                        <p className="text-[13px] font-black text-foreground leading-snug truncate">
+                            {qualification || 'Academic Specialist'}
                         </p>
                     </div>
                     
-                    {/* Date - Replaces Ratings Badge */}
                     <div className="shrink-0 text-right">
-                        <p className="text-[10px] font-black text-primary uppercase tracking-widest whitespace-nowrap">
+                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.15em] whitespace-nowrap">
                             {formatRelativeTime(createdAt)}
                         </p>
                     </div>
                 </div>
 
-                {/* Metadata Row & Save Button */}
-                <div className="flex items-center justify-between gap-4 mb-5">
-                    <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-bold">
-                        <div className="flex items-center gap-1">
-                            <MapPin size={12} className="text-primary/40 shrink-0" />
-                            <span className="truncate max-w-[120px]">{location || 'Dhaka'}</span>
-                        </div>
+                <div className="flex items-center justify-between gap-4 mb-6">
+                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-black">
+                        <MapPin size={13} className="text-primary/60 shrink-0" />
+                        <span className="truncate max-w-[140px]">{location || 'Dhaka'}</span>
                     </div>
 
-                    {/* Save Button - Moved to Profile Section */}
                     <motion.button 
                         whileTap={{ scale: 0.9 }}
                         onClick={handleSaveClick}
                         className={cn(
-                            "p-2 rounded-full border transition-all shadow-sm",
+                            "p-2.5 rounded-full border transition-all shadow-apple-sm",
                             isSaved ? "bg-primary text-white border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-white hover:text-primary"
                         )}
                     >
@@ -120,26 +117,26 @@ const TutorCard = ({
                     </motion.button>
                 </div>
 
-                {/* Subjects */}
-                <div className="flex flex-wrap gap-1.5 mb-6">
+                {/* Subjects with more breathing room */}
+                <div className="flex flex-wrap gap-1.5 mb-8">
                     {subjects.slice(0, 3).map((sub, i) => (
-                        <AppleBadge key={i} variant="muted" className="px-2.5 py-1 text-[9px] lowercase first-letter:uppercase font-bold bg-muted/80 border-none">
+                        <AppleBadge key={i} variant="muted" className="px-3 py-1 text-[9px] font-black bg-muted/80 border-none uppercase tracking-tighter">
                             {sub}
                         </AppleBadge>
                     ))}
                 </div>
 
                 {/* Footer Row */}
-                <div className="mt-auto pt-4 border-t border-border/30 flex items-center justify-between gap-4">
+                <div className="mt-auto pt-5 border-t border-border/30 flex items-center justify-between gap-4">
                     <div className="flex items-baseline gap-1">
-                        <span className="text-lg font-black text-foreground tabular-nums tracking-tighter">৳{salary}</span>
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{priceUnit}</span>
+                        <span className="text-2xl font-black text-foreground tabular-nums tracking-tighter">৳{salary}</span>
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{priceUnit}</span>
                     </div>
 
                     <AppleButton 
                         variant="secondary" 
                         size="sm" 
-                        className="rounded-xl font-black text-[11px] uppercase tracking-widest px-8 py-2.5 group/btn h-10 bg-apple-gray-100 hover:bg-primary/10 hover:text-primary transition-all border border-apple-gray-200"
+                        className="rounded-2xl font-black text-[11px] uppercase tracking-widest px-8 py-2.5 group/btn h-11 bg-muted/50 hover:bg-primary/10 hover:text-primary transition-all border border-border/50"
                     >
                         View <ArrowRight size={14} className="ml-1 transition-transform group-hover/btn:translate-x-1" />
                     </AppleButton>

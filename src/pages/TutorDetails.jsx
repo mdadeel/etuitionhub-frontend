@@ -205,61 +205,65 @@ const TutorDetails = () => {
                     <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
                         <AppleCard className="p-8 bg-card shadow-xl relative overflow-hidden" hover={false}>
                             <div className="relative z-10 text-center">
-                                <h3 className="text-xl font-bold text-foreground mb-2">Want to learn?</h3>
-                                <p className="text-xs text-muted-foreground mb-8">
-                                    Send a message to start classes with {tutor.displayName.split(' ')[0]}.
+                                <h3 className="text-2xl font-bold text-foreground mb-3">Learn with {tutor.displayName.split(' ')[0]}</h3>
+                                <p className="text-sm text-muted-foreground mb-10 font-medium">
+                                    Book a trial class and experience a new standard of academic support.
                                 </p>
 
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     {!user ? (
-                                        <AppleButton asChild variant="secondary" className="w-full h-12">
+                                        <AppleButton asChild variant="secondary" className="w-full h-14 text-sm">
                                             <Link to="/login">Login to Message</Link>
                                         </AppleButton>
                                     ) : (
                                         <AppleButton 
                                             onClick={handleContact}
-                                            className="w-full h-12 shadow-apple-md"
+                                            className="w-full h-14 shadow-apple-md text-sm"
                                         >
-                                            <Send size={16} className="mr-2" /> Contact Tutor
+                                            <Send size={18} className="mr-2" /> Contact Tutor
                                         </AppleButton>
                                     )}
 
                                     <AppleButton 
                                         variant="outline"
                                         onClick={handleSave}
-                                        className="w-full h-12"
+                                        className="w-full h-14 text-sm"
                                     >
-                                        <Bookmark size={16} className="mr-2" /> Save Profile
+                                        <Heart size={18} className="mr-2" /> Save Profile
                                     </AppleButton>
                                 </div>
 
-                                <div className="mt-8 pt-6 border-t border-border/50 flex items-center justify-center gap-3">
-                                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                                        <CheckCircle2 size={16} />
+                                <div className="mt-10 pt-8 border-t border-border/50 flex items-center justify-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                        <CheckCircle2 size={24} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[9px] font-bold text-foreground uppercase tracking-widest">Profile Verified</p>
-                                        <p className="text-[8px] text-muted-foreground font-medium uppercase">Documents checked</p>
+                                        <p className="text-[11px] font-bold text-foreground uppercase tracking-widest">Verified Profile</p>
+                                        <p className="text-[10px] text-muted-foreground font-semibold uppercase">Documents Validated</p>
                                     </div>
                                 </div>
                             </div>
                         </AppleCard>
 
                         {/* Quick Info */}
-                        <AppleCard className="p-6 bg-muted/20 border-dashed" hover={false}>
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <Briefcase size={14} className="text-primary" />
+                        <AppleCard className="p-8 bg-muted/20 border-dashed" hover={false}>
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-primary shadow-sm">
+                                        <Briefcase size={18} />
+                                    </div>
                                     <div>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Response Time</p>
-                                        <p className="text-xs font-bold text-foreground">Under 2 hours</p>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Response Time</p>
+                                        <p className="text-sm font-bold text-foreground">Under 2 hours</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <Clock size={14} className="text-primary" />
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-primary shadow-sm">
+                                        <Clock size={18} />
+                                    </div>
                                     <div>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Active Status</p>
-                                        <p className="text-xs font-bold text-foreground">Online recently</p>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Active Status</p>
+                                        <p className="text-sm font-bold text-foreground">Recently Active</p>
                                     </div>
                                 </div>
                             </div>
@@ -268,33 +272,34 @@ const TutorDetails = () => {
                 </div>
 
                 {/* Similar Tutors */}
-                <div className="mt-20 pt-12 border-t border-border/50">
-                    <div className="flex items-end justify-between mb-8">
+                <div className="mt-24 pt-16 border-t border-border/50">
+                    <div className="flex items-end justify-between mb-12">
                         <div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1 block">Suggestions</span>
-                            <h2 className="text-2xl font-bold text-foreground tracking-tight">Similar Tutors</h2>
+                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2 block">Recommendations</span>
+                            <h2 className="text-3xl font-bold text-foreground tracking-tight">Similar Expert Tutors</h2>
                         </div>
-                        <AppleButton asChild variant="ghost" size="sm" className="group text-xs">
+                        <AppleButton asChild variant="ghost" size="sm" className="group text-xs font-bold uppercase tracking-widest">
                             <Link to="/tutors" className="flex items-center gap-2">
                                 View All <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                             </Link>
                         </AppleButton>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {demoTutors
                             .filter(t => t._id !== id)
                             .slice(0, 3)
                             .map((item, idx) => (
-                                <div key={item._id} data-aos="fade-up" data-aos-delay={idx * 100}>
+                                <motion.div key={item._id} variants={itemVariants}>
                                     <TutorCard tutor={item} />
-                                </div>
+                                </motion.div>
                             ))}
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 };
 
 export default TutorDetails;
+

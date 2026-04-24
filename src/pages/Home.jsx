@@ -11,59 +11,21 @@ import FAQ from '../components/Home/FAQ';
 import MissionStatement from '../components/Home/MissionStatement';
 import FeatureSpotlight from '../components/Home/FeatureSpotlight';
 
-/**
- * Home Page - Main Entry Point
- * Refactored to "Apple Design System" with Storytelling additions
- */
 const Home = () => {
     return (
-        <div className="bg-background selection:bg-primary/20 selection:text-primary">
+        <div className="bg-background">
             <HomeBanner />
-
-            <div data-aos="fade-up">
-                <MissionStatement />
-            </div>
-
-            <div data-aos="fade-up">
-                <Statistics />
-            </div>
-
-            <div data-aos="fade-up">
-                <FeaturedCategories />
-            </div>
-
-            <div data-aos="fade-up">
-                <PopularTutors />
-            </div>
-
-            <div data-aos="fade-up">
-                <FeatureSpotlight />
-            </div>
-
-            <div data-aos="fade-up">
-                <WhyChooseUs />
-            </div>
-
-            <div data-aos="fade-up">
-                <HowItWorks />
-            </div>
-
-            <div data-aos="fade-up">
-                <CallToAction />
-            </div>
-
-            {/* Testimonials refactor pending, using standard for now */}
-            <div data-aos="fade-up">
-                <Testimonials />
-            </div>
-
-            <div data-aos="fade-up">
-                <FAQ />
-            </div>
-
-            <div data-aos="fade-up">
-                <Newsletter />
-            </div>
+            <MissionStatement />
+            <Statistics />
+            <FeaturedCategories />
+            <PopularTutors />
+            <FeatureSpotlight />
+            <WhyChooseUs />
+            <HowItWorks />
+            <CallToAction />
+            <Testimonials />
+            <FAQ />
+            <Newsletter />
         </div>
     )
 }

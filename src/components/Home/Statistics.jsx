@@ -9,18 +9,18 @@ const stats = [
 
 const Statistics = () => {
     return (
-        <section className="py-24 bg-background border-y border-border/50">
+        <section className="py-16 md:py-20 border-y border-border/50">
             <div className="max-w-[1200px] mx-auto px-6">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-20">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
                     {stats.map((stat, i) => (
-                        <div key={i} className="flex flex-col items-start" data-aos="fade-up" data-aos-delay={i * 100}>
+                        <div key={i} className="flex flex-col items-start">
                             <div className="flex items-baseline gap-1">
-                                <span className="text-4xl md:text-6xl font-bold text-foreground tracking-tight tabular-nums">
-                                    <CountUp end={stat.value} duration={2.5} decimals={stat.decimals || 0} separator="," />
+                                <span className="text-3xl md:text-5xl font-bold tracking-tight tabular-nums">
+                                    <CountUp end={stat.value} duration={2} decimals={stat.decimals || 0} separator="," />
                                 </span>
-                                <span className="text-xl md:text-2xl font-bold text-primary">{stat.suffix}</span>
+                                <span className="text-lg md:text-xl font-bold text-primary">{stat.suffix}</span>
                             </div>
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mt-3">
+                            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground mt-2">
                                 {stat.label}
                             </p>
                         </div>
