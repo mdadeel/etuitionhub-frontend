@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Mail, Send } from "lucide-react";
-import { AppleCard, AppleInput, AppleBadge } from "../shared/AppleUI";
+import { AppleCard, AppleInput } from "../shared/AppleUI";
 import { motion, useInView } from 'framer-motion';
 
 const Newsletter = () => {
@@ -19,7 +19,6 @@ const Newsletter = () => {
                 >
                     <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
                         <div className="max-w-xl text-center lg:text-left">
-                            <AppleBadge variant="secondary" className="mb-6">Weekly Updates</AppleBadge>
                             <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight mb-6 uppercase">
                                 THE <span className="text-primary italic">KNOWLEDGE</span> DISPATCH.
                             </h2>

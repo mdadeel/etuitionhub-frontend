@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Search, FileText, MessageCircle, ArrowRight } from 'lucide-react';
-import { AppleBadge } from '../shared/AppleUI';
 
 const steps = [
     { 
@@ -32,7 +31,7 @@ const HowItWorks = () => {
         <section ref={ref} className="py-24 bg-black text-white overflow-hidden">
             <div className="max-w-[1400px] mx-auto px-6">
                 <div className="text-center mb-20">
-                    <AppleBadge variant="outline" className="mb-6 border-white/20 text-white">The Process</AppleBadge>
+                   
                     <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">
                         THREE STEPS TO <br/>
                         <span className="text-primary italic">MASTERY.</span>

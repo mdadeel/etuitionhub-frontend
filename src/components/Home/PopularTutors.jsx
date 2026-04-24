@@ -5,7 +5,7 @@ import demoTutors from '../../data/demoTutors.json';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, Star } from "lucide-react";
-import { AppleBadge, AppleCard } from "../shared/AppleUI";
+import { AppleCard } from "../shared/AppleUI";
 import { motion, useInView } from 'framer-motion';
 
 const PopularTutors = () => {
@@ -40,10 +40,7 @@ const PopularTutors = () => {
             <div className="max-w-[1400px] mx-auto px-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div className="max-w-xl">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Star size={12} className="text-primary fill-primary" />
-                            <span className="text-[10px] font-black tracking-widest text-primary uppercase">Top Tier</span>
-                        </div>
+                        
                         <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight uppercase">
                             LEARN FROM <span className="text-primary italic">THE BEST.</span>
                         </h2>

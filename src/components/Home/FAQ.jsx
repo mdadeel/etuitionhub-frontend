@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { Plus, Minus } from "lucide-react";
-import { AppleBadge } from '../shared/AppleUI';
 import { motion, useInView } from 'framer-motion';
 
 const faqs = [
@@ -23,7 +22,6 @@ const FAQ = () => {
                     
                     {/* Sticky Side Header */}
                     <div className="lg:w-1/3 lg:sticky lg:top-32">
-                        <AppleBadge variant="secondary" className="mb-6">FAQ</AppleBadge>
                         <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight mb-8 uppercase">
                             STILL <span className="text-primary italic">CURIOUS?</span>
                         </h2>

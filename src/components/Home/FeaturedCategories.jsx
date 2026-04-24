@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { AppleBadge, AppleCard } from "../shared/AppleUI";
+import { AppleCard } from "../shared/AppleUI";
 
 const categories = [
     { icon: Calculator, label: "Mathematics", count: "SSC & HSC", span: "md:col-span-2 md:row-span-2", bg: "bg-primary/10", text: "Master advanced calculus and algebra with board-specific experts." },

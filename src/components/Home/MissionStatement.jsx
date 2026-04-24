@@ -1,4 +1,3 @@
-import { AppleBadge } from '../shared/AppleUI';
 
 const MissionStatement = () => {
     return (
@@ -10,7 +9,6 @@ const MissionStatement = () => {
 
             <div className="container mx-auto px-6 max-w-[1400px] relative z-10 text-center">
                 <div className="max-w-4xl mx-auto">
-                    <AppleBadge variant="primary" className="mb-10 bg-primary/10 text-primary border-none mx-auto">THE MISSION</AppleBadge>
                     <h2 className="text-3xl md:text-6xl font-black tracking-tighter leading-tight text-foreground mb-12 uppercase mx-auto">
                         QUALITY EDUCATION <span className="text-primary italic">FOR EVERYONE.</span>
                     </h2>

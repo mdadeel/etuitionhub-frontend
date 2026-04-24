@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { AppleCard, AppleBadge } from '../shared/AppleUI';
+import { AppleCard } from '../shared/AppleUI';
 import { motion, useInView } from 'framer-motion';
 
 const CallToAction = () => {
@@ -23,7 +23,6 @@ const CallToAction = () => {
                     <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2" />
 
                     <div className="relative z-10 flex flex-col items-center text-center">
-                        <AppleBadge variant="outline" className="mb-8 border-white/20 text-white">GET STARTED</AppleBadge>
                         <h2 className="text-3xl md:text-6xl font-black text-white tracking-tighter leading-tight mb-12 uppercase">
                             READY TO FIND <span className="text-primary italic">YOUR PERFECT MATCH?</span>
                         </h2>

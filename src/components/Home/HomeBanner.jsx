@@ -4,7 +4,6 @@ import { useRef, useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowRight, ShieldCheck, Sparkles, MoveRight, PhoneCall } from "lucide-react";
 import CountUp from 'react-countup';
-import { AppleBadge } from '../shared/AppleUI';
 
 const HomeBanner = () => {
     const navigate = useNavigate();
@@ -47,7 +46,7 @@ const HomeBanner = () => {
     };
 
     return (
-        <section ref={ref} className="relative w-full overflow-hidden min-h-[80vh] flex items-center pt-20 pb-24 md:pt-32 md:pb-32 bg-background">
+        <section ref={ref} className="relative w-full overflow-hidden min-h-[80vh] flex items-center pt-20 pb-24 md:pt-34 md:pb-32 bg-background">
             {/* Background Decorations */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />

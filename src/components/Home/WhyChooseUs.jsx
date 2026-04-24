@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { ShieldCheck, Banknote, Clock, Zap } from 'lucide-react';
-import { AppleBadge, AppleCard } from '../shared/AppleUI';
+import { AppleCard } from '../shared/AppleUI';
 import { motion, useInView } from 'framer-motion';
 
 const features = [
@@ -41,7 +41,6 @@ const WhyChooseUs = () => {
                     
                     {/* Sticky Side Header */}
                     <div className="lg:w-1/3 lg:sticky lg:top-32">
-                        <AppleBadge variant="primary" className="mb-6">THE STANDARD</AppleBadge>
                         <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight mb-8 uppercase">
                             WHY THE <span className="text-primary italic">BEST</span> CHOOSE US.
                         </h2>

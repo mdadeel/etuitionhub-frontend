@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { AppleCard, AppleBadge } from '../shared/AppleUI';
+import { AppleCard } from '../shared/AppleUI';
 import { Shield, Zap, Globe, Target } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
 
@@ -51,7 +51,6 @@ const FeatureSpotlight = () => {
 
                     {/* Features Column */}
                     <div className="lg:w-2/5">
-                        <AppleBadge variant="secondary" className="mb-6">Advanced Infrastructure</AppleBadge>
                         <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight mb-12 uppercase">
                             MANAGED <span className="text-primary italic">PROGRESS.</span>
                         </h2>
