@@ -1,7 +1,7 @@
 // Payment submission success page - for manual payment flow
 import { useEffect } from "react"
 import { Link, useNavigate } from 'react-router-dom'
-import { AppleBadge, AppleCard, AppleButton } from '../components/shared/AppleUI';
+import { AppleCard, AppleButton } from '../components/shared/AppleUI';
 import { ShieldCheck, History, LayoutDashboard } from 'lucide-react';
 
 const PaymentSuccess = () => {
@@ -25,7 +25,7 @@ const PaymentSuccess = () => {
                         <div className="w-4 h-4 bg-primary rounded-full animate-pulse"></div>
                     </div>
 
-                    <AppleBadge variant="primary" className="mb-4">Verification Pending</AppleBadge>
+                    <span className="inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-primary/10 text-primary mb-4">Verification Pending</span>
                     
                     <h1 className="text-4xl font-bold text-foreground tracking-tight mb-6">Payment Transmitted</h1>
                     

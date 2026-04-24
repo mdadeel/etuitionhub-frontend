@@ -34,7 +34,7 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { AppleBadge, AppleCard, AppleButton, AppleInput } from '../components/shared/AppleUI';
+import { AppleCard, AppleButton, AppleInput } from '../components/shared/AppleUI';
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -188,8 +188,8 @@ const TuitionDetails = () => {
                         <AppleCard className="p-10 relative overflow-hidden" hover={false}>
                             <div className="relative z-10">
                                 <div className="flex flex-wrap items-center gap-3 mb-6">
-                                    <AppleBadge variant="primary" className="px-3 py-1">Class {tuition.class_name}</AppleBadge>
-                                    <AppleBadge variant="success" className="px-3 py-1">Verified Opportunity</AppleBadge>
+                                    <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest border border-primary/20">Class {tuition.class_name}</span>
+                                    <span className="px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-[10px] font-bold uppercase tracking-widest border border-green-500/20">Verified Opportunity</span>
                                 </div>
 
                                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-10">

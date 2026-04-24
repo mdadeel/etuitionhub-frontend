@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
 import api from '../../services/api';
@@ -14,9 +14,7 @@ import {
     ArrowUpRight,
     TrendingUp
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { AppleCard, AppleBadge, AppleHeader, AppleButton } from '../shared/AppleUI';
+import { AppleCard, AppleHeader, AppleButton } from '../shared/AppleUI';
 import { cn } from '@/lib/utils';
 
 /**
@@ -29,41 +27,61 @@ const TutorDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [revenue, setRevenue] = useState([]);
 
-    useEffect(() => {
-        if (user?.email) {
-            loadDashboardData();
-        }
-    }, [user]);
-
-    const loadDashboardData = async () => {
+    // Fetch applications
+    const fetchApplications = useCallback(async () => {
+        if (!user?.email) return;
         try {
-            const appResponse = await api.get(`/api/applications/tutor/${user.email}`);
-            setApps(appResponse.data || []);
-
-            try {
-                const revenueRes = await api.get(`/api/payments/tutor/${user.email}`);
-                setRevenue(revenueRes.data || []);
-            } catch (e) {
-                console.log('Revenue fetch:', e.message);
-            }
-        } catch (e) {
-            console.error("Dashboard Load Error:", e);
-        } finally {
-            setLoading(false);
+            const res = await api.get(`/api/applications/tutor/${user.email}`);
+            setApps(res.data || []);
+        } catch (err) {
+            console.error('Failed to fetch applications:', err);
+            toast.error('Failed to load applications');
+            setApps([]);
         }
-    };
+    }, [user?.email]);
+
+    // Fetch earnings
+    const fetchRevenue = useCallback(async () => {
+        if (!user?.email) return;
+        try {
+            const res = await api.get(`/api/payments/tutor/${user.email}`);
+            setRevenue(res.data || []);
+        } catch (err) {
+            console.error('Failed to fetch earnings:', err);
+            setRevenue([]);
+        }
+    }, [user?.email]);
+
+    // Initial data fetch
+    useEffect(() => {
+        if (!user?.email) return;
+        
+        const loadData = async () => {
+            setLoading(true);
+            try {
+                await Promise.all([
+                    fetchApplications(),
+                    fetchRevenue()
+                ]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        loadData();
+    }, [user?.email, fetchApplications, fetchRevenue]);
 
     const totalEarnings = revenue.reduce((sum, p) => sum + (p.amount || 0), 0);
     const activeEngagements = apps.filter(a => a.status === 'approved').length;
 
     const handleDelete = async (id) => {
-        if (!confirm('Permanently remove this application?')) return;
+        if (!confirm('Delete this application?')) return;
         try {
             await api.delete(`/api/applications/${id}`);
-            toast.success("Application removed");
-            setApps(prev => prev.filter(a => a._id !== id));
+            toast.success('Application deleted');
+            await fetchApplications();
         } catch (err) {
-            toast.error(err.response?.data?.error || 'Operation failed.');
+            toast.error(err.response?.data?.error || 'Failed to delete application');
         }
     };
 
@@ -82,7 +100,7 @@ const TutorDashboard = () => {
             <AppleHeader 
                 title={`Welcome back, ${user?.displayName?.split(' ')[0]}`}
                 subtitle="Here's a summary of your professional activity and performance."
-                badge={<AppleBadge variant="primary">Specialist Dashboard</AppleBadge>}
+                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-primary/10 text-primary">Specialist Dashboard</span>}
             />
 
             {/* Tab Navigation */}
@@ -201,9 +219,9 @@ const TutorDashboard = () => {
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary}</td>
                                             <td className="px-8 py-6 text-center">
-                                                <AppleBadge variant={app.status === 'approved' ? 'primary' : app.status === 'rejected' ? 'error' : 'default'} className="normal-case">
+                                                <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${app.status === 'approved' ? 'bg-primary/10 text-primary' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-muted text-muted-foreground'}`}>
                                                     {app.status}
-                                                </AppleBadge>
+                                                </span>
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 {app.status === 'pending' ? (
@@ -311,9 +329,9 @@ const TutorDashboard = () => {
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{payment.amount}</td>
                                             <td className="px-8 py-6 text-right">
-                                                <AppleBadge variant={payment.status === 'completed' ? 'primary' : 'default'} className="normal-case">
+                                                <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${payment.status === 'completed' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                                                     {payment.status}
-                                                </AppleBadge>
+                                                </span>
                                             </td>
                                         </tr>
                                     ))}

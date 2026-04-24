@@ -7,6 +7,7 @@ import TutorDashboard from '../components/Dashboard/TutorDashboard';
 import AdminDashboard from '../components/Dashboard/AdminDashboard';
 import Profile from '../components/Dashboard/Profile';
 import DashUsers from '../components/Dashboard/DashUsers';
+import StudentPayments from '../components/Dashboard/StudentPayments';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -101,6 +102,8 @@ const Dashboard = () => {
                         } />
 
                         <Route path="profile" element={<Profile />} />
+
+                        <Route path="payments" element={<StudentPayments />} />
 
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>

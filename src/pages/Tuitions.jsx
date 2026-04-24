@@ -7,15 +7,9 @@ import Pagination from '../components/shared/Pagination';
 import { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
 import EmptyState from '../components/shared/EmptyState';
 import { useAuth } from '../contexts/AuthContext';
-import { SlidersHorizontal, Filter, X } from 'lucide-react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { AppleBadge, AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
+import { SlidersHorizontal, Filter, X, LayoutGrid, MapPin } from 'lucide-react';
+import FilterSelect from '../components/shared/FilterSelect';
+import { AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Tuitions = () => {
@@ -128,51 +122,40 @@ const Tuitions = () => {
                             </h3>
 
                             <div className="mb-8">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Sort by</label>
-                                <Select value={filters.sortBy} onValueChange={(val) => updateFilter('sortBy', val)}>
-                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
-                                        <div className="flex items-center gap-2">
-                                            <SlidersHorizontal size={12} className="text-muted-foreground" />
-                                            <SelectValue placeholder="Sort" />
-                                        </div>
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl">
-                                        <SelectItem value="newest" className="rounded-xl text-xs font-medium py-2 px-3">Latest First</SelectItem>
-                                        <SelectItem value="oldest" className="rounded-xl text-xs font-medium py-2 px-3">Oldest First</SelectItem>
-                                        <SelectItem value="salary-high" className="rounded-xl text-xs font-medium py-2 px-3">Salary: High to Low</SelectItem>
-                                        <SelectItem value="salary-low" className="rounded-xl text-xs font-medium py-2 px-3">Salary: Low to High</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <FilterSelect
+                                    label="Sort by"
+                                    value={filters.sortBy}
+                                    onValueChange={(val) => updateFilter('sortBy', val)}
+                                    icon={SlidersHorizontal}
+                                    options={[
+                                        { value: 'newest', label: 'Latest First' },
+                                        { value: 'oldest', label: 'Oldest First' },
+                                        { value: 'salary-high', label: 'Salary: High to Low' },
+                                        { value: 'salary-low', label: 'Salary: Low to High' },
+                                    ]}
+                                />
                             </div>
 
                             <div className="mb-8">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Class</label>
-                                <Select value={filters.classFilter || 'all'} onValueChange={(val) => updateFilter('classFilter', val === 'all' ? '' : val)}>
-                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
-                                        <SelectValue placeholder="All Classes" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl">
-                                        <SelectItem value="all" className="rounded-xl text-xs font-medium py-2 px-3">All Classes</SelectItem>
-                                        {filterOptions?.classes?.map(cls => (
-                                            <SelectItem key={cls} value={cls} className="rounded-xl text-xs font-medium py-2 px-3">Class {cls}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <FilterSelect
+                                    label="Class"
+                                    value={filters.classFilter || 'all'}
+                                    onValueChange={(val) => updateFilter('classFilter', val === 'all' ? '' : val)}
+                                    icon={LayoutGrid}
+                                    placeholder="All Classes"
+                                    options={['all', ...(filterOptions?.classes || [])]}
+                                />
                             </div>
 
                             <div className="mb-8">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Location</label>
-                                <Select value={filters.locationFilter || 'all'} onValueChange={(val) => updateFilter('locationFilter', val === 'all' ? '' : val)}>
-                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
-                                        <SelectValue placeholder="All Locations" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl max-h-[300px]">
-                                        <SelectItem value="all" className="rounded-xl text-xs font-medium py-2 px-3">All Locations</SelectItem>
-                                        {filterOptions?.locations?.map(loc => loc && (
-                                            <SelectItem key={loc} value={loc} className="rounded-xl text-xs font-medium py-2 px-3">{loc}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <FilterSelect
+                                    label="Location"
+                                    value={filters.locationFilter || 'all'}
+                                    onValueChange={(val) => updateFilter('locationFilter', val === 'all' ? '' : val)}
+                                    icon={MapPin}
+                                    placeholder="All Locations"
+                                    options={['all', ...(filterOptions?.locations?.filter(loc => !!loc) || [])]}
+                                />
                             </div>
 
                             <div>
@@ -225,7 +208,7 @@ const Tuitions = () => {
                         {searchQuery && (
                             <div className="mb-8 flex items-center gap-3">
                                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Searching for:</span>
-                                <AppleBadge variant="primary" className="px-3 py-1 normal-case text-sm tracking-normal">"{searchQuery}"</AppleBadge>
+                                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold font-mono tracking-tight">"{searchQuery}"</span>
                             </div>
                         )}
 

@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
-import { AppleBadge, AppleButton } from '../shared/AppleUI';
+import { AppleButton } from '../shared/AppleUI';
 import { Check, X, ShieldAlert, Edit2 } from 'lucide-react';
 import EditModal from './EditModal';
 
@@ -173,9 +173,9 @@ const DashTuitions = () => {
                                         <span className="text-sm font-bold text-primary tabular-nums">৳{t.salary}</span>
                                     </td>
                                     <td className="px-6 py-5 bg-muted/20 border-y border-border/50 text-center">
-                                        <AppleBadge variant={t.status === 'approved' ? 'success' : t.status === 'rejected' ? 'error' : 'primary'} className="scale-90">
-                                            {t.status.toUpperCase()}
-                                        </AppleBadge>
+                                                <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${t.status === 'approved' ? 'bg-green-500/10 text-green-600' : t.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-primary/10 text-primary'}`}>
+                                                    {t.status.toUpperCase()}
+                                                </span>
                                     </td>
                                     <td className="px-6 py-5 bg-muted/20 border-y border-r border-border/50 last:rounded-r-2xl text-right">
                                         <div className="flex justify-end gap-3">

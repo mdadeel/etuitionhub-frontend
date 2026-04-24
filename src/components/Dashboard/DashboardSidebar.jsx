@@ -7,11 +7,11 @@ import {
     ChevronRight,
     Settings,
     LogOut,
-    ShieldCheck
+    ShieldCheck,
+    Banknote
 } from "lucide-react";
 import { useAuth } from '../../contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AppleBadge } from '../shared/AppleUI';
 import { cn } from '@/lib/utils';
 import Cookies from 'js-cookie';
 import { toast } from 'react-hot-toast';
@@ -38,6 +38,8 @@ const DashboardSidebar = ({ role }) => {
         menuItems.push({ path: '/dashboard/users', label: 'User Directory', icon: Users });
     } else if (role?.toLowerCase() === 'tutor') {
         menuItems.push({ path: '/dashboard/my-applications', label: 'Applications', icon: FileText });
+    } else {
+        menuItems.push({ path: '/dashboard/payments', label: 'Payments', icon: Banknote });
     }
 
     const handleLogout = async () => {

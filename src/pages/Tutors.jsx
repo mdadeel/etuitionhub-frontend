@@ -3,15 +3,11 @@ import { useSearchParams } from 'react-router-dom'
 import TutorCard from "../components/shared/TutorCard"
 import LoadingSpinner from '../components/shared/LoadingSpinner'
 import EmptyState from '../components/shared/EmptyState'
-import { SlidersHorizontal, ShieldCheck, Filter, X } from 'lucide-react'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { AppleBadge, AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
+import { SlidersHorizontal, ShieldCheck, Filter, X, LayoutGrid } from 'lucide-react'
+
+import FilterSelect from '../components/shared/FilterSelect'
+
+import { AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
 import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import API_URL from '../config/api'
@@ -27,13 +23,18 @@ const Tutors = () => {
     const [allSubjects, setAllSubjects] = useState([]);
     const [allClasses, setAllClasses] = useState(['All']);
     const [allAreas, setAllAreas] = useState(['All']);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isFiltering, setIsFiltering] = useState(false);
+
 
     const searchQuery = searchParams.get('q') || '';
 
     useEffect(() => {
         const fetchTutors = async () => {
-            setLoading(true);
+            if (isInitialLoad) setLoading(true);
+            else setIsFiltering(true);
             try {
+
                 let params = new URLSearchParams();
                 if (searchQuery) params.append('q', searchQuery);
                 
@@ -79,7 +80,10 @@ const Tutors = () => {
                 console.error("Error fetching tutors", error);
             } finally {
                 setLoading(false);
+                setIsInitialLoad(false);
+                setIsFiltering(false);
             }
+
         };
         fetchTutors();
     }, [searchQuery, selectedSubjects, selectedClass, selectedArea, sortBy]);
@@ -123,11 +127,12 @@ const Tutors = () => {
         );
     };
 
-    if (loading) return (
+    if (loading && isInitialLoad) return (
         <div className="min-h-screen flex items-center justify-center bg-background">
             <LoadingSpinner />
         </div>
     )
+
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -175,56 +180,47 @@ const Tutors = () => {
 
                 <div className="flex flex-col md:grid md:grid-cols-12 gap-10">
                     <aside className="md:col-span-3 space-y-6">
-                        <AppleCard className="p-6 sticky top-24" hover={false}>
+                        <AppleCard className="p-6 sticky top-24 overflow-visible" hover={false}>
                             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
                                 <Filter size={14} /> Filters
                             </h3>
 
                             <div className="mb-8">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Sort by</label>
-                                <Select value={sortBy} onValueChange={setSortBy}>
-                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
-                                        <div className="flex items-center gap-2">
-                                            <SlidersHorizontal size={12} className="text-muted-foreground" />
-                                            <SelectValue placeholder="Sort" />
-                                        </div>
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl">
-                                        <SelectItem value="name-az" className="rounded-xl text-xs font-medium py-2 px-3">Alphabetical: A-Z</SelectItem>
-                                        <SelectItem value="name-za" className="rounded-xl text-xs font-medium py-2 px-3">Alphabetical: Z-A</SelectItem>
-                                        <SelectItem value="exp-high" className="rounded-xl text-xs font-medium py-2 px-3">Experience: High</SelectItem>
-                                        <SelectItem value="salary-low" className="rounded-xl text-xs font-medium py-2 px-3">Fee: Low to High</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <FilterSelect
+                                    label="Sort by"
+                                    value={sortBy}
+                                    onValueChange={setSortBy}
+                                    icon={SlidersHorizontal}
+                                    options={[
+                                        { value: 'name-az', label: 'Alphabetical: A-Z' },
+                                        { value: 'name-za', label: 'Alphabetical: Z-A' },
+                                        { value: 'exp-high', label: 'Experience: High' },
+                                        { value: 'salary-low', label: 'Fee: Low to High' },
+                                    ]}
+                                />
                             </div>
 
                             <div className="mb-8">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Class</label>
-                                <Select value={selectedClass} onValueChange={setSelectedClass}>
-                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
-                                        <SelectValue placeholder="Select Class" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl max-h-[300px]">
-                                        {allClasses.map(cls => (
-                                            <SelectItem key={cls} value={cls} className="rounded-xl text-xs font-medium py-2 px-3">{cls}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <FilterSelect
+                                    label="Class"
+                                    value={selectedClass}
+                                    onValueChange={setSelectedClass}
+                                    icon={LayoutGrid}
+                                    placeholder="Select Class"
+                                    options={allClasses}
+                                />
                             </div>
 
                             <div className="mb-8">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 block">Area / Location</label>
-                                <Select value={selectedArea} onValueChange={setSelectedArea}>
-                                    <SelectTrigger className="h-10 bg-muted/50 border-border/50 rounded-xl px-4 text-xs font-medium focus:ring-primary/20">
-                                        <SelectValue placeholder="Select Area" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-border shadow-2xl p-1 bg-card/95 backdrop-blur-xl max-h-[300px]">
-                                        {allAreas.map(area => (
-                                            <SelectItem key={area} value={area} className="rounded-xl text-xs font-medium py-2 px-3">{area}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <FilterSelect
+                                    label="Area / Location"
+                                    value={selectedArea}
+                                    onValueChange={setSelectedArea}
+                                    placeholder="Select Area"
+                                    options={allAreas}
+                                />
                             </div>
+
 
                             <div>
                                 <div className="flex items-center justify-between mb-3">
@@ -261,11 +257,17 @@ const Tutors = () => {
                         </AppleCard>
                     </aside>
 
-                    <main className="md:col-span-9">
+                    <main className="md:col-span-9 relative">
+                        {isFiltering && (
+                            <div className="absolute inset-0 z-10 bg-background/50 backdrop-blur-[2px] flex items-center justify-center rounded-3xl">
+                                <LoadingSpinner />
+                            </div>
+                        )}
+
                         {searchQuery && (
                             <div className="mb-8 flex items-center gap-3">
                                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Searching for:</span>
-                                <AppleBadge variant="primary" className="px-3 py-1 normal-case text-sm tracking-normal">"{searchQuery}"</AppleBadge>
+                                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold font-mono tracking-tight">"{searchQuery}"</span>
                             </div>
                         )}
 

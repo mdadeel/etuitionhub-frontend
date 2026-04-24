@@ -1,10 +1,11 @@
 // user management dashboard
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
-import { AppleBadge, AppleButton } from '../shared/AppleUI';
-import { ShieldCheck, UserX, ChevronDown, Edit2 } from 'lucide-react';
+import { AppleButton } from '../shared/AppleUI';
+import { UserX, Edit2, ShieldAlert, UserCog } from 'lucide-react';
+import FilterSelect from '../shared/FilterSelect';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditModal from './EditModal';
 
@@ -24,19 +25,21 @@ const DashUsers = () => {
         { name: 'photoURL', label: 'Photo URL', placeholder: 'https://...' }
     ];
 
-    useEffect(() => {
-        const loadUsers = async () => {
-            try {
-                const res = await api.get('/api/users');
-                setUsers(res.data);
-            } catch (err) {
-                toast.error(err.response?.data?.error || 'System access failed');
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadUsers();
+    const loadUsers = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await api.get('/api/users');
+            setUsers(res.data || []);
+        } catch (err) {
+            toast.error(err.response?.data?.error || 'Failed to load users');
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        loadUsers();
+    }, [loadUsers]);
 
     const filtered = useMemo(() => {
         if (filter === 'all') return users;
@@ -44,71 +47,61 @@ const DashUsers = () => {
     }, [users, filter]);
 
     const handleDelete = async (id) => {
-        if (!confirm('Permanently remove this identity from the infrastructure?')) return;
+        if (!confirm('Delete this user? This action cannot be undone.')) return;
 
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
-            toast.error('Identity Integrity: Demo data is read-only');
+            toast.error('Demo data is read-only');
             return;
         }
 
-        const backup = [...users];
-        setUsers(prev => prev.filter(u => u._id !== id));
-
         try {
             await api.delete(`/api/users/${id}`);
-            toast.success('Identity expunged.');
+            toast.success('User deleted');
+            await loadUsers();
         } catch (err) {
-            setUsers(backup);
-            toast.error('Operation failed.');
+            toast.error(err.response?.data?.error || 'Failed to delete user');
         }
     };
 
     const handleRoleChange = async (id, role) => {
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
-            toast.error('Identity Integrity: Demo data is read-only');
+            toast.error('Demo data is read-only');
             return;
         }
 
-        const backup = [...users];
-        setUsers(prev => prev.map(u => u._id === id ? { ...u, role } : u));
-
         try {
             await api.patch(`/api/users/${id}`, { role });
-            toast.success(`Identity reclassified as ${role}.`);
+            toast.success(`Role updated to ${role}`);
+            await loadUsers();
         } catch (err) {
-            setUsers(backup);
-            toast.error('Operation failed.');
+            toast.error(err.response?.data?.error || 'Failed to update role');
         }
     };
 
     const handleVerificationChange = async (id, status) => {
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
-            toast.error('Identity Integrity: Demo data is read-only');
+            toast.error('Demo data is read-only');
             return;
         }
 
-        const backup = [...users];
-        // Sync legacy isVerified for backward compatibility
         const isVerified = ['verified_basic', 'verified_premium'].includes(status);
         
-        setUsers(prev => prev.map(u => u._id === id ? { ...u, verificationStatus: status, isVerified } : u));
-
         try {
             await api.patch(`/api/users/${id}`, { verificationStatus: status, isVerified });
-            toast.success(`Verification state updated to ${status}.`);
+            toast.success(`Verification updated to ${status}`);
+            await loadUsers();
         } catch (err) {
-            setUsers(backup);
-            toast.error('Operation failed.');
+            toast.error(err.response?.data?.error || 'Failed to update verification');
         }
     };
 
     const handleEditClick = (user) => {
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(user._id)) {
-            toast.error('Identity Integrity: Demo data is read-only');
+            toast.error('Demo data is read-only');
             return;
         }
         setSelectedUser(user);
@@ -119,11 +112,11 @@ const DashUsers = () => {
         setIsSaving(true);
         try {
             const res = await api.patch(`/api/users/${selectedUser._id}`, updatedData);
-            setUsers(prev => prev.map(u => u._id === selectedUser._id ? res.data : u));
-            toast.success('Identity metadata corrected.');
+            toast.success('User updated successfully');
             setIsEditModalOpen(false);
+            await loadUsers();
         } catch (err) {
-            toast.error('Failed to update identity.');
+            toast.error(err.response?.data?.error || 'Failed to update user');
         } finally {
             setIsSaving(false);
         }
@@ -198,44 +191,44 @@ const DashUsers = () => {
                                 <td className="px-6 py-4 bg-muted/20 border-y border-border/50">
                                     <div className="flex flex-col gap-2">
                                         {user.verificationStatus === 'verified_premium' ? (
-                                            <AppleBadge variant="success" className="w-fit scale-90">Premium</AppleBadge>
+                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-green-500/10 text-green-600 w-fit">Premium</span>
                                         ) : user.verificationStatus === 'verified_basic' ? (
-                                            <AppleBadge variant="primary" className="w-fit scale-90">Basic</AppleBadge>
+                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-primary/10 text-primary w-fit">Basic</span>
                                         ) : user.verificationStatus === 'pending_review' ? (
-                                            <AppleBadge variant="warning" className="w-fit scale-90">Review</AppleBadge>
+                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-amber-500/10 text-amber-600 w-fit">Review</span>
                                         ) : (
-                                            <AppleBadge variant="default" className="w-fit scale-90 opacity-40">None</AppleBadge>
+                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-muted text-muted-foreground w-fit opacity-40">None</span>
                                         )}
                                         
                                         {user.role === 'tutor' && (
-                                            <div className="relative group/v-select">
-                                                <select
-                                                    className="bg-background/30 border border-border/30 text-[8px] font-bold uppercase tracking-widest pl-2 pr-6 py-1 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/20 cursor-pointer hover:bg-background/50 transition-all appearance-none"
+                                            <div className="w-32">
+                                                <FilterSelect
                                                     value={user.verificationStatus || 'unverified'}
-                                                    onChange={(e) => handleVerificationChange(user._id, e.target.value)}
-                                                >
-                                                    <option value="unverified">Unverified</option>
-                                                    <option value="pending_review">Pending</option>
-                                                    <option value="verified_basic">Basic</option>
-                                                    <option value="verified_premium">Premium</option>
-                                                </select>
-                                                <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 text-muted-foreground pointer-events-none" />
+                                                    onValueChange={(status) => handleVerificationChange(user._id, status)}
+                                                    icon={ShieldAlert}
+                                                    options={[
+                                                        { value: 'unverified', label: 'Unverified' },
+                                                        { value: 'pending_review', label: 'Pending' },
+                                                        { value: 'verified_basic', label: 'Basic' },
+                                                        { value: 'verified_premium', label: 'Premium' },
+                                                    ]}
+                                                />
                                             </div>
                                         )}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 bg-muted/20 border-y border-border/50">
-                                    <div className="relative w-fit group/select">
-                                        <select
-                                            className="bg-background/50 border border-border/50 text-[10px] font-bold uppercase tracking-widest pl-4 pr-10 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer hover:bg-background transition-all appearance-none"
+                                    <div className="w-36">
+                                        <FilterSelect
                                             value={user.role}
-                                            onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                                        >
-                                            <option value="student">Student</option>
-                                            <option value="tutor">Tutor</option>
-                                            <option value="admin">Admin</option>
-                                        </select>
-                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none transition-transform group-hover/select:translate-y-[-40%]" />
+                                            onValueChange={(role) => handleRoleChange(user._id, role)}
+                                            icon={UserCog}
+                                            options={[
+                                                { value: 'student', label: 'Student' },
+                                                { value: 'tutor', label: 'Tutor' },
+                                                { value: 'admin', label: 'Admin' },
+                                            ]}
+                                        />
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 bg-muted/20 border-y border-r border-border/50 last:rounded-r-2xl text-right">

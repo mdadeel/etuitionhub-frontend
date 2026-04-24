@@ -1,6 +1,6 @@
 import React from 'react';
 import { SearchX, RefreshCw } from "lucide-react";
-import { AppleButton, AppleBadge } from "./AppleUI";
+import { AppleButton } from "./AppleUI";
 import { cn } from "@/lib/utils";
 
 /**
@@ -41,9 +41,9 @@ const EmptyState = ({
                     <SearchX size={32} className="text-muted-foreground/30 group-hover:text-primary transition-colors duration-500" strokeWidth={1.5} />
                 </div>
                 
-                <AppleBadge variant="secondary" className="mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-90 group-hover:scale-100">
+                <span className="mb-4 px-3 py-1 bg-muted/50 text-muted-foreground rounded-full text-[10px] font-bold uppercase tracking-widest border border-border/50 opacity-0 group-hover:opacity-100 transition-all duration-500 scale-90 group-hover:scale-100">
                     Empty Result
-                </AppleBadge>
+                </span>
                 
                 <h3 className="text-2xl font-bold text-foreground mb-3 tracking-tight">{title}</h3>
                 <p className="text-sm font-medium text-muted-foreground mb-10 max-w-xs mx-auto leading-relaxed">

@@ -6,7 +6,7 @@ import DashPayments from './DashPayments';
 import DashSettings from './DashSettings';
 import { 
     AppleCard, 
-    AppleBadge, 
+    AppleBadge,
     AppleHeader 
 } from '../shared/AppleUI';
 import { cn } from '@/lib/utils';
@@ -26,7 +26,7 @@ const AdminDashboard = () => {
             <AppleHeader 
                 title="Management" 
                 subtitle="High-precision monitoring and strategic platform administration."
-                badge={<AppleBadge variant="primary">Administrator</AppleBadge>}
+                badge={<AppleBadge variant="primary">System Command</AppleBadge>}
                 action={
                     <div className="flex items-center gap-2.5 px-4 py-2 bg-green-500/10 rounded-2xl border border-green-500/20">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>

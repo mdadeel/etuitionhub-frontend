@@ -1,13 +1,7 @@
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X, LayoutGrid, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import FilterSelect from "../shared/FilterSelect";
 
 /**
  * FilterBar Component
@@ -43,23 +37,18 @@ const FilterBar = ({
 
                 {/* Sort Strategy */}
                 <div className="w-full md:w-64">
-                    <Select 
-                        value={filters.sortBy} 
+                    <FilterSelect
+                        value={filters.sortBy}
                         onValueChange={(value) => onFilterChange('sortBy', value)}
-                    >
-                        <SelectTrigger className="h-14 rounded-none border-border bg-background font-black text-[10px] tracking-widest uppercase focus:ring-primary">
-                            <div className="flex items-center gap-2">
-                                <SlidersHorizontal size={14} className="text-primary" />
-                                <SelectValue placeholder="SORT_STRATEGY" />
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-none border-border">
-                            <SelectItem value="newest" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">Latest Operations</SelectItem>
-                            <SelectItem value="oldest" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">Historical Order</SelectItem>
-                            <SelectItem value="salary-high" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">Yield: High-Low</SelectItem>
-                            <SelectItem value="salary-low" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">Yield: Low-High</SelectItem>
-                        </SelectContent>
-                    </Select>
+                        icon={SlidersHorizontal}
+                        placeholder="SORT_STRATEGY"
+                        options={[
+                            { value: 'newest', label: 'Latest Operations' },
+                            { value: 'oldest', label: 'Historical Order' },
+                            { value: 'salary-high', label: 'Yield: High-Low' },
+                            { value: 'salary-low', label: 'Yield: Low-High' },
+                        ]}
+                    />
                 </div>
             </div>
 
@@ -67,40 +56,26 @@ const FilterBar = ({
             <div className="relative z-10 flex flex-wrap items-center gap-10 pt-8 border-t border-border">
                 {/* Class Protocol Cluster */}
                 <div className="flex items-center gap-4">
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Class Node</span>
-                    <Select 
-                        value={filters.classFilter} 
+                    <FilterSelect
+                        label="Class Node"
+                        value={filters.classFilter}
                         onValueChange={(value) => onFilterChange('classFilter', value)}
-                    >
-                        <SelectTrigger className="w-48 h-10 border-none bg-transparent hover:bg-muted/50 font-black text-[10px] tracking-widest uppercase focus:ring-0 p-0 shadow-none">
-                            <SelectValue placeholder="ALL_PROTOCOLS" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-none border-border">
-                            <SelectItem value="all" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">All Protocols</SelectItem>
-                            {classOptions.map(cls => (
-                                <SelectItem key={cls} value={cls} className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">{cls}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        icon={LayoutGrid}
+                        placeholder="ALL_PROTOCOLS"
+                        options={['all', ...classOptions]}
+                    />
                 </div>
 
                 {/* Spatial Area Cluster */}
                 <div className="flex items-center gap-4">
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Spatial Area</span>
-                    <Select 
-                        value={filters.locationFilter} 
+                    <FilterSelect
+                        label="Spatial Area"
+                        value={filters.locationFilter}
                         onValueChange={(value) => onFilterChange('locationFilter', value)}
-                    >
-                        <SelectTrigger className="w-48 h-10 border-none bg-transparent hover:bg-muted/50 font-black text-[10px] tracking-widest uppercase focus:ring-0 p-0 shadow-none">
-                            <SelectValue placeholder="ALL_ZONES" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-none border-border">
-                            <SelectItem value="all" className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">All Zones</SelectItem>
-                            {locationOptions.map(loc => (loc && (
-                                <SelectItem key={loc} value={loc} className="rounded-none focus:bg-primary/10 text-[10px] font-black uppercase tracking-widest">{loc}</SelectItem>
-                            )))}
-                        </SelectContent>
-                    </Select>
+                        icon={MapPin}
+                        placeholder="ALL_ZONES"
+                        options={['all', ...locationOptions.filter(loc => !!loc)]}
+                    />
                 </div>
 
                 {/* Clear Matrix Signal */}

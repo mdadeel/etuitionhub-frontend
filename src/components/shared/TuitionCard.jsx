@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, ArrowRight, ShieldCheck, Clock, Briefcase, GraduationCap } from 'lucide-react';
-import { AppleBadge, AppleCard, AppleButton } from './AppleUI/index';
+import { AppleCard, AppleButton } from './AppleUI/index';
 import { cn } from '@/lib/utils';
 import { formatRelativeTime } from '@/utils/dateUtils';
 

@@ -23,7 +23,7 @@ import {
     GraduationCap,
     Heart
 } from 'lucide-react';
-import { AppleBadge, AppleCard, AppleButton } from '../components/shared/AppleUI';
+import { AppleCard, AppleButton } from '../components/shared/AppleUI';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const TutorDetails = () => {
@@ -136,7 +136,7 @@ const TutorDetails = () => {
 
                             <div className="flex-grow pt-2">
                                 <div className="flex flex-wrap items-center gap-3 mb-4">
-                                    <AppleBadge variant="primary" className="px-3 py-1">Verified Expert</AppleBadge>
+                                    <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest border border-primary/20">Verified Expert</span>
                                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 px-3 py-1 bg-muted/50 rounded-full border border-border/50">
                                         <MapPin size={10} className="text-primary" /> {tutor.location}
                                     </span>

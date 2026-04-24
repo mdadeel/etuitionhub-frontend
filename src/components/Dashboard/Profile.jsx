@@ -7,13 +7,13 @@ import LoadingSpinner from '../shared/LoadingSpinner';
 import { 
     ShieldCheck, 
     RefreshCw,
-    Camera
+    Camera,
+    Phone
 } from "lucide-react";
 import { 
     AppleCard, 
     AppleButton, 
     AppleInput, 
-    AppleBadge, 
     AppleHeader 
 } from '../shared/AppleUI';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,6 +25,7 @@ const Profile = () => {
 
     const [photoInput, setPhotoInput] = useState('');
     const [nameInput, setNameInput] = useState('');
+    const [mobileInput, setMobileInput] = useState('');
 
     useEffect(() => {
         if (dbUser?.displayName || user?.displayName) {
@@ -32,6 +33,9 @@ const Profile = () => {
         }
         if (dbUser?.photoURL || user?.photoURL) {
             setPhotoInput(dbUser?.photoURL || user?.photoURL);
+        }
+        if (dbUser?.mobileNumber) {
+            setMobileInput(dbUser.mobileNumber);
         }
     }, [dbUser, user]);
 
@@ -48,14 +52,15 @@ const Profile = () => {
         try {
             await api.patch(`/api/users/by-email/${user?.email}`, {
                 displayName: nameInput,
-                photoURL: photoInput
+                photoURL: photoInput,
+                mobileNumber: mobileInput
             });
 
-            toast.success('Your profile has been updated');
+            toast.success('Profile updated successfully');
             await refreshUserFromDB(user?.email);
             updateUserProfile({ displayName: nameInput, photoURL: photoInput });
-        } catch (error) {
-            toast.error('Something went wrong while saving');
+        } catch (err) {
+            toast.error(err.response?.data?.error || 'Failed to update profile');
         } finally {
             setLoading(false);
         }
@@ -66,13 +71,13 @@ const Profile = () => {
             <AppleHeader 
                 title="Identity" 
                 subtitle="High-fidelity account orchestration and personal metadata management."
-                badge={<AppleBadge variant="primary">Account Protocol</AppleBadge>}
+                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-primary/10 text-primary">Account Protocol</span>}
                 action={
                     <div className="flex items-center gap-3 bg-muted/50 px-4 py-2 rounded-2xl border border-border/50">
                         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Clearance</span>
-                        <AppleBadge variant="success">
+                        <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-green-500/10 text-green-600">
                             {dbUser?.role?.toUpperCase() || 'USER'}
-                        </AppleBadge>
+                        </span>
                     </div>
                 }
             />
@@ -131,12 +136,28 @@ const Profile = () => {
                                 </div>
                             </div>
 
-                            <AppleInput 
-                                label="Profile Image Protocol (URL)"
-                                placeholder="https://example.com/photo.jpg"
-                                value={photoInput}
-                                onChange={(e) => setPhotoInput(e.target.value)}
-                            />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <AppleInput 
+                                    label="Phone Number"
+                                    placeholder="e.g. 01700000000"
+                                    value={mobileInput}
+                                    onChange={(e) => setMobileInput(e.target.value)}
+                                />
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Profile Image</label>
+                                    <div className="relative">
+                                        <input 
+                                            type="url"
+                                            className="w-full bg-muted/30 border-none ring-1 ring-border/50 px-4 py-4 rounded-2xl text-xs font-medium text-muted-foreground"
+                                            value={photoInput}
+                                            onChange={(e) => setPhotoInput(e.target.value)}
+                                            placeholder="https://example.com/photo.jpg"
+                                        />
+                                        <Camera className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                                    </div>
+                                    <p className="text-[9px] font-bold text-muted-foreground/30 uppercase tracking-widest ml-1">Enter image URL</p>
+                                </div>
+                            </div>
 
                             <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-8 border-t border-border/50">
                                 <div className="flex items-center gap-3">
