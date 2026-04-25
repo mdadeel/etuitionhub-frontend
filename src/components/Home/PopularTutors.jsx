@@ -36,7 +36,7 @@ const PopularTutors = () => {
     };
 
     return (
-        <section ref={ref} className="py-20 bg-muted/20 border-t border-border/40">
+        <section ref={ref} className="py-20 bg-muted/20">
             <div className="max-w-[1400px] mx-auto px-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div className="max-w-xl">

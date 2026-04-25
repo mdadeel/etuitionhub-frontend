@@ -5,71 +5,105 @@ import {
     Palette, 
     Monitor, 
     Briefcase, 
-    Music, 
-    Globe,
-    ArrowUpRight
+    ArrowRight
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { AppleCard } from "../shared/AppleUI";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 const categories = [
-    { icon: Calculator, label: "Mathematics", count: "SSC & HSC", span: "md:col-span-2 md:row-span-2", bg: "bg-primary/10", text: "Master advanced calculus and algebra with board-specific experts." },
-    { icon: FlaskConical, label: "Science", count: "Physics & Chemistry", span: "md:col-span-1 md:row-span-1", bg: "bg-orange-500/10", text: "Conceptual learning for future engineers." },
-    { icon: Languages, label: "English", count: "IELTS & Board", span: "md:col-span-1 md:row-span-1", bg: "bg-blue-500/10", text: "Fluency and grammar mastery." },
-    { icon: Monitor, label: "ICT", count: "Programming", span: "md:col-span-1 md:row-span-2", bg: "bg-purple-500/10", text: "Python, C++, and Web Development basics." },
-    { icon: Briefcase, label: "Business", count: "Commerce", span: "md:col-span-1 md:row-span-1", bg: "bg-green-500/10", text: "Accounting and Finance specialized help." },
-    { icon: Palette, label: "Arts", count: "Humanities", span: "md:col-span-1 md:row-span-1", bg: "bg-pink-500/10", text: "History, Geography, and Fine Arts." },
+    { icon: Calculator, label: "Mathematics", count: "From basic arithmetic to advanced calculus", bg: "bg-blue-50/50", iconBg: "bg-blue-100", color: "text-blue-600" },
+    { icon: FlaskConical, label: "Science", count: "Explore the world through experiments", bg: "bg-orange-50/50", iconBg: "bg-orange-100", color: "text-orange-600" },
+    { icon: Languages, label: "English", count: "Language is power, master it", bg: "bg-indigo-50/50", iconBg: "bg-indigo-100", color: "text-indigo-600" },
+    { icon: Monitor, label: "ICT", count: "Digital skills for a brighter future", bg: "bg-sky-50/50", iconBg: "bg-sky-100", color: "text-sky-600" },
+    { icon: Briefcase, label: "Business", count: "Learn, adapt, and lead with confidence", bg: "bg-emerald-50/50", iconBg: "bg-emerald-100", color: "text-emerald-600" },
+    { icon: Palette, label: "Arts", count: "Creativity shapes the future", bg: "bg-pink-50/50", iconBg: "bg-pink-100", color: "text-pink-600" },
 ];
 
 const FeaturedCategories = () => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 },
+        },
+    };
+
+    const cardVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: "easeOut" },
+        },
+    };
+
     return (
-        <section className="py-16 md:py-20 bg-background">
-            <div className="max-w-[1400px] mx-auto px-6">
+        <section ref={ref} className="py-24 bg-background">
+            <div className="container mx-auto px-6">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-                    <div className="max-w-2xl">
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight uppercase">
+                    <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.6 }}
+                        className="max-w-2xl"
+                    >
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
                             SUBJECTS <span className="text-primary italic">WITHOUT LIMITS.</span>
                         </h2>
-                    </div>
-                    <Button variant="ghost" asChild className="text-xs font-black uppercase tracking-widest hover:bg-transparent p-0">
-                        <Link to="/tuitions" className="flex items-center gap-2 group">
-                            Explore All <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"><ArrowUpRight className="w-4 h-4" /></div>
-                        </Link>
-                    </Button>
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <Button variant="link" asChild className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors p-0 gap-2">
+                            <Link to="/tuitions">
+                                View All Subjects <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </Button>
+                    </motion.div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div 
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                >
                     {categories.map((cat, idx) => (
-                        <Link 
-                            to={`/tuitions?q=${encodeURIComponent(cat.label)}`} 
-                            key={idx}
-                            className={`group relative overflow-hidden rounded-[2rem] border border-border/40 transition-all hover:shadow-apple-xl p-8 ${cat.bg}`}
-                        >
-                            <div className="relative z-10">
-                                <div className="w-10 h-10 rounded-xl bg-white shadow-apple-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <cat.icon className="w-5 h-5 text-primary" strokeWidth={2.5} />
+                        <motion.div key={idx} variants={cardVariants}>
+                            <Link 
+                                to={`/tuitions?q=${encodeURIComponent(cat.label)}`} 
+                                className={`group relative block h-full overflow-hidden rounded-[2.5rem] border border-border/40 transition-all duration-300 p-8 ${cat.bg} hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/20 hover:bg-white`}
+                            >
+                                <div className="relative z-10">
+                                    <div className={`w-12 h-12 rounded-2xl ${cat.iconBg} flex items-center justify-center mb-8 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/10`}>
+                                        <cat.icon className={`w-6 h-6 ${cat.color}`} />
+                                    </div>
+                                    <h3 className="text-xl font-bold tracking-tight mb-3 uppercase">{cat.label}</h3>
+                                    <p className="text-sm text-muted-foreground font-medium leading-relaxed opacity-70 group-hover:opacity-100 transition-opacity">
+                                        {cat.count}
+                                    </p>
                                 </div>
-                                <h3 className="text-lg font-black tracking-tight mb-2 uppercase">{cat.label}</h3>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 mb-4">{cat.count}</p>
-                                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                                    {cat.text}
-                                </p>
-                            </div>
-                            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center">
-                                    <ArrowUpRight size={14} />
+                                
+                                {/* Decorative elements that appear on hover */}
+                                <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <ArrowRight className="w-5 h-5 text-muted-foreground/30" />
                                 </div>
-                            </div>
-                            
-                            {/* Abstract Vector Decoration */}
-                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/20 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
-                        </Link>
+                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/40 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </Link>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </section>
     );
 };
 
 export default FeaturedCategories;
+

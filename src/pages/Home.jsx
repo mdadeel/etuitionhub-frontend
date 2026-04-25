@@ -18,6 +18,7 @@ const Home = () => {
             <FeaturedCategories />
             <PopularTutors />
             <MissionStatement />
+            <Statistics />
             <WhyChooseUs />
             <FeatureSpotlight />
             <HowItWorks />
@@ -28,5 +29,6 @@ const Home = () => {
         </div>
     )
 }
+
 
 export default Home

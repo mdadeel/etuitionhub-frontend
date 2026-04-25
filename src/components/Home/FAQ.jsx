@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Plus, Minus } from "lucide-react";
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 
 const faqs = [
     { question: "How do you verify tutors?", answer: "Every tutor submits their academic certificates and national ID. We verify all documents manually before activating their profile." },
@@ -11,63 +11,80 @@ const faqs = [
 ];
 
 const FAQ = () => {
-    const [activeIndex, setActiveIndex] = useState(null);
+    const [activeIndex, setActiveIndex] = useState(0); // Start with first open
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const isInView = useInView(ref, { once: true, amount: 0.2 });
 
     return (
-        <section ref={ref} className="py-24 bg-background border-t border-border/40">
-            <div className="max-w-[1400px] mx-auto px-6">
-                <div className="flex flex-col lg:flex-row gap-16 items-start">
+        <section ref={ref} className="py-24 bg-background">
+            <div className="container mx-auto px-6">
+                <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
                     
-                    {/* Sticky Side Header */}
-                    <div className="lg:w-1/3 lg:sticky lg:top-32">
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight mb-8 uppercase">
+                    {/* Left Column: Heading */}
+                    <motion.div 
+                        className="lg:w-1/3 lg:sticky lg:top-32"
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-8 uppercase">
                             STILL <span className="text-primary italic">CURIOUS?</span>
                         </h2>
-                        <p className="text-lg text-muted-foreground font-medium max-w-sm leading-relaxed">
+                        <p className="text-lg text-muted-foreground font-medium max-w-sm leading-relaxed opacity-70">
                             Everything you need to know about Bangladesh's leading educator platform.
                         </p>
-                    </div>
+                    </motion.div>
 
-                    {/* Accordion List */}
-                    <div className="lg:w-2/3 space-y-4">
+                    {/* Right Column: Accordion List */}
+                    <motion.div 
+                        className="lg:w-2/3 space-y-6"
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.8 }}
+                    >
                         {faqs.map((faq, idx) => (
-                            <motion.div
+                            <div
                                 key={idx}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                transition={{ duration: 0.4, delay: idx * 0.05 }}
-                                className={`group border rounded-[2rem] transition-all duration-500 overflow-hidden ${
-                                    activeIndex === idx ? 'border-black bg-muted/20' : 'border-border/60 bg-white hover:border-black/30'
+                                className={`group rounded-[2rem] border transition-all duration-300 ${
+                                    activeIndex === idx 
+                                    ? 'border-primary/30 bg-primary/5 shadow-xl shadow-primary/5' 
+                                    : 'border-border/50 bg-white hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5'
                                 }`}
                             >
                                 <button
                                     className="w-full flex items-center justify-between p-8 text-left outline-none"
                                     onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}
                                 >
-                                    <span className={`text-xl font-black tracking-tight transition-colors ${
-                                        activeIndex === idx ? 'text-black' : 'text-foreground/80'
+                                    <span className={`text-xl font-bold tracking-tight transition-colors ${
+                                        activeIndex === idx ? 'text-foreground' : 'text-foreground/80'
                                     }`}>
                                         {faq.question}
                                     </span>
-                                    <div className={`transition-transform duration-500 ${activeIndex === idx ? 'rotate-180 text-primary' : 'text-muted-foreground'}`}>
-                                        <Plus size={24} strokeWidth={3} />
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                                        activeIndex === idx ? 'bg-primary text-white rotate-180' : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
+                                    }`}>
+                                        {activeIndex === idx ? <Minus size={20} /> : <Plus size={20} />}
                                     </div>
                                 </button>
                                 
-                                <motion.div 
-                                    initial={false}
-                                    animate={{ height: activeIndex === idx ? "auto" : 0, opacity: activeIndex === idx ? 1 : 0 }}
-                                    className="overflow-hidden"
-                                >
-                                    <div className="px-8 pb-8 text-lg text-muted-foreground font-medium leading-relaxed max-w-2xl">
-                                        {faq.answer}
-                                    </div>
-                                </motion.div>
-                            </motion.div>
+                                <AnimatePresence>
+                                    {activeIndex === idx && (
+                                        <motion.div 
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.3, ease: "easeOut" }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="px-8 pb-8 text-base text-muted-foreground font-medium leading-relaxed max-w-3xl border-t border-primary/10 pt-4 mt-2">
+                                                {faq.answer}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </section>
@@ -75,3 +92,4 @@ const FAQ = () => {
 };
 
 export default FAQ;
+

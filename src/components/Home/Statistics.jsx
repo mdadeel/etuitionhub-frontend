@@ -1,4 +1,6 @@
 import CountUp from 'react-countup';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 const stats = [
     { value: 1200, label: 'Verified Tutors', suffix: '+' },
@@ -8,22 +10,35 @@ const stats = [
 ];
 
 const Statistics = () => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, amount: 0.5 });
+
     return (
-        <section className="py-16 md:py-20 border-y border-border/50">
-            <div className="max-w-[1200px] mx-auto px-6">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <section ref={ref} className="py-20 bg-white/50">
+            <div className="container mx-auto px-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-24">
                     {stats.map((stat, i) => (
-                        <div key={i} className="flex flex-col items-start">
+                        <motion.div 
+                            key={i} 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 0.6, delay: i * 0.1 }}
+                            className="flex flex-col items-center lg:items-start text-center lg:text-left"
+                        >
                             <div className="flex items-baseline gap-1">
-                                <span className="text-3xl md:text-5xl font-bold tracking-tight tabular-nums">
-                                    <CountUp end={stat.value} duration={2} decimals={stat.decimals || 0} separator="," />
+                                <span className="text-4xl md:text-6xl font-black tracking-tight tabular-nums">
+                                    {isInView ? (
+                                        <CountUp end={stat.value} duration={2} decimals={stat.decimals || 0} separator="," />
+                                    ) : (
+                                        0
+                                    )}
                                 </span>
-                                <span className="text-lg md:text-xl font-bold text-primary">{stat.suffix}</span>
+                                <span className="text-xl md:text-2xl font-black text-primary">{stat.suffix}</span>
                             </div>
-                            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground mt-2">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 mt-4">
                                 {stat.label}
                             </p>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>
@@ -32,3 +47,4 @@ const Statistics = () => {
 }
 
 export default Statistics;
+

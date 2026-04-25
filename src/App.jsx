@@ -48,7 +48,7 @@ let App = () => {
       <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
-          <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500">
+          <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
             <Navbar />
             <main className="flex-grow pt-14">
               <Routes>
