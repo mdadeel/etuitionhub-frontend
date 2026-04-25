@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
 import api from '../../services/api';
@@ -22,7 +23,9 @@ import { cn } from '@/lib/utils';
  */
 const TutorDashboard = () => {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState("overview");
+    const [searchParams] = useSearchParams();
+    const initialTab = searchParams.get('tab') || 'overview';
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [apps, setApps] = useState([]);
     const [loading, setLoading] = useState(true);
     const [revenue, setRevenue] = useState([]);

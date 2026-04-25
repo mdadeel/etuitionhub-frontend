@@ -41,7 +41,7 @@ const DashboardSidebar = ({ role }) => {
         menuItems.push({ path: '/dashboard/users', label: 'User Directory', icon: Users });
     } else if (role?.toLowerCase() === 'tutor') {
         menuItems.push({ path: '/dashboard/my-profile', label: 'Tutor Profile', icon: Edit3 });
-        menuItems.push({ path: '/dashboard/my-applications', label: 'Applications', icon: FileText });
+        menuItems.push({ path: '/dashboard/applications', label: 'Applications', icon: FileText });
     } else {
         menuItems.push({ path: '/dashboard/payments', label: 'Payments', icon: Banknote });
     }

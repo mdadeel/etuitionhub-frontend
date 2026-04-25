@@ -111,6 +111,10 @@ const Dashboard = () => {
                             role === 'tutor' ? <TutorProfile /> : <Navigate to="/dashboard/profile" replace />
                         } />
 
+                        <Route path="applications" element={
+                            role === 'tutor' ? <TutorDashboard /> : <Navigate to="/dashboard" replace />
+                        } />
+
                         <Route path="payments" element={<StudentPayments />} />
 
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />

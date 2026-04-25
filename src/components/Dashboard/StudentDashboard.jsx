@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useForm, Controller } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
@@ -31,8 +32,9 @@ import { cn } from '@/lib/utils';
 const StudentDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-
-    const [activeTab, setActiveTab] = useState('overview');
+    const [searchParams] = useSearchParams();
+    const initialTab = searchParams.get('tab') || 'overview';
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [bookings, setBookings] = useState([]);
     const [myTuitions, setMyTuitions] = useState([]);
     const [applications, setApplications] = useState([]);
