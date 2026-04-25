@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import { AppleButton } from '../shared/AppleUI';
-import { UserX, Edit2, ShieldAlert, UserCog } from 'lucide-react';
+import { UserX, Edit2, ShieldAlert, UserCog, Search } from 'lucide-react';
 import FilterSelect from '../shared/FilterSelect';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditModal from './EditModal';
@@ -13,6 +13,7 @@ const DashUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const [search, setSearch] = useState('');
 
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -42,9 +43,25 @@ const DashUsers = () => {
     }, [loadUsers]);
 
     const filtered = useMemo(() => {
-        if (filter === 'all') return users;
-        return users.filter(u => u.role === filter);
-    }, [users, filter]);
+        let result = users;
+        
+        // Filter by role
+        if (filter !== 'all') {
+            result = result.filter(u => u.role === filter);
+        }
+        
+        // Filter by search
+        if (search.trim()) {
+            const searchLower = search.toLowerCase();
+            result = result.filter(u => 
+                u.displayName?.toLowerCase().includes(searchLower) ||
+                u.email?.toLowerCase().includes(searchLower) ||
+                u.mobileNumber?.toLowerCase().includes(searchLower)
+            );
+        }
+        
+        return result;
+    }, [users, filter, search]);
 
     const handleDelete = async (id) => {
         if (!confirm('Delete this user? This action cannot be undone.')) return;
@@ -111,7 +128,7 @@ const DashUsers = () => {
     const handleEditSave = async (updatedData) => {
         setIsSaving(true);
         try {
-            const res = await api.patch(`/api/users/${selectedUser._id}`, updatedData);
+            await api.patch(`/api/users/${selectedUser._id}`, updatedData);
             toast.success('User updated successfully');
             setIsEditModalOpen(false);
             await loadUsers();
@@ -132,8 +149,20 @@ const DashUsers = () => {
                         Identity Manifest
                     </h2>
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                        {users.length} registered system nodes
+                        {filtered.length} users found
                     </p>
+                </div>
+
+                {/* Search Input */}
+                <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                        type="text"
+                        placeholder="Search by name, email..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-10 pr-4 py-2.5 text-sm bg-muted/50 border border-border/50 rounded-xl w-64 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
                 </div>
 
                 <div className="flex bg-muted/50 p-1 rounded-2xl gap-1 border border-border/50 w-fit backdrop-blur-md">

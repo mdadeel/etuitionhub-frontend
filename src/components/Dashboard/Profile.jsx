@@ -58,7 +58,7 @@ const Profile = () => {
 
             toast.success('Profile updated successfully');
             await refreshUserFromDB(user?.email);
-            updateUserProfile({ displayName: nameInput, photoURL: photoInput });
+            await updateUserProfile({ displayName: nameInput, photoURL: photoInput });
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to update profile');
         } finally {

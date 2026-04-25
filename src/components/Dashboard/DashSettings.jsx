@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
@@ -11,22 +11,22 @@ const DashSettings = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [modifiedKeys, setModifiedKeys] = useState(new Set());
 
-    useEffect(() => {
-        loadSettings();
-    }, []);
-
-    const loadSettings = async () => {
+    const loadSettings = useCallback(async () => {
         setLoading(true);
         try {
             const res = await api.get('/api/settings');
-            setSettings(res.data);
+            setSettings(res.data || []);
             setModifiedKeys(new Set());
-        } catch (err) {
+        } catch {
             toast.error('Failed to load system configurations');
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        loadSettings();
+    }, [loadSettings]);
 
     const handleInputChange = (key, value) => {
         setSettings(prev => prev.map(s => s.key === key ? { ...s, value } : s));
@@ -48,7 +48,7 @@ const DashSettings = () => {
             await api.patch('/api/settings/bulk', { settings: settingsToUpdate });
             toast.success('System parameters updated successfully');
             setModifiedKeys(new Set());
-        } catch (err) {
+        } catch {
             toast.error('Strategic update failed');
         } finally {
             setIsSaving(false);

@@ -6,6 +6,7 @@ import LoadingSpinner from '../components/shared/LoadingSpinner';
 import TutorCard from '../components/shared/TutorCard';
 import toast from 'react-hot-toast';
 import api from '../services/api';
+import { isValidObjectId } from '../utils/validators';
 import { 
     ArrowLeft, 
     ArrowRight,
@@ -23,7 +24,7 @@ import {
     GraduationCap,
     Heart
 } from 'lucide-react';
-import { AppleCard, AppleButton } from '../components/shared/AppleUI';
+import { AppleCard, AppleButton } from '../components/shared/AppleUI/index';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const TutorDetails = () => {
@@ -34,12 +35,29 @@ const TutorDetails = () => {
 
     useEffect(() => {
         const fetchTutorDetails = async () => {
+            setLoading(true);
+            
+            // 1. Check if it's a demo ID first to avoid useless API calls
+            if (!isValidObjectId(id)) {
+                const found = demoTutors.find(t => t._id === id);
+                if (found) {
+                    setTutor(found);
+                    setLoading(false);
+                    return;
+                }
+            }
+
+            // 2. Otherwise try fetching from real database
             try {
-                // Try fetching from real database first
                 const response = await api.get(`/api/tutors/${id}`);
-                setTutor(response.data);
+                if (response.data) {
+                    setTutor(response.data);
+                } else {
+                    throw new Error("No data received");
+                }
             } catch (error) {
-                // If not found in DB, try demo data
+                console.warn("API fetch failed:", error.message);
+                // Last resort fallback
                 const found = demoTutors.find(t => t._id === id);
                 if (found) {
                     setTutor(found);
@@ -51,11 +69,14 @@ const TutorDetails = () => {
             }
         };
 
-        fetchTutorDetails();
+        if (id) {
+            fetchTutorDetails();
+        }
     }, [id]);
 
     const handleContact = () => {
-        toast.success(`Message sent to ${tutor.displayName}.`);
+        if (!tutor) return;
+        toast.success(`Message sent to ${tutor.displayName || 'the tutor'}.`);
     };
 
     const handleSave = () => {
@@ -79,6 +100,9 @@ const TutorDetails = () => {
             </div>
         );
     }
+
+    // Safe displayName splitting
+    const firstName = tutor.displayName ? tutor.displayName.split(' ')[0] : 'Tutor';
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -123,7 +147,7 @@ const TutorDetails = () => {
                                 <div className="w-32 h-32 md:w-48 md:h-48 rounded-[2.5rem] overflow-hidden border border-border/50 shadow-apple-lg">
                                     <img
                                         src={tutor.photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
-                                        alt={tutor.displayName}
+                                        alt={tutor.displayName || 'Tutor'}
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
@@ -138,33 +162,33 @@ const TutorDetails = () => {
                                 <div className="flex flex-wrap items-center gap-3 mb-4">
                                     <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest border border-primary/20">Verified Expert</span>
                                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 px-3 py-1 bg-muted/50 rounded-full border border-border/50">
-                                        <MapPin size={10} className="text-primary" /> {tutor.location}
+                                        <MapPin size={10} className="text-primary" /> {tutor.location || 'N/A'}
                                     </span>
                                 </div>
 
                                 <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-2 tracking-tight">
-                                    {tutor.displayName}
+                                    {tutor.displayName || 'Academic Specialist'}
                                 </h1>
                                 <p className="text-lg md:text-xl text-muted-foreground font-semibold mb-8 flex items-center gap-2">
                                     <GraduationCap size={20} className="text-primary" />
-                                    {tutor.qualification}
+                                    {tutor.qualification || 'Verified Educator'}
                                 </p>
 
                                 <div className="flex items-center gap-10 pt-8 border-t border-border/50">
                                     <div>
                                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Monthly Fee</p>
-                                        <p className="text-2xl font-bold text-foreground tabular-nums">৳{tutor.expectedSalary}</p>
+                                        <p className="text-2xl font-bold text-foreground tabular-nums">৳{tutor.expectedSalary || 'Negotiable'}</p>
                                     </div>
                                     <div className="w-px h-10 bg-border/50"></div>
                                     <div>
                                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Experience</p>
-                                        <p className="text-2xl font-bold text-foreground">{tutor.experience}</p>
+                                        <p className="text-2xl font-bold text-foreground">{tutor.experience || 'Verified'}</p>
                                     </div>
                                     <div className="w-px h-10 bg-border/50"></div>
                                     <div>
                                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Rating</p>
                                         <div className="flex items-center gap-1.5">
-                                            <p className="text-2xl font-bold text-foreground">{tutor.ratings}</p>
+                                            <p className="text-2xl font-bold text-foreground">{tutor.ratings || '4.9'}</p>
                                             <Star size={18} className="fill-yellow-400 text-yellow-400" />
                                         </div>
                                     </div>
@@ -178,11 +202,13 @@ const TutorDetails = () => {
                                     <Award size={16} className="text-primary" /> Specialized Subjects
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
-                                    {tutor.subjects?.map((subject, idx) => (
+                                    {Array.isArray(tutor.subjects) ? tutor.subjects.map((subject, idx) => (
                                         <span key={idx} className="bg-muted text-foreground px-4 py-2 rounded-xl text-xs font-bold border border-border/50">
                                             {subject}
                                         </span>
-                                    ))}
+                                    )) : (
+                                        <span className="text-muted-foreground text-xs font-medium">No subjects listed</span>
+                                    )}
                                 </div>
                             </AppleCard>
 
@@ -191,11 +217,13 @@ const TutorDetails = () => {
                                     <Calendar size={16} className="text-primary" /> Weekly Availability
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
-                                    {tutor.availableDays?.map((day, idx) => (
+                                    {Array.isArray(tutor.availableDays) ? tutor.availableDays.map((day, idx) => (
                                         <span key={idx} className="bg-muted/50 border border-border/50 px-4 py-2 rounded-xl text-xs font-bold text-foreground">
                                             {day}
                                         </span>
-                                    ))}
+                                    )) : (
+                                        <span className="text-muted-foreground text-xs font-medium">Contact for availability</span>
+                                    )}
                                 </div>
                             </AppleCard>
                         </div>
@@ -204,12 +232,12 @@ const TutorDetails = () => {
                         <AppleCard className="p-10" hover={false}>
                             <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6">About the Tutor</h2>
                             <p className="text-lg text-foreground font-bold leading-relaxed">
-                                {tutor.displayName} is a highly qualified educator specialized in {tutor.subjects?.join(', ')}. 
-                                With {tutor.experience} of proven experience, they provide a structured and simplified 
-                                learning approach tailored for students in {tutor.location}.
+                                {tutor.displayName} is a highly qualified educator specialized in {Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'their field'}. 
+                                With {tutor.experience || 'years'} of proven experience, they provide a structured and simplified 
+                                learning approach tailored for students in {tutor.location || 'their area'}.
                             </p>
                             <p className="text-base text-muted-foreground mt-4 leading-relaxed font-medium">
-                                Committed to academic excellence and student growth, {tutor.displayName.split(' ')[0]} 
+                                Committed to academic excellence and student growth, {firstName} 
                                 focuses on building strong conceptual foundations and problem-solving skills.
                             </p>
                         </AppleCard>
@@ -219,7 +247,7 @@ const TutorDetails = () => {
                     <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
                         <AppleCard className="p-8 bg-card shadow-xl relative overflow-hidden" hover={false}>
                             <div className="relative z-10 text-center">
-                                <h3 className="text-2xl font-bold text-foreground mb-3">Learn with {tutor.displayName.split(' ')[0]}</h3>
+                                <h3 className="text-2xl font-bold text-foreground mb-3">Learn with {firstName}</h3>
                                 <p className="text-sm text-muted-foreground mb-10 font-medium">
                                     Book a trial class and experience a new standard of academic support.
                                 </p>

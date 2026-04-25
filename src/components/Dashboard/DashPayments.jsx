@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
@@ -6,10 +6,8 @@ import {
     ShieldCheck, 
     Database, 
     Clock, 
-    ArrowUpRight, 
     CheckCircle2, 
     XCircle,
-    User,
     Banknote,
     Activity
 } from "lucide-react";
@@ -23,40 +21,36 @@ const PAYMENT_METHOD_LABELS = {
     bank: { name: 'Bank Transfer', color: 'bg-primary' }
 };
 
-/**
- * DashPayments Component
- * Refactored to "Technical Emerald Minimalism"
- */
 const DashPayments = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('pending_verification');
     const [processingId, setProcessingId] = useState(null);
 
-    useEffect(() => {
-        loadPayments();
-    }, []);
-
-    const loadPayments = async () => {
+    const loadPayments = useCallback(async () => {
+        setLoading(true);
         try {
             const res = await api.get('/api/payments/all');
             setPayments(res.data || []);
-        } catch (err) {
-            console.error('Payment load error:', err);
+        } catch {
             toast.error('Failed to load payments');
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        loadPayments();
+    }, [loadPayments]);
 
     const handleVerify = async (id) => {
-        if (!confirm('Verify this payment as successful?')) return;
+        if (!confirm('Verify this payment?')) return;
         setProcessingId(id);
         try {
             await api.patch(`/api/payments/${id}`, { status: 'verified' });
-            toast.success('Payment verified successfully');
-            setPayments(prev => prev.map(p => p._id === id ? { ...p, status: 'verified' } : p));
-        } catch (err) {
+            toast.success('Payment verified');
+            await loadPayments();
+        } catch {
             toast.error('Verification failed');
         } finally {
             setProcessingId(null);
@@ -64,13 +58,13 @@ const DashPayments = () => {
     };
 
     const handleReject = async (id) => {
-        if (!confirm('Reject this payment? This action cannot be undone.')) return;
+        if (!confirm('Reject this payment?')) return;
         setProcessingId(id);
         try {
             await api.patch(`/api/payments/${id}`, { status: 'rejected' });
             toast.success('Payment rejected');
-            setPayments(prev => prev.map(p => p._id === id ? { ...p, status: 'rejected' } : p));
-        } catch (err) {
+            await loadPayments();
+        } catch {
             toast.error('Rejection failed');
         } finally {
             setProcessingId(null);

@@ -137,7 +137,7 @@ const StudentDashboard = () => {
             await api.patch(`/api/applications/${id}`, { status: 'rejected' });
             toast.success('Application rejected');
             setApplications(prev => prev.map(a => a._id === id ? { ...a, status: 'rejected' } : a));
-        } catch (err) {
+        } catch {
             toast.error('Failed to reject application');
         }
     };
@@ -148,7 +148,7 @@ const StudentDashboard = () => {
             await api.delete(`/api/tuitions/${tid}`);
             toast.success('Request deleted');
             await refreshData();
-        } catch (err) {
+        } catch {
             toast.error('Failed to delete request');
         }
     };

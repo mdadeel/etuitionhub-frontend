@@ -41,7 +41,7 @@ const DashAnalytics = () => {
 
                 const paymentsRes = await api.get('/api/payments/all');
                 setTransactions(paymentsRes.data);
-            } catch (err) {
+            } catch {
                 console.error('Core analytics load failed');
                 await loadFallback();
             } finally {
@@ -76,7 +76,7 @@ const DashAnalytics = () => {
                     totalTuitions: tuitions.length, pendingTuitions: pending,
                     approvedTuitions: approved, totalRevenue: revenue
                 });
-            } catch (err) {
+            } catch {
                 console.error('Fallback systems failure');
             }
         };
@@ -264,7 +264,7 @@ const DashAnalytics = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border/40">
-                                {transactions.slice(0, 8).map((tx, i) => (
+                                {transactions.slice(0, 8).map((tx) => (
                                     <tr key={tx._id} className="hover:bg-muted/30 transition-colors">
                                         <td className="px-6 py-4">
                                             <span className="text-xs font-medium text-muted-foreground">#{tx._id.slice(-8).toUpperCase()}</span>
@@ -297,7 +297,8 @@ const DashAnalytics = () => {
     );
 };
 
-const StatCard = ({ title, value, unit, icon: Icon, isPrimary = false }) => {
+const StatCard = ({ title, value, icon, isPrimary = false }) => {
+    const IconComponent = icon;
     return (
         <div className={`p-6 bg-card border border-border/60 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md group relative overflow-hidden`}>
             <div className="relative z-10">
@@ -305,7 +306,7 @@ const StatCard = ({ title, value, unit, icon: Icon, isPrimary = false }) => {
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
                         isPrimary ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground group-hover:text-primary group-hover:bg-primary/10'
                     }`}>
-                        <Icon size={18} strokeWidth={2} />
+                        <IconComponent size={18} strokeWidth={2} />
                     </div>
                 </div>
 

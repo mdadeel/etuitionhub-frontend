@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import DashboardSidebar from '../components/Dashboard/DashboardSidebar';
 import StudentDashboard from '../components/Dashboard/StudentDashboard';
 import TutorDashboard from '../components/Dashboard/TutorDashboard';
+import TutorProfile from '../components/Dashboard/TutorProfile';
 import AdminDashboard from '../components/Dashboard/AdminDashboard';
 import Profile from '../components/Dashboard/Profile';
 import DashUsers from '../components/Dashboard/DashUsers';
@@ -13,8 +14,11 @@ import { cn } from '@/lib/utils';
 
 /**
  * Restricts a route to the admin role only.
+ * Waits for dbUser to load before deciding — prevents false redirects.
  */
 const AdminRoute = ({ children, role }) => {
+    const { loading } = useAuth();
+    if (loading) return null; // wait silently — Dashboard already shows a spinner
     if (role !== 'admin') return <Navigate to="/dashboard" replace />;
     return children;
 };
@@ -102,6 +106,10 @@ const Dashboard = () => {
                         } />
 
                         <Route path="profile" element={<Profile />} />
+
+                        <Route path="my-profile" element={
+                            role === 'tutor' ? <TutorProfile /> : <Navigate to="/dashboard/profile" replace />
+                        } />
 
                         <Route path="payments" element={<StudentPayments />} />
 

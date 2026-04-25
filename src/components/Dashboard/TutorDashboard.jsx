@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils';
  * TutorDashboard Component — Refined Apple Aesthetic
  */
 const TutorDashboard = () => {
-    const { user, dbUser } = useAuth();
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState("overview");
     const [apps, setApps] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -168,7 +168,7 @@ const TutorDashboard = () => {
                                 <p className="text-sm text-muted-foreground italic">No recent activity detected.</p>
                             ) : (
                                 <div className="space-y-4">
-                                    {apps.slice(0, 3).map((app, i) => (
+                                    {apps.slice(0, 3).map((app) => (
                                         <div key={app._id} className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border/40">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-8 h-8 rounded-xl bg-background border border-border/40 flex items-center justify-center">

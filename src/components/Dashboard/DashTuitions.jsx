@@ -1,5 +1,5 @@
 // tuition management dashboard - admin approve/reject
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
@@ -24,20 +24,21 @@ const DashTuitions = () => {
         { name: 'salary', label: 'Salary (BDT)', type: 'number', placeholder: 'e.g. 5000' }
     ];
 
-    useEffect(() => {
-        const loadTuitions = async () => {
-            try {
-                const res = await api.get('/api/tuitions');
-                setTuitions(res.data);
-            } catch (err) {
-                console.error('Core marketplace load failed');
-                toast.error('Marketplace status unavailable');
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadTuitions();
+    const loadTuitions = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await api.get('/api/tuitions');
+            setTuitions(res.data || []);
+        } catch {
+            toast.error('Failed to load tuitions');
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        loadTuitions();
+    }, [loadTuitions]);
 
     const filtered = useMemo(() => {
         if (filter === 'all') return tuitions;
@@ -47,47 +48,41 @@ const DashTuitions = () => {
     const handleApprove = async (id) => {
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
-            toast.error('Operational Integrity: Demo data is read-only');
+            toast.error('Demo data is read-only');
             return;
         }
 
-        const backup = [...tuitions];
-        setTuitions(prev => prev.map(t => t._id === id ? { ...t, status: 'approved' } : t));
-
         try {
             await api.patch(`/api/tuitions/${id}`, { status: 'approved' });
-            toast.success('Requirement verified and active.');
-        } catch (err) {
-            setTuitions(backup);
-            toast.error('Verification failed.');
+            toast.success('Tuition approved');
+            await loadTuitions();
+        } catch {
+            toast.error('Failed to approve tuition');
         }
     };
 
     const handleReject = async (id) => {
-        if (!confirm('Reject this requirement from the marketplace?')) return;
+        if (!confirm('Reject this tuition?')) return;
 
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
-            toast.error('Operational Integrity: Demo data is read-only');
+            toast.error('Demo data is read-only');
             return;
         }
 
-        const backup = [...tuitions];
-        setTuitions(prev => prev.map(t => t._id === id ? { ...t, status: 'rejected' } : t));
-
         try {
             await api.patch(`/api/tuitions/${id}`, { status: 'rejected' });
-            toast.success('Requirement rejected.');
-        } catch (err) {
-            setTuitions(backup);
-            toast.error('Operation failed.');
+            toast.success('Tuition rejected');
+            await loadTuitions();
+        } catch {
+            toast.error('Failed to reject tuition');
         }
     };
 
     const handleEditClick = (tuition) => {
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(tuition._id)) {
-            toast.error('Operational Integrity: Demo data is read-only');
+            toast.error('Demo data is read-only');
             return;
         }
         setSelectedTuition(tuition);
@@ -97,12 +92,12 @@ const DashTuitions = () => {
     const handleEditSave = async (updatedData) => {
         setIsSaving(true);
         try {
-            const res = await api.patch(`/api/tuitions/${selectedTuition._id}`, updatedData);
-            setTuitions(prev => prev.map(t => t._id === selectedTuition._id ? res.data : t));
-            toast.success('Metadata updated successfully.');
+            await api.patch(`/api/tuitions/${selectedTuition._id}`, updatedData);
+            toast.success('Tuition updated');
             setIsEditModalOpen(false);
-        } catch (err) {
-            toast.error('Failed to update requirement.');
+            await loadTuitions();
+        } catch {
+            toast.error('Failed to update tuition');
         } finally {
             setIsSaving(false);
         }

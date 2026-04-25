@@ -34,6 +34,14 @@ const ScrollToTop = () => {
   return null;
 };
 
+const ConditionalFooter = () => {
+  const { pathname } = useLocation();
+  const isDashboard = pathname.startsWith('/dashboard');
+  const isSession = pathname.startsWith('/session');
+  if (isDashboard || isSession) return null;
+  return <Footer />;
+};
+
 let App = () => {
   return (
     <ThemeProvider>
@@ -63,7 +71,7 @@ let App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
-            <Footer />
+            <ConditionalFooter />
             <Toaster position="top-right" />
           </div>
         </BrowserRouter>

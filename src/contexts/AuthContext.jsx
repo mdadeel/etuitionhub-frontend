@@ -103,18 +103,36 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         let isMounted = true;
 
-        const fetchUserFromDB = async (email) => {
+        const fetchUserFromDB = async (firebaseUser) => {
             try {
-                let res = await api.get(`/api/users/${email}`);
+                console.log('🔍 Synchronizing identity for:', firebaseUser.email);
+                let res = await api.get(`/api/users/${firebaseUser.email}`);
                 if (isMounted) {
                     setDbUser(res.data);
                     setUserRole(res.data.role);
-                    console.log('✅ dbUser loaded:', res.data);
+                    console.log('✅ Identity synchronized:', res.data.role);
                 }
-                return res.data;
             } catch (error) {
-                console.log('❌ User DB error:', error.message);
-                return null;
+                if (error.response?.status === 404 && isMounted) {
+                    console.warn('⚠️ Identity missing in DB. Provisioning silently...');
+                    try {
+                        // Silently provision without showing a loading toast
+                        const res = await api.post('/api/users', {
+                            email: firebaseUser.email,
+                            displayName: firebaseUser.displayName,
+                            photoURL: firebaseUser.photoURL || '',
+                            role: 'student'
+                        });
+                        if (isMounted) {
+                            setDbUser(res.data);
+                            setUserRole(res.data.role);
+                        }
+                    } catch (saveError) {
+                        console.error('❌ Provisioning failed:', saveError.message);
+                    }
+                } else {
+                    console.log('❌ Identity sync error:', error.message);
+                }
             } finally {
                 if (isMounted) {
                     setLoading(false);
@@ -126,7 +144,7 @@ export const AuthProvider = ({ children }) => {
             // only set lading true  going  fetc
 
             console.log("Fetching DB User for:", user.email);
-            fetchUserFromDB(user.email);
+            fetchUserFromDB(user);
         } else {
 
             setDbUser(null);
@@ -244,27 +262,23 @@ export const AuthProvider = ({ children }) => {
             const email = result.user.email;
 
             // Check if this user already exists so we don't downgrade their role
-            let existingRole = selectedRole;
+            let dbRecord = null;
             try {
                 const existing = await api.get(`/api/users/${email}`);
-                if (existing.data?.role) {
-                    // Keep their existing role — never overwrite admin/tutor with student
-                    existingRole = existing.data.role;
-                    console.log('Google login - preserving existing role:', existingRole);
-                }
+                dbRecord = existing.data;
+                console.log('Google login - returning user, role:', dbRecord.role);
             } catch {
-                // New user — use the selectedRole from the registration form
+                // New user — create them in the DB
                 console.log('Google login - new user, assigning role:', selectedRole);
+                dbRecord = await saveUserToDB(result.user, selectedRole);
             }
 
-            let savedUser = await saveUserToDB(result.user, existingRole);
-            console.log('After Google Login - DB Role:', savedUser?.role);
+            // Update local state immediately with DB data
+            setDbUser(dbRecord);
+            setUserRole(dbRecord.role);
 
             // Generate JWT immediately
             await setJWT(email);
-
-            // Refresh to get updated data
-            await refreshUserFromDB(email);
 
             return result;
         } catch (error) {
@@ -288,11 +302,19 @@ export const AuthProvider = ({ children }) => {
     };
 
     // user profile update
-    const updateUserProfile = (updateUser) => {
-        console.log(updateUser);
+    const updateUserProfile = async (updateUser) => {
+        console.log('Updating Firebase Profile:', updateUser);
         setLoading(true);
-        updateProfile(auth.currentUser, updateUser);
-        setUser((preUser) => ({ ...preUser, ...updateUser }))
+        try {
+            await updateProfile(auth.currentUser, updateUser);
+            setUser((preUser) => ({ ...preUser, ...updateUser }));
+            console.log('Firebase Profile Updated Successfully');
+        } catch (error) {
+            console.error('Firebase Profile Update Error:', error);
+            toast.error('Failed to sync profile with auth server');
+        } finally {
+            setLoading(false);
+        }
     }
 
     let authInfo = {
