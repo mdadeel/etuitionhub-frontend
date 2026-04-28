@@ -114,29 +114,32 @@ const HomeBanner = () => {
                         </motion.div>
                     </motion.div>
 
-                    {/* Right Column: Integrated Image with Glow */}
+                    {/* Right Column: Integrated Image with Glow & Shape */}
                     <motion.div 
-                        className="flex-1 relative w-full max-w-[600px] lg:max-w-none flex items-center justify-center"
+                        className="flex-1 relative w-full max-w-[700px] lg:max-w-none flex items-center justify-center"
                         initial={{ opacity: 0 }}
                         animate={isInView ? { opacity: 1 } : {}}
                         transition={{ duration: 1.5, ease: "easeOut" }}
                     >
+                        {/* Adaptive Background Shape */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] aspect-square rounded-[4rem] border border-border/40 bg-muted/20 rotate-6 pointer-events-none" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] aspect-square rounded-[5rem] border border-border/20 -rotate-3 pointer-events-none" />
+
                         {/* Soft Glow Background */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-blue-500/5 rounded-full blur-[80px] pointer-events-none" />
-
+                        
                         {/* Main Image Container with Masking */}
                         <div 
-                            className="relative z-10 mx-auto max-w-lg lg:max-w-xl overflow-hidden"
+                            className="relative z-10 mx-auto max-w-xl lg:max-w-2xl overflow-hidden"
                             style={{
-                                maskImage: 'radial-gradient(circle at center, black 40%, transparent 95%)',
-                                WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 95%)'
+                                maskImage: 'radial-gradient(circle at center, black 50%, transparent 98%)',
+                                WebkitMaskImage: 'radial-gradient(circle at center, black 50%, transparent 98%)'
                             }}
                         >
                             <img 
                                 src="/hero-student.png" 
                                 alt="Student Learning" 
-                                className="w-full h-auto drop-shadow-sm opacity-95"
+                                className="w-full h-auto drop-shadow-sm opacity-95 transition-transform duration-1000"
                             />
                         </div>
 
@@ -144,6 +147,7 @@ const HomeBanner = () => {
                         <div className="absolute top-1/2 left-[-15%] w-4 h-4 rounded-full bg-blue-400/10 blur-sm animate-pulse" />
                         <div className="absolute bottom-[20%] right-[-15%] w-6 h-6 rounded-full bg-primary/10 blur-md animate-pulse" />
                     </motion.div>
+
 
                 </div>
 
