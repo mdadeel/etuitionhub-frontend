@@ -1,87 +1,74 @@
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Database, Target, Layers, Globe } from "lucide-react";
+import { GraduationCap, CheckCircle, Users, BookOpen, MapPin, Globe } from "lucide-react";
 
-/**
- * About Page
- * Refactored to "Technical Emerald Minimalism"
- */
 const About = () => {
     return (
-        <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary">
-            {/* Background Technical Grid Element */}
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
-                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
-            </div>
-
-            <div className="max-w-4xl mx-auto relative z-10">
-                <header className="mb-24 border-b border-border pb-16">
-                    <div className="flex items-center gap-3 mb-8">
-                        <div className="w-12 h-1 bg-primary"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Institutional Profile</span>
-                    </div>
-                    
-                    <h1 className="text-6xl md:text-7xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85] mb-10">
-                        Educational <br />
-                        <span className="text-muted-foreground">Infrastructure.</span>
-                    </h1>
-                    
-                    <p className="text-xl md:text-2xl text-muted-foreground font-bold leading-relaxed max-w-2xl uppercase tracking-tight">
-                        Bangladesh's premier neural network connecting academic potential with specialized expertise.
-                    </p>
-                </header>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-                    <section className="space-y-8">
-                        <div className="flex items-center gap-3">
-                            <Target size={18} className="text-primary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground">Operational Mission</h2>
-                        </div>
-                        <p className="text-sm text-muted-foreground font-medium leading-loose uppercase tracking-wide">
-                            We are engineering a future where quality academic guidance is no longer a geographical privilege.
-                            By standardizing the discovery and engagement of educational talent, we ensure every student has access to the specialized intelligence they require.
-                        </p>
-                    </section>
-
-                    <section className="space-y-8">
-                        <div className="flex items-center gap-3">
-                            <Layers size={18} className="text-primary" />
-                            <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground">Value Architecture</h2>
-                        </div>
-                        <ul className="space-y-6">
-                            {[
-                                'Verified professional credentials',
-                                'Comprehensive subject indexing',
-                                'Dynamic scheduling protocols',
-                                'Nationwide jurisdictional coverage'
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-center gap-4 group">
-                                    <div className="w-1.5 h-1.5 bg-primary group-hover:scale-150 transition-transform"></div>
-                                    <span className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">{item}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
+        <div className="bg-slate-50 min-h-screen py-16">
+            <div className="max-w-4xl mx-auto px-6">
+                {/* Header */}
+                <div className="mb-12">
+                    <span className="text-sm font-medium text-blue-600">About Us</span>
+                    <h1 className="text-3xl font-bold text-slate-900 mt-2">Connecting students with verified tutors</h1>
                 </div>
 
-                <footer className="mt-32 pt-16 border-t border-border">
-                    <div className="bg-muted/30 p-12 border border-border relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                            <Database size={80} className="text-primary" />
+                {/* Mission */}
+                <section className="bg-white border border-slate-200 rounded-xl p-8 mb-8">
+                    <h2 className="text-xl font-semibold text-slate-900 mb-4">Our Mission</h2>
+                    <p className="text-slate-600 leading-relaxed">
+                        We built e-tuitionBD because finding a good tutor in Bangladesh shouldn't feel like gambling.
+                        Every profile on our platform is verified, every fee is transparent, and every parent can
+                        speak directly to the tutor before making a decision.
+                    </p>
+                </section>
+
+                {/* Stats */}
+                <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    {[
+                        { value: '2,500+', label: 'Active Tutors', icon: Users },
+                        { value: '15,000+', label: 'Students Matched', icon: GraduationCap },
+                        { value: '50+', label: 'Subjects', icon: BookOpen },
+                        { value: '10+', label: 'Cities', icon: MapPin }
+                    ].map((stat, i) => (
+                        <div key={i} className="bg-white border border-slate-200 rounded-xl p-5 text-center">
+                            <stat.icon className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                            <span className="text-2xl font-bold text-slate-900">{stat.value}</span>
+                            <span className="text-sm text-slate-500 block">{stat.label}</span>
                         </div>
-                        <div className="relative z-10 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
-                            <div>
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] mb-2">Established MMXXIV</p>
-                                <p className="text-sm font-black text-foreground uppercase tracking-widest italic group-hover:text-primary transition-colors">
-                                    "Standardizing Excellence in National Education"
-                                </p>
+                    ))}
+                </section>
+
+                {/* Values */}
+                <section className="bg-white border border-slate-200 rounded-xl p-8 mb-8">
+                    <h2 className="text-xl font-semibold text-slate-900 mb-6">Why Choose Us</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {[
+                            'Verified tutor profiles with credentials',
+                            'Transparent pricing - no hidden fees',
+                            'Direct communication with tutors',
+                            'Wide range of subjects and levels'
+                        ].map((item, i) => (
+                            <div key={i} className="flex items-start gap-3">
+                                <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                                <span className="text-slate-600">{item}</span>
                             </div>
-                            <Badge variant="outline" className="rounded-none border-primary text-primary px-6 py-2 text-[10px] font-black uppercase tracking-widest bg-background">
-                                <Globe size={12} className="mr-2" /> GLOBAL_STANDARDS
-                            </Badge>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Coverage */}
+                <section className="bg-white border border-slate-200 rounded-xl p-8">
+                    <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
+                            <Globe className="w-6 h-6 text-blue-600" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold text-slate-900 mb-2">Nationwide Coverage</h2>
+                            <p className="text-slate-600">
+                                We serve students across Bangladesh - from Dhaka to Chattogram, Sylhet to Khulna.
+                                Our platform connects students with tutors regardless of location.
+                            </p>
                         </div>
                     </div>
-                </footer>
+                </section>
             </div>
         </div>
     );

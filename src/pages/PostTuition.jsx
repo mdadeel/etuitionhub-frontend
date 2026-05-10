@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Send, ArrowLeft, Database, GraduationCap, BookOpen, MapPin, DollarSign } from "lucide-react";
+import { Send, ArrowLeft, GraduationCap, BookOpen, MapPin, DollarSign } from "lucide-react";
 
 const PostTuition = () => {
     const { user, loading: authLoading } = useAuth();
@@ -54,155 +54,133 @@ const PostTuition = () => {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Loading</span>
+                    <div className="w-8 h-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+                    <span className="text-sm text-slate-500">Loading...</span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary">
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"
-                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
-            </div>
-
-            <div className="max-w-3xl mx-auto relative z-10">
-                <header className="mb-16 border-b border-border pb-12">
-                    <div className="flex items-center gap-3 mb-8">
-                        <div className="w-12 h-1 bg-primary"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Tuition Posting Interface</span>
-                    </div>
-
-                    <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85] mb-8">
-                        Post a <br />
-                        <span className="text-muted-foreground">Tuition.</span>
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-muted-foreground font-bold leading-relaxed max-w-2xl uppercase tracking-tight">
-                        Define your academic requirements and connect with qualified tutors in your area.
-                    </p>
-                </header>
+        <div className="bg-slate-50 min-h-screen py-12">
+            <div className="max-w-3xl mx-auto px-6">
+                {/* Header */}
+                <div className="mb-8">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-4"
+                    >
+                        <ArrowLeft size={16} /> Back
+                    </button>
+                    <h1 className="text-2xl font-bold text-slate-900 mb-2">Post a tuition requirement</h1>
+                    <p className="text-slate-600">Fill in your academic needs and we'll match you with suitable tutors</p>
+                </div>
 
                 {!user ? (
-                    <div className="bg-muted/30 border border-border p-12 text-center relative">
-                        <Database size={48} className="mx-auto mb-6 text-primary opacity-30" />
-                        <h2 className="text-xl font-black text-foreground uppercase tracking-tight mb-4">Authentication Required</h2>
-                        <p className="text-sm text-muted-foreground font-medium mb-8 uppercase tracking-wide">
-                            You must be logged in to post a tuition request.
-                        </p>
+                    <div className="bg-white border border-slate-200 p-8 rounded-xl text-center">
+                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <GraduationCap size={28} className="text-slate-400" />
+                        </div>
+                        <h2 className="text-lg font-semibold text-slate-900 mb-2">Login required</h2>
+                        <p className="text-slate-600 mb-6">You need to be logged in to post a tuition request</p>
                         <div className="flex items-center justify-center gap-4">
-                            <Button asChild variant="outline" className="rounded-none h-12 px-8 text-xs font-black uppercase tracking-widest">
-                                <Link to="/login">Sign In</Link>
-                            </Button>
-                            <Button asChild className="rounded-none h-12 px-8 text-xs font-black uppercase tracking-widest">
-                                <Link to="/register">Create Account</Link>
-                            </Button>
+                            <Link
+                                to="/login"
+                                className="px-5 py-2.5 border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50"
+                            >
+                                Sign In
+                            </Link>
+                            <Link
+                                to="/register"
+                                className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                            >
+                                Create Account
+                            </Link>
                         </div>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="space-y-8 p-10 bg-background border border-border relative">
-                        <div className="absolute top-0 right-0 p-4 opacity-5">
-                            <Database size={100} className="text-foreground" />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                            <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                    <BookOpen size={12} className="text-primary" /> Subject *
-                                </Label>
+                    <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-xl p-6 space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-slate-700">Subject *</Label>
                                 <Input
                                     value={subject}
                                     onChange={(e) => setSubject(e.target.value)}
                                     placeholder="e.g. Higher Mathematics"
-                                    className="h-12 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary text-sm"
                                     required
                                 />
                             </div>
 
-                            <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                    <GraduationCap size={12} className="text-primary" /> Class Level *
-                                </Label>
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-slate-700">Class Level *</Label>
                                 <select
                                     value={className}
                                     onChange={(e) => setClassName(e.target.value)}
-                                    className="h-12 w-full rounded-none border border-border bg-muted/20 font-bold text-sm px-3 focus-visible:ring-primary focus-visible:outline-none focus-visible:ring-2"
+                                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-slate-50"
                                     required
                                 >
                                     <option value="">Select class</option>
-                                    {['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'HSC'].map(c => (
+                                    {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'SSC', 'HSC 1st Year', 'HSC 2nd Year'].map(c => (
                                         <option key={c} value={c}>{c}</option>
                                     ))}
                                 </select>
                             </div>
 
-                            <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                    <DollarSign size={12} className="text-primary" /> Monthly Budget (BDT) *
-                                </Label>
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-slate-700">Monthly Budget (BDT) *</Label>
                                 <Input
                                     value={salary}
                                     onChange={(e) => setSalary(e.target.value)}
                                     type="number"
                                     placeholder="5000"
-                                    className="h-12 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary text-sm"
                                     required
                                 />
                             </div>
 
-                            <div className="space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                    <BookOpen size={12} className="text-primary" /> Curriculum *
-                                </Label>
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-slate-700">Curriculum *</Label>
                                 <select
                                     value={medium}
                                     onChange={(e) => setMedium(e.target.value)}
-                                    className="h-12 w-full rounded-none border border-border bg-muted/20 font-bold text-sm px-3 focus-visible:ring-primary focus-visible:outline-none focus-visible:ring-2"
+                                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm bg-slate-50"
                                     required
                                 >
                                     <option value="">Select medium</option>
-                                    {['Bangla Medium', 'English Medium'].map(m => (
+                                    {['Bangla Medium', 'English Medium', 'Cambridge', 'IB'].map(m => (
                                         <option key={m} value={m}>{m}</option>
                                     ))}
                                 </select>
                             </div>
                         </div>
 
-                        <div className="space-y-3 relative z-10">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                <MapPin size={12} className="text-primary" /> Location Details *
-                            </Label>
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium text-slate-700">Location *</Label>
                             <Textarea
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
-                                placeholder="Full address for tutor reference..."
-                                className="min-h-[120px] rounded-none border-border bg-muted/20 font-medium focus-visible:ring-primary resize-none p-5 text-sm"
+                                placeholder="Full address (area, street, house number)..."
+                                className="min-h-[100px] resize-none"
                                 required
                             />
                         </div>
 
-                        <div className="pt-4 relative z-10 flex items-center gap-4">
+                        <div className="flex items-center gap-4 pt-2">
                             <Button
                                 type="submit"
                                 disabled={submitting}
-                                className="flex-1 h-14 rounded-none text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-lg"
+                                className="flex-1 h-11"
                             >
-                                {submitting ? (
-                                    <>Publishing...</>
-                                ) : (
-                                    <>Post Tuition <Send size={18} /></>
-                                )}
+                                {submitting ? 'Posting...' : 'Post Tuition'}
                             </Button>
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => navigate(-1)}
-                                className="h-14 rounded-none text-xs font-black uppercase tracking-[0.3em] flex items-center gap-3"
+                                className="h-11 px-5"
                             >
-                                <ArrowLeft size={18} /> Back
+                                Cancel
                             </Button>
                         </div>
                     </form>

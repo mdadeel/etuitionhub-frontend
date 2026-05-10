@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Briefcase, CheckCircle, ArrowRight, Database, GraduationCap, BookOpen, MapPin, Phone, DollarSign, ShieldCheck } from "lucide-react";
+import { Briefcase, CheckCircle, ArrowRight, ArrowLeft, GraduationCap, BookOpen, MapPin, Phone, DollarSign, ShieldCheck } from "lucide-react";
 
 const SUBJECT_OPTIONS = [
     'Mathematics', 'English', 'Bangla', 'Physics', 'Chemistry',
@@ -73,129 +73,116 @@ const BecomeTutor = () => {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Loading</span>
+                    <div className="w-8 h-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+                    <span className="text-sm text-slate-500">Loading...</span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary">
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"
-                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
-            </div>
-
-            <div className="max-w-3xl mx-auto relative z-10">
-                <header className="mb-16 border-b border-border pb-12">
-                    <div className="flex items-center gap-3 mb-8">
-                        <div className="w-12 h-1 bg-primary"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Tutor Registration Protocol</span>
-                    </div>
-
-                    <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85] mb-8">
-                        Become a <br />
-                        <span className="text-muted-foreground">Tutor.</span>
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-muted-foreground font-bold leading-relaxed max-w-2xl uppercase tracking-tight">
-                        Register your expertise and start connecting with students who need your skills.
-                    </p>
-                </header>
+        <div className="bg-slate-50 min-h-screen py-12">
+            <div className="max-w-3xl mx-auto px-6">
+                {/* Header */}
+                <div className="mb-8">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-4"
+                    >
+                        <ArrowLeft size={16} /> Back
+                    </button>
+                    <h1 className="text-2xl font-bold text-slate-900 mb-2">Become a tutor</h1>
+                    <p className="text-slate-600">Create your tutor profile and connect with students</p>
+                </div>
 
                 {!user ? (
-                    <div className="bg-muted/30 border border-border p-12 text-center relative">
-                        <Briefcase size={48} className="mx-auto mb-6 text-primary opacity-30" />
-                        <h2 className="text-xl font-black text-foreground uppercase tracking-tight mb-4">Account Required</h2>
-                        <p className="text-sm text-muted-foreground font-medium mb-8 uppercase tracking-wide">
-                            Create an account to register as a tutor on our platform.
-                        </p>
+                    <div className="bg-white border border-slate-200 p-8 rounded-xl text-center">
+                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Briefcase size={28} className="text-slate-400" />
+                        </div>
+                        <h2 className="text-lg font-semibold text-slate-900 mb-2">Create an account first</h2>
+                        <p className="text-slate-600 mb-6">You need an account to register as a tutor</p>
                         <div className="flex items-center justify-center gap-4">
-                            <Button asChild variant="outline" className="rounded-none h-12 px-8 text-xs font-black uppercase tracking-widest">
-                                <Link to="/login">Sign In</Link>
-                            </Button>
-                            <Button asChild className="rounded-none h-12 px-8 text-xs font-black uppercase tracking-widest">
-                                <Link to="/register">Create Account</Link>
-                            </Button>
+                            <Link
+                                to="/login"
+                                className="px-5 py-2.5 border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50"
+                            >
+                                Sign In
+                            </Link>
+                            <Link
+                                to="/register"
+                                className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                            >
+                                Create Account
+                            </Link>
                         </div>
                     </div>
                 ) : isAlreadyTutor ? (
-                    <div className="bg-muted/30 border border-border p-12 text-center relative">
-                        <ShieldCheck size={48} className="mx-auto mb-6 text-primary" />
-                        <h2 className="text-xl font-black text-foreground uppercase tracking-tight mb-4">You're Already a Tutor</h2>
-                        <p className="text-sm text-muted-foreground font-medium mb-8 uppercase tracking-wide">
-                            Your tutor profile is active. Manage it from your dashboard.
-                        </p>
-                        <div className="flex items-center justify-center gap-4">
-                            <Button asChild className="rounded-none h-12 px-8 text-xs font-black uppercase tracking-widest">
-                                <Link to="/dashboard">Go to Dashboard <ArrowRight size={16} className="ml-2" /></Link>
-                            </Button>
+                    <div className="bg-white border border-slate-200 p-8 rounded-xl text-center">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <ShieldCheck size={28} className="text-green-600" />
                         </div>
+                        <h2 className="text-lg font-semibold text-slate-900 mb-2">You're already a tutor</h2>
+                        <p className="text-slate-600 mb-6">Your tutor profile is active. Manage it from your dashboard.</p>
+                        <Link
+                            to="/dashboard"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                        >
+                            Go to Dashboard <ArrowRight size={16} />
+                        </Link>
                     </div>
                 ) : (
                     <>
                         {/* Step indicator */}
-                        <div className="flex items-center gap-4 mb-12">
+                        <div className="flex items-center gap-4 mb-8">
                             {[1, 2].map(s => (
                                 <div key={s} className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 flex items-center justify-center border text-xs font-black tracking-wider ${
-                                        step >= s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground'
+                                    <div className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${
+                                        step >= s ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'
                                     }`}>
                                         {step > s ? <CheckCircle size={14} /> : s}
                                     </div>
-                                    <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
-                                        step >= s ? 'text-foreground' : 'text-muted-foreground'
+                                    <span className={`text-sm font-medium ${
+                                        step >= s ? 'text-slate-900' : 'text-slate-400'
                                     }`}>
-                                        {s === 1 ? 'Basic Info' : 'Expertise & Location'}
+                                        {s === 1 ? 'Basic Info' : 'Subjects & Location'}
                                     </span>
-                                    {s < 2 && <div className="w-12 h-px bg-border" />}
+                                    {s < 2 && <div className="w-8 h-0.5 bg-slate-200" />}
                                 </div>
                             ))}
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-8 p-10 bg-background border border-border relative">
-                            <div className="absolute top-0 right-0 p-4 opacity-5">
-                                <Database size={100} className="text-foreground" />
-                            </div>
-
+                        <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-xl p-6 space-y-6">
                             {step === 1 && (
-                                <div className="space-y-8 relative z-10">
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                            <Briefcase size={12} className="text-primary" /> Full Name *
-                                        </Label>
+                                <div className="space-y-5">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-slate-700">Full Name *</Label>
                                         <Input
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
-                                            placeholder="YOUR_FULL_NAME"
-                                            className="h-12 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary uppercase text-sm tracking-widest"
+                                            placeholder="Your full name"
                                             required
                                         />
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                            <Phone size={12} className="text-primary" /> Mobile Number
-                                        </Label>
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-slate-700">Phone Number</Label>
                                         <Input
                                             value={phone}
                                             onChange={(e) => setPhone(e.target.value)}
                                             placeholder="01XXXXXXXXX"
-                                            className="h-12 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary text-sm"
                                         />
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                            <GraduationCap size={12} className="text-primary" /> Qualification *
-                                        </Label>
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-slate-700">Qualification *</Label>
                                         <Textarea
                                             value={qualification}
                                             onChange={(e) => setQualification(e.target.value)}
                                             placeholder="e.g. BSc in Mathematics, University of Dhaka"
-                                            className="min-h-[100px] rounded-none border-border bg-muted/20 font-medium focus-visible:ring-primary resize-none p-5 text-sm"
+                                            className="min-h-[100px] resize-none"
                                             required
                                         />
                                     </div>
@@ -203,29 +190,29 @@ const BecomeTutor = () => {
                                     <Button
                                         type="button"
                                         onClick={() => setStep(2)}
-                                        className="w-full h-14 rounded-none text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3"
+                                        className="w-full h-11"
                                     >
-                                        Next Step <ArrowRight size={18} />
+                                        Next Step <ArrowRight size={16} className="ml-2" />
                                     </Button>
                                 </div>
                             )}
 
                             {step === 2 && (
-                                <div className="space-y-8 relative z-10">
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                            <BookOpen size={12} className="text-primary" /> Subjects You Teach * ({subjects.length} selected)
+                                <div className="space-y-5">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-slate-700">
+                                            Subjects You Teach * ({subjects.length} selected)
                                         </Label>
-                                        <div className="flex flex-wrap gap-2 border border-border p-4 bg-muted/20">
+                                        <div className="flex flex-wrap gap-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
                                             {SUBJECT_OPTIONS.map(subject => (
                                                 <button
                                                     key={subject}
                                                     type="button"
                                                     onClick={() => toggleSubject(subject)}
-                                                    className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest border transition-colors ${
+                                                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
                                                         subjects.includes(subject)
-                                                            ? 'border-primary bg-primary text-primary-foreground'
-                                                            : 'border-border text-muted-foreground hover:border-primary/50'
+                                                            ? 'bg-blue-600 text-white border-blue-600'
+                                                            : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
                                                     }`}
                                                 >
                                                     {subject}
@@ -234,49 +221,43 @@ const BecomeTutor = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                                <DollarSign size={12} className="text-primary" /> Expected Salary (BDT)
-                                            </Label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-slate-700">Expected Salary</Label>
                                             <Input
                                                 value={expectedSalary}
                                                 onChange={(e) => setExpectedSalary(e.target.value)}
                                                 type="number"
                                                 placeholder="5000"
-                                                className="h-12 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary text-sm"
                                             />
                                         </div>
 
-                                        <div className="space-y-3">
-                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                                <MapPin size={12} className="text-primary" /> Location *
-                                            </Label>
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-slate-700">Location *</Label>
                                             <Input
                                                 value={location}
                                                 onChange={(e) => setLocation(e.target.value)}
                                                 placeholder="e.g. Dhanmondi, Dhaka"
-                                                className="h-12 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary text-sm"
                                                 required
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-4 pt-4">
+                                    <div className="flex items-center gap-4 pt-2">
                                         <Button
                                             type="button"
                                             variant="outline"
                                             onClick={() => setStep(1)}
-                                            className="h-14 px-8 rounded-none text-xs font-black uppercase tracking-[0.3em]"
+                                            className="h-11 px-5"
                                         >
                                             Back
                                         </Button>
                                         <Button
                                             type="submit"
                                             disabled={submitting}
-                                            className="flex-1 h-14 rounded-none text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-lg"
+                                            className="flex-1 h-11"
                                         >
-                                            {submitting ? 'Publishing Profile...' : 'Activate Tutor Account'}
+                                            {submitting ? 'Creating Profile...' : 'Create Tutor Profile'}
                                         </Button>
                                     </div>
                                 </div>
