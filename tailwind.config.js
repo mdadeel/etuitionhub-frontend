@@ -17,13 +17,9 @@ export default {
           '-apple-system',
           'sans-serif'
         ],
-        mono: [
-          'Geist Mono',
-          'monospace'
-        ]
       },
       colors: {
-        // Core Shadcn variables using HSL
+        // Core variables using HSL
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
@@ -57,36 +53,24 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        
-        // Apple Design System - Explicit Hex for stability
-        'apple-gray': {
-          50: '#FBFBFD',
-          100: '#F5F5F7',
-          200: '#E8E8ED',
-          300: '#D2D2D7',
-          400: '#A1A1A6',
-          500: '#86868B',
-          600: '#6E6E73',
-          700: '#424245',
-          800: '#1D1D1F',
-          900: '#000000',
-        },
-        'apple-blue': {
-          DEFAULT: '#0071E3',
-          dark: '#007AFF',
-        }
+
+        // Trust-first design system
+        success: '#059669',
+        warning: '#D97706',
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        'container': '16px',
-        'pill': '9999px',
       },
       boxShadow: {
-        'apple-sm': '0 2px 4px rgba(0, 0, 0, 0.04)',
-        'apple-md': '0 4px 8px rgba(0, 0, 0, 0.08)',
-        'apple-lg': '0 12px 24px rgba(0, 0, 0, 0.12)',
+        'sm': '0 1px 2px rgba(0, 0, 0, 0.05)',
+        'card': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        'card-hover': '0 4px 6px rgba(0, 0, 0, 0.1)',
+      },
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
       }
     },
   },

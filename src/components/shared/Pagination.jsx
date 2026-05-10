@@ -1,23 +1,17 @@
 import React from 'react';
-import { AppleButton } from './AppleUI';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/**
- * Unified Pagination component with Apple Design System.
- * Supports both step-based (next/prev) and direct page navigation.
- */
-const Pagination = ({ 
-    currentPage, 
-    totalPages, 
-    onPageChange, 
-    onNext, 
-    onPrev, 
-    hasNext, 
+const Pagination = ({
+    currentPage,
+    totalPages,
+    onPageChange,
+    onNext,
+    onPrev,
+    hasNext,
     hasPrev,
     className
 }) => {
-    // Derived states if explicit ones aren't provided
     const _hasNext = hasNext !== undefined ? hasNext : currentPage < totalPages;
     const _hasPrev = hasPrev !== undefined ? hasPrev : currentPage > 1;
     const _onNext = onNext || (() => onPageChange(currentPage + 1));
@@ -26,7 +20,7 @@ const Pagination = ({
     const getPageNumbers = () => {
         const pages = [];
         const maxVisiblePages = 5;
-        
+
         if (totalPages <= maxVisiblePages) {
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
@@ -54,7 +48,7 @@ const Pagination = ({
                 pages.push(totalPages);
             }
         }
-        
+
         return pages;
     };
 
@@ -63,30 +57,33 @@ const Pagination = ({
     if (totalPages <= 1) return null;
 
     return (
-        <div className={cn("flex items-center justify-center gap-3 mt-12 pb-8", className)}>
-            <AppleButton
-                variant="outline"
-                size="sm"
+        <div className={cn("flex items-center justify-center gap-2 mt-8", className)}>
+            <button
                 onClick={_onPrev}
                 disabled={!_hasPrev}
-                className="h-9 w-9 p-0 rounded-xl bg-background/50 border-border/40 hover:bg-background/80"
+                className={cn(
+                    "p-2 rounded-md border border-slate-200 transition-colors",
+                    _hasPrev
+                        ? "hover:bg-slate-50 text-slate-600"
+                        : "text-slate-300 cursor-not-allowed bg-slate-50"
+                )}
             >
                 <ChevronLeft size={16} />
-            </AppleButton>
-            
-            <div className="flex items-center gap-1.5 bg-muted/20 p-1.5 rounded-2xl border border-border/30 backdrop-blur-sm">
+            </button>
+
+            <div className="flex items-center gap-1">
                 {pageNumbers.map((page, index) => (
                     <React.Fragment key={index}>
                         {page === '...' ? (
-                            <span className="px-3 text-xs font-bold text-muted-foreground/30 tracking-widest">...</span>
+                            <span className="px-2 text-sm text-slate-400">...</span>
                         ) : (
                             <button
                                 onClick={() => onPageChange(page)}
                                 className={cn(
-                                    "min-w-[36px] h-8 px-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-300",
+                                    "min-w-[32px] h-8 px-2 rounded-md text-sm font-medium transition-colors",
                                     currentPage === page
-                                        ? "bg-primary text-primary-foreground shadow-apple-sm scale-105"
-                                        : "text-muted-foreground hover:text-foreground hover:bg-background/40"
+                                        ? "bg-blue-600 text-white"
+                                        : "text-slate-600 hover:bg-slate-100"
                                 )}
                             >
                                 {page}
@@ -95,16 +92,19 @@ const Pagination = ({
                     </React.Fragment>
                 ))}
             </div>
-            
-            <AppleButton
-                variant="outline"
-                size="sm"
+
+            <button
                 onClick={_onNext}
                 disabled={!_hasNext}
-                className="h-9 w-9 p-0 rounded-xl bg-background/50 border-border/40 hover:bg-background/80"
+                className={cn(
+                    "p-2 rounded-md border border-slate-200 transition-colors",
+                    _hasNext
+                        ? "hover:bg-slate-50 text-slate-600"
+                        : "text-slate-300 cursor-not-allowed bg-slate-50"
+                )}
             >
                 <ChevronRight size={16} />
-            </AppleButton>
+            </button>
         </div>
     );
 };

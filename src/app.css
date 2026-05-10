@@ -8,26 +8,27 @@ html, body {
 
 @layer base {
   :root {
-    --background: 240 10% 98%;
-    --foreground: 240 5% 15%;
+    /* Trust-first design system - darker text, minimal blue */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 8%;  /* #0F172A - darker text */
     --card: 0 0% 100%;
-    --card-foreground: 240 5% 15%;
+    --card-foreground: 215 25% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 5% 15%;
-    --primary: 210 100% 45%;
+    --popover-foreground: 215 25% 8%;
+    --primary: 217 91% 60%;  /* #2563EB - blue accent */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 5% 25%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 45%;
-    --accent: 240 5% 96%;
-    --accent-foreground: 240 5% 15%;
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 215 25% 20%;  /* #334155 */
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 20% 40%;  /* #64748B */
+    --accent: 210 20% 96%;
+    --accent-foreground: 215 25% 8%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 5% 92%;
-    --input: 240 5% 92%;
-    --ring: 210 100% 45%;
-    --radius: 20px;
+    --border: 214 32% 88%;  /* #E2E8F0 */
+    --input: 214 32% 88%;
+    --ring: 217 91% 60%;
+    --radius: 8px;  /* 8px - tighter, more mature */
   }
 
   .dark {
@@ -71,27 +72,16 @@ html, body {
 }
 
 @layer utilities {
+  /* Trust-first design utilities */
   .glass {
-    @apply bg-background/70 backdrop-blur-xl border border-border shadow-apple-sm;
-  }
-  
-  .glass-card {
-    @apply bg-card border border-border shadow-apple-sm hover:shadow-apple-md transition-all duration-300 rounded-container;
-  }
-  
-  .apple-card {
-    @apply bg-card border border-border shadow-apple-sm rounded-container overflow-hidden;
+    @apply bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm;
   }
 
-  .mac-compact {
-    @apply py-1.5 px-3 text-[11px] leading-tight font-medium;
+  .card-compact {
+    @apply bg-white border border-slate-200 shadow-sm rounded-lg;
   }
 
-  .mac-pill {
-    @apply rounded-pill px-4 py-1.5 text-xs font-semibold transition-all active:scale-[0.96];
-  }
-
-  .mac-input {
-    @apply bg-muted border-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all rounded-md px-3 py-1.5 text-xs;
+  .card-compact-hover {
+    @apply bg-white border border-slate-200 shadow-sm rounded-lg hover:shadow-md hover:border-blue-300 transition-all;
   }
 }

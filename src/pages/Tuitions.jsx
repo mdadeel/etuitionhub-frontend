@@ -6,18 +6,14 @@ import TuitionCard from '../components/shared/TuitionCard';
 import Pagination from '../components/shared/Pagination';
 import { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
 import EmptyState from '../components/shared/EmptyState';
-import { useAuth } from '../contexts/AuthContext';
 import { SlidersHorizontal, Filter, X, LayoutGrid, MapPin } from 'lucide-react';
 import FilterSelect from '../components/shared/FilterSelect';
-import { AppleCard, AppleButton, AppleHeader } from '../components/shared/AppleUI/index'
-import { motion, AnimatePresence } from 'framer-motion';
 
 const Tuitions = () => {
-    const { userRole } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
 
-    const [page, setPage] = useState( page => 1);
+    const [page, setPage] = useState(1);
 
     const {
         filters,
@@ -36,7 +32,6 @@ const Tuitions = () => {
         status: 'approved'
     });
 
-    // Process subjects to handle comma-separated strings from the backend
     const processedSubjects = useMemo(() => {
         if (!filterOptions?.subjects) return [];
         const subjectsSet = new Set();
@@ -66,62 +61,41 @@ const Tuitions = () => {
     };
 
     if (loading && tuitions.length === 0) return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
             <TuitionGridSkeleton />
         </div>
     );
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.05
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 15 },
-        visible: { 
-            opacity: 1, 
-            y: 0,
-            transition: {
-                duration: 0.4,
-                ease: [0.21, 0.47, 0.32, 0.98]
-            }
-        }
-    };
-
     return (
-        <div className="bg-background min-h-screen">
-            <div className="w-full px-6 md:px-12 py-18">
-
-                <AppleHeader
-                    title="Available Tuition Jobs"
-                    subtitle="Find the perfect teaching opportunity that matches your skills and location."
-                    action={
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-2xl border border-border/50">
-                                <span className="text-xl font-bold text-foreground tabular-nums">{pagination?.totalItems || 0}</span>
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Jobs</span>
-                            </div>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-2xl border border-border/50">
-                                <span className="text-xl font-bold text-foreground tabular-nums">{totalPages}</span>
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pages</span>
-                            </div>
+        <div className="bg-slate-50 min-h-screen">
+            <div className="max-w-7xl mx-auto px-4 py-6">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h1 className="text-xl font-semibold text-slate-900">Available Tuition Jobs</h1>
+                        <p className="text-sm text-slate-600">Find the perfect teaching opportunity that matches your skills.</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-md border border-slate-200">
+                            <span className="text-lg font-semibold text-slate-900">{pagination?.totalItems || 0}</span>
+                            <span className="text-xs text-slate-500">Jobs</span>
                         </div>
-                    }
-                />
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-md border border-slate-200">
+                            <span className="text-lg font-semibold text-slate-900">{totalPages}</span>
+                            <span className="text-xs text-slate-500">Pages</span>
+                        </div>
+                    </div>
+                </div>
 
-                <div className="flex flex-col md:grid md:grid-cols-12 gap-10">
-                    <aside className="md:col-span-3 space-y-6">
-                        <AppleCard className="p-6 sticky top-24" hover={false}>
-                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                <div className="grid lg:grid-cols-4 gap-6">
+                    {/* Sidebar */}
+                    <aside className="lg:col-span-1">
+                        <div className="bg-white p-4 rounded-lg border border-slate-200 sticky top-20">
+                            <h3 className="text-sm font-medium text-slate-700 mb-4 flex items-center gap-2">
                                 <Filter size={14} /> Filters
                             </h3>
 
-                            <div className="mb-8">
+                            <div className="space-y-4">
                                 <FilterSelect
                                     label="Sort by"
                                     value={filters.sortBy}
@@ -134,9 +108,7 @@ const Tuitions = () => {
                                         { value: 'salary-low', label: 'Salary: Low to High' },
                                     ]}
                                 />
-                            </div>
 
-                            <div className="mb-8">
                                 <FilterSelect
                                     label="Class"
                                     value={filters.classFilter || 'all'}
@@ -145,9 +117,7 @@ const Tuitions = () => {
                                     placeholder="All Classes"
                                     options={['all', ...(filterOptions?.classes || [])]}
                                 />
-                            </div>
 
-                            <div className="mb-8">
                                 <FilterSelect
                                     label="Location"
                                     value={filters.locationFilter || 'all'}
@@ -156,93 +126,87 @@ const Tuitions = () => {
                                     placeholder="All Locations"
                                     options={['all', ...(filterOptions?.locations?.filter(loc => !!loc) || [])]}
                                 />
-                            </div>
 
-                            <div>
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Subjects</label>
-                                    {filters.subjects.length > 0 && (
-                                        <button 
-                                            onClick={() => updateFilter('subjects', [])} 
-                                            className="text-[9px] font-bold text-primary hover:underline uppercase"
-                                        >
-                                            Reset
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar py-1">
-                                    {processedSubjects.map(subject => (
-                                        <button
-                                            key={subject}
-                                            onClick={() => {
-                                                const current = filters.subjects;
-                                                const updated = current.includes(subject)
-                                                    ? current.filter(s => s !== subject)
-                                                    : [...current, subject];
-                                                updateFilter('subjects', updated);
-                                            }}
-                                            className={`px-3 py-1.5 rounded-full text-[10px] font-black transition-all border ${filters.subjects.includes(subject)
-                                                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                                                : 'bg-muted/30 text-muted-foreground border-border/40 hover:bg-muted/60 hover:text-foreground'
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-sm font-medium text-slate-600 block">Subjects</label>
+                                        {filters.subjects.length > 0 && (
+                                            <button
+                                                onClick={() => updateFilter('subjects', [])}
+                                                className="text-xs text-blue-600 hover:underline"
+                                            >
+                                                Reset
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                                        {processedSubjects.map(subject => (
+                                            <button
+                                                key={subject}
+                                                onClick={() => {
+                                                    const current = filters.subjects;
+                                                    const updated = current.includes(subject)
+                                                        ? current.filter(s => s !== subject)
+                                                        : [...current, subject];
+                                                    updateFilter('subjects', updated);
+                                                }}
+                                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                                                    filters.subjects.includes(subject)
+                                                        ? 'bg-blue-600 text-white'
+                                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                                 }`}
-                                        >
-                                            {subject}
-                                        </button>
-                                    ))}
+                                            >
+                                                {subject}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
                             {(searchQuery || filters.classFilter || filters.locationFilter || filters.subjects.length > 0 || filters.sortBy !== 'newest') && (
-                                <AppleButton
+                                <button
                                     onClick={handleClearAll}
-                                    variant="ghost"
-                                    className="w-full mt-2 text-[10px] font-bold uppercase tracking-widest border border-border/50 hover:bg-muted/50 rounded-xl"
+                                    className="w-full mt-4 px-3 py-2 text-sm text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 flex items-center justify-center gap-2"
                                 >
-                                    <X size={12} className="mr-2" /> Clear Filters
-                                </AppleButton>
+                                    <X size={14} /> Clear Filters
+                                </button>
                             )}
-                        </AppleCard>
+                        </div>
                     </aside>
 
-                    <main className="md:col-span-9">
+                    {/* Main Content */}
+                    <main className="lg:col-span-3">
                         {searchQuery && (
-                            <div className="mb-8 flex items-center gap-3">
-                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Searching for:</span>
-                                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold font-mono tracking-tight">"{searchQuery}"</span>
+                            <div className="mb-4 flex items-center gap-2">
+                                <span className="text-sm text-slate-500">Searching for:</span>
+                                <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded text-sm font-medium">"{searchQuery}"</span>
                             </div>
                         )}
 
                         {error ? (
-                            <div className="py-32 text-center">
-                                <h3 className="text-xl font-bold text-destructive mb-2">Error</h3>
-                                <p className="text-muted-foreground text-sm max-w-md mx-auto">{error}</p>
+                            <div className="py-12 text-center">
+                                <h3 className="text-lg font-semibold text-red-600 mb-2">Error</h3>
+                                <p className="text-sm text-slate-600 max-w-md mx-auto">{error}</p>
                             </div>
                         ) : tuitions.length === 0 ? (
-                            <div className="py-32">
+                            <div className="py-12">
                                 <EmptyState
-                                    title="No Jobs Detected"
-                                    message="We couldn't locate any academic requirements matching your current filtering parameters."
+                                    title="No Jobs Found"
+                                    message="We couldn't locate any tuition jobs matching your criteria."
                                     onAction={handleClearAll}
-                                    actionLabel="Reset Parameters"
+                                    actionLabel="Reset Filters"
                                 />
                             </div>
                         ) : (
-                            <div className="space-y-12">
-                                <motion.div 
-                                    variants={containerVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                                >
+                            <div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {tuitions.map((tuition) => (
-                                        <motion.div key={tuition._id} variants={itemVariants}>
-                                            <TuitionCard tuition={tuition} />
-                                        </motion.div>
+                                        <TuitionCard key={tuition._id} tuition={tuition} />
                                     ))}
-                                </motion.div>
+                                </div>
 
                                 {totalPages > 1 && (
-                                    <div className="pt-10 border-t border-border/50">
+                                    <div className="pt-6 border-t border-slate-200">
                                         <Pagination
                                             currentPage={currentPage}
                                             totalPages={totalPages}
@@ -264,4 +228,3 @@ const Tuitions = () => {
 };
 
 export default Tuitions;
-

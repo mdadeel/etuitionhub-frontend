@@ -14,6 +14,8 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import Blog from './pages/Blog'
 import TutorDetails from './pages/TutorDetails'
 import TuitionDetails from "./pages/TuitionDetails"
+import PostTuition from './pages/PostTuition'
+import BecomeTutor from './pages/BecomeTutor'
 import About from './pages/About'
 import Contact from "./pages/Contact"
 import Dashboard from './pages/Dashboard'
@@ -59,6 +61,8 @@ let App = () => {
                 <Route path="/tuition/:id" element={<TuitionDetails />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/post-tuition" element={<PostTuition />} />
+                <Route path="/become-tutor" element={<BecomeTutor />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path="/admin-login" element={<PublicRoute><AdminLogin /></PublicRoute>} />

@@ -1,13 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, ArrowRight, ShieldCheck, Clock, Briefcase, GraduationCap } from 'lucide-react';
-import { AppleCard, AppleButton } from './AppleUI/index';
-import { cn } from '@/lib/utils';
+import { MapPin, GraduationCap, ArrowRight } from 'lucide-react';
 import { formatRelativeTime } from '@/utils/dateUtils';
 
-/**
- * Compact TuitionCard component.
- */
 const TuitionCard = ({ tuition, className }) => {
     const navigate = useNavigate();
 
@@ -19,63 +14,47 @@ const TuitionCard = ({ tuition, className }) => {
     };
 
     return (
-        <AppleCard 
-            className={cn("flex flex-col h-full group", className)} 
-            hover={true}
-            tonal={false}
-            glass={false}
+        <div
+            className={`p-4 bg-white border border-slate-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer ${className}`}
             onClick={handleViewDetails}
         >
-            <div className="p-6 flex-grow flex flex-col bg-card">
-                {/* Top Section: Subject & Time */}
-                <div className="flex justify-between items-start gap-4 mb-4">
-                    <h2 className="text-2xl font-black text-foreground group-hover:text-primary transition-colors leading-none tracking-tight">
-                        {tuition.subject}
-                    </h2>
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest shrink-0 mt-1">
-                        {formatRelativeTime(tuition.createdAt)}
-                    </p>
+            <div className="flex justify-between items-start gap-3 mb-3">
+                <h3 className="font-semibold text-slate-900 text-base">{tuition.subject}</h3>
+                <span className="text-xs text-slate-500 shrink-0">
+                    {formatRelativeTime(tuition.createdAt)}
+                </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-600 mb-3">
+                <div className="flex items-center gap-1.5">
+                    <GraduationCap className="w-4 h-4 text-slate-400" />
+                    <span>{tuition.qualification || `B.Sc in ${tuition.subject}`}</span>
                 </div>
-                
-                {/* Qualification & Location in same block/line area */}
-                <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-[11px] text-foreground font-black mb-5 py-3 border-y border-border/20">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                        <GraduationCap size={13} className="text-primary shrink-0" />
-                        <span className="truncate">{tuition.qualification || `B.Sc in ${tuition.subject}`}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 min-w-0">
-                        <MapPin size={13} className="text-primary shrink-0" />
-                        <span className="truncate">{tuition.location}</span>
-                    </div>
-                </div>
-
-                {/* Description - Black & Bold, reduced margin */}
-                <p className="text-sm text-foreground font-bold leading-snug line-clamp-2 mb-6 italic opacity-80">
-                    "{tuition.description || "Providing specialized academic support for conceptual clarity."}"
-                </p>
-
-                {/* Footer Row: Salary & Button */}
-                <div className="mt-auto pt-5 flex items-center justify-between gap-4">
-                    <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-black text-foreground tabular-nums tracking-tighter">৳{tuition.salary}</span>
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">/mo</span>
-                    </div>
-
-                    <AppleButton
-                        variant="primary"
-                        size="sm"
-                        className="rounded-2xl font-black text-[11px] uppercase tracking-widest px-8 py-2.5 group/btn h-11 bg-black text-white hover:bg-black/90 border-none shadow-apple-lg transition-all"
-                        onClick={handleViewDetails}
-                    >
-                        Apply <ArrowRight size={14} className="ml-1 transition-transform group-hover/btn:translate-x-1" />
-                    </AppleButton>
+                <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-slate-400" />
+                    <span>{tuition.location}</span>
                 </div>
             </div>
-        </AppleCard>
-    );
 
+            <p className="text-sm text-slate-600 line-clamp-2 mb-4">
+                {tuition.description || "Providing specialized academic support for conceptual clarity."}
+            </p>
+
+            <div className="flex items-center justify-between">
+                <div className="flex items-baseline">
+                    <span className="text-lg font-semibold text-slate-900">৳{tuition.salary}</span>
+                    <span className="text-xs text-slate-500 ml-1">/mo</span>
+                </div>
+                <button
+                    className="flex items-center gap-1 text-sm text-blue-600 font-medium hover:text-blue-700"
+                    onClick={handleViewDetails}
+                >
+                    Apply
+                    <ArrowRight className="w-4 h-4" />
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default TuitionCard;
-
-

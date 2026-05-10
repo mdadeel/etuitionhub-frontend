@@ -7,25 +7,21 @@ import TutorCard from '../components/shared/TutorCard';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import { isValidObjectId } from '../utils/validators';
-import { 
-    ArrowLeft, 
+import {
+    ArrowLeft,
     ArrowRight,
-    Star, 
-    MapPin, 
-    Calendar, 
-    ShieldCheck, 
+    Star,
+    MapPin,
+    Calendar,
+    ShieldCheck,
     Award,
     Send,
-    Bookmark,
-    ExternalLink,
+    Heart,
     CheckCircle2,
     Briefcase,
     Clock,
-    GraduationCap,
-    Heart
+    GraduationCap
 } from 'lucide-react';
-import { AppleCard, AppleButton } from '../components/shared/AppleUI/index';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const TutorDetails = () => {
     const { id } = useParams();
@@ -36,8 +32,7 @@ const TutorDetails = () => {
     useEffect(() => {
         const fetchTutorDetails = async () => {
             setLoading(true);
-            
-            // 1. Check if it's a demo ID first to avoid useless API calls
+
             if (!isValidObjectId(id)) {
                 const found = demoTutors.find(t => t._id === id);
                 if (found) {
@@ -47,7 +42,6 @@ const TutorDetails = () => {
                 }
             }
 
-            // 2. Otherwise try fetching from real database
             try {
                 const response = await api.get(`/api/tutors/${id}`);
                 if (response.data) {
@@ -57,7 +51,6 @@ const TutorDetails = () => {
                 }
             } catch (error) {
                 console.warn("API fetch failed:", error.message);
-                // Last resort fallback
                 const found = demoTutors.find(t => t._id === id);
                 if (found) {
                     setTutor(found);
@@ -84,264 +77,236 @@ const TutorDetails = () => {
     };
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
             <LoadingSpinner />
         </div>
     );
 
     if (!tutor) {
         return (
-            <div className="max-w-xl mx-auto px-6 py-20 text-center bg-background min-h-screen flex flex-col items-center justify-center">
-                <h1 className="text-2xl font-bold text-foreground mb-2">Profile Not Found</h1>
-                <p className="text-muted-foreground mb-8 text-sm">We couldn't find the tutor you are looking for.</p>
-                <AppleButton asChild variant="primary">
-                    <Link to="/tutors">Back to Tutors</Link>
-                </AppleButton>
+            <div className="max-w-xl mx-auto px-4 py-20 text-center bg-slate-50 min-h-screen flex flex-col items-center justify-center">
+                <h1 className="text-xl font-semibold text-slate-900 mb-2">Profile Not Found</h1>
+                <p className="text-sm text-slate-600 mb-6">We couldn't find the tutor you are looking for.</p>
+                <Link to="/tutors" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Back to Tutors
+                </Link>
             </div>
         );
     }
 
-    // Safe displayName splitting
     const firstName = tutor.displayName ? tutor.displayName.split(' ')[0] : 'Tutor';
 
-    const containerVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { 
-            opacity: 1, 
-            y: 0,
-            transition: {
-                duration: 0.6,
-                ease: [0.21, 0.47, 0.32, 0.98],
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 10 },
-        visible: { opacity: 1, y: 0 }
-    };
-
     return (
-        <div className="bg-background min-h-screen py-12 px-6 selection:bg-primary/20 selection:text-primary">
-            <motion.div 
-                initial="hidden"
-                animate="visible"
-                variants={containerVariants}
-                className="max-w-[1100px] mx-auto"
-            >
+        <div className="bg-slate-50 min-h-screen py-8">
+            <div className="max-w-6xl mx-auto px-4">
                 {/* Back Link */}
-                <div className="mb-10">
-                    <Link to="/tutors" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group">
-                        <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> 
+                <div className="mb-6">
+                    <Link to="/tutors" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600">
+                        <ArrowLeft size={16} />
                         Back to Tutors
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-                    {/* Left Column */}
-                    <div className="lg:col-span-8 space-y-10">
+                <div className="grid lg:grid-cols-3 gap-6">
+                    {/* Main Content */}
+                    <div className="lg:col-span-2 space-y-4">
                         {/* Identity Card */}
-                        <AppleCard className="p-10 flex flex-col md:flex-row gap-10 items-start" hover={false}>
-                            <div className="relative shrink-0">
-                                <div className="w-32 h-32 md:w-48 md:h-48 rounded-[2.5rem] overflow-hidden border border-border/50 shadow-apple-lg">
-                                    <img
-                                        src={tutor.photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
-                                        alt={tutor.displayName || 'Tutor'}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                {tutor.isVerified && (
-                                    <div className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-2 rounded-2xl shadow-apple-lg border-4 border-background">
-                                        <ShieldCheck size={20} />
+                        <div className="bg-white p-6 rounded-lg border border-slate-200">
+                            <div className="flex flex-col md:flex-row gap-6">
+                                <div className="relative shrink-0">
+                                    <div className="w-28 h-28 rounded-lg overflow-hidden border border-slate-200">
+                                        <img
+                                            src={tutor.photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
+                                            alt={tutor.displayName || 'Tutor'}
+                                            className="w-full h-full object-cover"
+                                        />
                                     </div>
-                                )}
-                            </div>
-
-                            <div className="flex-grow pt-2">
-                                <div className="flex flex-wrap items-center gap-3 mb-4">
-                                    <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest border border-primary/20">Verified Expert</span>
-                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 px-3 py-1 bg-muted/50 rounded-full border border-border/50">
-                                        <MapPin size={10} className="text-primary" /> {tutor.location || 'N/A'}
-                                    </span>
+                                    {tutor.isVerified && (
+                                        <div className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-1.5 rounded-full">
+                                            <ShieldCheck size={16} />
+                                        </div>
+                                    )}
                                 </div>
 
-                                <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-2 tracking-tight">
-                                    {tutor.displayName || 'Academic Specialist'}
-                                </h1>
-                                <p className="text-lg md:text-xl text-muted-foreground font-semibold mb-8 flex items-center gap-2">
-                                    <GraduationCap size={20} className="text-primary" />
-                                    {tutor.qualification || 'Verified Educator'}
-                                </p>
+                                <div className="flex-grow">
+                                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                                        {tutor.isVerified && (
+                                            <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">Verified</span>
+                                        )}
+                                        <span className="text-xs text-slate-500 flex items-center gap-1 px-2 py-1 bg-slate-100 rounded-full">
+                                            <MapPin size={12} /> {tutor.location || 'N/A'}
+                                        </span>
+                                    </div>
 
-                                <div className="flex items-center gap-10 pt-8 border-t border-border/50">
-                                    <div>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Monthly Fee</p>
-                                        <p className="text-2xl font-bold text-foreground tabular-nums">৳{tutor.expectedSalary || 'Negotiable'}</p>
-                                    </div>
-                                    <div className="w-px h-10 bg-border/50"></div>
-                                    <div>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Experience</p>
-                                        <p className="text-2xl font-bold text-foreground">{tutor.experience || 'Verified'}</p>
-                                    </div>
-                                    <div className="w-px h-10 bg-border/50"></div>
-                                    <div>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Rating</p>
-                                        <div className="flex items-center gap-1.5">
-                                            <p className="text-2xl font-bold text-foreground">{tutor.ratings || '4.9'}</p>
-                                            <Star size={18} className="fill-yellow-400 text-yellow-400" />
+                                    <h1 className="text-xl font-semibold text-slate-900 mb-1">
+                                        {tutor.displayName || 'Tutor'}
+                                    </h1>
+                                    <p className="text-sm text-slate-600 mb-4 flex items-center gap-2">
+                                        <GraduationCap size={16} className="text-blue-600" />
+                                        {tutor.qualification || 'Verified Educator'}
+                                    </p>
+
+                                    <div className="flex items-center gap-6 pt-4 border-t border-slate-200">
+                                        <div>
+                                            <p className="text-xs text-slate-500 mb-1">Monthly Fee</p>
+                                            <p className="text-lg font-semibold text-slate-900">৳{tutor.expectedSalary || 'Negotiable'}</p>
+                                        </div>
+                                        <div className="w-px h-8 bg-slate-200"></div>
+                                        <div>
+                                            <p className="text-xs text-slate-500 mb-1">Experience</p>
+                                            <p className="text-lg font-semibold text-slate-900">{tutor.experience || 'Verified'}</p>
+                                        </div>
+                                        <div className="w-px h-8 bg-slate-200"></div>
+                                        <div>
+                                            <p className="text-xs text-slate-500 mb-1">Rating</p>
+                                            <div className="flex items-center gap-1">
+                                                <p className="text-lg font-semibold text-slate-900">{tutor.ratings || '4.9'}</p>
+                                                <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </AppleCard>
+                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <AppleCard className="p-8" hover={false}>
-                                <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                                    <Award size={16} className="text-primary" /> Specialized Subjects
+                        {/* Subjects & Availability */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-white p-4 rounded-lg border border-slate-200">
+                                <h2 className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
+                                    <Award size={14} className="text-blue-600" /> Subjects
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
                                     {Array.isArray(tutor.subjects) ? tutor.subjects.map((subject, idx) => (
-                                        <span key={idx} className="bg-muted text-foreground px-4 py-2 rounded-xl text-xs font-bold border border-border/50">
+                                        <span key={idx} className="bg-slate-100 text-slate-700 px-3 py-1 rounded text-xs">
                                             {subject}
                                         </span>
                                     )) : (
-                                        <span className="text-muted-foreground text-xs font-medium">No subjects listed</span>
+                                        <span className="text-slate-500 text-xs">No subjects listed</span>
                                     )}
                                 </div>
-                            </AppleCard>
+                            </div>
 
-                            <AppleCard className="p-8" hover={false}>
-                                <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                                    <Calendar size={16} className="text-primary" /> Weekly Availability
+                            <div className="bg-white p-4 rounded-lg border border-slate-200">
+                                <h2 className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
+                                    <Calendar size={14} className="text-blue-600" /> Availability
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
                                     {Array.isArray(tutor.availableDays) ? tutor.availableDays.map((day, idx) => (
-                                        <span key={idx} className="bg-muted/50 border border-border/50 px-4 py-2 rounded-xl text-xs font-bold text-foreground">
+                                        <span key={idx} className="bg-slate-100 text-slate-700 px-3 py-1 rounded text-xs">
                                             {day}
                                         </span>
                                     )) : (
-                                        <span className="text-muted-foreground text-xs font-medium">Contact for availability</span>
+                                        <span className="text-slate-500 text-xs">Contact for availability</span>
                                     )}
                                 </div>
-                            </AppleCard>
+                            </div>
                         </div>
 
                         {/* About Section */}
-                        <AppleCard className="p-10" hover={false}>
-                            <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6">About the Tutor</h2>
-                            <p className="text-lg text-foreground font-bold leading-relaxed">
-                                {tutor.displayName} is a highly qualified educator specialized in {Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'their field'}. 
-                                With {tutor.experience || 'years'} of proven experience, they provide a structured and simplified 
-                                learning approach tailored for students in {tutor.location || 'their area'}.
+                        <div className="bg-white p-4 rounded-lg border border-slate-200">
+                            <h2 className="text-sm font-medium text-slate-700 mb-3">About the Tutor</h2>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                                {tutor.displayName} is a qualified educator specialized in {Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'their field'}.
+                                With {tutor.experience || 'years'} of experience, they provide structured learning for students in {tutor.location || 'their area'}.
                             </p>
-                            <p className="text-base text-muted-foreground mt-4 leading-relaxed font-medium">
-                                Committed to academic excellence and student growth, {firstName} 
-                                focuses on building strong conceptual foundations and problem-solving skills.
+                            <p className="text-sm text-slate-600 mt-3 leading-relaxed">
+                                Committed to academic excellence and student growth, {firstName} focuses on building strong conceptual foundations.
                             </p>
-                        </AppleCard>
+                        </div>
                     </div>
 
-                    {/* Right Column */}
-                    <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
-                        <AppleCard className="p-8 bg-card shadow-xl relative overflow-hidden" hover={false}>
-                            <div className="relative z-10 text-center">
-                                <h3 className="text-2xl font-bold text-foreground mb-3">Learn with {firstName}</h3>
-                                <p className="text-sm text-muted-foreground mb-10 font-medium">
-                                    Book a trial class and experience a new standard of academic support.
+                    {/* Sidebar */}
+                    <div className="space-y-4">
+                        <div className="bg-white p-4 rounded-lg border border-slate-200">
+                            <div className="text-center">
+                                <h3 className="text-base font-medium text-slate-900 mb-2">Learn with {firstName}</h3>
+                                <p className="text-sm text-slate-600 mb-4">
+                                    Book a trial class and experience quality academic support.
                                 </p>
 
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                     {!user ? (
-                                        <AppleButton asChild variant="secondary" className="w-full h-14 text-sm">
-                                            <Link to="/login">Login to Message</Link>
-                                        </AppleButton>
+                                        <Link to="/login" className="block w-full px-4 py-2.5 bg-slate-100 text-slate-700 font-medium rounded-md hover:bg-slate-200 text-sm">
+                                            Login to Message
+                                        </Link>
                                     ) : (
-                                        <AppleButton 
+                                        <button
                                             onClick={handleContact}
-                                            className="w-full h-14 shadow-apple-md text-sm"
+                                            className="w-full px-4 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 text-sm"
                                         >
-                                            <Send size={18} className="mr-2" /> Contact Tutor
-                                        </AppleButton>
+                                            <Send size={16} /> Contact Tutor
+                                        </button>
                                     )}
 
-                                    <AppleButton 
-                                        variant="outline"
+                                    <button
                                         onClick={handleSave}
-                                        className="w-full h-14 text-sm"
+                                        className="w-full px-4 py-2.5 border border-slate-200 text-slate-600 font-medium rounded-md hover:bg-slate-50 flex items-center justify-center gap-2 text-sm"
                                     >
-                                        <Heart size={18} className="mr-2" /> Save Profile
-                                    </AppleButton>
+                                        <Heart size={16} /> Save Profile
+                                    </button>
                                 </div>
 
-                                <div className="mt-10 pt-8 border-t border-border/50 flex items-center justify-center gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                                        <CheckCircle2 size={24} />
+                                <div className="mt-4 pt-4 border-t border-slate-200 flex items-center justify-center gap-3">
+                                    <div className="w-8 h-8 bg-blue-50 flex items-center justify-center text-blue-600 rounded-full">
+                                        <CheckCircle2 size={16} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[11px] font-bold text-foreground uppercase tracking-widest">Verified Profile</p>
-                                        <p className="text-[10px] text-muted-foreground font-semibold uppercase">Documents Validated</p>
+                                        <p className="text-xs font-medium text-slate-900">Verified Profile</p>
+                                        <p className="text-xs text-slate-500">Documents Validated</p>
                                     </div>
                                 </div>
                             </div>
-                        </AppleCard>
+                        </div>
 
                         {/* Quick Info */}
-                        <AppleCard className="p-8 bg-muted/20 border-dashed" hover={false}>
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-primary shadow-sm">
-                                        <Briefcase size={18} />
+                        <div className="bg-white p-4 rounded-lg border border-slate-200">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-slate-100 flex items-center justify-center text-slate-600 rounded">
+                                        <Briefcase size={14} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Response Time</p>
-                                        <p className="text-sm font-bold text-foreground">Under 2 hours</p>
+                                        <p className="text-xs text-slate-500">Response Time</p>
+                                        <p className="text-sm font-medium text-slate-900">Under 2 hours</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-primary shadow-sm">
-                                        <Clock size={18} />
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-slate-100 flex items-center justify-center text-slate-600 rounded">
+                                        <Clock size={14} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Active Status</p>
-                                        <p className="text-sm font-bold text-foreground">Recently Active</p>
+                                        <p className="text-xs text-slate-500">Active Status</p>
+                                        <p className="text-sm font-medium text-slate-900">Recently Active</p>
                                     </div>
                                 </div>
                             </div>
-                        </AppleCard>
+                        </div>
                     </div>
                 </div>
 
                 {/* Similar Tutors */}
-                <div className="mt-24 pt-16 border-t border-border/50">
-                    <div className="flex items-end justify-between mb-12">
+                <div className="mt-8 pt-6 border-t border-slate-200">
+                    <div className="flex items-center justify-between mb-4">
                         <div>
-                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2 block">Recommendations</span>
-                            <h2 className="text-3xl font-bold text-foreground tracking-tight">Similar Expert Tutors</h2>
+                            <h2 className="text-lg font-semibold text-slate-900">Similar Tutors</h2>
                         </div>
-                        <AppleButton asChild variant="ghost" size="sm" className="group text-xs font-bold uppercase tracking-widest">
-                            <Link to="/tutors" className="flex items-center gap-2">
-                                View All <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-                            </Link>
-                        </AppleButton>
+                        <Link to="/tutors" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                            View All <ArrowRight size={14} />
+                        </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {demoTutors
                             .filter(t => t._id !== id)
                             .slice(0, 3)
-                            .map((item, idx) => (
-                                <motion.div key={item._id} variants={itemVariants}>
-                                    <TutorCard tutor={item} />
-                                </motion.div>
+                            .map((item) => (
+                                <TutorCard key={item._id} tutor={item} />
                             ))}
                     </div>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 };
 
 export default TutorDetails;
-

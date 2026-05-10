@@ -1,202 +1,193 @@
 import { useNavigate } from 'react-router-dom';
-import { motion, useInView } from "framer-motion";
-import { useRef, useState, useMemo, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, ArrowRight, Sparkles, CheckCircle2, Star, Users, Briefcase } from "lucide-react";
-import CountUp from 'react-countup';
+import { useState } from "react";
+import { Search, MapPin, GraduationCap, CheckCircle, Clock, Users, Star, MessageCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+
+const tutorPreview = {
+    name: "Rahim Ahmed",
+    subjects: "Math, Physics",
+    rating: 4.9,
+    fee: "৳5,000",
+    location: "Dhaka, Mirpur",
+    verified: true,
+    responseTime: "Usually replies in 15 min",
+    completedSessions: "120+ classes",
+    style: "Explains concepts visually"
+};
+
+const stats = [
+    { label: "Students matched today", value: "47" },
+    { label: "New tutors this week", value: "23" },
+    { label: "Avg response time", value: "18 min" }
+];
 
 const HomeBanner = () => {
     const navigate = useNavigate();
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true });
+    const [searchData, setSearchData] = useState({
+        subject: '',
+        classLevel: '',
+        location: ''
+    });
 
-    // Animated Title Logic
-    const [titleNumber, setTitleNumber] = useState(0);
-    const titles = useMemo(
-        () => ["DEDICATED", "EXPERT", "VERIFIED", "PASSIONATE", "RELIABLE"],
-        []
-    );
-
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            setTitleNumber((prev) => (prev === titles.length - 1 ? 0 : prev + 1));
-        }, 3000);
-        return () => clearTimeout(timeoutId);
-    }, [titleNumber, titles]);
-
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] },
-        },
+    const handleSearch = (e) => {
+        e.preventDefault();
+        const params = new URLSearchParams();
+        if (searchData.subject) params.set('subject', searchData.subject);
+        if (searchData.classLevel) params.set('class', searchData.classLevel);
+        if (searchData.location) params.set('location', searchData.location);
+        navigate(`/tutors?${params.toString()}`);
     };
 
     return (
-        <section ref={ref} className="relative w-full overflow-hidden bg-background pt-24 pb-16 lg:pt-32 lg:pb-24">
-            {/* Background Decorations */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px]" />
-            </div>
+        <section className="bg-gradient-to-b from-slate-50 via-white to-slate-50/50">
+            <div className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
+                <div className="grid lg:grid-cols-12 gap-12">
 
-            <div className="container mx-auto px-6 relative z-10">
-                <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-                    
-                    {/* Left Column: Content */}
-                    <motion.div 
-                        className="flex-1 text-center lg:text-left"
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
-                    >
-                        <motion.div variants={itemVariants} className="mb-6 inline-flex">
-                            <Badge variant="secondary" className="px-4 py-1.5 rounded-full bg-primary/10 text-primary border-none text-xs font-bold tracking-wide flex items-center gap-2">
-                                <Sparkles className="w-3.5 h-3.5" />
-                                #1 TUITION PLATFORM IN BANGLADESH
-                            </Badge>
-                        </motion.div>
+                    {/* LEFT - Larger, stronger */}
+                    <div className="lg:col-span-7 space-y-7">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full">
+                            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span className="text-sm font-medium text-green-700">2,500+ verified tutors available</span>
+                        </div>
 
-                        <motion.h1 variants={itemVariants} className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-foreground mb-6">
-                            CONNECT WITH THE <br />
-                            <span className="relative inline-block h-[1.1em] overflow-hidden align-bottom">
-                                {titles.map((title, index) => (
-                                    <motion.span
-                                        key={index}
-                                        className="absolute top-0 left-0 text-primary"
-                                        initial={{ opacity: 0, y: "100%" }}
-                                        animate={
-                                            titleNumber === index
-                                                ? { y: "0%", opacity: 1 }
-                                                : { y: titleNumber > index ? "-100%" : "100%", opacity: 0 }
-                                        }
-                                        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                        <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
+                            Find the right tutor without the <span className="text-blue-600">guesswork</span>
+                        </h1>
+
+                        <p className="text-lg text-slate-600 max-w-xl leading-relaxed">
+                            Real tutors, verified credentials, direct contact. Whether it's SSC, HSC, or University preparation — connect with teachers who actually deliver results.
+                        </p>
+
+                        {/* Search - slightly bigger */}
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                            <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                <div className="md:col-span-1">
+                                    <select
+                                        className="w-full px-4 py-3.5 border border-slate-200 rounded-lg text-sm bg-slate-50"
+                                        value={searchData.subject}
+                                        onChange={(e) => setSearchData({...searchData, subject: e.target.value})}
                                     >
-                                        {title}.
-                                    </motion.span>
-                                ))}
-                                <span className="invisible pointer-events-none">{titles[0]}.</span>
+                                        <option value="">Subject</option>
+                                        <option value="math">Mathematics</option>
+                                        <option value="english">English</option>
+                                        <option value="physics">Physics</option>
+                                        <option value="chemistry">Chemistry</option>
+                                        <option value="biology">Biology</option>
+                                    </select>
+                                </div>
+                                <div className="md:col-span-1">
+                                    <select
+                                        className="w-full px-4 py-3.5 border border-slate-200 rounded-lg text-sm bg-slate-50"
+                                        value={searchData.classLevel}
+                                        onChange={(e) => setSearchData({...searchData, classLevel: e.target.value})}
+                                    >
+                                        <option value="">Class</option>
+                                        <option value="ssc">SSC</option>
+                                        <option value="hsc">HSC</option>
+                                        <option value="university">University</option>
+                                    </select>
+                                </div>
+                                <div className="md:col-span-1">
+                                    <Input
+                                        type="text"
+                                        placeholder="Area"
+                                        className="h-[46px] px-4 border border-slate-200 rounded-lg text-sm bg-slate-50"
+                                        value={searchData.location}
+                                        onChange={(e) => setSearchData({...searchData, location: e.target.value})}
+                                    />
+                                </div>
+                                <div className="md:col-span-1">
+                                    <button
+                                        type="submit"
+                                        className="w-full h-[46px] bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                                    >
+                                        Find Tutor
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        {/* Trust indicators - cleaner */}
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
+                            <span className="flex items-center gap-1.5">
+                                <CheckCircle className="w-4 h-4 text-green-600" />
+                                <span>Verified tutors</span>
                             </span>
-                        </motion.h1>
+                            <span className="text-slate-300">·</span>
+                            <span>Direct contact</span>
+                            <span className="text-slate-300">·</span>
+                            <span>No middleman</span>
+                        </div>
+                    </div>
 
-                        <motion.p variants={itemVariants} className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl lg:mx-0 mx-auto mb-10 font-medium opacity-90">
-                            The nation's reliable way to teach, learn, and excel. <br className="hidden md:block" />
-                            For SSC, HSC, O-Level, A-Level, and beyond.
-                        </motion.p>
-
-                        <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
-                            <Button
-                                size="lg"
-                                onClick={() => navigate('/tutors')}
-                                className="h-14 px-8 rounded-xl text-sm font-bold bg-black text-white hover:bg-black/90 shadow-lg shadow-black/10 transition-all hover:shadow-xl active:scale-[0.98] gap-3"
-                            >
-                                <Search className="w-4.5 h-4.5" />
-                                Find a Tutor
-                            </Button>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                onClick={() => navigate('/register')}
-                                className="h-14 px-8 rounded-xl text-sm font-bold border-2 border-border/60 bg-transparent hover:bg-muted/50 transition-all active:scale-[0.98] gap-3"
-                            >
-                                Post a Tuition
-                            </Button>
-                        </motion.div>
-                    </motion.div>
-
-                    {/* Right Column: Integrated Image with Glow & Shape */}
-                    <motion.div 
-                        className="flex-1 relative w-full max-w-[700px] lg:max-w-none flex items-center justify-center"
-                        initial={{ opacity: 0 }}
-                        animate={isInView ? { opacity: 1 } : {}}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
-                    >
-                        {/* Adaptive Background Shape */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] aspect-square rounded-[4rem] border border-border/40 bg-muted/20 rotate-6 pointer-events-none" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] aspect-square rounded-[5rem] border border-border/20 -rotate-3 pointer-events-none" />
-
-                        {/* Soft Glow Background */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-                        
-                        {/* Main Image Container with Masking */}
-                        <div 
-                            className="relative z-10 mx-auto max-w-xl lg:max-w-2xl overflow-hidden"
-                            style={{
-                                maskImage: 'radial-gradient(circle at center, black 50%, transparent 98%)',
-                                WebkitMaskImage: 'radial-gradient(circle at center, black 50%, transparent 98%)'
-                            }}
-                        >
-                            <img 
-                                src="/hero-student.png" 
-                                alt="Student Learning" 
-                                className="w-full h-auto drop-shadow-sm opacity-95 transition-transform duration-1000"
-                            />
+                    {/* RIGHT - Realistic stacked content */}
+                    <div className="lg:col-span-5 space-y-4 hidden lg:block">
+                        {/* Featured tutor preview - more detailed */}
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                            <div className="flex items-start gap-4">
+                                <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center">
+                                    <GraduationCap className="w-6 h-6 text-blue-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="font-semibold text-slate-900">{tutorPreview.name}</span>
+                                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">Verified</span>
+                                    </div>
+                                    <p className="text-sm text-slate-500 mb-2">{tutorPreview.subjects} · {tutorPreview.location}</p>
+                                    <p className="text-xs text-slate-600 italic">"{tutorPreview.style}"</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1">
+                                        <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                                        <span className="font-semibold text-slate-900">{tutorPreview.rating}</span>
+                                    </div>
+                                    <span className="text-blue-600 font-semibold">{tutorPreview.fee}/mo</span>
+                                </div>
+                                <button
+                                    onClick={() => navigate('/tutors')}
+                                    className="text-sm text-blue-600 font-medium hover:underline"
+                                >
+                                    View profile →
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Decorative background elements */}
-                        <div className="absolute top-1/2 left-[-15%] w-4 h-4 rounded-full bg-blue-400/10 blur-sm animate-pulse" />
-                        <div className="absolute bottom-[20%] right-[-15%] w-6 h-6 rounded-full bg-primary/10 blur-md animate-pulse" />
-                    </motion.div>
+                        {/* Activity stats - alive feeling */}
+                        <div className="grid grid-cols-3 gap-3">
+                            {stats.map((stat, idx) => (
+                                <div key={idx} className="bg-slate-50 rounded-lg p-3 text-center">
+                                    <div className="text-lg font-bold text-slate-900">{stat.value}</div>
+                                    <div className="text-xs text-slate-500">{stat.label}</div>
+                                </div>
+                            ))}
+                        </div>
 
-
+                        {/* Quick trust snippets */}
+                        <div className="flex items-center gap-3 text-sm text-slate-600">
+                            <div className="flex items-center gap-1.5">
+                                <Clock className="w-4 h-4 text-slate-400" />
+                                <span>{tutorPreview.responseTime}</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-slate-600">
+                            <div className="flex items-center gap-1.5">
+                                <Users className="w-4 h-4 text-slate-400" />
+                                <span>{tutorPreview.completedSessions}</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-slate-600">
+                            <div className="flex items-center gap-1.5">
+                                <MessageCircle className="w-4 h-4 text-slate-400" />
+                                <span>12 inquiries today</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                {/* Stats Section at Bottom */}
-                <motion.div 
-                    className="mt-24 pt-12 grid grid-cols-2 md:grid-cols-3 gap-8"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.8, duration: 0.8 }}
-                >
-                    <div className="flex items-center gap-5 justify-center lg:justify-start">
-                        <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-                            <Users className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <div className="text-2xl font-black text-foreground tracking-tight">
-                                <CountUp end={1200} duration={2} separator="," />+
-                            </div>
-                            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest opacity-60">Expert Tutors</div>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-5 justify-center lg:justify-start">
-                        <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
-                            <CheckCircle2 className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <div className="text-2xl font-black text-foreground tracking-tight">
-                                <CountUp end={98} duration={2} />%
-                            </div>
-                            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest opacity-60">Success Rate</div>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-5 justify-center lg:justify-start col-span-2 md:col-span-1">
-                        <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
-                            <Briefcase className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <div className="text-2xl font-black text-foreground tracking-tight">
-                                <CountUp end={8} duration={2} />
-                            </div>
-                            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest opacity-60">Subjects</div>
-                        </div>
-                    </div>
-                </motion.div>
             </div>
         </section>
     );
 };
 
 export default HomeBanner;
-
-
