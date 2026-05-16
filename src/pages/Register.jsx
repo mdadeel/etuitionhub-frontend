@@ -130,9 +130,9 @@ const Register = () => {
                             >
                                 <ArrowLeft size={16} /> Back
                             </button>
-                            <h1 className="text-xl font-semibold text-slate-900 mt-2">
+                            <h2 className="text-xl font-semibold text-slate-900 mt-2">
                                 Create your {role} account
-                            </h1>
+                            </h2>
                         </div>
 
                         <div className="p-6">

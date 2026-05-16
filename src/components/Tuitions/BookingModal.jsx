@@ -3,7 +3,7 @@ import axios from 'axios';
 import API_URL from '../../config/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
-import { Calendar } from 'lucide-react';
+import { Calendar, Check } from 'lucide-react';
 
 export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
     const [step, setStep] = useState(1);
@@ -111,7 +111,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                 {step === 3 && (
                     <div className="py-4 text-center">
                         <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <CheckIcon className="w-6 h-6" />
+                            <Check className="w-6 h-6" />
                         </div>
                         <h3 className="text-lg font-medium text-gray-900">Booking Confirmed!</h3>
                         <p className="text-sm text-gray-500 mt-2">Your session has been successfully scheduled.</p>
@@ -123,10 +123,4 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
     );
 }
 
-function CheckIcon(props) {
-  return (
-    <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-    </svg>
-  )
-}
+

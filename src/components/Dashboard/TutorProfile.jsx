@@ -13,7 +13,12 @@ import {
     Calendar,
     DollarSign,
     MapPin,
-    Save
+    Save,
+    Wallet,
+    Briefcase,
+    Star,
+    ArrowRight,
+    CheckCircle2
 } from "lucide-react";
 import { 
     AppleCard, 
@@ -92,113 +97,184 @@ const TutorProfile = () => {
     if (authLoading) return <LoadingSpinner />;
 
     return (
-        <div className="animate-in fade-in duration-700 max-w-5xl mx-auto pb-20">
-            <AppleHeader 
-                title="Tutor Profile" 
-                subtitle="Manage your professional tutoring profile and qualifications."
-                badge={<AppleBadge variant="primary">Specialist Account</AppleBadge>}
-            />
+        <div className="max-w-5xl mx-auto pb-20">
+            <div className="mb-12 space-y-2 border-b border-slate-200 pb-8">
+                <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Professional Dossier</h1>
+                <p className="text-slate-500 text-xs font-black uppercase tracking-widest">Manage your professional tutoring profile and qualifications.</p>
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                {/* Profile Photo & Basic Info */}
-                <div className="lg:col-span-4">
-                    <AppleCard className="p-8 flex flex-col items-center text-center space-y-6" hover={false}>
-                        <div className="relative group">
-                            <Avatar className="h-36 w-36 rounded-[2rem] border-4 border-background shadow-apple-md overflow-hidden bg-muted transition-all duration-500 group-hover:scale-105">
-                                <AvatarImage 
+            <div className="space-y-8">
+                {/* Profile Preview Card - Sharp */}
+                <div className="bg-white border border-slate-200 rounded-none shadow-none">
+                    <div className="p-6 md:p-8 flex flex-col md:flex-row gap-8">
+                        {/* Left: Profile Image */}
+                        <div className="relative shrink-0 mx-auto md:mx-0">
+                            <div className="w-48 h-48 md:w-56 md:h-56 rounded-none overflow-hidden border border-slate-200">
+                                <img 
                                     src={photoInput || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
-                                    className="object-cover"
+                                    className="w-full h-full object-cover"
+                                    alt="Profile"
                                 />
-                                <AvatarFallback className="text-4xl font-bold bg-muted text-muted-foreground">
-                                    {nameInput?.charAt(0) || 'T'}
-                                </AvatarFallback>
-                            </Avatar>
+                            </div>
+                            {dbUser?._id !== 'tutor_001' && (
+                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white px-3 py-1.5 rounded-none border border-slate-900 flex items-center gap-2 whitespace-nowrap shadow-sm">
+                                    <div className="w-4 h-4 rounded-none bg-blue-600 flex items-center justify-center">
+                                        <CheckCircle2 size={10} className="text-white" />
+                                    </div>
+                                    <span className="text-[9px] font-black text-slate-900 uppercase tracking-tighter">Verified Tutor</span>
+                                </div>
+                            )}
                         </div>
-                        <div className="space-y-1">
-                            <h3 className="font-bold text-xl text-foreground tracking-tight">{nameInput || 'Tutor'}</h3>
-                            <p className="text-xs font-medium text-muted-foreground">{user?.email}</p>
+
+                        {/* Right: Info */}
+                        <div className="flex-1 flex flex-col justify-center space-y-4">
+                            <div className="flex flex-wrap items-center gap-2">
+                                {dbUser?._id !== 'tutor_001' && (
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-slate-900 rounded-none text-[9px] font-black uppercase tracking-widest border border-slate-200">
+                                        <ShieldCheck size={10} />
+                                        Verified
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-slate-500 rounded-none text-[9px] font-black uppercase tracking-widest border border-slate-200">
+                                    <MapPin size={10} />
+                                    {location || 'Location not set'}
+                                </div>
+                            </div>
+
+                            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
+                                {nameInput || 'Tutor Name'}
+                            </h2>
+
+                            <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-tight">
+                                <GraduationCap className="text-blue-600" size={18} />
+                                <span className="text-xs">{qualification || 'Qualifications not specified'}</span>
+                            </div>
+
+                            <div className="pt-4 border-t border-slate-100">
+                                <p className="text-slate-500 text-xs font-bold leading-relaxed max-w-2xl italic uppercase tracking-tight">
+                                    "Passionate about making concepts easy to understand. Helping students achieve their academic goals with personalized guidance."
+                                </p>
+                            </div>
                         </div>
-                        <div className="flex flex-wrap justify-center gap-2">
-                            {subjects.slice(0, 4).map(sub => (
-                                <span key={sub} className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-primary/10 text-primary">
-                                    {sub}
-                                </span>
-                            ))}
+                    </div>
+
+                    {/* Bottom Stats Strip */}
+                    <div className="bg-slate-50 border-t border-slate-200 px-6 md:px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-none bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-900">
+                                <Wallet size={16} />
+                            </div>
+                            <div>
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Monthly Fee</p>
+                                <p className="text-lg font-black text-slate-900 tracking-tighter">৳{parseInt(expectedSalary || 0).toLocaleString()}</p>
+                            </div>
                         </div>
-                    </AppleCard>
+
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-none bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-900">
+                                <Briefcase size={16} />
+                            </div>
+                            <div>
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Experience</p>
+                                <p className="text-lg font-black text-slate-900 tracking-tighter">4+ Years</p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-none bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-900">
+                                <Star size={16} className="fill-blue-600 text-blue-600" />
+                            </div>
+                            <div>
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Rating</p>
+                                <div className="flex items-baseline gap-1.5">
+                                    <p className="text-lg font-black text-slate-900 tracking-tighter">4.9</p>
+                                    <p className="text-[10px] text-slate-400 font-bold">(128)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <button 
+                                className="h-10 px-6 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-none hover:bg-blue-600 transition-colors"
+                                onClick={() => dbUser?._id && window.open(`/tutor/${dbUser._id}`, '_blank')}
+                            >
+                                View Profile
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Edit Form */}
-                <div className="lg:col-span-8 space-y-6">
+                {/* Edit Form Section */}
+                <div className="space-y-6">
                     {/* Basic Info */}
-                    <AppleCard className="p-8" hover={false}>
-                        <h3 className="text-lg font-bold text-foreground tracking-tight mb-6 flex items-center gap-2">
-                            <ShieldCheck className="text-primary" size={20} />
-                            Basic Information
+                    <div className="p-8 bg-white border border-slate-200 rounded-none shadow-none">
+                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+                            <ShieldCheck className="text-blue-600" size={16} />
+                            Update Information
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Full Name</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Full Name</label>
                                 <input 
                                     type="text"
-                                    className="w-full bg-muted/50 border-none ring-1 ring-border/50 px-4 py-3 rounded-xl text-sm font-medium"
+                                    className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
                                     value={nameInput}
                                     onChange={(e) => setNameInput(e.target.value)}
                                     placeholder="Your full name"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Phone Number</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Phone Number</label>
                                 <input 
                                     type="tel"
-                                    className="w-full bg-muted/50 border-none ring-1 ring-border/50 px-4 py-3 rounded-xl text-sm font-medium"
+                                    className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
                                     value={mobileInput}
                                     onChange={(e) => setMobileInput(e.target.value)}
                                     placeholder="01700000000"
                                 />
                             </div>
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Profile Photo URL</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Profile Photo URL</label>
                                 <input 
                                     type="url"
-                                    className="w-full bg-muted/50 border-none ring-1 ring-border/50 px-4 py-3 rounded-xl text-sm font-medium"
+                                    className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
                                     value={photoInput}
                                     onChange={(e) => setPhotoInput(e.target.value)}
                                     placeholder="https://example.com/photo.jpg"
                                 />
                             </div>
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Location</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Location</label>
                                 <input 
                                     type="text"
-                                    className="w-full bg-muted/50 border-none ring-1 ring-border/50 px-4 py-3 rounded-xl text-sm font-medium"
+                                    className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
                                     placeholder="e.g. Dhanmondi, Dhaka"
                                 />
                             </div>
                         </div>
-                    </AppleCard>
+                    </div>
 
                     {/* Professional Info */}
-                    <AppleCard className="p-8" hover={false}>
-                        <h3 className="text-lg font-bold text-foreground tracking-tight mb-6 flex items-center gap-2">
-                            <GraduationCap className="text-primary" size={20} />
+                    <div className="p-8 bg-white border border-slate-200 rounded-none shadow-none">
+                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+                            <GraduationCap className="text-blue-600" size={16} />
                             Professional Details
                         </h3>
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Qualification</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Qualification</label>
                                 <input 
                                     type="text"
-                                    className="w-full bg-muted/50 border-none ring-1 ring-border/50 px-4 py-3 rounded-xl text-sm font-medium"
+                                    className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
                                     value={qualification}
                                     onChange={(e) => setQualification(e.target.value)}
                                     placeholder="e.g. B.Sc in Engineering, HSC with GPA 5"
                                 />
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Subjects You Can Teach</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Subjects You Can Teach</label>
                                 <div className="flex flex-wrap gap-2">
                                     {SUBJECT_OPTIONS.map(subject => (
                                         <button
@@ -206,10 +282,10 @@ const TutorProfile = () => {
                                             type="button"
                                             onClick={() => toggleSubject(subject)}
                                             className={cn(
-                                                "px-4 py-2 text-xs font-semibold rounded-full border transition-all duration-200",
+                                                "px-4 py-2 text-[10px] font-black rounded-none border transition-all uppercase tracking-widest",
                                                 subjects.includes(subject)
-                                                    ? "bg-primary text-primary-foreground border-primary"
-                                                    : "bg-muted/30 border-border/50 hover:border-primary/50 hover:bg-muted/50"
+                                                    ? "bg-blue-600 text-white border-blue-600"
+                                                    : "bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900"
                                             )}
                                         >
                                             {subject}
@@ -217,14 +293,14 @@ const TutorProfile = () => {
                                     ))}
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Expected Monthly Salary (BDT)</label>
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Expected Monthly Salary (BDT)</label>
                                     <div className="relative">
-                                        <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                        <DollarSign size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
                                         <input 
                                             type="number"
-                                            className="w-full bg-muted/50 border-none ring-1 ring-border/50 pl-10 pr-4 py-3 rounded-xl text-sm font-medium"
+                                            className="w-full h-11 bg-slate-50 border border-slate-200 pl-11 pr-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
                                             value={expectedSalary}
                                             onChange={(e) => setExpectedSalary(e.target.value)}
                                             placeholder="5000"
@@ -233,26 +309,26 @@ const TutorProfile = () => {
                                 </div>
                             </div>
                         </div>
-                    </AppleCard>
+                    </div>
 
                     {/* Save Button */}
-                    <AppleButton 
+                    <button 
                         onClick={handleSave}
                         disabled={loading}
-                        className="w-full h-14 rounded-xl shadow-apple-md"
+                        className="w-full h-14 bg-blue-600 hover:bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-none transition-all shadow-none flex items-center justify-center gap-3"
                     >
                         {loading ? (
                             <>
-                                <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                                Saving...
+                                <RefreshCw className="w-4 h-4 animate-spin" />
+                                Synchronizing...
                             </>
                         ) : (
                             <>
-                                <Save className="w-4 h-4 mr-2" />
-                                Save Profile
+                                <Save className="w-4 h-4" />
+                                Commit Changes
                             </>
                         )}
-                    </AppleButton>
+                    </button>
                 </div>
             </div>
         </div>

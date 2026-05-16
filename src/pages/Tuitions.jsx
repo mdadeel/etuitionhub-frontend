@@ -6,8 +6,9 @@ import TuitionCard from '../components/shared/TuitionCard';
 import Pagination from '../components/shared/Pagination';
 import { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
 import EmptyState from '../components/shared/EmptyState';
-import { SlidersHorizontal, Filter, X, LayoutGrid, MapPin } from 'lucide-react';
+import { SlidersHorizontal, Filter, X, LayoutGrid, MapPin, Search } from 'lucide-react';
 import FilterSelect from '../components/shared/FilterSelect';
+import { cn } from '@/lib/utils';
 
 const Tuitions = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -20,6 +21,7 @@ const Tuitions = () => {
         updateFilter,
         clearFilters
     } = useTuitionFilters(searchQuery);
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
     useEffect(() => {
         setPage(1);
@@ -71,11 +73,11 @@ const Tuitions = () => {
             <div className="max-w-7xl mx-auto px-4 py-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div>
+                    <div className="md:block hidden">
                         <h1 className="text-xl font-semibold text-slate-900">Available Tuition Jobs</h1>
                         <p className="text-sm text-slate-600">Find the perfect teaching opportunity that matches your skills.</p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
                         <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-md border border-slate-200">
                             <span className="text-lg font-semibold text-slate-900">{pagination?.totalItems || 0}</span>
                             <span className="text-xs text-slate-500">Jobs</span>
@@ -87,11 +89,52 @@ const Tuitions = () => {
                     </div>
                 </div>
 
+                {/* Mobile Search Bar */}
+                <div className="lg:hidden mb-6">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Search tuitions..."
+                            className="w-full pl-9 pr-4 h-11 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchParams({ q: e.target.value })}
+                        />
+                    </div>
+                </div>
+
                 <div className="grid lg:grid-cols-4 gap-6">
-                    {/* Sidebar */}
-                    <aside className="lg:col-span-1">
-                        <div className="bg-white p-4 rounded-lg border border-slate-200 sticky top-20">
-                            <h3 className="text-sm font-medium text-slate-700 mb-4 flex items-center gap-2">
+                    {/* Mobile Filters Trigger (Thumb Zone) */}
+                    <button
+                        onClick={() => setIsMobileFiltersOpen(true)}
+                        className="lg:hidden fixed bottom-20 right-6 z-40 bg-blue-600 text-white p-4 rounded-full shadow-lg flex items-center gap-2 hover:bg-blue-700 active:scale-95 transition-all"
+                    >
+                        <Filter size={20} />
+                        <span className="font-semibold text-sm">Filters</span>
+                        { (filters.subjects.length > 0 || filters.classFilter || filters.locationFilter) && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">
+                                {(filters.subjects.length > 0 ? 1 : 0) + (filters.classFilter ? 1 : 0) + (filters.locationFilter ? 1 : 0)}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* Sidebar Filters (Desktop & Mobile Drawer) */}
+                    <aside className={cn(
+                        "lg:col-span-1",
+                        "fixed inset-0 z-[60] bg-black/50 lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
+                        isMobileFiltersOpen ? "opacity-100" : "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto"
+                    )}>
+                        <div className={cn(
+                            "bg-white w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-lg lg:border lg:border-slate-200 lg:sticky lg:top-20 lg:w-full lg:h-auto transition-transform duration-300",
+                            isMobileFiltersOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+                        )}>
+                            <div className="flex items-center justify-between mb-6 lg:hidden">
+                                <h3 className="text-lg font-bold">Filters</h3>
+                                <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 hover:bg-slate-100 rounded-full">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <h3 className="hidden lg:flex text-sm font-medium text-slate-700 mb-4 flex items-center gap-2">
                                 <Filter size={14} /> Filters
                             </h3>
 
@@ -171,6 +214,13 @@ const Tuitions = () => {
                                     <X size={14} /> Clear Filters
                                 </button>
                             )}
+
+                            <button 
+                                onClick={() => setIsMobileFiltersOpen(false)}
+                                className="w-full mt-4 px-3 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm lg:hidden"
+                            >
+                                Apply Filters
+                            </button>
                         </div>
                     </aside>
 
@@ -199,7 +249,7 @@ const Tuitions = () => {
                             </div>
                         ) : (
                             <div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                                     {tuitions.map((tuition) => (
                                         <TuitionCard key={tuition._id} tuition={tuition} />
                                     ))}

@@ -1,36 +1,69 @@
-import { Mail } from 'lucide-react';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Mail, Zap, CheckCircle2 } from 'lucide-react';
 
 const Newsletter = () => {
     return (
-        <section className="py-12 bg-white">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 text-center">
-                    <h2 className="text-xl font-semibold text-slate-900 mb-3">
-                        Get updates in your inbox
-                    </h2>
-                    <p className="text-slate-600 mb-6 max-w-md mx-auto">
-                        New tutor listings and learning tips, delivered weekly.
-                    </p>
+        <section className="py-24 bg-white relative overflow-hidden border-b border-slate-100">
+            {/* Background Grid Motif */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+                <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+            </div>
 
-                    <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                        <div className="relative flex-1">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                            <Input
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <div className="bg-slate-950 p-12 md:p-16 text-center space-y-12 border border-white/10 relative overflow-hidden">
+                    {/* Industrial Header */}
+                    <div className="flex flex-col items-center space-y-6 relative z-10">
+                        <div className="inline-flex items-center gap-3 px-3 py-1 bg-white/5 border border-white/10">
+                            <Zap size={14} className="text-blue-500" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">System_Notification</span>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none uppercase">
+                                Stay Inside <br />
+                                <span className="text-blue-600">The Loop</span>
+                            </h2>
+                            <p className="text-slate-400 text-xs font-bold max-w-sm mx-auto uppercase tracking-wider leading-relaxed">
+                                Get verified tutor updates and strategic learning intel delivered with institutional precision.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Technical Form */}
+                    <form className="flex flex-col md:flex-row gap-0 max-w-2xl mx-auto relative z-10 border border-white/10">
+                        <div className="relative flex-1 group">
+                            <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                                <Mail className="w-4 h-4 text-slate-600 group-focus-within:text-blue-500 transition-colors" />
+                            </div>
+                            <input
                                 type="email"
-                                placeholder="Your email"
-                                className="pl-11 h-12 rounded-lg bg-white border-slate-200"
+                                placeholder="USER@EMAIL_ADDRESS"
+                                className="w-full h-16 pl-16 pr-6 bg-white/[0.02] text-white placeholder:text-slate-700 focus:outline-none focus:bg-white/[0.05] transition-all font-mono text-xs font-black uppercase tracking-widest"
                                 required
                             />
                         </div>
-                        <Button type="submit" className="h-12 px-6 bg-blue-600 hover:bg-blue-700 rounded-lg">
-                            Subscribe
-                        </Button>
+                        <button 
+                            type="submit" 
+                            className="h-16 px-12 bg-blue-600 text-white font-black uppercase tracking-[0.2em] text-[11px] hover:bg-white hover:text-slate-950 transition-all border-l border-white/10"
+                        >
+                            Subscribe_Module
+                        </button>
                     </form>
-                    <p className="text-xs text-slate-500 mt-4">
-                        No spam. Unsubscribe anytime.
-                    </p>
+
+                    {/* Trust Bar */}
+                    <div className="flex flex-wrap justify-center items-center gap-8 pt-8 border-t border-white/5 relative z-10">
+                        <div className="flex items-center gap-2 text-[9px] font-black text-slate-600 uppercase tracking-widest">
+                            <CheckCircle2 size={12} className="text-emerald-500" />
+                            <span>Zero Spam Filter</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[9px] font-black text-slate-600 uppercase tracking-widest">
+                            <CheckCircle2 size={12} className="text-emerald-500" />
+                            <span>Encrypted Data</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[9px] font-black text-slate-600 uppercase tracking-widest">
+                            <CheckCircle2 size={12} className="text-emerald-500" />
+                            <span>One-Click Opt-Out</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

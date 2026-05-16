@@ -27,24 +27,24 @@ const FeaturedCategories = () => {
                         <Link
                             key={cat.slug}
                             to={`/tutors?subject=${cat.slug}`}
-                            className={`relative p-5 rounded-xl border transition-all hover:border-blue-400 hover:shadow-md ${
-                                cat.tag ? 'border-slate-300 bg-slate-50' : 'border-slate-200 bg-white'
+                            className={`relative p-5 rounded-none border border-slate-200 transition-all hover:bg-slate-50 ${
+                                cat.tag ? 'bg-slate-50/50' : 'bg-white'
                             }`}
                         >
                             {/* Tag for some items */}
                             {cat.tag && (
-                                <span className="absolute -top-2 right-3 px-2 py-0.5 bg-blue-600 text-white text-xs font-medium rounded">
+                                <span className="absolute -top-px -right-px px-2 py-0.5 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-none border border-slate-900">
                                     {cat.tag}
                                 </span>
                             )}
 
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-lg">
-                                    <cat.icon className="w-5 h-5 text-slate-600" />
+                                <div className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-none border border-slate-200">
+                                    <cat.icon className="w-5 h-5 text-slate-900" />
                                 </div>
-                                <span className="font-medium text-slate-900">{cat.label}</span>
+                                <span className="font-bold text-slate-900 tracking-tight">{cat.label}</span>
                             </div>
-                            <div className="text-sm text-slate-600">{cat.count} tutors</div>
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-tighter">{cat.count} tutors</div>
                         </Link>
                     ))}
                 </div>

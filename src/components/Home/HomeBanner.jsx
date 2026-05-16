@@ -1,25 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from "react";
-import { Search, MapPin, GraduationCap, CheckCircle, Clock, Users, Star, MessageCircle } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Search, MapPin, GraduationCap, CheckCircle, Clock, Users, Star, MessageCircle, TrendingUp, Zap, ShieldCheck, UserPlus, GraduationCap as TutorIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const tutorPreview = {
     name: "Rahim Ahmed",
     subjects: "Math, Physics",
     rating: 4.9,
+    reviews: 128,
     fee: "৳5,000",
     location: "Dhaka, Mirpur",
     verified: true,
     responseTime: "Usually replies in 15 min",
-    completedSessions: "120+ classes",
-    style: "Explains concepts visually"
+    completedSessions: "12+ Students taught",
+    style: "Explains concepts visually",
+    inquiriesToday: 12
 };
-
-const stats = [
-    { label: "Students matched today", value: "47" },
-    { label: "New tutors this week", value: "23" },
-    { label: "Avg response time", value: "18 min" }
-];
 
 const HomeBanner = () => {
     const navigate = useNavigate();
@@ -39,149 +35,215 @@ const HomeBanner = () => {
     };
 
     return (
-        <section className="bg-gradient-to-b from-slate-50 via-white to-slate-50/50">
-            <div className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
-                <div className="grid lg:grid-cols-12 gap-12">
+        <section className="bg-[#F8FAFC] overflow-hidden">
+            <div className="max-w-7xl mx-auto px-6 pt-20 pb-10">
+                <div className="grid lg:grid-cols-12 gap-8 items-center">
 
-                    {/* LEFT - Larger, stronger */}
-                    <div className="lg:col-span-7 space-y-7">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full">
-                            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                            <span className="text-sm font-medium text-green-700">2,500+ verified tutors available</span>
+                    {/* LEFT - Content & Search */}
+                    <div className="lg:col-span-7 space-y-6">
+                        <div>
+                            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#E8F5E9] text-[#2E7D32] rounded-none mb-4 border border-[#2E7D32]/10">
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                <span className="text-[10px] font-black uppercase tracking-wider">2,500+ verified tutors</span>
+                            </div>
+
+                            <h1 className="text-4xl lg:text-5xl font-black text-[#0F172A] tracking-tighter leading-[1.1] mb-4">
+                                Find the right tutor <br />
+                                without the <span className="text-primary relative inline-block">
+                                    guesswork
+                                    <svg className="absolute -bottom-1.5 left-0 w-full h-1.5" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                        <path d="M0 5 Q 25 0 50 5 T 100 5" fill="none" stroke="currentColor" strokeWidth="3" />
+                                    </svg>
+                                </span>
+                            </h1>
+
+                            <p className="text-sm text-[#64748B] max-w-lg leading-relaxed font-medium">
+                                Real tutors. Verified credentials. Direct contact. Connect with teachers who actually deliver results.
+                            </p>
                         </div>
 
-                        <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
-                            Find the right tutor without the <span className="text-blue-600">guesswork</span>
-                        </h1>
-
-                        <p className="text-lg text-slate-600 max-w-xl leading-relaxed">
-                            Real tutors, verified credentials, direct contact. Whether it's SSC, HSC, or University preparation — connect with teachers who actually deliver results.
-                        </p>
-
-                        {/* Search - slightly bigger */}
-                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                            <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                                <div className="md:col-span-1">
-                                    <select
-                                        className="w-full px-4 py-3.5 border border-slate-200 rounded-lg text-sm bg-slate-50"
-                                        value={searchData.subject}
-                                        onChange={(e) => setSearchData({...searchData, subject: e.target.value})}
-                                    >
-                                        <option value="">Subject</option>
-                                        <option value="math">Mathematics</option>
-                                        <option value="english">English</option>
-                                        <option value="physics">Physics</option>
-                                        <option value="chemistry">Chemistry</option>
-                                        <option value="biology">Biology</option>
-                                    </select>
+                        {/* Search Card - Compact */}
+                        <div className="bg-white rounded-none shadow-none border border-slate-200 p-6">
+                            <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-10 gap-3 mb-4">
+                                <div className="md:col-span-3">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Subject</label>
+                                    <div className="relative">
+                                        <select
+                                            className="w-full h-10 pl-3 pr-8 border border-slate-200 rounded-none text-xs font-bold bg-slate-50/50 appearance-none focus:border-primary outline-none transition-all"
+                                            value={searchData.subject}
+                                            onChange={(e) => setSearchData({ ...searchData, subject: e.target.value })}
+                                        >
+                                            <option value="">Select subject</option>
+                                            <option value="math">Mathematics</option>
+                                            <option value="english">English</option>
+                                            <option value="physics">Physics</option>
+                                        </select>
+                                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <Search className="w-3.5 h-3.5 text-slate-400" />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="md:col-span-1">
+                                <div className="md:col-span-3">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Class</label>
                                     <select
-                                        className="w-full px-4 py-3.5 border border-slate-200 rounded-lg text-sm bg-slate-50"
+                                        className="w-full h-10 px-3 border border-slate-200 rounded-none text-xs font-bold bg-slate-50/50 appearance-none focus:border-primary outline-none transition-all"
                                         value={searchData.classLevel}
-                                        onChange={(e) => setSearchData({...searchData, classLevel: e.target.value})}
+                                        onChange={(e) => setSearchData({ ...searchData, classLevel: e.target.value })}
                                     >
-                                        <option value="">Class</option>
+                                        <option value="">Select class</option>
                                         <option value="ssc">SSC</option>
                                         <option value="hsc">HSC</option>
                                         <option value="university">University</option>
                                     </select>
                                 </div>
-                                <div className="md:col-span-1">
-                                    <Input
-                                        type="text"
-                                        placeholder="Area"
-                                        className="h-[46px] px-4 border border-slate-200 rounded-lg text-sm bg-slate-50"
-                                        value={searchData.location}
-                                        onChange={(e) => setSearchData({...searchData, location: e.target.value})}
-                                    />
-                                </div>
-                                <div className="md:col-span-1">
+                                <div className="md:col-span-4 flex items-end gap-2">
+                                    <div className="flex-1">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Area</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter area or city"
+                                            className="w-full h-10 px-3 border border-slate-200 rounded-none text-xs font-bold bg-slate-50/50 outline-none focus:border-primary transition-all"
+                                            value={searchData.location}
+                                            onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
+                                        />
+                                    </div>
                                     <button
                                         type="submit"
-                                        className="w-full h-[46px] bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                                        className="h-10 px-4 bg-primary text-white font-black uppercase tracking-widest text-[10px] rounded-none hover:bg-slate-900 transition-all flex items-center gap-2 shrink-0"
                                     >
-                                        Find Tutor
+                                        <Search className="w-3.5 h-3.5" />
+                                        <span>Find</span>
                                     </button>
                                 </div>
                             </form>
-                        </div>
 
-                        {/* Trust indicators - cleaner */}
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                                <span>Verified tutors</span>
-                            </span>
-                            <span className="text-slate-300">·</span>
-                            <span>Direct contact</span>
-                            <span className="text-slate-300">·</span>
-                            <span>No middleman</span>
+                            <div className="flex flex-wrap items-center gap-5 pt-3 border-t border-slate-50">
+                                <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                                    <CheckCircle className="w-3 h-3 text-green-600" />
+                                    <span>Verified</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                                    <MessageCircle className="w-3 h-3 text-blue-600" />
+                                    <span>Direct</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                                    <Users className="w-3 h-3 text-teal-600" />
+                                    <span>No Fees</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* RIGHT - Realistic stacked content */}
-                    <div className="lg:col-span-5 space-y-4 hidden lg:block">
-                        {/* Featured tutor preview - more detailed */}
-                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                    {/* RIGHT - Compact Tutor Card & Stats */}
+                    <div className="lg:col-span-5 space-y-4 lg:translate-y-[60px]">
+                        {/* Featured Tutor Card - Slimmer */}
+                        <div className="bg-white rounded-none shadow-none border border-slate-200 p-6 relative">
                             <div className="flex items-start gap-4">
-                                <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center">
-                                    <GraduationCap className="w-6 h-6 text-blue-600" />
+                                <div className="w-14 h-14 bg-slate-100 text-slate-900 flex items-center justify-center rounded-none shrink-0 border border-slate-200">
+                                    <TutorIcon className="w-7 h-7" />
                                 </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="font-semibold text-slate-900">{tutorPreview.name}</span>
-                                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">Verified</span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between mb-0.5">
+                                        <h3 className="text-lg font-black text-slate-900 tracking-tight">{tutorPreview.name}</h3>
+                                        <div className="flex items-center gap-1 text-slate-900 font-bold text-[9px] uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded-none border border-slate-200">
+                                            <CheckCircle className="w-2.5 h-2.5" />
+                                            <span>Verified</span>
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-slate-500 mb-2">{tutorPreview.subjects} · {tutorPreview.location}</p>
-                                    <p className="text-xs text-slate-600 italic">"{tutorPreview.style}"</p>
+                                    <p className="text-xs font-bold text-slate-500">{tutorPreview.subjects} • {tutorPreview.location}</p>
+                                    <p className="text-xs italic text-slate-400 mt-1.5">"{tutorPreview.style}"</p>
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-1">
-                                        <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                                        <span className="font-semibold text-slate-900">{tutorPreview.rating}</span>
+
+                            <div className="grid grid-cols-3 gap-1 mt-6 pt-4 border-t border-slate-50 text-center">
+                                <div>
+                                    <div className="flex items-center justify-center gap-1 text-amber-500 mb-0.5">
+                                        <Star size={12} className="fill-current" />
+                                        <span className="font-black text-slate-900 text-sm">{tutorPreview.rating}</span>
                                     </div>
-                                    <span className="text-blue-600 font-semibold">{tutorPreview.fee}/mo</span>
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">({tutorPreview.reviews})</p>
                                 </div>
-                                <button
-                                    onClick={() => navigate('/tutors')}
-                                    className="text-sm text-blue-600 font-medium hover:underline"
-                                >
-                                    View profile →
-                                </button>
+                                <div>
+                                    <div className="font-black text-primary text-sm mb-0.5">{tutorPreview.fee}/mo</div>
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Starting</p>
+                                </div>
+                                <div>
+                                    <div className="font-black text-slate-900 text-sm mb-0.5">12+</div>
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Taught</p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => navigate('/tutors')}
+                                className="w-full mt-6 h-10 border border-slate-900 text-slate-900 font-black uppercase tracking-widest text-[10px] rounded-none hover:bg-slate-900 hover:text-white transition-all group"
+                            >
+                                <span className="flex items-center justify-center gap-2">
+                                    View Profile
+                                    <TrendingUp className="w-3.5 h-3.5" />
+                                </span>
+                            </button>
+                        </div>
+
+                        {/* Platform Stats Grid - More Compact */}
+                        <div className="bg-slate-100/50 border border-slate-200 rounded-none p-6">
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="text-center">
+                                    <div className="w-8 h-8 bg-slate-200 rounded-none flex items-center justify-center mx-auto mb-2 border border-slate-300">
+                                        <Users className="w-4 h-4 text-slate-900" />
+                                    </div>
+                                    <div className="text-lg font-black text-slate-900 leading-none mb-0.5">47</div>
+                                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter leading-tight">Matched Today</p>
+                                </div>
+                                <div className="text-center border-x border-slate-200 px-2">
+                                    <div className="w-8 h-8 bg-slate-200 rounded-none flex items-center justify-center mx-auto mb-2 border border-slate-300">
+                                        <TutorIcon className="w-4 h-4 text-slate-900" />
+                                    </div>
+                                    <div className="text-lg font-black text-slate-900 leading-none mb-0.5">23</div>
+                                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter leading-tight">New Weekly</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="w-8 h-8 bg-slate-200 rounded-none flex items-center justify-center mx-auto mb-2 border border-slate-300">
+                                        <Zap className="w-4 h-4 text-slate-900" />
+                                    </div>
+                                    <div className="text-lg font-black text-slate-900 leading-none mb-0.5">18m</div>
+                                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter leading-tight">Response Time</p>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Activity stats - alive feeling */}
-                        <div className="grid grid-cols-3 gap-3">
-                            {stats.map((stat, idx) => (
-                                <div key={idx} className="bg-slate-50 rounded-lg p-3 text-center">
-                                    <div className="text-lg font-bold text-slate-900">{stat.value}</div>
-                                    <div className="text-xs text-slate-500">{stat.label}</div>
-                                </div>
-                            ))}
-                        </div>
+                        {/* Real-time Indicators - Small */}
 
-                        {/* Quick trust snippets */}
-                        <div className="flex items-center gap-3 text-sm text-slate-600">
-                            <div className="flex items-center gap-1.5">
-                                <Clock className="w-4 h-4 text-slate-400" />
-                                <span>{tutorPreview.responseTime}</span>
-                            </div>
+                    </div>
+                </div>
+
+                {/* Bottom Features Row - Reduced Spacing */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12 pt-8 border-t border-slate-100">
+                    <div className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="font-black text-slate-900 uppercase tracking-wider text-[10px] mb-0.5">Verified</h4>
+                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">Credential checked tutors.</p>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-slate-600">
-                            <div className="flex items-center gap-1.5">
-                                <Users className="w-4 h-4 text-slate-400" />
-                                <span>{tutorPreview.completedSessions}</span>
-                            </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <MessageCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="font-black text-slate-900 uppercase tracking-wider text-[10px] mb-0.5">Direct</h4>
+                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">Message and connect.</p>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-slate-600">
-                            <div className="flex items-center gap-1.5">
-                                <MessageCircle className="w-4 h-4 text-slate-400" />
-                                <span>12 inquiries today</span>
-                            </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <Users className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="font-black text-slate-900 uppercase tracking-wider text-[10px] mb-0.5">No Fees</h4>
+                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">Direct pay to tutors.</p>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <Star className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="font-black text-slate-900 uppercase tracking-wider text-[10px] mb-0.5">Proven</h4>
+                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">Delivering real results.</p>
                         </div>
                     </div>
                 </div>

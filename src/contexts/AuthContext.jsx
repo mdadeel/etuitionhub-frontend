@@ -114,22 +114,9 @@ export const AuthProvider = ({ children }) => {
                 }
             } catch (error) {
                 if (error.response?.status === 404 && isMounted) {
-                    console.warn('⚠️ Identity missing in DB. Provisioning silently...');
-                    try {
-                        // Silently provision without showing a loading toast
-                        const res = await api.post('/api/users', {
-                            email: firebaseUser.email,
-                            displayName: firebaseUser.displayName,
-                            photoURL: firebaseUser.photoURL || '',
-                            role: 'student'
-                        });
-                        if (isMounted) {
-                            setDbUser(res.data);
-                            setUserRole(res.data.role);
-                        }
-                    } catch (saveError) {
-                        console.error('❌ Provisioning failed:', saveError.message);
-                    }
+                    console.warn('⚠️ Identity missing in DB.');
+                    setDbUser(null);
+                    setUserRole(null);
                 } else {
                     console.log('❌ Identity sync error:', error.message);
                 }
@@ -261,17 +248,10 @@ export const AuthProvider = ({ children }) => {
             let result = await signInWithPopup(auth, googleProvider);
             const email = result.user.email;
 
-            // Check if this user already exists so we don't downgrade their role
-            let dbRecord = null;
-            try {
-                const existing = await api.get(`/api/users/${email}`);
-                dbRecord = existing.data;
-                console.log('Google login - returning user, role:', dbRecord.role);
-            } catch {
-                // New user — create them in the DB
-                console.log('Google login - new user, assigning role:', selectedRole);
-                dbRecord = await saveUserToDB(result.user, selectedRole);
-            }
+            // Use the saveUserToDB (createOrUpdate) endpoint for EVERY Google login
+            // The backend handles "upsert" and ensures roles are preserved/upgraded correctly
+            console.log('Google login - syncing with DB, requested role:', selectedRole);
+            const dbRecord = await saveUserToDB(result.user, selectedRole);
 
             // Update local state immediately with DB data
             setDbUser(dbRecord);

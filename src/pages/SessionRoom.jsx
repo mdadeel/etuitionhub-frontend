@@ -5,11 +5,13 @@ import Peer from 'simple-peer';
 import API_URL from '../config/api';
 import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function SessionRoom() {
     const { bookingId } = useParams();
     const navigate = useNavigate();
-    
+    const { user, dbUser } = useAuth();
+
     const [stream, setStream] = useState();
     const [receivingCall, setReceivingCall] = useState(false);
     const [callerSignal, setCallerSignal] = useState();
@@ -17,7 +19,7 @@ export default function SessionRoom() {
     const [callEnded, setCallEnded] = useState(false);
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
-    
+
     const [micOn, setMicOn] = useState(true);
     const [videoOn, setVideoOn] = useState(true);
 
@@ -27,16 +29,34 @@ export default function SessionRoom() {
     const socket = useRef();
 
     useEffect(() => {
+        const verifyBooking = async () => {
+            try {
+                const userEmail = user?.email || dbUser?.email;
+                if (!userEmail) {
+                    navigate('/login');
+                    return;
+                }
+            } catch (error) {
+                console.error('Session access error:', error);
+            }
+        };
+
+        if (bookingId) {
+            verifyBooking();
+        }
+    }, [bookingId, user, dbUser, navigate]);
+
+    useEffect(() => {
         socket.current = io(API_URL);
-        
-        const userId = "user-" + Math.floor(Math.random() * 10000); // Mock user ID
+
+        const userId = user?.email || dbUser?.email || "anonymous";
 
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((currentStream) => {
             setStream(currentStream);
             if (myVideo.current) {
                 myVideo.current.srcObject = currentStream;
             }
-            
+
             socket.current.emit('join-room', bookingId, userId);
 
             socket.current.on('user-connected', (newUserId) => {
@@ -167,7 +187,7 @@ export default function SessionRoom() {
                         )}
                     </div>
                 )}
-                
+
                 {/* My Video (PiP) */}
                 {stream && (
                     <div className="absolute bottom-24 right-8 w-48 h-32 bg-black rounded-lg overflow-hidden border-2 border-gray-700 shadow-xl">
@@ -195,7 +215,7 @@ export default function SessionRoom() {
                     <MessageSquare className="w-5 h-5" />
                     <h3 className="font-medium">Session Chat</h3>
                 </div>
-                
+
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex flex-col ${msg.sender === 'Me' ? 'items-end' : 'items-start'}`}>
@@ -209,11 +229,11 @@ export default function SessionRoom() {
 
                 <div className="p-4 border-t border-gray-700">
                     <form onSubmit={sendMessage} className="flex gap-2">
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             value={messageInput}
                             onChange={(e) => setMessageInput(e.target.value)}
-                            placeholder="Type a message..." 
+                            placeholder="Type a message..."
                             className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
                         />
                         <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700">Send</Button>

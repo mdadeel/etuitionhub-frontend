@@ -109,21 +109,24 @@ const DashTuitions = () => {
         <div className="bg-transparent">
             <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
-                        Marketplace Streams
-                    </h2>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                        {tuitions.length} active metadata nodes detected
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-8 h-1.5 bg-blue-600 rounded-full"></div>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Marketplace Management</span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Tuition Streams</h1>
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight leading-tight">Tuition Streams</h1>
+                    <p className="text-sm text-slate-500 font-medium mt-1">
+                        {tuitions.length} active metadata nodes detected.
                     </p>
                 </div>
 
-                <div className="flex bg-muted/50 p-1 rounded-2xl gap-1 border border-border/50 w-fit backdrop-blur-md">
+                <div className="flex bg-muted p-1 rounded-2xl gap-1 border border-border w-fit backdrop-blur-md">
                     {['all', 'pending', 'approved'].map(f => (
                         <button
                             key={f}
-                            className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${filter === f
-                                ? 'bg-background text-primary shadow-apple-sm ring-1 ring-border/50'
-                                : 'text-muted-foreground hover:text-foreground'
+                            className={`px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${filter === f
+                                ? 'bg-card text-blue-600 shadow-sm border border-border'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                                 }`}
                             onClick={() => setFilter(f)}
                         >
@@ -136,12 +139,12 @@ const DashTuitions = () => {
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-separate border-spacing-y-3">
                     <thead>
-                        <tr className="text-muted-foreground">
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Academic Scope</th>
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Geography</th>
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-center">Yield</th>
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-center">State</th>
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-right">Ops</th>
+                        <tr className="text-slate-400">
+                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Scope</th>
+                            <th className="hidden md:table-cell px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Geography</th>
+                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-center">Yield</th>
+                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-center">State</th>
+                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-right">Ops</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,30 +160,30 @@ const DashTuitions = () => {
                         ) : (
                             filtered.map((t) => (
                                 <tr key={t._id} className="group">
-                                    <td className="px-6 py-5 bg-muted/20 border-y border-l border-border/50 first:rounded-l-2xl">
-                                        <p className="text-sm font-bold text-foreground leading-tight">{t.subject}</p>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{t.class_name}</p>
+                                    <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-l border-border first:rounded-l-2xl group-hover:bg-muted/30 transition-colors">
+                                        <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{t.subject}</p>
+                                        <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{t.class_name}</p>
                                     </td>
-                                    <td className="px-6 py-5 bg-muted/20 border-y border-border/50">
-                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t.location}</p>
+                                    <td className="hidden md:table-cell px-6 py-5 bg-card border-y border-border group-hover:bg-muted/30 transition-colors">
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.location}</p>
                                     </td>
-                                    <td className="px-6 py-5 bg-muted/20 border-y border-border/50 text-center">
-                                        <span className="text-sm font-bold text-primary tabular-nums">৳{t.salary}</span>
+                                    <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-border text-center group-hover:bg-muted/30 transition-colors">
+                                        <span className="text-xs md:text-sm font-bold text-blue-600 tabular-nums">৳{t.salary}</span>
                                     </td>
-                                    <td className="px-6 py-5 bg-muted/20 border-y border-border/50 text-center">
-                                                <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${t.status === 'approved' ? 'bg-green-500/10 text-green-600' : t.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-primary/10 text-primary'}`}>
-                                                    {t.status.toUpperCase()}
-                                                </span>
+                                    <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-border text-center group-hover:bg-muted/30 transition-colors">
+                                        <span className={`px-2 md:px-2.5 py-0.5 md:py-1 text-[8px] md:text-[9px] font-bold uppercase tracking-widest rounded-full border ${t.status === 'approved' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : t.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
+                                            {t.status.toUpperCase()}
+                                        </span>
                                     </td>
-                                    <td className="px-6 py-5 bg-muted/20 border-y border-r border-border/50 last:rounded-r-2xl text-right">
-                                        <div className="flex justify-end gap-3">
+                                    <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-r border-border last:rounded-r-2xl text-right group-hover:bg-muted/30 transition-colors">
+                                        <div className="flex justify-end gap-2 md:gap-3">
                                             <AppleButton
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/5"
+                                                className="h-7 w-7 md:h-8 md:w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50"
                                                 onClick={() => handleEditClick(t)}
                                             >
-                                                <Edit2 size={14} />
+                                                <Edit2 size={12} />
                                             </AppleButton>
 
                                             {t.status === 'pending' && (
@@ -188,23 +191,23 @@ const DashTuitions = () => {
                                                     <AppleButton
                                                         size="sm"
                                                         variant="primary"
-                                                        className="h-8 px-4 text-[10px]"
+                                                        className="h-7 md:h-8 px-2 md:px-4 text-[8px] md:text-[10px]"
                                                         onClick={() => handleApprove(t._id)}
                                                     >
-                                                        <Check size={14} className="mr-1.5" /> Verify
+                                                        <Check size={12} className="md:mr-1.5" /> <span className="hidden md:inline">Verify</span>
                                                     </AppleButton>
                                                     <AppleButton
                                                         size="sm"
                                                         variant="secondary"
-                                                        className="h-8 px-4 text-[10px] bg-destructive/10 text-destructive hover:bg-destructive hover:text-white"
+                                                        className="h-7 md:h-8 px-2 md:px-4 text-[8px] md:text-[10px] bg-destructive/10 text-destructive hover:bg-destructive hover:text-white"
                                                         onClick={() => handleReject(t._id)}
                                                     >
-                                                        <X size={14} className="mr-1.5" /> Drop
+                                                        <X size={12} className="md:mr-1.5" /> <span className="hidden md:inline">Drop</span>
                                                     </AppleButton>
                                                 </>
                                             )}
                                             {t.status !== 'pending' && (
-                                                <span className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.2em] px-4 self-center">Archived</span>
+                                                <span className="text-[8px] font-bold text-muted-foreground/30 uppercase tracking-[0.1em] md:px-4 self-center">Done</span>
                                             )}
                                         </div>
                                     </td>

@@ -72,13 +72,15 @@ const DashSettings = () => {
 
     return (
         <div className="space-y-10">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                 <div>
-                    <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
-                        Global Configurations
-                    </h2>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                        Environment variables and platform constraints
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-8 h-1.5 bg-blue-600 rounded-full"></div>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Strategic Parameters</span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Global Configurations</h1>
+                    <p className="text-sm text-slate-500 font-medium mt-1">
+                        Environment variables and platform constraints.
                     </p>
                 </div>
 
@@ -87,7 +89,7 @@ const DashSettings = () => {
                         variant="ghost" 
                         size="sm" 
                         onClick={loadSettings}
-                        className="h-10 px-4 rounded-xl"
+                        className="h-10 px-4 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                     >
                         <RefreshCw size={14} className="mr-2" /> Reset
                     </AppleButton>
@@ -96,7 +98,7 @@ const DashSettings = () => {
                         size="sm" 
                         onClick={handleSave}
                         isLoading={isSaving}
-                        className="h-10 px-6 rounded-xl shadow-apple-sm"
+                        className="h-10 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white shadow-apple-sm"
                     >
                         <Save size={14} className="mr-2" /> Deploy Changes
                     </AppleButton>
@@ -106,15 +108,15 @@ const DashSettings = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {Object.entries(groupedSettings).map(([category, items]) => (
                     <div key={category} className="space-y-4">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 px-1">
+                        <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2 px-1">
                             {categoryIcons[category]} {category} Parameters
                         </h3>
                         
-                        <div className="bg-muted/20 border border-border/50 rounded-3xl p-6 space-y-6 backdrop-blur-sm">
+                        <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-8 shadow-sm backdrop-blur-sm">
                             {items.map(setting => (
                                 <div key={setting.key} className="space-y-2">
                                     <div className="flex items-center justify-between px-1">
-                                        <label className="text-[11px] font-bold text-foreground uppercase tracking-wider">
+                                        <label className="text-[11px] font-bold text-slate-900 uppercase tracking-wider">
                                             {setting.label}
                                         </label>
                                         <div className="group relative">
@@ -128,7 +130,7 @@ const DashSettings = () => {
                                     <AppleInput
                                         value={setting.value}
                                         onChange={(e) => handleInputChange(setting.key, e.target.value)}
-                                        className={modifiedKeys.has(setting.key) ? 'ring-primary/40 bg-primary/5' : ''}
+                                        className={modifiedKeys.has(setting.key) ? 'ring-4 ring-blue-600/10 bg-blue-50/50 border-blue-600/30' : ''}
                                     />
                                 </div>
                             ))}
@@ -138,15 +140,15 @@ const DashSettings = () => {
             </div>
 
             {modifiedKeys.size > 0 && (
-                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-10">
-                    <span className="text-xs font-bold uppercase tracking-widest">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-10 z-[100] border border-white/10 backdrop-blur-xl">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         {modifiedKeys.size} Parameters Modified
                     </span>
                     <button 
                         onClick={handleSave}
-                        className="bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase transition-colors"
+                        className="bg-blue-600 hover:bg-blue-500 px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-apple-sm"
                     >
-                        Apply Now
+                        Apply Changes
                     </button>
                 </div>
             )}

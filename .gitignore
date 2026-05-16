@@ -30,3 +30,7 @@ dist-ssr
 *.sln
 *.sw?
 TYPESCRIPT_SETUP.md
+stitch/*
+agent/*
+claude-skills
+clean-code

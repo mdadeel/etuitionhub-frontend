@@ -67,15 +67,15 @@ const Profile = () => {
     };
 
     return (
-        <div className="animate-in fade-in duration-700 max-w-5xl mx-auto pb-20 px-6 lg:px-0">
+        <div className="animate-in fade-in duration-700 max-w-5xl mx-auto pb-20 px-4 md:px-6 lg:px-0">
             <AppleHeader 
-                title="Identity" 
+                title="Account Identity" 
                 subtitle="High-fidelity account orchestration and personal metadata management."
-                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-primary/10 text-primary">Account Protocol</span>}
+                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-blue-600/10 text-blue-600 border border-blue-500/20">Identity Protocol</span>}
                 action={
-                    <div className="flex items-center gap-3 bg-muted/50 px-4 py-2 rounded-2xl border border-border/50">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Clearance</span>
-                        <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-green-500/10 text-green-600">
+                    <div className="flex items-center gap-3 bg-card px-4 py-2 rounded-2xl border border-border/60 shadow-sm">
+                        <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Clearance</span>
+                        <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-emerald-600/10 text-emerald-600 border border-emerald-500/20">
                             {dbUser?.role?.toUpperCase() || 'USER'}
                         </span>
                     </div>
@@ -85,26 +85,26 @@ const Profile = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 {/* Profile Photo Section */}
                 <div className="lg:col-span-4">
-                    <AppleCard className="p-10 flex flex-col items-center text-center space-y-8" hover={false}>
+                    <AppleCard className="p-8 md:p-10 flex flex-col items-center text-center space-y-6 md:space-y-8 bg-card border border-border/60 rounded-3xl shadow-xl" hover={false}>
                         <div className="relative group">
-                            <Avatar className="h-44 w-44 rounded-[2.5rem] border-4 border-background shadow-apple-md overflow-hidden bg-muted transition-all duration-500 group-hover:scale-105">
+                            <Avatar className="h-32 w-32 md:h-44 md:w-44 rounded-3xl md:rounded-[2.5rem] border-4 border-card shadow-xl overflow-hidden bg-muted transition-all duration-500 group-hover:scale-105">
                                 <AvatarImage 
                                     src={photoInput || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
                                     className="object-cover"
                                 />
-                                <AvatarFallback className="text-4xl font-bold bg-muted text-muted-foreground">
+                                <AvatarFallback className="text-4xl font-bold bg-muted text-muted-foreground/40">
                                     {user?.displayName?.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="absolute bottom-1 right-1 w-12 h-12 bg-background rounded-full flex items-center justify-center shadow-apple-md border border-border/50 cursor-pointer hover:scale-110 transition-transform">
-                                <Camera size={20} className="text-muted-foreground" />
+                            <div className="absolute bottom-1 right-1 w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-lg border border-border/60 cursor-pointer hover:scale-110 transition-transform text-muted-foreground/60 hover:text-blue-600">
+                                <Camera size={20} />
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <h3 className="font-bold text-xl text-foreground tracking-tight">{nameInput || 'Guest User'}</h3>
-                            <p className="text-xs font-medium text-muted-foreground">{user?.email}</p>
+                            <h3 className="font-extrabold text-xl text-foreground tracking-tight">{nameInput || 'Guest User'}</h3>
+                            <p className="text-xs font-medium text-muted-foreground/60 tracking-wide">{user?.email}</p>
                         </div>
-                        <p className="text-[10px] text-muted-foreground/60 leading-relaxed font-bold uppercase tracking-widest italic">
+                        <p className="text-[10px] text-muted-foreground/40 leading-relaxed font-bold uppercase tracking-[0.2em] italic">
                             Verified Encryption Active
                         </p>
                     </AppleCard>
@@ -112,7 +112,7 @@ const Profile = () => {
 
                 {/* Edit Form Section */}
                 <div className="lg:col-span-8">
-                    <AppleCard className="p-10" hover={false}>
+                    <AppleCard className="p-8 md:p-12 bg-card border border-border/60 rounded-3xl shadow-xl" hover={false}>
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <AppleInput 
@@ -121,16 +121,16 @@ const Profile = () => {
                                     value={nameInput}
                                     onChange={(e) => setNameInput(e.target.value)}
                                 />
-                                <div className="space-y-2.5">
-                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Stream</label>
-                                    <div className="relative">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Email Stream</label>
+                                    <div className="relative group">
                                         <input 
                                             type="email"
-                                            className="w-full bg-muted/30 border-none ring-1 ring-border/50 px-4 py-4 rounded-2xl text-xs font-bold text-muted-foreground/60 cursor-not-allowed italic"
+                                            className="w-full bg-muted/30 border border-border/60 px-4 py-4 rounded-2xl text-xs font-bold text-muted-foreground/40 cursor-not-allowed italic transition-all focus:ring-0"
                                             value={user?.email || ''}
                                             readOnly
                                         />
-                                        <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary opacity-30" />
+                                        <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-600 opacity-20" />
                                     </div>
                                     <p className="text-[9px] font-bold text-muted-foreground/30 uppercase tracking-widest ml-1">Immutable parameter.</p>
                                 </div>
@@ -143,31 +143,31 @@ const Profile = () => {
                                     value={mobileInput}
                                     onChange={(e) => setMobileInput(e.target.value)}
                                 />
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Profile Image</label>
-                                    <div className="relative">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Profile Image</label>
+                                    <div className="relative group">
                                         <input 
                                             type="url"
-                                            className="w-full bg-muted/30 border-none ring-1 ring-border/50 px-4 py-4 rounded-2xl text-xs font-medium text-muted-foreground"
+                                            className="w-full bg-muted/30 border border-border/60 px-4 py-4 rounded-2xl text-xs font-medium text-foreground transition-all focus:outline-none focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600/20"
                                             value={photoInput}
                                             onChange={(e) => setPhotoInput(e.target.value)}
                                             placeholder="https://example.com/photo.jpg"
                                         />
-                                        <Camera className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                                        <Camera className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30 group-focus-within:text-blue-600 transition-colors" />
                                     </div>
-                                    <p className="text-[9px] font-bold text-muted-foreground/30 uppercase tracking-widest ml-1">Enter image URL</p>
+                                    <p className="text-[9px] font-bold text-muted-foreground/30 uppercase tracking-widest ml-1">Enter high-fidelity image URL.</p>
                                 </div>
                             </div>
 
-                            <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-8 border-t border-border/50">
+                            <div className="pt-10 flex flex-col sm:flex-row items-center justify-between gap-8 border-t border-border/40">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Real-time sync active</span>
+                                    <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                                    <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.1em]">Real-time synchronization active</span>
                                 </div>
                                 <AppleButton
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full sm:w-auto h-14 min-w-[220px] shadow-apple-md"
+                                    className="w-full sm:w-auto h-14 min-w-[240px] shadow-xl bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold uppercase tracking-widest text-[11px]"
                                 >
                                     {loading ? (
                                         <>
@@ -184,14 +184,14 @@ const Profile = () => {
 
                     {/* Security Tip */}
                     <div className="mt-10">
-                        <AppleCard className="p-8 bg-primary/5 border-primary/10" hover={false}>
+                        <AppleCard className="p-8 bg-blue-600/5 border border-blue-500/10 rounded-3xl" hover={false}>
                             <div className="flex items-start gap-6">
-                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                                    <ShieldCheck className="text-primary" size={24} />
+                                <div className="w-12 h-12 rounded-2xl bg-card flex items-center justify-center shrink-0 shadow-sm border border-border/60">
+                                    <ShieldCheck className="text-blue-600" size={24} />
                                 </div>
                                 <div>
                                     <h4 className="text-sm font-bold text-foreground tracking-tight">Encryption Standards</h4>
-                                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed font-medium">
+                                    <p className="text-xs text-muted-foreground/60 mt-2 leading-relaxed font-medium">
                                         Your account is protected by industry-standard encryption protocols. 
                                         Keep your metadata accurate to ensure seamless verification within the marketplace.
                                     </p>

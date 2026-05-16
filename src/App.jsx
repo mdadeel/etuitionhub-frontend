@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useSearchParams } from "react-router-dom"
 import Navbar from './components/shared/Navbar'
 import MobileBottomNav from './components/shared/MobileBottomNav'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import Home from "./pages/Home"
 import Footer from './components/shared/Footer'
 import Login from "./pages/Login"
@@ -28,6 +28,7 @@ import Checkout from './pages/Checkout'
 import PaymentSuccess from "./pages/PaymentSuccess"
 import PaymentHistory from './pages/PaymentHistory'
 import AdminLogin from './pages/AdminLogin'
+import PasswordReset from './pages/PasswordReset'
 import { cn } from '@/lib/utils'
 
 const ScrollToTop = () => {
@@ -69,7 +70,7 @@ const MainContent = ({ children }) => {
   );
 };
 
-let App = () => {
+const SessionExpiryCheck = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -79,10 +80,15 @@ let App = () => {
     }
   }, [searchParams]);
 
+  return null;
+};
+
+let App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <SessionExpiryCheck />
           <ScrollToTop />
           <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
             <ConditionalNavbar />
@@ -99,6 +105,7 @@ let App = () => {
                 <Route path="/become-tutor" element={<BecomeTutor />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                <Route path="/password-reset" element={<PublicRoute><PasswordReset /></PublicRoute>} />
                 <Route path="/admin-login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
                 <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
                 <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />

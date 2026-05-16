@@ -170,26 +170,28 @@ const StudentDashboard = () => {
             <AppleHeader 
                 title={`Hello, ${user?.displayName?.split(' ')[0]}`}
                 subtitle="Manage your tutoring requests and find the perfect match for your studies."
-                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-secondary/10 text-secondary">Student Dashboard</span>}
+                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-blue-50 text-blue-600 border border-blue-100">Student Dashboard</span>}
             />
 
             {/* Tab Navigation */}
-            <div className="flex items-center gap-1 bg-muted/30 p-1.5 rounded-2xl border border-border/40 w-fit max-w-full overflow-x-auto scrollbar-hide">
-                {tabs.map(tab => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={cn(
-                            "flex items-center gap-2 px-5 py-2 text-xs font-semibold transition-all duration-300 rounded-xl whitespace-nowrap",
-                            activeTab === tab.id
-                                ? "bg-background text-primary shadow-sm shadow-primary/5 border border-border/40"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                        )}
-                    >
-                        <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-50'} />
-                        {tab.label}
-                    </button>
-                ))}
+            <div className="w-full overflow-hidden">
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200 w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+                    {tabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={cn(
+                                "flex items-center gap-2 px-5 py-3 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 rounded-xl whitespace-nowrap min-w-fit",
+                                activeTab === tab.id
+                                    ? "bg-white text-blue-600 shadow-sm border border-slate-200"
+                                    : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
+                            )}
+                        >
+                            <tab.icon size={14} className={activeTab === tab.id ? 'text-blue-600' : 'opacity-50'} />
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Overview Content */}
@@ -199,37 +201,37 @@ const StudentDashboard = () => {
                         <LoadingSpinner />
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <AppleCard className="p-8 group">
-                            <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <Database size={20} />
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                        <AppleCard className="p-6 md:p-10 group bg-white border border-slate-200 rounded-3xl shadow-xl" hover={false}>
+                            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-blue-100 shadow-sm">
+                                <Database size={24} />
                             </div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Active Requests</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Active Requests</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-4xl font-bold text-foreground tracking-tight tabular-nums">{myTuitions.length}</span>
-                                <span className="text-xs font-medium text-muted-foreground">posts</span>
+                                <span className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">{myTuitions.length}</span>
+                                <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Nodes</span>
                             </div>
                         </AppleCard>
 
-                        <AppleCard className="p-8 group">
-                            <div className="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <FileText size={20} />
+                        <AppleCard className="p-6 md:p-10 group bg-white border border-slate-200 rounded-3xl shadow-xl" hover={false}>
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-100 shadow-sm">
+                                <FileText size={24} />
                             </div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Tutor Applications</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Tutor Applications</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-4xl font-bold text-foreground tracking-tight tabular-nums">{applications.length}</span>
-                                <span className="text-xs font-medium text-muted-foreground">applications</span>
+                                <span className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">{applications.length}</span>
+                                <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Apps</span>
                             </div>
                         </AppleCard>
 
-                        <AppleCard className="p-8 group">
-                            <div className="w-10 h-10 rounded-2xl bg-green-500/10 text-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <UserCheck size={20} />
+                        <AppleCard className="p-6 md:p-10 group bg-white border border-slate-200 rounded-3xl shadow-xl col-span-2 lg:col-span-1" hover={false}>
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-100 shadow-sm">
+                                <UserCheck size={24} />
                             </div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Active Engagements</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Engagements</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-4xl font-bold text-foreground tracking-tight tabular-nums">{bookings.filter(b => b.isAccepted).length}</span>
-                                <span className="text-xs font-medium text-muted-foreground">sessions</span>
+                                <span className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">{bookings.filter(b => b.isAccepted).length}</span>
+                                <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Sessions</span>
                             </div>
                         </AppleCard>
                     </div>
@@ -398,7 +400,7 @@ const StudentDashboard = () => {
 
             {/* Applications Tab */}
             {activeTab === 'applications' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-6">
                     {applications.length === 0 ? (
                         <AppleCard className="col-span-full p-32 text-center border-dashed">
                              <Search size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
@@ -406,7 +408,7 @@ const StudentDashboard = () => {
                         </AppleCard>
                     ) : (
                         applications.map(app => (
-                            <AppleCard key={app._id} className="p-8 group relative overflow-hidden">
+                            <AppleCard key={app._id} className="p-4 md:p-8 group relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
                                 <div className="relative z-10">
                                     <div className="flex justify-between items-start mb-6">

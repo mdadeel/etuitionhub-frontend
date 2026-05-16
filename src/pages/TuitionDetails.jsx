@@ -135,7 +135,7 @@ const TuitionDetails = () => {
     if (!tuition) {
         return (
             <div className="max-w-xl mx-auto px-4 py-20 text-center bg-slate-50 min-h-screen flex flex-col items-center justify-center">
-                <h1 className="text-xl font-semibold text-slate-900 mb-2">Post Unavailable</h1>
+                <h2 className="text-xl font-semibold text-slate-900 mb-2">Post Unavailable</h2>
                 <p className="text-sm text-slate-600 mb-6">This tuition post doesn't exist or was removed.</p>
                 <Link to="/tuitions" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                     Back to Jobs

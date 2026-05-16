@@ -36,8 +36,8 @@ const PaymentHistory = () => {
     return (
         <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary animate-in fade-in duration-700">
             {/* Background Technical Grid Element */}
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
-                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
+            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"
+                style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
             </div>
 
             <div className="max-w-5xl mx-auto relative z-10">
@@ -58,8 +58,8 @@ const PaymentHistory = () => {
 
                 {payments.length === 0 ? (
                     <div className="py-40 text-center bg-muted/10 border border-dashed border-border rounded-none group relative overflow-hidden">
-                        <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
-                             style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 0), linear-gradient(90deg, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}>
+                        <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"
+                            style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 0), linear-gradient(90deg, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}>
                         </div>
                         <div className="relative z-10">
                             <Banknote size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />

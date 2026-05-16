@@ -143,35 +143,37 @@ const DashUsers = () => {
 
     return (
         <div className="bg-transparent">
-            <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <header className="mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                 <div>
-                    <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
-                        Identity Manifest
-                    </h2>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                        {filtered.length} users found
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-8 h-1.5 bg-blue-600 rounded-full"></div>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Identity Directory</span>
+                    </div>
+                    <h1 className="text-3xl font-extrabold text-foreground tracking-tight leading-tight">User Manifest</h1>
+                    <p className="text-sm text-muted-foreground font-medium mt-1">
+                        Total of {filtered.length} active nodes identified.
                     </p>
                 </div>
 
                 {/* Search Input */}
-                <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 group-focus-within:text-blue-600 transition-colors" />
                     <input
                         type="text"
                         placeholder="Search by name, email..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10 pr-4 py-2.5 text-sm bg-muted/50 border border-border/50 rounded-xl w-64 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="pl-11 pr-4 py-3 text-sm bg-muted/30 border border-border/60 rounded-2xl w-full lg:w-72 focus:outline-none focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600/20 transition-all placeholder:text-muted-foreground/40"
                     />
                 </div>
 
-                <div className="flex bg-muted/50 p-1 rounded-2xl gap-1 border border-border/50 w-fit backdrop-blur-md">
+                <div className="flex bg-muted/40 p-1 rounded-2xl gap-1 border border-border/60 w-fit backdrop-blur-md">
                     {['all', 'student', 'tutor', 'admin'].map(f => (
                         <button
                             key={f}
-                            className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${filter === f
-                                ? 'bg-background text-primary shadow-apple-sm ring-1 ring-border/50'
-                                : 'text-muted-foreground hover:text-foreground'
+                            className={`px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${filter === f
+                                ? 'bg-card text-blue-600 shadow-sm border border-border/60'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                                 }`}
                             onClick={() => setFilter(f)}
                         >
@@ -184,49 +186,49 @@ const DashUsers = () => {
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-separate border-spacing-y-3">
                     <thead>
-                        <tr className="text-muted-foreground">
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Node Profile</th>
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Metadata</th>
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Trust Tier</th>
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Permission</th>
-                            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-right">Ops</th>
+                        <tr className="text-muted-foreground/40">
+                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Node</th>
+                            <th className="hidden md:table-cell px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Metadata</th>
+                            <th className="hidden lg:table-cell px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Trust Tier</th>
+                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Auth</th>
+                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-right">Ops</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filtered.map((user) => (
                             <tr key={user._id} className="group">
-                                <td className="px-6 py-4 bg-muted/20 border-y border-l border-border/50 first:rounded-l-2xl">
-                                    <div className="flex items-center gap-4">
-                                        <Avatar className="h-10 w-10 rounded-xl border border-border shadow-sm">
+                                <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-l border-border/60 first:rounded-l-2xl group-hover:bg-muted/30 transition-colors">
+                                    <div className="flex items-center gap-3 md:gap-4">
+                                        <Avatar className="h-8 w-8 md:h-10 md:w-10 rounded-xl border border-border/60 shadow-sm transition-transform group-hover:scale-105">
                                             <AvatarImage src={user.photoURL} className="object-cover" />
-                                            <AvatarFallback className="text-[10px] font-bold bg-background text-muted-foreground">
+                                            <AvatarFallback className="text-[10px] font-bold bg-muted text-muted-foreground/60">
                                                 {user.displayName?.charAt(0)}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <p className="text-sm font-bold text-foreground leading-tight">{user.displayName}</p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <div className={`w-1.5 h-1.5 rounded-full ${user.isVerified ? 'bg-primary animate-pulse' : 'bg-muted-foreground/30'}`}></div>
-                                                <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                                            <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{user.displayName}</p>
+                                            <div className="flex items-center gap-1.5 mt-1">
+                                                <div className={`w-1.5 h-1.5 rounded-full ${user.isVerified ? 'bg-blue-600 animate-pulse' : 'bg-muted-foreground/30'}`}></div>
+                                                <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
                                                     {user.role}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 bg-muted/20 border-y border-border/50">
-                                    <p className="text-xs font-bold text-muted-foreground lowercase italic opacity-60 tracking-tight">{user.email}</p>
+                                <td className="hidden md:table-cell px-6 py-5 bg-card border-y border-border/60 group-hover:bg-muted/30 transition-colors">
+                                    <p className="text-xs font-bold text-muted-foreground/60 lowercase italic tracking-tight">{user.email}</p>
                                 </td>
-                                <td className="px-6 py-4 bg-muted/20 border-y border-border/50">
+                                <td className="hidden lg:table-cell px-6 py-5 bg-card border-y border-border/60 group-hover:bg-muted/30 transition-colors">
                                     <div className="flex flex-col gap-2">
                                         {user.verificationStatus === 'verified_premium' ? (
-                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-green-500/10 text-green-600 w-fit">Premium</span>
+                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-blue-600/10 text-blue-600 border border-blue-500/20 w-fit">Premium</span>
                                         ) : user.verificationStatus === 'verified_basic' ? (
-                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-primary/10 text-primary w-fit">Basic</span>
+                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-muted text-muted-foreground/60 border border-border/60 w-fit">Basic</span>
                                         ) : user.verificationStatus === 'pending_review' ? (
-                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-amber-500/10 text-amber-600 w-fit">Review</span>
+                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-amber-600/10 text-amber-600 border border-amber-500/20 w-fit">Review</span>
                                         ) : (
-                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-muted text-muted-foreground w-fit opacity-40">None</span>
+                                            <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-muted text-muted-foreground/30 border border-border/60 w-fit opacity-60">None</span>
                                         )}
                                         
                                         {user.role === 'tutor' && (
@@ -246,8 +248,8 @@ const DashUsers = () => {
                                         )}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 bg-muted/20 border-y border-border/50">
-                                    <div className="w-36">
+                                <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-border/60 group-hover:bg-muted/30 transition-colors">
+                                    <div className="w-24 md:w-36">
                                         <FilterSelect
                                             value={user.role}
                                             onValueChange={(role) => handleRoleChange(user._id, role)}
@@ -260,12 +262,12 @@ const DashUsers = () => {
                                         />
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 bg-muted/20 border-y border-r border-border/50 last:rounded-r-2xl text-right">
+                                <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-r border-border/60 last:rounded-r-2xl text-right group-hover:bg-muted/30 transition-colors">
                                     <div className="flex justify-end gap-2">
                                         <AppleButton
                                             variant="ghost"
                                             size="sm"
-                                            className="h-9 w-9 p-0 text-muted-foreground hover:text-primary hover:bg-primary/5"
+                                            className="h-9 w-9 p-0 text-muted-foreground/60 hover:text-blue-600 hover:bg-blue-600/10"
                                             onClick={() => handleEditClick(user)}
                                         >
                                             <Edit2 size={14} />
@@ -273,7 +275,7 @@ const DashUsers = () => {
                                         <AppleButton
                                             variant="ghost"
                                             size="sm"
-                                            className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/5"
+                                            className="h-9 w-9 p-0 text-muted-foreground/60 hover:text-red-600 hover:bg-red-600/10"
                                             onClick={() => handleDelete(user._id)}
                                         >
                                             <UserX size={16} />

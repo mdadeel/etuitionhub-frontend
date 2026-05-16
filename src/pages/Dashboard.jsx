@@ -31,14 +31,14 @@ const Dashboard = () => {
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     
-    const role = dbUser?.role?.toLowerCase() || 'student';
+    const role = dbUser?.role?.toLowerCase() || (loading ? '' : 'student');
 
     // Close mobile menu on route change
     useEffect(() => {
         setIsMobileMenuOpen(false);
     }, [location]);
 
-    if (loading) {
+    if (loading || (user && !dbUser)) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
@@ -54,7 +54,7 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="flex h-screen bg-background overflow-hidden selection:bg-primary/20 selection:text-primary">
+        <div className="flex h-screen bg-background overflow-hidden selection:bg-blue-600/20 selection:text-blue-600">
             
             {/* Desktop Sidebar */}
             <DashboardSidebar role={role} />
@@ -69,27 +69,19 @@ const Dashboard = () => {
 
             {/* Mobile Sidebar Content */}
             <div className={cn(
-                "fixed inset-y-0 left-0 w-72 bg-background z-[70] lg:hidden transition-transform duration-500 ease-apple border-r border-border/40",
+                "fixed inset-y-0 left-0 w-72 bg-background z-[70] lg:hidden transition-transform duration-500 ease-apple border-r border-border/40 overflow-y-auto",
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <DashboardSidebar role={role} />
             </div>
             
-            <main className="flex-1 h-full overflow-y-auto relative scrollbar-hide flex flex-col">
-                {/* Mobile Header Trigger */}
-                <div className="lg:hidden flex items-center justify-between px-6 h-16 border-b border-border/40 bg-background/50 backdrop-blur-md sticky top-0 z-50">
-                    <span className="text-sm font-bold tracking-tight">Dashboard</span>
-                    <button 
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="p-2 hover:bg-muted rounded-xl transition-colors"
-                    >
-                        {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                    </button>
-                </div>
+            <main className="flex-1 h-full overflow-y-auto overflow-x-hidden relative scrollbar-hide flex flex-col pt-0 lg:pt-0">
+                {/* Mobile spacing adjustment for removed header */}
+                <div className="lg:hidden h-4" />
 
                 {/* Background Dynamic Gradients */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] -mr-64 -mt-64 rounded-full pointer-events-none opacity-50"></div>
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] -ml-64 -mb-64 rounded-full pointer-events-none opacity-50"></div>
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 blur-[120px] -mr-64 -mt-64 rounded-full pointer-events-none opacity-40 dark:opacity-20"></div>
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/10 blur-[120px] -ml-64 -mb-64 rounded-full pointer-events-none opacity-40 dark:opacity-20"></div>
 
                 <div className="max-w-7xl w-full mx-auto px-6 py-8 md:px-12 md:py-16 lg:px-16 relative z-10 flex-grow">
                     <Routes>

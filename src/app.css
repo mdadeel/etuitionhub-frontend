@@ -1,8 +1,10 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 
-html, body {
+html,
+body {
   scrollbar-gutter: stable;
 }
 
@@ -10,45 +12,59 @@ html, body {
   :root {
     /* Trust-first design system - darker text, minimal blue */
     --background: 210 20% 98%;
-    --foreground: 215 25% 8%;  /* #0F172A - darker text */
+    --foreground: 215 25% 8%;
+    /* #0F172A - darker text */
     --card: 0 0% 100%;
     --card-foreground: 215 25% 8%;
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 8%;
-    --primary: 217 91% 60%;  /* #2563EB - blue accent */
+    --primary: 217 91% 60%;
+    /* #2563EB - blue accent */
     --primary-foreground: 0 0% 100%;
     --secondary: 210 20% 96%;
-    --secondary-foreground: 215 25% 20%;  /* #334155 */
+    --secondary-foreground: 215 25% 20%;
+    /* #334155 */
     --muted: 210 20% 96%;
-    --muted-foreground: 215 20% 40%;  /* #64748B */
+    --muted-foreground: 215 20% 40%;
+    /* #64748B */
     --accent: 210 20% 96%;
     --accent-foreground: 215 25% 8%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 88%;  /* #E2E8F0 */
+    --border: 214 32% 88%;
+    /* #E2E8F0 */
     --input: 214 32% 88%;
     --ring: 217 91% 60%;
-    --radius: 8px;  /* 8px - tighter, more mature */
+    --radius: 4px;  /* 4px - sharp, data-dense */
+    --cta: 142 71% 45%;
+    /* #22c55e */
   }
 
   .dark {
-    --background: 240 5% 6%;
-    --foreground: 240 5% 98%;
-    --card: 240 5% 9%;
-    --card-foreground: 240 5% 98%;
-    --popover: 240 5% 9%;
-    --popover-foreground: 240 5% 98%;
-    --primary: 210 100% 55%;
-    --primary-foreground: 240 5% 10%;
-    --secondary: 240 5% 15%;
-    --secondary-foreground: 240 5% 98%;
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 240 5% 15%;
-    --accent-foreground: 240 5% 98%;
-    --border: 240 5% 15%;
-    --input: 240 5% 15%;
-    --ring: 210 100% 55%;
+    --background: 222 47% 4%;
+    /* #020617 - Deep OLED Black */
+    --foreground: 210 40% 98%;
+    --card: 222 47% 6%;
+    /* Slightly lighter for cards */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 6%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    /* Maintain brand blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 32% 12%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 32% 12%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 32% 12%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 32% 17%;
+    /* Defined borders for dark mode */
+    --input: 217 32% 17%;
+    --ring: 217 91% 60%;
+    --cta: 142 71% 45%;
   }
 }
 
@@ -56,22 +72,45 @@ html, body {
   * {
     @apply border-border;
   }
-  
+
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground transition-colors duration-500;
+    font-family: 'Fira Sans', 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.011em;
-    overflow-y: scroll;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-bold tracking-tight;
+  }
+
+  /* Minimalist Premium Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full transition-colors;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
   }
 }
 
 @layer utilities {
+
   /* Trust-first design utilities */
   .glass {
     @apply bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm;
@@ -83,5 +122,26 @@ html, body {
 
   .card-compact-hover {
     @apply bg-white border border-slate-200 shadow-sm rounded-lg hover:shadow-md hover:border-blue-300 transition-all;
+  }
+
+  /* Mobile Responsive Utilities */
+  .mobile-only {
+    @apply md:hidden;
+  }
+
+  .desktop-only {
+    @apply hidden md:block;
+  }
+
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  .safe-bottom {
+    @apply pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0;
+  }
+
+  .thumb-zone-cta {
+    @apply fixed bottom-20 left-4 right-4 z-50 md:static md:bottom-auto md:left-auto md:right-auto;
   }
 }

@@ -85,7 +85,7 @@ const TutorDetails = () => {
     if (!tutor) {
         return (
             <div className="max-w-xl mx-auto px-4 py-20 text-center bg-slate-50 min-h-screen flex flex-col items-center justify-center">
-                <h1 className="text-xl font-semibold text-slate-900 mb-2">Profile Not Found</h1>
+                <h2 className="text-xl font-semibold text-slate-900 mb-2">Profile Not Found</h2>
                 <p className="text-sm text-slate-600 mb-6">We couldn't find the tutor you are looking for.</p>
                 <Link to="/tutors" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                     Back to Tutors
@@ -121,16 +121,12 @@ const TutorDetails = () => {
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                    {tutor.isVerified && (
-                                        <div className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-1.5 rounded-full">
-                                            <ShieldCheck size={16} />
-                                        </div>
-                                    )}
+                                    
                                 </div>
 
                                 <div className="flex-grow">
                                     <div className="flex flex-wrap items-center gap-2 mb-3">
-                                        {tutor.isVerified && (
+                                        {tutor.isVerified && tutor._id !== 'tutor_001' && (
                                             <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">Verified</span>
                                         )}
                                         <span className="text-xs text-slate-500 flex items-center gap-1 px-2 py-1 bg-slate-100 rounded-full">
@@ -232,7 +228,7 @@ const TutorDetails = () => {
                                     ) : (
                                         <button
                                             onClick={handleContact}
-                                            className="w-full px-4 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 text-sm"
+                                            className="w-full px-4 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 text-sm transition-colors shadow-sm active:scale-95"
                                         >
                                             <Send size={16} /> Contact Tutor
                                         </button>
@@ -246,15 +242,17 @@ const TutorDetails = () => {
                                     </button>
                                 </div>
 
-                                <div className="mt-4 pt-4 border-t border-slate-200 flex items-center justify-center gap-3">
-                                    <div className="w-8 h-8 bg-blue-50 flex items-center justify-center text-blue-600 rounded-full">
-                                        <CheckCircle2 size={16} />
+                                {tutor._id !== 'tutor_001' && (
+                                    <div className="mt-4 pt-4 border-t border-slate-200 flex items-center justify-center gap-3">
+                                        <div className="w-8 h-8 bg-blue-50 flex items-center justify-center text-blue-600 rounded-full">
+                                            <CheckCircle2 size={16} />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="text-xs font-medium text-slate-900">Verified Profile</p>
+                                            <p className="text-xs text-slate-500">Documents Validated</p>
+                                        </div>
                                     </div>
-                                    <div className="text-left">
-                                        <p className="text-xs font-medium text-slate-900">Verified Profile</p>
-                                        <p className="text-xs text-slate-500">Documents Validated</p>
-                                    </div>
-                                </div>
+                                )}
                             </div>
                         </div>
 
