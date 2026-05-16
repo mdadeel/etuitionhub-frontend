@@ -1,7 +1,8 @@
 import './app.css'
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useLocation, useSearchParams } from "react-router-dom"
 import Navbar from './components/shared/Navbar'
+import MobileBottomNav from './components/shared/MobileBottomNav'
 import { Toaster } from 'react-hot-toast'
 import Home from "./pages/Home"
 import Footer from './components/shared/Footer'
@@ -27,6 +28,7 @@ import Checkout from './pages/Checkout'
 import PaymentSuccess from "./pages/PaymentSuccess"
 import PaymentHistory from './pages/PaymentHistory'
 import AdminLogin from './pages/AdminLogin'
+import { cn } from '@/lib/utils'
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -34,6 +36,14 @@ const ScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [pathname]);
   return null;
+};
+
+const ConditionalNavbar = () => {
+  const { pathname } = useLocation();
+  const isDashboard = pathname.startsWith('/dashboard');
+  const isSession = pathname.startsWith('/session');
+  if (isDashboard || isSession) return null;
+  return <Navbar />;
 };
 
 const ConditionalFooter = () => {
@@ -44,15 +54,39 @@ const ConditionalFooter = () => {
   return <Footer />;
 };
 
+const MainContent = ({ children }) => {
+  const { pathname } = useLocation();
+  const isDashboard = pathname.startsWith('/dashboard');
+  const isSession = pathname.startsWith('/session');
+  
+  return (
+    <main className={cn(
+      "flex-grow transition-all duration-300",
+      !isDashboard && !isSession ? "pt-14 safe-bottom" : "pt-0"
+    )}>
+      {children}
+    </main>
+  );
+};
+
 let App = () => {
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('expired') === 'true') {
+      toast.error('Session expired. Please login again.');
+      window.history.replaceState({}, '', '/login');
+    }
+  }, [searchParams]);
+
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
           <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
-            <Navbar />
-            <main className="flex-grow pt-14">
+            <ConditionalNavbar />
+            <MainContent>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/tuitions" element={<Tuitions />} />
@@ -74,8 +108,9 @@ let App = () => {
                 <Route path="/payment-history" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </main>
+            </MainContent>
             <ConditionalFooter />
+            <MobileBottomNav />
             <Toaster position="top-right" />
           </div>
         </BrowserRouter>

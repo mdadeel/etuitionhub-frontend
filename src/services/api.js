@@ -27,13 +27,11 @@ api.interceptors.response.use(
         var status = err.response?.status
 
         if (status === 401) {
-            // token expired maybe
-            Cookies.remove('token')
-            console.log('401 - token issue')
-            // redirect maybe - but breaks SSR/initial load
-            // if (!window.location.pathname.includes('/login')) {
-            //     window.location.href = '/login'
-            // }
+            Cookies.remove('token');
+            Cookies.remove('refreshToken');
+            if (!window.location.pathname.includes('/login')) {
+                window.location.href = '/login?expired=true';
+            }
         } else if (status === 403) {
             console.warn('403 forbidden:', err.response?.data?.error)
         } else if (status === 404) {
