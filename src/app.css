@@ -8,14 +8,14 @@ body {
   scrollbar-gutter: stable;
 }
 
+/* Premium Human-Centered Design Tokens */
 @layer base {
   :root {
-    /* Premium Academic Infrastructure - Dark Navy Infrastructure */
-    /* Base: dark navy with layered neutral surfaces */
+    /* Deep Navy Infrastructure - #081225 */
     --background: 222 47% 6%;
     --foreground: 210 40% 98%;
 
-    /* Card: subtle elevation with translucent backgrounds */
+    /* Soft Navy - #0F172E */
     --card: 222 47% 8%;
     --card-foreground: 210 40% 98%;
 
@@ -23,67 +23,73 @@ body {
     --popover: 222 47% 10%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary: Electric blue accent - #3B82F6 */
+    /* Muted Blue - #2563EB */
     --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
 
-    /* Secondary: muted grayscale surfaces */
-    --secondary: 215 25% 12%;
-    --secondary-foreground: 210 40% 85%;
+    /* Calm Blue Accent - #4F8CFF */
+    --secondary: 215 100% 65%;
+    --secondary-foreground: 210 40% 98%;
 
-    /* Muted: layered neutral for depth */
+    /* Muted neutrals */
     --muted: 215 25% 14%;
     --muted-foreground: 215 20% 60%;
 
-    /* Accent */
-    --accent: 215 25% 16%;
-    --accent-foreground: 210 40% 95%;
+    /* Intelligent Cyan Glow - #6EE7F9 (very limited) */
+    --accent: 185 70% 70%;
+    --accent-foreground: 210 40% 98%;
 
     /* Destructive */
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Border: subtle, not excessive */
+    /* Soft borders */
     --border: 215 25% 18%;
     --input: 215 25% 18%;
     --ring: 217 91% 60%;
 
-    /* Radius: unified, softer corners */
+    /* Unified softer corners */
     --radius: 8px;
 
-    /* Success/Warning for state indicators */
+    /* Success/Warning */
     --success: 142 71% 45%;
     --warning: 38 92% 50%;
   }
 
-  /* Light mode - muted grayscale surfaces, avoid pure white */
+  /* Light mode - warm, calm, institutional trust */
   .light {
-    --background: 210 20% 98%;
+    /* Warm background: #F5F7FA */
+    --background: 210 20% 97%;
     --foreground: 215 25% 10%;
 
+    /* Elevated card: #FFFFFF */
     --card: 0 0% 100%;
     --card-foreground: 215 25% 10%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 10%;
 
+    /* Muted blue: #2563EB */
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 215 25% 20%;
+    /* Calm blue accent: #4F8CFF */
+    --secondary: 215 100% 65%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 20% 96%;
+    /* Secondary surface: #EEF2F6 */
+    --muted: 210 20% 94%;
     --muted-foreground: 215 20% 40%;
 
-    --accent: 210 20% 95%;
-    --accent-foreground: 215 25% 12%;
+    --accent: 185 70% 70%;
+    --accent-foreground: 215 25% 10%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 88%;
-    --input: 214 32% 88%;
+    /* Soft border: rgba(15, 23, 46, 0.08) */
+    --border: 215 32% 88%;
+    --input: 215 32% 88%;
     --ring: 217 91% 60%;
   }
 }
@@ -101,40 +107,62 @@ body {
     letter-spacing: -0.011em;
   }
 
-  /* Typography Hierarchy */
+  /* Editorial Typography Hierarchy */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
     font-family: 'Space Grotesk', system-ui, sans-serif;
   }
 
-  /* Hero Headings - Bold Editorial */
+  /* Bold editorial headlines */
   h1 {
-    font-size: 3rem;
-    line-height: 1.1;
+    font-size: 3.5rem;
+    line-height: 0.95;
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
   }
 
   h2 {
-    font-size: 2.25rem;
-    line-height: 1.2;
+    font-size: 2.5rem;
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  h3 {
+    font-size: 1.875rem;
+    line-height: 1.15;
     font-weight: 600;
     letter-spacing: -0.02em;
   }
 
-  h3 {
-    font-size: 1.5rem;
-    line-height: 1.3;
-    font-weight: 600;
+  /* Premium Body Typography */
+  .font-heading {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .font-body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.011em;
+    line-height: 1.6;
+  }
+
+  .font-label {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
   /* Small uppercase metadata labels */
   .label-uppercase {
     @apply text-xs font-medium uppercase tracking-wider;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
   }
 
-  /* Premium Scrollbar */
+  /* Premium Scrollbar - calm and restrained */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -145,113 +173,135 @@ body {
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full transition-colors;
+    @apply bg-muted-foreground/15 rounded-full transition-colors;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
+    @apply bg-muted-foreground/30;
   }
 }
 
 @layer utilities {
-  /* Premium Card - softer corners, subtle elevation */
+  /* Premium Human-Centered Card - softer corners, atmospheric depth */
   .card-premium {
-    @apply bg-card border border-border rounded-lg transition-all duration-200;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    @apply bg-card border border-border/50 rounded-lg transition-all duration-300;
+    box-shadow: 
+      0 8px 24px rgba(0, 0, 0, 0.06),
+      0 4px 12px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(15, 23, 46, 0.04);
   }
 
   .card-premium-hover {
-    @apply card-premium hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5;
-    transition: all 200ms ease-out;
+    @apply card-premium hover:border-primary/20 hover:shadow-xl hover:-translate-y-1;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Glass effect for layered depth */
+  /* Glass effect for layered depth - meaningful and restrained */
   .glass-premium {
-    @apply bg-card/80 backdrop-blur-md border border-border/50;
+    @apply bg-card/70 backdrop-blur-lg border border-border/30 rounded-lg;
   }
 
-  /* Premium Button - magnetic effect */
+  /* Premium Button - calm, confident, not loud */
   .btn-premium {
-    @apply inline-flex items-center justify-center rounded-md px-4 py-2.5 text-sm font-medium transition-all duration-200;
+    @apply inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium transition-all duration-300;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
     @apply disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
     @apply btn-premium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98];
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    transform: translateY(-1px);
   }
 
   .btn-secondary {
-    @apply btn-premium bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border;
+    @apply btn-premium bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/50;
   }
 
   .btn-ghost {
-    @apply btn-premium hover:bg-secondary hover:text-accent-foreground;
+    @apply btn-premium hover:bg-muted/50 hover:text-accent-foreground;
   }
 
-  /* Premium Input */
+  /* Premium Input - soft focus rings, welcoming spacing */
   .input-premium {
-    @apply flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm;
-    @apply placeholder:text-muted-foreground;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply flex h-11 w-full rounded-lg border border-border/50 bg-card/50 px-4 py-2.5 text-sm;
+    @apply placeholder:text-muted-foreground/60;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
-    transition: all 150ms ease-out;
+    transition: all 250ms ease-out;
   }
 
-  /* Microinteraction: smooth focus states */
+  /* Microinteraction: soft focus states */
   .input-premium:focus {
-    @apply border-primary/50;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    @apply border-primary/30;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   }
 
-  /* Animated hover border */
+  /* Animated hover border - subtle illumination */
   .hover-border-animate {
     @apply relative overflow-hidden;
   }
 
   .hover-border-animate::after {
     content: '';
-    @apply absolute inset-0 border-2 border-primary/0 rounded-lg transition-all duration-200;
+    @apply absolute inset-0 border-2 border-primary/0 rounded-lg transition-all duration-300;
   }
 
   .hover-border-animate:hover::after {
-    @apply border-primary/30;
+    @apply border-primary/20;
   }
 
-  /* Subtle card lift on hover */
+  /* Subtle card lift - soft scaling and opacity */
   .card-lift {
-    @apply transition-transform duration-200 ease-out;
+    @apply transition-all duration-300 ease-out;
   }
 
   .card-lift:hover {
     @apply -translate-y-1;
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.08),
+      0 6px 16px rgba(0, 0, 0, 0.04);
   }
 
-  /* Animated navigation indicator */
+  /* Magnetic button effect - slight scale or lift */
+  .magnetic-button {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .magnetic-button:hover {
+    @apply scale-102 -translate-y-0.5;
+  }
+
+  /* Animated navigation indicator - directional movement */
   .nav-indicator {
     @apply relative;
   }
 
   .nav-indicator::after {
     content: '';
-    @apply absolute -bottom-1 left-0 h-0.5 bg-primary rounded-full transition-all duration-200;
+    @apply absolute -bottom-1 left-0 h-0.5 bg-primary rounded-full transition-all duration-300;
   }
 
   .nav-indicator.active::after {
     @apply w-full;
   }
 
-  /* Loading skeleton */
+  /* Loading skeleton - soft, calm */
   .skeleton-premium {
-    @apply animate-pulse bg-muted rounded;
+    @apply animate-pulse bg-muted/50 rounded-lg;
   }
 
-  /* Cinematic whitespace */
+  /* Cinematic whitespace - deliberate negative space */
   .section-rhythm {
-    @apply py-16 md:py-24 lg:py-32;
+    @apply py-20 md:py-28 lg:py-36;
   }
 
-  /* Container widths */
+  /* Container widths - intentional alignment */
   .container-premium {
     @apply mx-auto px-4 md:px-6 lg:px-8 max-w-7xl;
   }
@@ -276,6 +326,73 @@ body {
   .safe-bottom {
     @apply pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0;
   }
+
+  /* Editorial Typography Utilities */
+  .text-editorial {
+    @apply font-heading text-4xl md:text-6xl lg:text-7xl text-primary leading-[0.95];
+  }
+
+  .text-hero {
+    @apply font-heading text-3xl md:text-5xl text-primary leading-[1.05];
+  }
+
+  .text-section {
+    @apply font-heading text-2xl md:text-4xl text-primary leading-[1.15];
+  }
+
+  /* Premium Background Patterns - soft noise textures */
+  .bg-pattern-academic {
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(37, 99, 235, 0.05) 1px, transparent 0);
+    background-size: 40px 40px;
+  }
+
+  /* Atmospheric Shadow System */
+  .shadow-premium {
+    box-shadow: 
+      0 8px 24px rgba(0, 0, 0, 0.06),
+      0 4px 12px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(15, 23, 46, 0.04);
+  }
+
+  .shadow-premium-lg {
+    box-shadow: 
+      0 16px 40px rgba(0, 0, 0, 0.08),
+      0 8px 20px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(37, 99, 235, 0.1);
+  }
+
+  /* Premium Border System - soft, not harsh */
+  .border-premium {
+    @apply border border-border/50 rounded-lg;
+  }
+
+  .border-premium-hover {
+    @apply border-premium hover:border-primary/20 hover:shadow-premium-lg;
+  }
+
+  /* Layered Background Surfaces */
+  .bg-layered {
+    @apply bg-gradient-to-b from-background to-muted/20;
+  }
+
+  .bg-elevated {
+    @apply bg-card/80 backdrop-blur-md;
+  }
+
+  /* Soft Divider */
+  .divider-soft {
+    @apply h-px bg-border/30;
+  }
+
+  /* Editorial Spacing */
+  .spacing-editorial {
+    @apply space-y-6 md:space-y-8;
+  }
+
+  .spacing-section {
+    @apply space-y-12 md:space-y-16;
+  }
 }
 
 /* Reduced motion support */
@@ -287,5 +404,137 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Restrained Micro-interactions - Motion Hierarchy */
+@layer utilities {
+  /* Smooth hover transitions - 300ms cubic-bezier */
+  .transition-smooth {
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Subtle motion hierarchy - scale and lift */
+  .motion-lift {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .motion-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Intelligent reveal interactions */
+  .reveal-on-hover {
+    opacity: 0.7;
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
+  }
+
+  .reveal-on-hover:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  /* Directional movement - subtle */
+  .directional-move {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .directional-move:hover {
+    transform: translateX(2px);
+  }
+
+  /* Soft scaling and opacity transitions */
+  .soft-scale {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 300ms ease-out;
+  }
+
+  .soft-scale:hover {
+    transform: scale(1.02);
+  }
+
+  /* Button illumination on hover */
+  .btn-illuminate {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-illuminate::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 500ms ease-out;
+  }
+
+  .btn-illuminate:hover::before {
+    left: 100%;
+  }
+
+  /* Input focus states - soft, welcoming */
+  .input-focus-soft {
+    transition: border-color 250ms ease-out, box-shadow 250ms ease-out;
+  }
+
+  .input-focus-soft:focus {
+    border-color: rgba(37, 99, 235, 0.3);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  /* Card hover - subtle elevation */
+  .card-hover-elevate {
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover-elevate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Navigation indicator - directional */
+  .nav-indicator-directional {
+    position: relative;
+  }
+
+  .nav-indicator-directional::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #2563EB;
+    transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-indicator-directional:hover::after {
+    width: 100%;
+  }
+
+  /* Loading states - calm, soft */
+  .loading-calm {
+    animation: pulse-calm 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes pulse-calm {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Scroll reveal - gentle */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 600ms ease-out, transform 600ms ease-out;
+  }
+
+  .scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
