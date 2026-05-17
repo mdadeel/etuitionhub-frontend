@@ -1,6 +1,31 @@
 import { Mail, Zap, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const Newsletter = () => {
+    const [email, setEmail] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            // Newsletter API will be added later — for now store locally
+            const subscribers = JSON.parse(localStorage.getItem('newsletter_subscribers') || '[]');
+            if (subscribers.includes(email)) {
+                toast.error('You are already subscribed');
+            } else {
+                subscribers.push(email);
+                localStorage.setItem('newsletter_subscribers', JSON.stringify(subscribers));
+                toast.success('Subscribed successfully!');
+                setEmail('');
+            }
+        } catch {
+            toast.error('Subscription failed');
+        } finally {
+            setSubmitting(false);
+        }
+    };
     return (
         <section className="py-24 bg-white relative overflow-hidden border-b border-slate-100">
             {/* Background Grid Motif */}
@@ -29,13 +54,15 @@ const Newsletter = () => {
                     </div>
 
                     {/* Technical Form */}
-                    <form className="flex flex-col md:flex-row gap-0 max-w-2xl mx-auto relative z-10 border border-white/10">
+                    <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 max-w-2xl mx-auto relative z-10 border border-white/10">
                         <div className="relative flex-1 group">
                             <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
                                 <Mail className="w-4 h-4 text-slate-600 group-focus-within:text-blue-500 transition-colors" />
                             </div>
                             <input
                                 type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder="USER@EMAIL_ADDRESS"
                                 className="w-full h-16 pl-16 pr-6 bg-white/[0.02] text-white placeholder:text-slate-700 focus:outline-none focus:bg-white/[0.05] transition-all font-mono text-xs font-black uppercase tracking-widest"
                                 required
@@ -43,9 +70,10 @@ const Newsletter = () => {
                         </div>
                         <button 
                             type="submit" 
-                            className="h-16 px-12 bg-blue-600 text-white font-black uppercase tracking-[0.2em] text-[11px] hover:bg-white hover:text-slate-950 transition-all border-l border-white/10"
+                            disabled={submitting}
+                            className="h-16 px-12 bg-blue-600 text-white font-black uppercase tracking-[0.2em] text-[11px] hover:bg-white hover:text-slate-950 transition-all border-l border-white/10 disabled:opacity-50"
                         >
-                            Subscribe_Module
+                            {submitting ? 'Processing...' : 'Subscribe_Module'}
                         </button>
                     </form>
 
