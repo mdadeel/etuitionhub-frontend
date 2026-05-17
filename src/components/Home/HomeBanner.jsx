@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from "react";
-import { Search, MapPin, GraduationCap, CheckCircle, Clock, Users, Star, MessageCircle, TrendingUp, Zap, ShieldCheck, UserPlus, GraduationCap as TutorIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Search, ShieldCheck, CheckCircle, MessageCircle, Users, GraduationCap, Star, Clock, Heart } from "lucide-react";
+import { Badge, Button, Card, Avatar, SectionHeader } from '@/components/ui';
 
 const tutorPreview = {
     name: "Rahim Ahmed",
-    subjects: "Math, Physics",
+    subjects: "Mathematics, Physics",
     rating: 4.9,
     reviews: 128,
     fee: "৳5,000",
@@ -14,7 +14,6 @@ const tutorPreview = {
     responseTime: "Usually replies in 15 min",
     completedSessions: "12+ Students taught",
     style: "Explains concepts visually",
-    inquiriesToday: 12
 };
 
 const HomeBanner = () => {
@@ -35,41 +34,37 @@ const HomeBanner = () => {
     };
 
     return (
-        <section className="bg-[#F8FAFC] overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6 pt-20 pb-10">
-                <div className="grid lg:grid-cols-12 gap-8 items-center">
+        <section className="bg-[#F5F7FA] overflow-hidden">
+            <div className="max-w-7xl mx-auto px-6 pt-24 pb-16">
+                <div className="grid lg:grid-cols-12 gap-12 items-start">
 
-                    {/* LEFT - Content & Search */}
-                    <div className="lg:col-span-7 space-y-6">
-                        <div>
-                            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#E8F5E9] text-[#2E7D32] rounded-none mb-4 border border-[#2E7D32]/10">
-                                <CheckCircle className="w-3.5 h-3.5" />
-                                <span className="text-[10px] font-black uppercase tracking-wider">2,500+ verified tutors</span>
-                            </div>
+                    {/* LEFT - Emotional Content & Search */}
+                    <div className="lg:col-span-7 space-y-8">
+                        {/* Trust Badge */}
+                        <Badge variant="primary">
+                            <ShieldCheck className="w-4 h-4" />
+                            2,500+ verified tutors across Bangladesh
+                        </Badge>
 
-                            <h1 className="text-4xl lg:text-5xl font-black text-[#0F172A] tracking-tighter leading-[1.1] mb-4">
-                                Find the right tutor <br />
-                                without the <span className="text-primary relative inline-block">
-                                    guesswork
-                                    <svg className="absolute -bottom-1.5 left-0 w-full h-1.5" viewBox="0 0 100 10" preserveAspectRatio="none">
-                                        <path d="M0 5 Q 25 0 50 5 T 100 5" fill="none" stroke="currentColor" strokeWidth="3" />
-                                    </svg>
-                                </span>
+                        {/* Editorial Headline */}
+                        <div className="space-y-4">
+                            <h1 className="text-5xl lg:text-6xl font-heading text-[#111827] tracking-tight leading-[0.95]">
+                                Your child is in
+                                <span className="block text-[#2563EB]">safe hands.</span>
                             </h1>
-
-                            <p className="text-sm text-[#64748B] max-w-lg leading-relaxed font-medium">
-                                Real tutors. Verified credentials. Direct contact. Connect with teachers who actually deliver results.
+                            <p className="text-lg text-[#5B6475] max-w-xl leading-relaxed font-body">
+                                Real tutors. Verified credentials. Direct connection. We help you find teachers who genuinely care about your child's academic journey.
                             </p>
                         </div>
 
-                        {/* Search Card - Compact */}
-                        <div className="bg-white rounded-none shadow-none border border-slate-200 p-6">
-                            <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-10 gap-3 mb-4">
+                        {/* Search Interface */}
+                        <Card variant="elevated" className="p-6">
+                            <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-10 gap-4 mb-5">
                                 <div className="md:col-span-3">
-                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Subject</label>
+                                    <label className="text-xs font-medium text-[#111827] mb-1.5 block">Subject</label>
                                     <div className="relative">
                                         <select
-                                            className="w-full h-10 pl-3 pr-8 border border-slate-200 rounded-none text-xs font-bold bg-slate-50/50 appearance-none focus:border-primary outline-none transition-all"
+                                            className="w-full h-11 pl-3 pr-8 border border-[rgba(15,23,46,0.12)] rounded-lg text-sm font-medium bg-white text-[#111827] appearance-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all duration-300"
                                             value={searchData.subject}
                                             onChange={(e) => setSearchData({ ...searchData, subject: e.target.value })}
                                         >
@@ -78,15 +73,15 @@ const HomeBanner = () => {
                                             <option value="english">English</option>
                                             <option value="physics">Physics</option>
                                         </select>
-                                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <Search className="w-3.5 h-3.5 text-slate-400" />
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <Search className="w-4 h-4 text-[#5B6475]" />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="md:col-span-3">
-                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Class</label>
+                                    <label className="text-xs font-medium text-[#111827] mb-1.5 block">Class Level</label>
                                     <select
-                                        className="w-full h-10 px-3 border border-slate-200 rounded-none text-xs font-bold bg-slate-50/50 appearance-none focus:border-primary outline-none transition-all"
+                                        className="w-full h-11 px-3 border border-[rgba(15,23,46,0.12)] rounded-lg text-sm font-medium bg-white text-[#111827] appearance-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all duration-300"
                                         value={searchData.classLevel}
                                         onChange={(e) => setSearchData({ ...searchData, classLevel: e.target.value })}
                                     >
@@ -96,156 +91,132 @@ const HomeBanner = () => {
                                         <option value="university">University</option>
                                     </select>
                                 </div>
-                                <div className="md:col-span-4 flex items-end gap-2">
+                                <div className="md:col-span-4 flex items-end gap-3">
                                     <div className="flex-1">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 block">Area</label>
+                                        <label className="text-xs font-medium text-[#111827] mb-1.5 block">Location</label>
                                         <input
                                             type="text"
                                             placeholder="Enter area or city"
-                                            className="w-full h-10 px-3 border border-slate-200 rounded-none text-xs font-bold bg-slate-50/50 outline-none focus:border-primary transition-all"
+                                            className="w-full h-11 px-3 border border-[rgba(15,23,46,0.12)] rounded-lg text-sm font-medium bg-white text-[#111827] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all duration-300 placeholder:text-[#5B6475]"
                                             value={searchData.location}
                                             onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
                                         />
                                     </div>
-                                    <button
-                                        type="submit"
-                                        className="h-10 px-4 bg-primary text-white font-black uppercase tracking-widest text-[10px] rounded-none hover:bg-slate-900 transition-all flex items-center gap-2 shrink-0"
-                                    >
-                                        <Search className="w-3.5 h-3.5" />
-                                        <span>Find</span>
-                                    </button>
+                                    <Button type="submit">
+                                        <Search className="w-4 h-4" />
+                                        <span>Search</span>
+                                    </Button>
                                 </div>
                             </form>
 
-                            <div className="flex flex-wrap items-center gap-5 pt-3 border-t border-slate-50">
-                                <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                                    <CheckCircle className="w-3 h-3 text-green-600" />
-                                    <span>Verified</span>
+                            {/* Trust Signals */}
+                            <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-[rgba(15,23,46,0.08)]">
+                                <div className="flex items-center gap-2 text-xs text-[#5B6475]">
+                                    <CheckCircle className="w-4 h-4 text-[#2563EB]" />
+                                    <span>Verified credentials</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                                    <MessageCircle className="w-3 h-3 text-blue-600" />
-                                    <span>Direct</span>
+                                <div className="flex items-center gap-2 text-xs text-[#5B6475]">
+                                    <MessageCircle className="w-4 h-4 text-[#2563EB]" />
+                                    <span>Direct messaging</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                                    <Users className="w-3 h-3 text-teal-600" />
-                                    <span>No Fees</span>
+                                <div className="flex items-center gap-2 text-xs text-[#5B6475]">
+                                    <Users className="w-4 h-4 text-[#2563EB]" />
+                                    <span>No platform fees</span>
                                 </div>
                             </div>
-                        </div>
+                        </Card>
                     </div>
 
-                    {/* RIGHT - Compact Tutor Card & Stats */}
-                    <div className="lg:col-span-5 space-y-4 lg:translate-y-[60px]">
-                        {/* Featured Tutor Card - Slimmer */}
-                        <div className="bg-white rounded-none shadow-none border border-slate-200 p-6 relative">
+                    {/* RIGHT - Tutor Preview & Trust Signals */}
+                    <div className="lg:col-span-5 space-y-6 lg:translate-y-4">
+                        {/* Featured Tutor Card */}
+                        <Card variant="elevated" hover className="p-6 relative">
+                            <Badge variant="primary" className="absolute -top-2 -right-2">
+                                <CheckCircle className="w-3 h-3" />
+                                Verified
+                            </Badge>
+
                             <div className="flex items-start gap-4">
-                                <div className="w-14 h-14 bg-slate-100 text-slate-900 flex items-center justify-center rounded-none shrink-0 border border-slate-200">
-                                    <TutorIcon className="w-7 h-7" />
-                                </div>
+                                <Avatar size="lg" verified={tutorPreview.verified} />
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between mb-0.5">
-                                        <h3 className="text-lg font-black text-slate-900 tracking-tight">{tutorPreview.name}</h3>
-                                        <div className="flex items-center gap-1 text-slate-900 font-bold text-[9px] uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded-none border border-slate-200">
-                                            <CheckCircle className="w-2.5 h-2.5" />
-                                            <span>Verified</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs font-bold text-slate-500">{tutorPreview.subjects} • {tutorPreview.location}</p>
-                                    <p className="text-xs italic text-slate-400 mt-1.5">"{tutorPreview.style}"</p>
+                                    <h3 className="text-lg font-heading text-[#111827] tracking-tight mb-1">{tutorPreview.name}</h3>
+                                    <p className="text-sm font-medium text-[#5B6475]">{tutorPreview.subjects}</p>
+                                    <p className="text-sm text-[#5B6475] mt-1">{tutorPreview.location}</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-1 mt-6 pt-4 border-t border-slate-50 text-center">
-                                <div>
-                                    <div className="flex items-center justify-center gap-1 text-amber-500 mb-0.5">
-                                        <Star size={12} className="fill-current" />
-                                        <span className="font-black text-slate-900 text-sm">{tutorPreview.rating}</span>
-                                    </div>
-                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">({tutorPreview.reviews})</p>
-                                </div>
-                                <div>
-                                    <div className="font-black text-primary text-sm mb-0.5">{tutorPreview.fee}/mo</div>
-                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Starting</p>
-                                </div>
-                                <div>
-                                    <div className="font-black text-slate-900 text-sm mb-0.5">12+</div>
-                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Taught</p>
-                                </div>
-                            </div>
+                            <p className="text-sm italic text-[#5B6475] mt-4 px-1">"{tutorPreview.style}"</p>
 
-                            <button
-                                onClick={() => navigate('/tutors')}
-                                className="w-full mt-6 h-10 border border-slate-900 text-slate-900 font-black uppercase tracking-widest text-[10px] rounded-none hover:bg-slate-900 hover:text-white transition-all group"
-                            >
-                                <span className="flex items-center justify-center gap-2">
-                                    View Profile
-                                    <TrendingUp className="w-3.5 h-3.5" />
-                                </span>
-                            </button>
-                        </div>
-
-                        {/* Platform Stats Grid - More Compact */}
-                        <div className="bg-slate-100/50 border border-slate-200 rounded-none p-6">
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-[rgba(15,23,46,0.08)]">
                                 <div className="text-center">
-                                    <div className="w-8 h-8 bg-slate-200 rounded-none flex items-center justify-center mx-auto mb-2 border border-slate-300">
-                                        <Users className="w-4 h-4 text-slate-900" />
+                                    <div className="flex items-center justify-center gap-1.5 text-[#2563EB] mb-1">
+                                        <Star size={14} className="fill-current" />
+                                        <span className="font-heading text-lg text-[#111827]">{tutorPreview.rating}</span>
                                     </div>
-                                    <div className="text-lg font-black text-slate-900 leading-none mb-0.5">47</div>
-                                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter leading-tight">Matched Today</p>
+                                    <p className="text-xs text-[#5B6475]">({tutorPreview.reviews})</p>
                                 </div>
-                                <div className="text-center border-x border-slate-200 px-2">
-                                    <div className="w-8 h-8 bg-slate-200 rounded-none flex items-center justify-center mx-auto mb-2 border border-slate-300">
-                                        <TutorIcon className="w-4 h-4 text-slate-900" />
-                                    </div>
-                                    <div className="text-lg font-black text-slate-900 leading-none mb-0.5">23</div>
-                                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter leading-tight">New Weekly</p>
+                                <div className="text-center border-x border-[rgba(15,23,46,0.08)]">
+                                    <div className="font-heading text-lg text-[#111827] mb-1">{tutorPreview.fee}</div>
+                                    <p className="text-xs text-[#5B6475]">per month</p>
                                 </div>
                                 <div className="text-center">
-                                    <div className="w-8 h-8 bg-slate-200 rounded-none flex items-center justify-center mx-auto mb-2 border border-slate-300">
-                                        <Zap className="w-4 h-4 text-slate-900" />
-                                    </div>
-                                    <div className="text-lg font-black text-slate-900 leading-none mb-0.5">18m</div>
-                                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter leading-tight">Response Time</p>
+                                    <div className="font-heading text-lg text-[#111827] mb-1">12+</div>
+                                    <p className="text-xs text-[#5B6475]">students taught</p>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Real-time Indicators - Small */}
+                            <Button variant="outline" className="w-full mt-6">
+                                View Full Profile
+                            </Button>
+                        </Card>
 
+                        {/* Platform Stats */}
+                        <Card variant="subtle" className="p-6">
+                            <div className="grid grid-cols-3 gap-6">
+                                <div className="text-center">
+                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-3 border border-[rgba(15,23,46,0.08)] shadow-sm">
+                                        <Users className="w-5 h-5 text-[#2563EB]" />
+                                    </div>
+                                    <div className="text-xl font-heading text-[#111827] leading-none mb-1">47</div>
+                                    <p className="text-xs text-[#5B6475]">matched today</p>
+                                </div>
+                                <div className="text-center border-x border-[rgba(15,23,46,0.08)]">
+                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-3 border border-[rgba(15,23,46,0.08)] shadow-sm">
+                                        <GraduationCap className="w-5 h-5 text-[#2563EB]" />
+                                    </div>
+                                    <div className="text-xl font-heading text-[#111827] leading-none mb-1">23</div>
+                                    <p className="text-xs text-[#5B6475]">new this week</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-3 border border-[rgba(15,23,46,0.08)] shadow-sm">
+                                        <Clock className="w-5 h-5 text-[#2563EB]" />
+                                    </div>
+                                    <div className="text-xl font-heading text-[#111827] leading-none mb-1">18m</div>
+                                    <p className="text-xs text-[#5B6475]">response time</p>
+                                </div>
+                            </div>
+                        </Card>
                     </div>
                 </div>
 
-                {/* Bottom Features Row - Reduced Spacing */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12 pt-8 border-t border-slate-100">
-                    <div className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                        <div>
-                            <h4 className="font-black text-slate-900 uppercase tracking-wider text-[10px] mb-0.5">Verified</h4>
-                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">Credential checked tutors.</p>
+                {/* Bottom Trust Features */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-[rgba(15,23,46,0.08)]">
+                    {[
+                        { icon: CheckCircle, title: "Verified", desc: "Credential-checked tutors you can trust." },
+                        { icon: MessageCircle, title: "Direct", desc: "Message and connect directly." },
+                        { icon: Users, title: "No Fees", desc: "Direct payment to tutors." },
+                        { icon: Heart, title: "Proven", desc: "Delivering real academic results." }
+                    ].map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-[#EEF2F6] rounded-lg flex items-center justify-center shrink-0 mt-0.5 border border-[rgba(15,23,46,0.08)]">
+                                <feature.icon className="w-4 h-4 text-[#2563EB]" />
+                            </div>
+                            <div>
+                                <h4 className="font-heading text-sm text-[#111827] mb-1">{feature.title}</h4>
+                                <p className="text-xs text-[#5B6475] leading-relaxed">{feature.desc}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                        <MessageCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                        <div>
-                            <h4 className="font-black text-slate-900 uppercase tracking-wider text-[10px] mb-0.5">Direct</h4>
-                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">Message and connect.</p>
-                        </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                        <Users className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
-                        <div>
-                            <h4 className="font-black text-slate-900 uppercase tracking-wider text-[10px] mb-0.5">No Fees</h4>
-                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">Direct pay to tutors.</p>
-                        </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                        <Star className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                        <div>
-                            <h4 className="font-black text-slate-900 uppercase tracking-wider text-[10px] mb-0.5">Proven</h4>
-                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">Delivering real results.</p>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         </section>

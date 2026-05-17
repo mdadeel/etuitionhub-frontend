@@ -1,5 +1,6 @@
 import { Calculator, Languages, Palette, Code, BookOpen, GraduationCap, Award } from "lucide-react";
 import { Link } from 'react-router-dom';
+import { Card, Badge } from '@/components/ui';
 
 const categories = [
     { icon: GraduationCap, label: "SSC", count: "850+", slug: "ssc", tag: "Most popular" },
@@ -14,37 +15,35 @@ const categories = [
 
 const FeaturedCategories = () => {
     return (
-        <section className="py-16 bg-white">
+        <section className="py-20 bg-white">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="mb-8">
-                    <h2 className="text-2xl font-semibold text-slate-900 mb-2">Find your subject</h2>
-                    <p className="text-slate-600">From school preparation to university-level coaching</p>
+                <div className="mb-12">
+                    <h2 className="text-4xl md:text-5xl font-heading text-[#111827] tracking-tight leading-[0.95] mb-4">Find your subject</h2>
+                    <p className="text-lg text-[#5B6475] leading-relaxed font-body">From school preparation to university-level coaching</p>
                 </div>
 
-                {/* More editorial - varied sizes, some with extra info */}
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {categories.map((cat, idx) => (
                         <Link
                             key={cat.slug}
                             to={`/tutors?subject=${cat.slug}`}
-                            className={`relative p-5 rounded-none border border-slate-200 transition-all hover:bg-slate-50 ${
-                                cat.tag ? 'bg-slate-50/50' : 'bg-white'
-                            }`}
+                            className="block"
                         >
-                            {/* Tag for some items */}
-                            {cat.tag && (
-                                <span className="absolute -top-px -right-px px-2 py-0.5 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-none border border-slate-900">
-                                    {cat.tag}
-                                </span>
-                            )}
+                            <Card hover className={`p-5 relative h-full ${cat.tag ? 'bg-[#F5F7FA]' : ''}`}>
+                                {cat.tag && (
+                                    <Badge variant="dark" size="xs" className="absolute -top-2 right-4">
+                                        {cat.tag}
+                                    </Badge>
+                                )}
 
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-none border border-slate-200">
-                                    <cat.icon className="w-5 h-5 text-slate-900" />
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="w-10 h-10 flex items-center justify-center bg-[#EEF2F6] rounded-lg border border-[rgba(15,23,46,0.08)]">
+                                        <cat.icon className="w-5 h-5 text-[#111827]" />
+                                    </div>
+                                    <span className="font-heading text-base text-[#111827] tracking-tight">{cat.label}</span>
                                 </div>
-                                <span className="font-bold text-slate-900 tracking-tight">{cat.label}</span>
-                            </div>
-                            <div className="text-xs font-bold text-slate-500 uppercase tracking-tighter">{cat.count} tutors</div>
+                                <div className="text-sm text-[#5B6475]">{cat.count} tutors</div>
+                            </Card>
                         </Link>
                     ))}
                 </div>

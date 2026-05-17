@@ -1,59 +1,106 @@
-import { ShieldCheck, MessageCircle, Wallet, Monitor, Star, CheckCircle, Zap } from 'lucide-react';
+import { ShieldCheck, MessageCircle, Wallet, Monitor, CheckCircle, Users, Clock, Heart } from 'lucide-react';
+import { Card, SectionHeader } from '@/components/ui';
 
-const features = [
-    { icon: ShieldCheck, title: "Verified Profiles", desc: "Academic documents checked", color: "text-emerald-600", bg: "bg-emerald-600/5" },
-    { icon: Star, title: "Parent Reviews", desc: "Real feedback from families", color: "text-amber-600", bg: "bg-amber-600/5" },
-    { icon: Wallet, title: "Flexible Budget", desc: "৳2,000 to ৳15,000/mo", color: "text-blue-600", bg: "bg-blue-600/5" },
-    { icon: MessageCircle, title: "Direct Contact", desc: "No middleman fees", color: "text-blue-600", bg: "bg-blue-600/5" },
-    { icon: Monitor, title: "Online & Offline", desc: "Your preference", color: "text-teal-600", bg: "bg-teal-600/5" },
-    { icon: CheckCircle, title: "Progress Tracking", desc: "Regular updates", color: "text-emerald-600", bg: "bg-emerald-600/5" }
-];
+const FeatureBlock = ({ icon: Icon, title, description, features }) => (
+    <div className="grid lg:grid-cols-12 gap-12 items-center">
+        <div className="lg:col-span-5">
+            <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-[#EEF2F6] rounded-xl flex items-center justify-center shrink-0 border border-[rgba(15,23,46,0.08)]">
+                    <Icon className="w-6 h-6 text-[#2563EB]" />
+                </div>
+                <div>
+                    <h3 className="text-xl font-heading text-[#111827] mb-2">{title}</h3>
+                    <p className="text-base text-[#5B6475] leading-relaxed">{description}</p>
+                </div>
+            </div>
+        </div>
+        <div className="lg:col-span-7">
+            <Card variant="elevated" className="p-8">
+                <div className="grid grid-cols-2 gap-6">
+                    {features.map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
+                            <CheckCircle className="w-5 h-5 text-[#2563EB] mt-0.5" />
+                            <div>
+                                <p className="text-sm font-medium text-[#111827] mb-1">{feature.title}</p>
+                                <p className="text-xs text-[#5B6475]">{feature.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        </div>
+    </div>
+);
 
 const WhyChooseUs = () => {
     return (
-        <section className="py-16 bg-white relative overflow-hidden border-b border-slate-100">
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="grid lg:grid-cols-12 gap-12 items-start">
-                    {/* Left - The Narrative */}
-                    <div className="lg:col-span-5 space-y-8">
-                        <div className="space-y-4">
-                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-none">
-                                Why parents <br />
-                                trust <span className="text-blue-600">e-tuitionBD</span>
-                            </h2>
-                            <p className="text-lg text-slate-500 leading-relaxed font-bold">
-                                We've heard the stories — tutors who don't show up, fake credentials, and hidden fees that exploit families. 
-                            </p>
-                        </div>
+        <section className="py-20 bg-[#F5F7FA] relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-6">
+                <SectionHeader
+                    title={<>Why parents <span className="text-[#2563EB]">trust us</span> with their children's education</>}
+                    subtitle="We've heard the stories — tutors who don't show up, fake credentials, and hidden fees. That's why we built a platform where every tutor is verified, every fee is transparent, and every parent can communicate directly."
+                />
 
-                        <div className="p-8 bg-slate-950 rounded-none text-white border-l-4 border-blue-600 relative overflow-hidden">
-                             <p className="text-lg font-bold leading-relaxed italic relative z-10">
-                                "That's why we built a platform where every tutor is verified, every fee is transparent, and every parent can communicate directly. No agents, no guesswork, just teaching."
-                             </p>
-                             <div className="mt-6 flex items-center gap-3 relative z-10">
-                                <div className="w-10 h-10 rounded-none bg-slate-800 border border-slate-700 flex items-center justify-center">
-                                    <Zap size={18} className="text-blue-500" />
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Our Founding Mission</span>
-                             </div>
-                        </div>
-                    </div>
+                <div className="space-y-20">
+                    <FeatureBlock
+                        icon={ShieldCheck}
+                        title="Verified Credentials"
+                        description="Every tutor's academic documents are manually checked. We verify qualifications, experience, and background to ensure your child learns from genuine educators."
+                        features={[
+                            { title: "Document Verification", desc: "Academic credentials checked" },
+                            { title: "Background Check", desc: "Identity verification complete" },
+                            { title: "Experience Validated", desc: "Teaching history confirmed" },
+                            { title: "Reference Checks", desc: "Past employer verification" }
+                        ]}
+                    />
 
-                    {/* Right - Feature Integration */}
-                    <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-px bg-slate-200 border border-slate-200">
-                        {features.map((feature, idx) => (
-                            <div
-                                key={idx}
-                                className="group p-8 bg-white rounded-none transition-all hover:bg-slate-50"
-                            >
-                                <div className={`w-12 h-12 flex items-center justify-center bg-slate-100 border border-slate-200 ${feature.color} rounded-none mb-6`}>
-                                    <feature.icon size={24} strokeWidth={2.5} />
+                    <div className="grid lg:grid-cols-12 gap-12 items-center">
+                        <div className="lg:col-span-7 order-2 lg:order-1">
+                            <Card variant="elevated" className="p-8">
+                                <div className="grid grid-cols-2 gap-6">
+                                    {[
+                                        { icon: MessageCircle, title: "Direct Messaging", desc: "Communicate without intermediaries" },
+                                        { icon: Wallet, title: "Transparent Fees", desc: "No hidden charges or commissions" },
+                                        { icon: Users, title: "Parent-Tutor Match", desc: "Find the right fit for your child" },
+                                        { icon: Clock, title: "Quick Response", desc: "Average 18-minute reply time" }
+                                    ].map((feature, idx) => (
+                                        <div key={idx} className="flex items-start gap-3">
+                                            <feature.icon className="w-5 h-5 text-[#2563EB] mt-0.5" />
+                                            <div>
+                                                <p className="text-sm font-medium text-[#111827] mb-1">{feature.title}</p>
+                                                <p className="text-xs text-[#5B6475]">{feature.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                                <h3 className="text-lg font-black text-slate-900 mb-2 tracking-tight uppercase">{feature.title}</h3>
-                                <p className="text-xs text-slate-500 font-bold uppercase tracking-tight leading-relaxed">{feature.desc}</p>
+                            </Card>
+                        </div>
+                        <div className="lg:col-span-5 order-1 lg:order-2">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-[#EEF2F6] rounded-xl flex items-center justify-center shrink-0 border border-[rgba(15,23,46,0.08)]">
+                                    <MessageCircle className="w-6 h-6 text-[#2563EB]" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-heading text-[#111827] mb-2">Direct Connection</h3>
+                                    <p className="text-base text-[#5B6475] leading-relaxed">
+                                        No middlemen, no agents. Message tutors directly, discuss your child's needs, and build a relationship based on trust and transparency.
+                                    </p>
+                                </div>
                             </div>
-                        ))}
+                        </div>
                     </div>
+
+                    <FeatureBlock
+                        icon={Monitor}
+                        title="Online & Offline"
+                        description="Choose the learning mode that works best for your family. Whether it's in-person sessions at home or online classes, we support your preference."
+                        features={[
+                            { title: "Online Classes", desc: "Learn from anywhere" },
+                            { title: "In-Person Sessions", desc: "Home tutoring available" },
+                            { title: "Flexible Budget", desc: "৳2,000 to ৳15,000/month" },
+                            { title: "Personalized Care", desc: "Tailored to your child" }
+                        ]}
+                    />
                 </div>
             </div>
         </section>
