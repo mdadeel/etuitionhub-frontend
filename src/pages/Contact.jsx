@@ -1,18 +1,32 @@
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Mail, MapPin, Clock, Send, Database, Terminal } from "lucide-react";
+import api from '../services/api';
 
-/**
- * Contact Page
- * Refactored to "Technical Emerald Minimalism"
- */
 const Contact = () => {
-    const handleSubmit = (e) => {
+    const [submitting, setSubmitting] = useState(false);
+    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        toast.success('Communication synchronized with support infrastructure.');
+        setSubmitting(true);
+        try {
+            await api.post('/api/contact', formData);
+            toast.success('Message sent successfully! We\'ll get back to you soon.');
+            setFormData({ name: '', email: '', message: '' });
+        } catch (err) {
+            toast.error(err.response?.data?.error || 'Failed to send message');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -96,6 +110,9 @@ const Contact = () => {
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Origin Identity</Label>
                                     <Input 
                                         type="text" 
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
                                         placeholder="FULL_NAME_OR_ORG" 
                                         className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary uppercase text-[11px] tracking-widest"
                                         required 
@@ -106,6 +123,9 @@ const Contact = () => {
                                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Operational Email</Label>
                                     <Input 
                                         type="email" 
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
                                         placeholder="IDENTITY@DOMAIN.COM" 
                                         className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary uppercase text-[11px] tracking-widest"
                                         required 
@@ -116,6 +136,9 @@ const Contact = () => {
                             <div className="space-y-3 relative z-10">
                                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Communication Payload</Label>
                                 <Textarea 
+                                    name="message"
+                                    value={formData.message}
+                                    onChange={handleChange}
                                     placeholder="DETAIL_INQUIRY_OR_INCIDENT_PARAMETERS..." 
                                     className="min-h-[200px] rounded-none border-border bg-muted/20 font-medium focus-visible:ring-primary resize-none p-6 text-sm"
                                     required 
@@ -123,8 +146,8 @@ const Contact = () => {
                             </div>
 
                             <div className="pt-4 relative z-10">
-                                <Button type="submit" className="w-full h-16 rounded-none text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-lg">
-                                    Transmit Message <Send size={18} className="transition-transform hover:translate-x-1" />
+                                <Button type="submit" disabled={submitting} className="w-full h-16 rounded-none text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-lg">
+                                    {submitting ? 'Sending...' : 'Transmit Message'} <Send size={18} className="transition-transform hover:translate-x-1" />
                                 </Button>
                             </div>
                         </form>

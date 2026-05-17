@@ -4,7 +4,6 @@ import { useTuitions } from '../hooks/useTuitions';
 import { useTuitionFilters } from '../hooks/useTuitionFilters';
 import TuitionCard from '../components/shared/TuitionCard';
 import Pagination from '../components/shared/Pagination';
-import { TuitionGridSkeleton } from '../components/Tuitions/TuitionSkeleton';
 import EmptyState from '../components/shared/EmptyState';
 import { SlidersHorizontal, Filter, X, LayoutGrid, MapPin, Search } from 'lucide-react';
 import FilterSelect from '../components/shared/FilterSelect';
@@ -62,29 +61,23 @@ const Tuitions = () => {
         setPage(1);
     };
 
-    if (loading && tuitions.length === 0) return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <TuitionGridSkeleton />
-        </div>
-    );
-
     return (
-        <div className="bg-slate-50 min-h-screen">
+        <div className="bg-[#F5F7FA] min-h-screen">
             <div className="max-w-7xl mx-auto px-4 py-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div className="md:block hidden">
-                        <h1 className="text-xl font-semibold text-slate-900">Available Tuition Jobs</h1>
-                        <p className="text-sm text-slate-600">Find the perfect teaching opportunity that matches your skills.</p>
+                        <h1 className="text-xl font-heading text-[#111827]">Available Tuition Jobs</h1>
+                        <p className="text-sm text-[#5B6475]">Find the perfect teaching opportunity that matches your skills.</p>
                     </div>
                     <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-md border border-slate-200">
-                            <span className="text-lg font-semibold text-slate-900">{pagination?.totalItems || 0}</span>
-                            <span className="text-xs text-slate-500">Jobs</span>
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border border-[rgba(15,23,46,0.08)]">
+                            <span className="text-lg font-heading text-[#111827]">{pagination?.totalItems || 0}</span>
+                            <span className="text-xs text-[#5B6475]">Jobs</span>
                         </div>
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-md border border-slate-200">
-                            <span className="text-lg font-semibold text-slate-900">{totalPages}</span>
-                            <span className="text-xs text-slate-500">Pages</span>
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border border-[rgba(15,23,46,0.08)]">
+                            <span className="text-lg font-heading text-[#111827]">{totalPages}</span>
+                            <span className="text-xs text-[#5B6475]">Pages</span>
                         </div>
                     </div>
                 </div>
@@ -92,11 +85,11 @@ const Tuitions = () => {
                 {/* Mobile Search Bar */}
                 <div className="lg:hidden mb-6">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5B6475]" />
                         <input
                             type="text"
                             placeholder="Search tuitions..."
-                            className="w-full pl-9 pr-4 h-11 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
+                            className="w-full pl-9 pr-4 h-11 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm text-[#111827] placeholder:text-[#5B6475]"
                             value={searchQuery}
                             onChange={(e) => setSearchParams({ q: e.target.value })}
                         />
@@ -104,37 +97,37 @@ const Tuitions = () => {
                 </div>
 
                 <div className="grid lg:grid-cols-4 gap-6">
-                    {/* Mobile Filters Trigger (Thumb Zone) */}
+                    {/* Mobile Filters Trigger */}
                     <button
                         onClick={() => setIsMobileFiltersOpen(true)}
-                        className="lg:hidden fixed bottom-20 right-6 z-40 bg-blue-600 text-white p-4 rounded-full shadow-lg flex items-center gap-2 hover:bg-blue-700 active:scale-95 transition-all"
+                        className="lg:hidden fixed bottom-20 right-6 z-40 bg-[#2563EB] text-white p-4 rounded-full shadow-lg flex items-center gap-2 hover:bg-[#1D4ED8] active:scale-95 transition-all"
                     >
                         <Filter size={20} />
-                        <span className="font-semibold text-sm">Filters</span>
+                        <span className="font-medium text-sm">Filters</span>
                         { (filters.subjects.length > 0 || filters.classFilter || filters.locationFilter) && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-[#2563EB] text-[10px] flex items-center justify-center rounded-full border-2 border-white">
                                 {(filters.subjects.length > 0 ? 1 : 0) + (filters.classFilter ? 1 : 0) + (filters.locationFilter ? 1 : 0)}
                             </span>
                         )}
                     </button>
 
-                    {/* Sidebar Filters (Desktop & Mobile Drawer) */}
+                    {/* Sidebar Filters */}
                     <aside className={cn(
                         "lg:col-span-1",
                         "fixed inset-0 z-[60] bg-black/50 lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
                         isMobileFiltersOpen ? "opacity-100" : "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto"
                     )}>
                         <div className={cn(
-                            "bg-white w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-lg lg:border lg:border-slate-200 lg:sticky lg:top-20 lg:w-full lg:h-auto transition-transform duration-300",
+                            "bg-white w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-xl lg:border lg:border-[rgba(15,23,46,0.08)] lg:sticky lg:top-20 lg:w-full lg:h-auto lg:shadow-sm transition-transform duration-300",
                             isMobileFiltersOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
                         )}>
                             <div className="flex items-center justify-between mb-6 lg:hidden">
-                                <h3 className="text-lg font-bold">Filters</h3>
-                                <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 hover:bg-slate-100 rounded-full">
+                                <h3 className="text-lg font-heading">Filters</h3>
+                                <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 hover:bg-[#F5F7FA] rounded-full">
                                     <X size={20} />
                                 </button>
                             </div>
-                            <h3 className="hidden lg:flex text-sm font-medium text-slate-700 mb-4 flex items-center gap-2">
+                            <h3 className="hidden lg:flex text-sm font-medium text-[#111827] mb-4 flex items-center gap-2">
                                 <Filter size={14} /> Filters
                             </h3>
 
@@ -172,11 +165,11 @@ const Tuitions = () => {
 
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
-                                        <label className="text-sm font-medium text-slate-600 block">Subjects</label>
+                                        <label className="text-sm font-medium text-[#5B6475] block">Subjects</label>
                                         {filters.subjects.length > 0 && (
                                             <button
                                                 onClick={() => updateFilter('subjects', [])}
-                                                className="text-xs text-blue-600 hover:underline"
+                                                className="text-xs text-[#2563EB] hover:underline"
                                             >
                                                 Reset
                                             </button>
@@ -193,10 +186,10 @@ const Tuitions = () => {
                                                         : [...current, subject];
                                                     updateFilter('subjects', updated);
                                                 }}
-                                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                                                     filters.subjects.includes(subject)
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                                        ? 'bg-[#2563EB] text-white'
+                                                        : 'bg-[#F5F7FA] text-[#5B6475] hover:bg-[#EEF2F6] border border-[rgba(15,23,46,0.08)]'
                                                 }`}
                                             >
                                                 {subject}
@@ -209,7 +202,7 @@ const Tuitions = () => {
                             {(searchQuery || filters.classFilter || filters.locationFilter || filters.subjects.length > 0 || filters.sortBy !== 'newest') && (
                                 <button
                                     onClick={handleClearAll}
-                                    className="w-full mt-4 px-3 py-2 text-sm text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 flex items-center justify-center gap-2"
+                                    className="w-full mt-4 px-3 py-2 text-sm text-[#5B6475] border border-[rgba(15,23,46,0.08)] rounded-xl hover:bg-[#F5F7FA] flex items-center justify-center gap-2 transition-colors"
                                 >
                                     <X size={14} /> Clear Filters
                                 </button>
@@ -217,7 +210,7 @@ const Tuitions = () => {
 
                             <button 
                                 onClick={() => setIsMobileFiltersOpen(false)}
-                                className="w-full mt-4 px-3 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm lg:hidden"
+                                className="w-full mt-4 px-3 py-3 bg-[#2563EB] text-white rounded-xl font-medium text-sm lg:hidden"
                             >
                                 Apply Filters
                             </button>
@@ -226,19 +219,25 @@ const Tuitions = () => {
 
                     {/* Main Content */}
                     <main className="lg:col-span-3">
+                        {loading && tuitions.length === 0 && (
+                            <div className="py-12 text-center">
+                                <p className="text-sm text-[#5B6475]">Loading tuitions...</p>
+                            </div>
+                        )}
+
                         {searchQuery && (
                             <div className="mb-4 flex items-center gap-2">
-                                <span className="text-sm text-slate-500">Searching for:</span>
-                                <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded text-sm font-medium">"{searchQuery}"</span>
+                                <span className="text-sm text-[#5B6475]">Searching for:</span>
+                                <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-sm font-medium">"{searchQuery}"</span>
                             </div>
                         )}
 
                         {error ? (
                             <div className="py-12 text-center">
-                                <h3 className="text-lg font-semibold text-red-600 mb-2">Error</h3>
-                                <p className="text-sm text-slate-600 max-w-md mx-auto">{error}</p>
+                                <h3 className="text-lg font-heading text-red-600 mb-2">Error</h3>
+                                <p className="text-sm text-[#5B6475] max-w-md mx-auto">{error}</p>
                             </div>
-                        ) : tuitions.length === 0 ? (
+                        ) : tuitions.length === 0 && !loading ? (
                             <div className="py-12">
                                 <EmptyState
                                     title="No Jobs Found"
@@ -256,7 +255,7 @@ const Tuitions = () => {
                                 </div>
 
                                 {totalPages > 1 && (
-                                    <div className="pt-6 border-t border-slate-200">
+                                    <div className="pt-6 border-t border-[rgba(15,23,46,0.08)]">
                                         <Pagination
                                             currentPage={currentPage}
                                             totalPages={totalPages}

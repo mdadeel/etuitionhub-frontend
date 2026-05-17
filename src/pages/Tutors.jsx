@@ -1,14 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import TutorCard from "../components/shared/TutorCard"
-import LoadingSpinner from '../components/shared/LoadingSpinner'
 import EmptyState from '../components/shared/EmptyState'
-import { SlidersHorizontal, ShieldCheck, Filter, X, LayoutGrid, Search, Zap, UserPlus, Users, Clock, TrendingUp } from 'lucide-react'
+import { SlidersHorizontal, ShieldCheck, Filter, X, LayoutGrid, Search } from 'lucide-react'
 import FilterSelect from '../components/shared/FilterSelect'
 import axios from 'axios'
 import API_URL from '../config/api'
 import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
 
 const Tutors = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -21,13 +19,10 @@ const Tutors = () => {
     const [allSubjects, setAllSubjects] = useState([]);
     const [allClasses, setAllClasses] = useState(['All']);
     const [allAreas, setAllAreas] = useState(['All']);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
-    const [isFiltering, setIsFiltering] = useState(false);
-
-    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
     const searchQuery = searchParams.get('q') || '';
 
-    // Lock body scroll when mobile filters are open
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
     useEffect(() => {
         if (isMobileFiltersOpen) {
             document.body.style.overflow = 'hidden';
@@ -41,8 +36,7 @@ const Tutors = () => {
 
     useEffect(() => {
         const fetchTutors = async () => {
-            if (isInitialLoad) setLoading(true);
-            else setIsFiltering(true);
+            setLoading(true);
             try {
                 let params = new URLSearchParams();
                 if (searchQuery) params.append('q', searchQuery);
@@ -57,13 +51,14 @@ const Tutors = () => {
                 }
 
                 const response = await axios.get(`${API_URL}/api/tutors?${params.toString()}`);
-                setTutors(response.data);
+                const tutorsData = response.data.data || response.data;
+                setTutors(Array.isArray(tutorsData) ? tutorsData : []);
 
                 const subjectsSet = new Set();
                 const classesSet = new Set(['All']);
                 const areasSet = new Set(['All']);
 
-                response.data.forEach(t => {
+                tutorsData.forEach(t => {
                     if (t.subjects) {
                         t.subjects.forEach(s => {
                             if (typeof s === 'string') {
@@ -87,8 +82,6 @@ const Tutors = () => {
                 console.error("Error fetching tutors", error);
             } finally {
                 setLoading(false);
-                setIsInitialLoad(false);
-                setIsFiltering(false);
             }
         };
         fetchTutors();
@@ -133,35 +126,26 @@ const Tutors = () => {
         );
     };
 
-    if (loading && isInitialLoad) return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
-            <LoadingSpinner />
-        </div>
-    )
-
     return (
-        <div className="bg-background text-foreground min-h-screen">
+        <div className="bg-[#F5F7FA] text-[#111827] min-h-screen">
             <div className="max-w-7xl mx-auto px-4 py-6">
-                {/* Platform Pulse Bar */}
-                
-
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                     <div>
-                        <h1 className="text-2xl font-black text-foreground tracking-tighter uppercase italic leading-none mb-2">
-                            Verified <span className="text-primary">Tutors.</span>
+                        <h1 className="text-2xl font-heading text-[#111827] tracking-tight leading-none mb-2">
+                            Verified <span className="text-[#2563EB]">Tutors.</span>
                         </h1>
-                        <p className="text-sm text-muted-foreground font-medium">Browse through our verified network of academic professionals.</p>
+                        <p className="text-sm text-[#5B6475] font-medium">Browse through our verified network of academic professionals.</p>
                     </div>
                     
                     <div className="flex items-center gap-2">
-                        <div className="px-4 py-2 bg-card border border-border rounded-sm shadow-sm flex flex-col items-center min-w-[80px]">
-                            <span className="text-xl font-black text-foreground leading-none">{filteredAndSortedTutors.length}</span>
-                            <span className="text-[9px] text-muted-foreground uppercase tracking-tighter font-bold">Available</span>
+                        <div className="px-4 py-2 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
+                            <span className="text-xl font-heading text-[#111827] leading-none">{filteredAndSortedTutors.length}</span>
+                            <span className="text-[10px] text-[#5B6475] uppercase tracking-wide font-medium">Available</span>
                         </div>
-                        <div className="px-4 py-2 bg-card border border-border rounded-sm shadow-sm flex flex-col items-center min-w-[80px]">
-                            <ShieldCheck size={18} className="text-primary mb-1" />
-                            <span className="text-[9px] text-muted-foreground uppercase tracking-tighter font-bold">100% Vetted</span>
+                        <div className="px-4 py-2 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
+                            <ShieldCheck size={18} className="text-[#2563EB] mb-1" />
+                            <span className="text-[10px] text-[#5B6475] uppercase tracking-wide font-medium">100% Vetted</span>
                         </div>
                     </div>
                 </div>
@@ -169,11 +153,11 @@ const Tutors = () => {
                 {/* Mobile Search Bar */}
                 <div className="lg:hidden mb-6">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5B6475]" />
                         <input
                             type="text"
                             placeholder="Search tutors..."
-                            className="w-full pl-10 pr-4 h-12 bg-card border border-border rounded-sm text-sm outline-none focus:ring-2 focus:ring-primary/20 shadow-sm transition-all text-foreground placeholder:text-muted-foreground"
+                            className="w-full pl-10 pr-4 h-12 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm transition-all text-[#111827] placeholder:text-[#5B6475]"
                             value={searchQuery}
                             onChange={(e) => setSearchParams({ q: e.target.value })}
                         />
@@ -181,40 +165,39 @@ const Tutors = () => {
                 </div>
 
                 <div className="grid lg:grid-cols-4 gap-6">
-                    {/* Mobile Filters Trigger (Thumb Zone - Optimized) */}
+                    {/* Mobile Filters Trigger */}
                     <button
                         onClick={() => setIsMobileFiltersOpen(true)}
-                        className="lg:hidden fixed z-40 bg-[hsl(var(--cta))] text-white h-14 rounded-sm shadow-xl flex items-center justify-center gap-2 hover:bg-[hsl(var(--cta))/0.9] active:scale-[0.98] transition-all"
+                        className="lg:hidden fixed z-40 bg-[#2563EB] text-white h-14 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:bg-[#1D4ED8] active:scale-[0.98] transition-all"
                         style={{ bottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)', left: '1rem', right: '1rem' }}
                     >
                         <Filter size={20} />
-                        <span className="font-bold text-base tracking-wide uppercase">Filters</span>
+                        <span className="font-medium text-base tracking-wide">Filters</span>
                         {(selectedSubjects.length > 0 || selectedClass !== 'All' || selectedArea !== 'All') && (
-                            <span className="absolute top-1/2 -translate-y-1/2 right-4 w-6 h-6 bg-foreground text-background text-xs font-mono font-bold flex items-center justify-center rounded-sm">
+                            <span className="absolute top-1/2 -translate-y-1/2 right-4 w-6 h-6 bg-white text-[#2563EB] text-xs font-bold flex items-center justify-center rounded-full">
                                 {(selectedSubjects.length > 0 ? 1 : 0) + (selectedClass !== 'All' ? 1 : 0) + (selectedArea !== 'All' ? 1 : 0)}
                             </span>
                         )}
                     </button>
 
-                    {/* Sidebar Filters (Desktop & Mobile Drawer) */}
+                    {/* Sidebar Filters */}
                     <aside className={cn(
                         "lg:col-span-1",
                         "fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
                         isMobileFiltersOpen ? "opacity-100" : "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto"
                     )}>
                         <div className={cn(
-                            "bg-card w-full max-w-none h-[85vh] absolute bottom-0 lg:h-auto p-6 lg:p-4 lg:rounded-sm lg:border lg:border-border lg:sticky lg:top-20 lg:w-full transition-transform duration-300 rounded-t-2xl lg:rounded-none overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]",
+                            "bg-white w-full max-w-none h-[85vh] absolute bottom-0 lg:h-auto p-6 lg:p-4 lg:rounded-xl lg:border lg:border-[rgba(15,23,46,0.08)] lg:sticky lg:top-20 lg:w-full lg:shadow-sm transition-transform duration-300 rounded-t-2xl lg:rounded-none overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]",
                             isMobileFiltersOpen ? "translate-y-0" : "translate-y-full lg:translate-y-0"
                         )}>
-                            {/* Drag Handle Indicator */}
-                            <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-6 lg:hidden" />
+                            <div className="w-12 h-1.5 bg-[#E2E8F0] rounded-full mx-auto mb-6 lg:hidden" />
                             <div className="flex items-center justify-between mb-6 lg:hidden">
-                                <h3 className="text-xl font-bold tracking-tight">Filters</h3>
-                                <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 hover:bg-muted rounded-full bg-muted/50 touch-manipulation">
+                                <h3 className="text-xl font-heading tracking-tight">Filters</h3>
+                                <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 hover:bg-[#F5F7FA] rounded-full touch-manipulation">
                                     <X size={24} />
                                 </button>
                             </div>
-                            <h3 className="hidden lg:flex text-sm font-bold text-card-foreground mb-4 items-center gap-2 uppercase tracking-wider">
+                            <h3 className="hidden lg:flex text-sm font-medium text-[#111827] mb-4 items-center gap-2">
                                 <Filter size={16} /> Filters
                             </h3>
 
@@ -251,9 +234,9 @@ const Tutors = () => {
 
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
-                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">Subjects</label>
+                                        <label className="text-xs font-medium text-[#5B6475] uppercase tracking-wide block">Subjects</label>
                                         {selectedSubjects.length > 0 && (
-                                            <button onClick={() => setSelectedSubjects([])} className="text-xs text-primary hover:underline font-bold">Reset</button>
+                                            <button onClick={() => setSelectedSubjects([])} className="text-xs text-[#2563EB] hover:underline font-medium">Reset</button>
                                         )}
                                     </div>
                                     <div className="flex flex-wrap gap-2 max-h-[250px] overflow-y-auto pr-1">
@@ -261,9 +244,9 @@ const Tutors = () => {
                                             <button
                                                 key={subject}
                                                 onClick={() => toggleSubject(subject)}
-                                                className={`px-3 py-1.5 rounded-sm text-xs font-bold transition-colors min-h-[36px] border ${selectedSubjects.includes(subject)
-                                                        ? 'bg-primary text-primary-foreground border-primary'
-                                                        : 'bg-muted text-muted-foreground border-border hover:bg-muted/80'
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors min-h-[36px] border ${selectedSubjects.includes(subject)
+                                                        ? 'bg-[#2563EB] text-white border-[#2563EB]'
+                                                        : 'bg-[#F5F7FA] text-[#5B6475] border-[rgba(15,23,46,0.08)] hover:bg-[#EEF2F6]'
                                                     }`}
                                             >
                                                 {subject}
@@ -276,7 +259,7 @@ const Tutors = () => {
                             {(searchQuery || sortBy !== 'name-az' || selectedSubjects.length > 0 || selectedClass !== 'All' || selectedArea !== 'All') && (
                                 <button
                                     onClick={handleClear}
-                                    className="w-full mt-6 px-3 py-3 text-sm font-bold text-muted-foreground border border-border rounded-sm hover:bg-muted flex items-center justify-center gap-2 uppercase tracking-wider transition-colors"
+                                    className="w-full mt-6 px-3 py-3 text-sm font-medium text-[#5B6475] border border-[rgba(15,23,46,0.08)] rounded-xl hover:bg-[#F5F7FA] flex items-center justify-center gap-2 transition-colors"
                                 >
                                     <X size={16} /> Clear All
                                 </button>
@@ -284,7 +267,7 @@ const Tutors = () => {
 
                             <button
                                 onClick={() => setIsMobileFiltersOpen(false)}
-                                className="w-full mt-4 px-3 py-4 bg-[hsl(var(--cta))] text-white rounded-sm font-bold text-sm lg:hidden uppercase tracking-wider h-14 shadow-sm active:scale-[0.98] transition-all"
+                                className="w-full mt-4 px-3 py-4 bg-[#2563EB] text-white rounded-xl font-medium text-sm lg:hidden h-14 shadow-sm active:scale-[0.98] transition-all"
                             >
                                 Apply Filters
                             </button>
@@ -293,21 +276,21 @@ const Tutors = () => {
 
                     {/* Main Content */}
                     <main className="lg:col-span-3 relative pb-24 md:pb-0">
-                        {isFiltering && (
-                            <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-sm">
-                                <LoadingSpinner />
+                        {loading && tutors.length === 0 && (
+                            <div className="py-12 text-center">
+                                <p className="text-sm text-[#5B6475]">Loading tutors...</p>
                             </div>
                         )}
 
                         {searchQuery && (
                             <div className="mb-4 flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground uppercase tracking-wider font-bold">Searching for:</span>
-                                <span className="px-2 py-1 bg-primary/10 text-primary rounded-sm text-sm font-mono font-bold">"{searchQuery}"</span>
+                                <span className="text-sm text-[#5B6475] uppercase tracking-wide font-medium">Searching for:</span>
+                                <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-sm font-medium">"{searchQuery}"</span>
                             </div>
                         )}
 
-                        {filteredAndSortedTutors.length === 0 ? (
-                            <div className="py-12 bg-card border border-border rounded-sm">
+                        {filteredAndSortedTutors.length === 0 && !loading ? (
+                            <div className="py-12 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl">
                                 <EmptyState
                                     message="No tutors found matching your criteria."
                                     onAction={handleClear}
@@ -315,28 +298,11 @@ const Tutors = () => {
                                 />
                             </div>
                         ) : (
-                            <motion.div
-                                initial="hidden"
-                                animate="visible"
-                                variants={{
-                                    hidden: { opacity: 0 },
-                                    visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
-                                }}
-                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4"
-                            >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
                                 {filteredAndSortedTutors.map((tutor) => (
-                                    <motion.div
-                                        key={tutor._id}
-                                        variants={{
-                                            hidden: { opacity: 0, y: 20 },
-                                            visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                                        }}
-                                        className="h-full"
-                                    >
-                                        <TutorCard tutor={tutor} />
-                                    </motion.div>
+                                    <TutorCard key={tutor._id} tutor={tutor} />
                                 ))}
-                            </motion.div>
+                            </div>
                         )}
                     </main>
                 </div>
