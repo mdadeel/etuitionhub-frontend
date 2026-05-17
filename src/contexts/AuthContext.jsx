@@ -123,6 +123,21 @@ export const AuthProvider = ({ children }) => {
             // Generate token if user exists
             if (currentUser?.email) {
                 await setJWT(currentUser.email);
+
+                // Also fetch dbUser
+                try {
+                    let res = await api.get(`/api/users/${currentUser.email}`);
+                    setDbUser(res.data);
+                    setUserRole(res.data.role);
+                } catch (error) {
+                    if (error.response?.status === 404) {
+                        setDbUser(null);
+                        setUserRole(null);
+                    }
+                }
+            } else {
+                setDbUser(null);
+                setUserRole(null);
             }
 
             setLoading(false);
