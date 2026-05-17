@@ -77,13 +77,32 @@ const TutorDetails = () => {
         }
     }, [tutor]);
 
-    const handleContact = () => {
+    const handleContact = async () => {
         if (!tutor) return;
-        toast.success(`Message sent to ${tutor.displayName || 'the tutor'}.`);
+        try {
+            await api.post('/api/contact', {
+                name: user?.displayName || 'Anonymous',
+                email: user?.email || '',
+                message: `Interest in tutoring from ${user?.displayName} (${user?.email}) for tutor: ${tutor.displayName}`
+            });
+            toast.success('Message sent to tutor!');
+        } catch {
+            toast.error('Failed to send message');
+        }
     };
 
-    const handleSave = () => {
-        toast.success('Saved to favorites.');
+    const handleSave = async () => {
+        if (!tutor) return;
+        try {
+            await api.post(`/api/bookmarks/${tutor._id}`);
+            toast.success('Tutor saved to favorites!');
+        } catch (err) {
+            if (err.response?.status === 400) {
+                toast.error('Tutor already saved');
+            } else {
+                toast.error('Failed to save tutor');
+            }
+        }
     };
 
     const handleSubmitReview = async (e) => {
