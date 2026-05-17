@@ -47,7 +47,7 @@ const StudentPayments = () => {
         const total = payments.length;
         const totalSpent = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
         const pending = payments.filter(p => p.status === 'pending_verification').length;
-        const completed = payments.filter(p => p.status === 'verified' || p.status === 'completed').length;
+        const completed = payments.filter(p => p.status === 'verified').length;
         return { total, totalSpent, pending, completed };
     }, [payments]);
 
@@ -60,7 +60,7 @@ const StudentPayments = () => {
         { id: 'all', label: 'All', count: stats.total },
         { id: 'pending_verification', label: 'Pending', count: stats.pending },
         { id: 'verified', label: 'Verified', count: payments.filter(p => p.status === 'verified').length },
-        { id: 'completed', label: 'Completed', count: payments.filter(p => p.status === 'completed').length },
+        { id: 'completed', label: 'Verified', count: payments.filter(p => p.status === 'verified').length },
         { id: 'rejected', label: 'Rejected', count: payments.filter(p => p.status === 'rejected').length }
     ];
 
