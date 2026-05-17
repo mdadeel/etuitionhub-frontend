@@ -1,7 +1,7 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 html,
 body {
@@ -10,61 +10,81 @@ body {
 
 @layer base {
   :root {
-    /* Trust-first design system - darker text, minimal blue */
-    --background: 210 20% 98%;
-    --foreground: 215 25% 8%;
-    /* #0F172A - darker text */
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 8%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 8%;
+    /* Premium Academic Infrastructure - Dark Navy Infrastructure */
+    /* Base: dark navy with layered neutral surfaces */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    /* Card: subtle elevation with translucent backgrounds */
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+
+    /* Popover */
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary: Electric blue accent - #3B82F6 */
     --primary: 217 91% 60%;
-    /* #2563EB - blue accent */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 215 25% 20%;
-    /* #334155 */
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 20% 40%;
-    /* #64748B */
-    --accent: 210 20% 96%;
-    --accent-foreground: 215 25% 8%;
-    --destructive: 0 84% 60%;
+    --primary-foreground: 210 40% 98%;
+
+    /* Secondary: muted grayscale surfaces */
+    --secondary: 215 25% 12%;
+    --secondary-foreground: 210 40% 85%;
+
+    /* Muted: layered neutral for depth */
+    --muted: 215 25% 14%;
+    --muted-foreground: 215 20% 60%;
+
+    /* Accent */
+    --accent: 215 25% 16%;
+    --accent-foreground: 210 40% 95%;
+
+    /* Destructive */
+    --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 88%;
-    /* #E2E8F0 */
-    --input: 214 32% 88%;
+
+    /* Border: subtle, not excessive */
+    --border: 215 25% 18%;
+    --input: 215 25% 18%;
     --ring: 217 91% 60%;
-    --radius: 4px;  /* 4px - sharp, data-dense */
-    --cta: 142 71% 45%;
-    /* #22c55e */
+
+    /* Radius: unified, softer corners */
+    --radius: 8px;
+
+    /* Success/Warning for state indicators */
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
   }
 
-  .dark {
-    --background: 222 47% 4%;
-    /* #020617 - Deep OLED Black */
-    --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
-    /* Slightly lighter for cards */
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 6%;
-    --popover-foreground: 210 40% 98%;
+  /* Light mode - muted grayscale surfaces, avoid pure white */
+  .light {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 10%;
+
     --primary: 217 91% 60%;
-    /* Maintain brand blue */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 32% 12%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 32% 12%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 32% 12%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 32% 17%;
-    /* Defined borders for dark mode */
-    --input: 217 32% 17%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 215 25% 20%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 20% 40%;
+
+    --accent: 210 20% 95%;
+    --accent-foreground: 215 25% 12%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
     --ring: 217 91% 60%;
-    --cta: 142 71% 45%;
   }
 }
 
@@ -74,23 +94,47 @@ body {
   }
 
   body {
-    @apply bg-background text-foreground transition-colors duration-500;
-    font-family: 'Fira Sans', 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-family: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.011em;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-bold tracking-tight;
+  /* Typography Hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
   }
 
-  /* Minimalist Premium Scrollbar */
+  /* Hero Headings - Bold Editorial */
+  h1 {
+    font-size: 3rem;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+
+  /* Small uppercase metadata labels */
+  .label-uppercase {
+    @apply text-xs font-medium uppercase tracking-wider;
+    letter-spacing: 0.08em;
+  }
+
+  /* Premium Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -110,21 +154,113 @@ body {
 }
 
 @layer utilities {
-
-  /* Trust-first design utilities */
-  .glass {
-    @apply bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm;
+  /* Premium Card - softer corners, subtle elevation */
+  .card-premium {
+    @apply bg-card border border-border rounded-lg transition-all duration-200;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   }
 
-  .card-compact {
-    @apply bg-white border border-slate-200 shadow-sm rounded-lg;
+  .card-premium-hover {
+    @apply card-premium hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5;
+    transition: all 200ms ease-out;
   }
 
-  .card-compact-hover {
-    @apply bg-white border border-slate-200 shadow-sm rounded-lg hover:shadow-md hover:border-blue-300 transition-all;
+  /* Glass effect for layered depth */
+  .glass-premium {
+    @apply bg-card/80 backdrop-blur-md border border-border/50;
   }
 
-  /* Mobile Responsive Utilities */
+  /* Premium Button - magnetic effect */
+  .btn-premium {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2.5 text-sm font-medium transition-all duration-200;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply btn-premium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply btn-premium bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border;
+  }
+
+  .btn-ghost {
+    @apply btn-premium hover:bg-secondary hover:text-accent-foreground;
+  }
+
+  /* Premium Input */
+  .input-premium {
+    @apply flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm;
+    @apply placeholder:text-muted-foreground;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+    transition: all 150ms ease-out;
+  }
+
+  /* Microinteraction: smooth focus states */
+  .input-premium:focus {
+    @apply border-primary/50;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+
+  /* Animated hover border */
+  .hover-border-animate {
+    @apply relative overflow-hidden;
+  }
+
+  .hover-border-animate::after {
+    content: '';
+    @apply absolute inset-0 border-2 border-primary/0 rounded-lg transition-all duration-200;
+  }
+
+  .hover-border-animate:hover::after {
+    @apply border-primary/30;
+  }
+
+  /* Subtle card lift on hover */
+  .card-lift {
+    @apply transition-transform duration-200 ease-out;
+  }
+
+  .card-lift:hover {
+    @apply -translate-y-1;
+  }
+
+  /* Animated navigation indicator */
+  .nav-indicator {
+    @apply relative;
+  }
+
+  .nav-indicator::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 h-0.5 bg-primary rounded-full transition-all duration-200;
+  }
+
+  .nav-indicator.active::after {
+    @apply w-full;
+  }
+
+  /* Loading skeleton */
+  .skeleton-premium {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  /* Cinematic whitespace */
+  .section-rhythm {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  /* Container widths */
+  .container-premium {
+    @apply mx-auto px-4 md:px-6 lg:px-8 max-w-7xl;
+  }
+
+  .container-narrow {
+    @apply mx-auto px-4 md:px-6 max-w-4xl;
+  }
+
+  /* Mobile utilities */
   .mobile-only {
     @apply md:hidden;
   }
@@ -140,8 +276,16 @@ body {
   .safe-bottom {
     @apply pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0;
   }
+}
 
-  .thumb-zone-cta {
-    @apply fixed bottom-20 left-4 right-4 z-50 md:static md:bottom-auto md:left-auto md:right-auto;
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -182,7 +182,7 @@ const DashPayments = () => {
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
                                                 <Badge variant="outline" className={`rounded-full px-2 md:px-3 py-0.5 md:py-1 text-[8px] md:text-[9px] font-bold uppercase tracking-widest ${
-                                                    (payment.status === 'verified' || payment.status === 'completed') ? 'text-blue-600 border-blue-500/20 bg-blue-600/10' :
+                                                    payment.status === 'verified' ? 'text-blue-600 border-blue-500/20 bg-blue-600/10' :
                                                     payment.status === 'rejected' ? 'text-red-600 border-red-500/20 bg-red-600/10' :
                                                     'text-amber-600 border-amber-500/20 bg-amber-600/10'
                                                 }`}>

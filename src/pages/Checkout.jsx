@@ -21,11 +21,14 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
 const PAYMENT_METHODS = [
-    { id: 'bkash', name: 'bKash', color: 'bg-[#D12053]' },
-    { id: 'nagad', name: 'Nagad', color: 'bg-[#F7941D]' },
-    { id: 'rocket', name: 'Rocket', color: 'bg-[#8C3494]' },
+    { id: 'stripe', name: 'Credit Card (Stripe)', color: 'bg-[#635BFF]', badge: 'Real' },
+    { id: 'bkash', name: 'bKash', color: 'bg-[#D12053]', badge: 'Demo' },
+    { id: 'nagad', name: 'Nagad', color: 'bg-[#F7941D]', badge: 'Demo' },
+    { id: 'rocket', name: 'Rocket', color: 'bg-[#8C3494]', badge: 'Demo' },
     { id: 'bank', name: 'Bank Transfer', color: 'bg-primary' }
 ];
+
+const isDemoMethod = (methodId) => ['bkash', 'nagad', 'rocket'].includes(methodId);
 
 /**
  * Checkout Page
@@ -76,8 +79,32 @@ const Checkout = () => {
         }));
     };
 
+    const handleStripeCheckout = async () => {
+        try {
+            setSubmitting(true);
+            const res = await api.post('/api/payments/stripe/create', {
+                amount: application?.budget || 500,
+                bookingId: id,
+                tutorName: application?.tutorName
+            });
+            
+            if (res.data.url) {
+                window.location.href = res.data.url;
+            }
+        } catch (error) {
+            console.error('Stripe error:', error);
+            toast.error('Failed to initiate Stripe checkout');
+            setSubmitting(false);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (formData.paymentMethod === 'stripe') {
+            await handleStripeCheckout();
+            return;
+        }
 
         if (!formData.transactionId.trim()) {
             toast.error('Transaction ID required');
@@ -181,6 +208,11 @@ const Checkout = () => {
                                                 <span className={`text-[11px] font-black uppercase tracking-[0.15em] ${formData.paymentMethod === method.id ? 'text-primary' : 'text-foreground'}`}>
                                                     {method.name}
                                                 </span>
+                                                {method.badge && (
+                                                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded ml-2">
+                                                        {method.badge}
+                                                    </span>
+                                                )}
                                             </div>
                                             {formData.paymentMethod === method.id && (
                                                 <div className="absolute bottom-0 right-0 p-1 bg-primary text-primary-foreground">
@@ -190,35 +222,48 @@ const Checkout = () => {
                                         </button>
                                     ))}
                                 </div>
+                                {isDemoMethod(formData.paymentMethod) && (
+                                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                        <div className="flex items-center gap-2 text-yellow-800">
+                                            <AlertCircle className="w-5 h-5" />
+                                            <span className="font-medium">Demo Mode</span>
+                                        </div>
+                                        <p className="text-sm text-yellow-700 mt-1">
+                                            This payment method is in demo mode. Transactions will be auto-verified for testing purposes.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Transaction Hash (ID)</Label>
-                                    <Input
-                                        type="text"
-                                        name="transactionId"
-                                        value={formData.transactionId}
-                                        onChange={handleChange}
-                                        className="h-14 rounded-none border-border bg-muted/20 font-mono text-xs font-bold text-primary focus-visible:ring-primary uppercase tracking-widest"
-                                        placeholder="E.G. TXN_99882211"
-                                        required
-                                    />
-                                </div>
+                            {formData.paymentMethod !== 'stripe' && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                                    <div className="space-y-4">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Transaction Hash (ID)</Label>
+                                        <Input
+                                            type="text"
+                                            name="transactionId"
+                                            value={formData.transactionId}
+                                            onChange={handleChange}
+                                            className="h-14 rounded-none border-border bg-muted/20 font-mono text-xs font-bold text-primary focus-visible:ring-primary uppercase tracking-widest"
+                                            placeholder="E.G. TXN_99882211"
+                                            required
+                                        />
+                                    </div>
 
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Origin Phone Node</Label>
-                                    <Input
-                                        type="text"
-                                        name="senderNumber"
-                                        value={formData.senderNumber}
-                                        onChange={handleChange}
-                                        className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary tabular-nums"
-                                        placeholder="01XXXXXXXXX"
-                                        required
-                                    />
+                                    <div className="space-y-4">
+                                        <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Origin Phone Node</Label>
+                                        <Input
+                                            type="text"
+                                            name="senderNumber"
+                                            value={formData.senderNumber}
+                                            onChange={handleChange}
+                                            className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary tabular-nums"
+                                            placeholder="01XXXXXXXXX"
+                                            required
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className="space-y-4">
                                 <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Additional Parameters (Optional)</Label>

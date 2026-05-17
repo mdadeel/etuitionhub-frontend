@@ -52,7 +52,7 @@ const DashAnalytics = () => {
                 const admins = users.filter(u => u.role === 'admin').length;
                 const pending = tuitions.filter(t => t.status === 'pending').length;
                 const approved = tuitions.filter(t => t.status === 'approved').length;
-                const completed = payments.filter(p => p.status === 'verified' || p.status === 'completed');
+                const completed = payments.filter(p => p.status === 'verified');
                 const revenue = completed.reduce((sum, p) => sum + (p.amount || 0), 0);
 
                 setTransactions(payments);
@@ -266,7 +266,7 @@ const DashAnalytics = () => {
                                             <span className="text-xs md:text-sm font-bold text-blue-600 tabular-nums">৳{tx.amount.toLocaleString()}</span>
                                         </td>
                                         <td className="px-4 md:px-6 py-4 text-right">
-                                            <Badge className={`rounded-full px-2.5 py-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-widest ${tx.status === 'verified' || tx.status === 'completed'
+                                            <Badge className={`rounded-full px-2.5 py-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-widest ${tx.status === 'verified'
                                                 ? 'bg-blue-50 text-blue-600 border border-blue-100 shadow-none'
                                                 : 'bg-amber-50 text-amber-600 border border-amber-100 shadow-none'
                                                 }`}>
