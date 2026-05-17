@@ -36,12 +36,25 @@ export default function SessionRoom() {
                     navigate('/login');
                     return;
                 }
+                
+                const response = await fetch(`${API_URL}/api/bookings/${bookingId}`);
+                if (!response.ok) {
+                    navigate('/dashboard');
+                    return;
+                }
+                const booking = await response.json();
+                
+                if (!booking || (booking.studentEmail !== userEmail && booking.tutorEmail !== userEmail)) {
+                    navigate('/dashboard');
+                    return;
+                }
             } catch (error) {
                 console.error('Session access error:', error);
+                navigate('/dashboard');
             }
         };
 
-        if (bookingId) {
+        if (bookingId && (user || dbUser)) {
             verifyBooking();
         }
     }, [bookingId, user, dbUser, navigate]);
@@ -82,7 +95,7 @@ export default function SessionRoom() {
             if (connectionRef.current) connectionRef.current.destroy();
             if (stream) stream.getTracks().forEach(track => track.stop());
         };
-    }, [bookingId]);
+    }, [bookingId, user, dbUser]);
 
     const callUser = (userToCall, currentStream) => {
         const peer = new Peer({
