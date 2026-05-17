@@ -97,51 +97,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // user change hoile db theke role anbo
-
-
-    useEffect(() => {
-        let isMounted = true;
-
-        const fetchUserFromDB = async (firebaseUser) => {
-            try {
-                console.log('🔍 Synchronizing identity for:', firebaseUser.email);
-                let res = await api.get(`/api/users/${firebaseUser.email}`);
-                if (isMounted) {
-                    setDbUser(res.data);
-                    setUserRole(res.data.role);
-                    console.log('✅ Identity synchronized:', res.data.role);
-                }
-            } catch (error) {
-                if (error.response?.status === 404 && isMounted) {
-                    console.warn('⚠️ Identity missing in DB.');
-                    setDbUser(null);
-                    setUserRole(null);
-                } else {
-                    console.log('❌ Identity sync error:', error.message);
-                }
-            } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
-            }
-        };
-
-        if (user?.email) {
-            // only set lading true  going  fetc
-
-            console.log("Fetching DB User for:", user.email);
-            fetchUserFromDB(user);
-        } else {
-
-            setDbUser(null);
-            setUserRole(null);
-            setLoading(false);
-        }
-
-        return () => { isMounted = false };
-    }, [user?.email]);
-
     // JWT generation helper
     const setJWT = async (email) => {
         if (!email) return;
