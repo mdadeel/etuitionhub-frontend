@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import API_URL from '../../config/api';
+import { useAuth } from '../../contexts/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Calendar, Check } from 'lucide-react';
 
 export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
+    const { user, dbUser } = useAuth();
     const [step, setStep] = useState(1);
     const [availability, setAvailability] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -13,11 +15,14 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
     useEffect(() => {
         if (isOpen && tutorId) {
-            axios.get(`${API_URL}/api/tutors/${tutorId}/availability`)
+            const url = selectedDate 
+                ? `${API_URL}/api/tutors/${tutorId}/availability?date=${selectedDate}`
+                : `${API_URL}/api/tutors/${tutorId}/availability`;
+            axios.get(url)
                 .then(res => setAvailability(res.data))
                 .catch(err => console.error(err));
         }
-    }, [isOpen, tutorId]);
+    }, [isOpen, tutorId, selectedDate]);
 
     const handleConfirm = async (method) => {
         try {
@@ -25,7 +30,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
             const bookingRes = await axios.post(`${API_URL}/api/bookings`, {
                 tutorId,
                 tutorName,
-                studentEmail: 'student@example.com', // Simplified for demo
+                studentEmail: user?.email || dbUser?.email,
                 subject: 'Trial Session',
                 scheduledAt: selectedDate || new Date(),
                 duration: 60,
@@ -64,6 +69,19 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
                 {step === 1 && (
                     <div className="py-4">
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium mb-2">Select Date</label>
+                            <input 
+                                type="date" 
+                                value={selectedDate || ''}
+                                onChange={(e) => {
+                                    setSelectedDate(e.target.value);
+                                    setSelectedSlot(null);
+                                }}
+                                min={new Date().toISOString().split('T')[0]}
+                                className="w-full px-3 py-2 border rounded-lg"
+                            />
+                        </div>
                         <p className="mb-2 font-medium text-sm text-gray-700">Available Slots:</p>
                         {availability.length === 0 ? (
                             <p className="text-gray-500 text-sm italic">No slots available right now.</p>
@@ -75,7 +93,6 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                                             key={`${idx}-${sIdx}`}
                                             variant={selectedSlot === slot ? "default" : "outline"}
                                             onClick={() => {
-                                                setSelectedDate(new Date()); 
                                                 setSelectedSlot(slot);
                                             }}
                                             className="w-full justify-start text-xs font-normal"
