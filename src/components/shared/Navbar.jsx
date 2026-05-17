@@ -213,9 +213,9 @@ const Navbar = () => {
                         </div>
                     ) : (
                         <div className="flex items-center gap-5">
-                            <button className="text-[#5B6475] hover:text-[#111827] transition-colors duration-300 font-label text-xs tracking-wide">
+                            <Link to="/login" className="text-[#5B6475] hover:text-[#111827] transition-colors duration-300 font-label text-xs tracking-wide">
                                 Sign In
-                            </button>
+                            </Link>
                             <Link
                                 to="/register"
                                 className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-lg font-label text-xs tracking-wide transition-all duration-300 hover:shadow-md"

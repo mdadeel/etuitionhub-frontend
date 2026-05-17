@@ -5,7 +5,6 @@ import {
     FileText, 
     Users, 
     ChevronRight,
-    Settings,
     LogOut,
     ShieldCheck,
     Banknote,
@@ -122,11 +121,7 @@ const DashboardSidebar = ({ role }) => {
                 </div>
 
                 {/* Bottom Actions */}
-                <div className="space-y-3 mt-auto pt-6 border-t border-[rgba(15,23,46,0.08)] px-2">
-                    <button className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[#5B6475] hover:text-[#111827] hover:bg-[#F5F7FA] transition-all group">
-                        <Settings size={18} className="opacity-50 group-hover:opacity-100 group-hover:rotate-45 transition-all duration-500" />
-                        <span className="text-[13px] font-semibold tracking-tight">System Settings</span>
-                    </button>
+                <div className="space-y-3 mt-auto pt-6 border-t border-border/40 px-2">
                     <button 
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all group"

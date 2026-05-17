@@ -11,7 +11,8 @@ import DashUsers from '../components/Dashboard/DashUsers';
 import StudentPayments from '../components/Dashboard/StudentPayments';
 import TutorSessions from '../components/Dashboard/TutorSessions';
 import SavedTutors from '../components/Dashboard/SavedTutors';
-import { Menu, X, Home, Bell } from 'lucide-react';
+import { Menu, X, Home } from 'lucide-react';
+import NotificationBell from '../components/shared/NotificationBell';
 import { cn } from '@/lib/utils';
 
 /**
@@ -105,10 +106,7 @@ const Dashboard = () => {
 
                         {/* Right: User info + notifications */}
                         <div className="flex items-center gap-4">
-                            <button className="relative p-2 hover:bg-[#F5F7FA] rounded-lg transition-colors">
-                                <Bell size={18} className="text-[#5B6475]" />
-                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#2563EB] rounded-full"></span>
-                            </button>
+                            <NotificationBell />
                             <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-[rgba(15,23,46,0.08)]">
                                 <div className="text-right">
                                     <p className="text-sm font-medium text-[#111827]">{user?.displayName?.split(' ')[0]}</p>
