@@ -170,24 +170,24 @@ const StudentDashboard = () => {
             <AppleHeader 
                 title={`Hello, ${user?.displayName?.split(' ')[0]}`}
                 subtitle="Manage your tutoring requests and find the perfect match for your studies."
-                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-blue-50 text-blue-600 border border-blue-100">Student Dashboard</span>}
+                badge={<span className="px-3 py-1 text-xs font-semibold rounded-full bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">Student Dashboard</span>}
             />
 
             {/* Tab Navigation */}
             <div className="w-full overflow-hidden">
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200 w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+                <div className="flex items-center gap-1 bg-[#EEF2F6] p-1 rounded-2xl border border-[rgba(15,23,46,0.08)] w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "flex items-center gap-2 px-5 py-3 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 rounded-xl whitespace-nowrap min-w-fit",
+                                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-xl whitespace-nowrap min-w-fit",
                                 activeTab === tab.id
-                                    ? "bg-white text-blue-600 shadow-sm border border-slate-200"
-                                    : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
+                                    ? "bg-white text-[#2563EB] shadow-sm border border-[rgba(15,23,46,0.08)]"
+                                    : "text-[#5B6475] hover:text-[#111827] hover:bg-white/50"
                             )}
                         >
-                            <tab.icon size={14} className={activeTab === tab.id ? 'text-blue-600' : 'opacity-50'} />
+                            <tab.icon size={14} className={activeTab === tab.id ? 'text-[#2563EB]' : 'opacity-50'} />
                             {tab.label}
                         </button>
                     ))}
@@ -202,36 +202,36 @@ const StudentDashboard = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-                        <AppleCard className="p-6 md:p-10 group bg-white border border-slate-200 rounded-3xl shadow-xl" hover={false}>
-                            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-blue-100 shadow-sm">
+                        <AppleCard className="p-6 md:p-10 group" hover={false}>
+                            <div className="w-12 h-12 rounded-2xl bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
                                 <Database size={24} />
                             </div>
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Active Requests</p>
+                            <p className="text-xs font-semibold text-[#5B6475] mb-2">Active Requests</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">{myTuitions.length}</span>
-                                <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Nodes</span>
+                                <span className="text-3xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">{myTuitions.length}</span>
+                                <span className="text-xs font-semibold text-[#5B6475]">Nodes</span>
                             </div>
                         </AppleCard>
 
-                        <AppleCard className="p-6 md:p-10 group bg-white border border-slate-200 rounded-3xl shadow-xl" hover={false}>
-                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-100 shadow-sm">
+                        <AppleCard className="p-6 md:p-10 group" hover={false}>
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
                                 <FileText size={24} />
                             </div>
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Tutor Applications</p>
+                            <p className="text-xs font-semibold text-[#5B6475] mb-2">Tutor Applications</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">{applications.length}</span>
-                                <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Apps</span>
+                                <span className="text-3xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">{applications.length}</span>
+                                <span className="text-xs font-semibold text-[#5B6475]">Apps</span>
                             </div>
                         </AppleCard>
 
-                        <AppleCard className="p-6 md:p-10 group bg-white border border-slate-200 rounded-3xl shadow-xl col-span-2 lg:col-span-1" hover={false}>
-                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-100 shadow-sm">
+                        <AppleCard className="p-6 md:p-10 group col-span-2 lg:col-span-1" hover={false}>
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                                 <UserCheck size={24} />
                             </div>
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Engagements</p>
+                            <p className="text-xs font-semibold text-[#5B6475] mb-2">Engagements</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">{bookings.filter(b => b.isAccepted).length}</span>
-                                <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Sessions</span>
+                                <span className="text-3xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">{bookings.filter(b => b.isAccepted).length}</span>
+                                <span className="text-xs font-semibold text-[#5B6475]">Sessions</span>
                             </div>
                         </AppleCard>
                     </div>
@@ -244,31 +244,31 @@ const StudentDashboard = () => {
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
                     <div className="relative z-10">
                         <div className="flex items-center gap-4 mb-10">
-                            <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
+                            <div className="w-12 h-12 rounded-2xl bg-[#2563EB] text-white flex items-center justify-center shadow-lg shadow-[#2563EB]/20">
                                 <Plus size={24} />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-foreground tracking-tight">Post a New Request</h2>
-                                <p className="text-xs text-muted-foreground mt-0.5">Define your academic requirements to find the best tutor.</p>
+                                <h2 className="text-xl font-bold text-[#111827] tracking-tight">Post a New Request</h2>
+                                <p className="text-xs text-[#5B6475] mt-0.5">Define your academic requirements to find the best tutor.</p>
                             </div>
                         </div>
 
                         <form onSubmit={handleSubmit(onPostTuition)} className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Subject / Topic *</Label>
+                                    <Label className="text-xs font-semibold text-[#5B6475] ml-1">Subject / Topic *</Label>
                                     <Input 
                                         {...register('subject', { required: 'Subject is required' })} 
                                         placeholder="e.g. Higher Mathematics" 
-                                        className="h-11 rounded-xl bg-muted/20 border-border/40" 
+                                        className="h-11 rounded-xl bg-[#F5F7FA] border-[rgba(15,23,46,0.08)]" 
                                     />
                                     {errors.subject && (
-                                        <p className="text-xs text-destructive ml-1">{errors.subject.message}</p>
+                                        <p className="text-xs text-red-600 ml-1">{errors.subject.message}</p>
                                     )}
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Class Level *</Label>
+                                    <Label className="text-xs font-semibold text-[#5B6475] ml-1">Class Level *</Label>
                                     <Controller
                                         name="class_name"
                                         control={control}
@@ -283,25 +283,25 @@ const StudentDashboard = () => {
                                         )}
                                     />
                                     {errors.class_name && (
-                                        <p className="text-xs text-destructive ml-1">{errors.class_name.message}</p>
+                                        <p className="text-xs text-red-600 ml-1">{errors.class_name.message}</p>
                                     )}
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Monthly Budget (BDT) *</Label>
+                                    <Label className="text-xs font-semibold text-[#5B6475] ml-1">Monthly Budget (BDT) *</Label>
                                     <Input 
                                         {...register('salary', { required: 'Budget is required' })} 
                                         type="number" 
                                         placeholder="5000" 
-                                        className="h-11 rounded-xl bg-muted/20 border-border/40" 
+                                        className="h-11 rounded-xl bg-[#F5F7FA] border-[rgba(15,23,46,0.08)]" 
                                     />
                                     {errors.salary && (
-                                        <p className="text-xs text-destructive ml-1">{errors.salary.message}</p>
+                                        <p className="text-xs text-red-600 ml-1">{errors.salary.message}</p>
                                     )}
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Curriculum *</Label>
+                                    <Label className="text-xs font-semibold text-[#5B6475] ml-1">Curriculum *</Label>
                                     <Controller
                                         name="medium"
                                         control={control}
@@ -316,26 +316,26 @@ const StudentDashboard = () => {
                                         )}
                                     />
                                     {errors.medium && (
-                                        <p className="text-xs text-destructive ml-1">{errors.medium.message}</p>
+                                        <p className="text-xs text-red-600 ml-1">{errors.medium.message}</p>
                                     )}
                                 </div>
                             </div>
                             
                             <div className="space-y-2">
-                                <Label className="text-[11px] font-semibold text-muted-foreground ml-1">Location Details *</Label>
+                                <Label className="text-xs font-semibold text-[#5B6475] ml-1">Location Details *</Label>
                                 <Textarea 
                                     {...register('location', { required: 'Location is required' })} 
-                                    className="rounded-xl bg-muted/20 border-border/40 min-h-[100px] resize-none" 
+                                    className="rounded-xl bg-[#F5F7FA] border-[rgba(15,23,46,0.08)] min-h-[100px] resize-none" 
                                     placeholder="Provide full address for tutor reference..." 
                                 />
                                 {errors.location && (
-                                    <p className="text-xs text-destructive ml-1">{errors.location.message}</p>
+                                    <p className="text-xs text-red-600 ml-1">{errors.location.message}</p>
                                 )}
                             </div>
 
                             <AppleButton 
                                 type="submit" 
-                                className="w-full h-12 rounded-xl shadow-lg shadow-primary/20" 
+                                className="w-full h-12 rounded-xl shadow-lg shadow-[#2563EB]/20" 
                                 disabled={submitting}
                             >
                                 {submitting ? (
@@ -357,36 +357,36 @@ const StudentDashboard = () => {
                 <AppleCard className="overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-muted/30 border-b border-border/40">
+                            <thead className="bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]">
                                 <tr>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Subject</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Yield</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Status</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-right">Actions</th>
+                                    <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Subject</th>
+                                    <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Yield</th>
+                                    <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Status</th>
+                                    <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border/40">
+                            <tbody className="divide-y divide-[rgba(15,23,46,0.08)]">
                                 {myTuitions.length === 0 ? (
                                     <tr>
-                                        <td colSpan="4" className="p-20 text-center text-sm text-muted-foreground italic">No active requests.</td>
+                                        <td colSpan="4" className="p-20 text-center text-sm text-[#5B6475] italic">No active requests.</td>
                                     </tr>
                                 ) : (
                                     myTuitions.map((job) => (
-                                        <tr key={job._id} className="hover:bg-muted/10 transition-colors">
+                                        <tr key={job._id} className="hover:bg-[#F5F7FA]/50 transition-colors">
                                             <td className="px-8 py-6">
-                                                <p className="text-sm font-bold text-foreground">{job.subject}</p>
-                                                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest mt-1">{job.class_name}</p>
+                                                <p className="text-sm font-bold text-[#111827]">{job.subject}</p>
+                                                <p className="text-xs text-[#5B6475] font-medium mt-1">{job.class_name}</p>
                                             </td>
-                                            <td className="px-8 py-6 text-sm font-bold text-primary tabular-nums">৳{job.salary}</td>
+                                            <td className="px-8 py-6 text-sm font-bold text-[#2563EB] tabular-nums">৳{job.salary}</td>
                                             <td className="px-8 py-6">
-                                                <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${job.status === 'approved' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${job.status === 'approved' ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-[#F5F7FA] text-[#5B6475]'}`}>
                                                     {job.status === 'approved' ? 'Active' : 'Pending'}
                                                 </span>
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 <div className="flex justify-end gap-3">
-                                                    <button onClick={() => navigate(`/tuition/${job._id}`)} className="text-[10px] font-bold text-primary hover:underline">View</button>
-                                                    <button onClick={() => handleDeleteTuition(job._id)} className="text-[10px] font-bold text-destructive hover:underline">Remove</button>
+                                                    <button onClick={() => navigate(`/tuition/${job._id}`)} className="text-xs font-bold text-[#2563EB] hover:underline">View</button>
+                                                    <button onClick={() => handleDeleteTuition(job._id)} className="text-xs font-bold text-red-600 hover:underline">Remove</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -403,31 +403,31 @@ const StudentDashboard = () => {
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-6">
                     {applications.length === 0 ? (
                         <AppleCard className="col-span-full p-32 text-center border-dashed">
-                             <Search size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-muted-foreground italic">No incoming applications yet.</p>
+                             <Search size={48} className="text-[#5B6475]/20 mx-auto mb-8" strokeWidth={1} />
+                            <p className="text-sm font-medium text-[#5B6475] italic">No incoming applications yet.</p>
                         </AppleCard>
                     ) : (
                         applications.map(app => (
                             <AppleCard key={app._id} className="p-4 md:p-8 group relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#2563EB]/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
                                 <div className="relative z-10">
                                     <div className="flex justify-between items-start mb-6">
                                         <div>
-                                            <h3 className="text-xl font-bold text-foreground tracking-tight">{app.tutorName}</h3>
-                                            <p className="text-xs text-muted-foreground mt-1">{app.tutorEmail}</p>
+                                            <h3 className="text-xl font-bold text-[#111827] tracking-tight">{app.tutorName}</h3>
+                                            <p className="text-xs text-[#5B6475] mt-1">{app.tutorEmail}</p>
                                         </div>
-                                        <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${app.status === 'approved' ? 'bg-primary/10 text-primary' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-muted text-muted-foreground'}`}>
+                                        <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${app.status === 'approved' ? 'bg-[#2563EB]/10 text-[#2563EB]' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-[#F5F7FA] text-[#5B6475]'}`}>
                                             {app.status}
                                         </span>
                                     </div>
                                     
                                     <div className="space-y-4 mb-8">
-                                        <div className="p-4 rounded-xl bg-muted/30 border border-border/40 text-xs text-muted-foreground leading-relaxed italic">
+                                        <div className="p-4 rounded-xl bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] text-xs text-[#5B6475] leading-relaxed italic">
                                             "{app.qualifications}"
                                         </div>
-                                        <div className="flex justify-between items-center pt-4 border-t border-border/40">
-                                            <span className="text-xs font-semibold text-muted-foreground">Expected Salary</span>
-                                            <span className="text-lg font-bold text-primary tabular-nums">৳{app.expectedSalary}</span>
+                                        <div className="flex justify-between items-center pt-4 border-t border-[rgba(15,23,46,0.08)]">
+                                            <span className="text-xs font-semibold text-[#5B6475]">Expected Salary</span>
+                                            <span className="text-lg font-bold text-[#2563EB] tabular-nums">৳{app.expectedSalary}</span>
                                         </div>
                                     </div>
 
@@ -449,36 +449,36 @@ const StudentDashboard = () => {
                 <AppleCard className="overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-muted/30 border-b border-border/40">
+                            <thead className="bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]">
                                 <tr>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Tutor Name</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Subject</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-center">Contact</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-right">Verification</th>
+                                    <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Tutor Name</th>
+                                    <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Subject</th>
+                                    <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Contact</th>
+                                    <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-right">Verification</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border/40">
+                            <tbody className="divide-y divide-[rgba(15,23,46,0.08)]">
                                 {bookings.length === 0 ? (
                                     <tr>
-                                        <td colSpan="4" className="p-20 text-center text-sm text-muted-foreground italic">No verified engagements yet.</td>
+                                        <td colSpan="4" className="p-20 text-center text-sm text-[#5B6475] italic">No verified engagements yet.</td>
                                     </tr>
                                 ) : (
                                     bookings.map((booking) => (
-                                        <tr key={booking._id} className="hover:bg-muted/10 transition-colors">
+                                        <tr key={booking._id} className="hover:bg-[#F5F7FA]/50 transition-colors">
                                             <td className="px-8 py-6">
-                                                <p className="text-sm font-bold text-foreground">{booking.tutor_name || booking.tutorName}</p>
+                                                <p className="text-sm font-bold text-[#111827]">{booking.tutor_name || booking.tutorName}</p>
                                             </td>
-                                            <td className="px-8 py-6 text-sm font-semibold text-muted-foreground">{booking.subject}</td>
+                                            <td className="px-8 py-6 text-sm font-semibold text-[#5B6475]">{booking.subject}</td>
                                             <td className="px-8 py-6 text-center">
-                                                <a href={`tel:${booking.mobile}`} className="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1.5">
+                                                <a href={`tel:${booking.mobile}`} className="text-xs font-bold text-[#2563EB] hover:underline flex items-center justify-center gap-1.5">
                                                     <Phone size={12} /> {booking.mobile}
                                                 </a>
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 <div className="flex flex-col items-end gap-2">
-                                                    <span className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full bg-primary/10 text-primary">Protocol Active</span>
+                                                    <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#2563EB]/10 text-[#2563EB]">Protocol Active</span>
                                                     {booking.isAccepted && (
-                                                        <AppleButton size="sm" className="h-7 px-3 text-[10px] rounded-lg" onClick={() => navigate(`/session/${booking._id}`)}>
+                                                        <AppleButton size="sm" className="h-7 px-3 text-xs rounded-lg" onClick={() => navigate(`/session/${booking._id}`)}>
                                                             Join Room
                                                         </AppleButton>
                                                     )}

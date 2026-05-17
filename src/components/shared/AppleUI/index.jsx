@@ -10,10 +10,10 @@ export const AppleCard = ({ children, className, hover = true, moveOnHover = fal
         whileHover={hover ? { y: moveOnHover ? -4 : 0, transition: { duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] } } : {}}
         className={cn(
             "relative overflow-hidden transition-all duration-300",
-            tonal ? "bg-apple-gray-100 border-none" : "bg-card border border-border shadow-sm",
-            glass && !tonal && "bg-card/80 backdrop-blur-xl",
+            tonal ? "bg-[#F5F7FA] border-none" : "bg-white border border-[rgba(15,23,46,0.08)] shadow-sm",
+            glass && !tonal && "bg-white/80 backdrop-blur-xl",
             "rounded-2xl md:rounded-3xl",
-            hover && (tonal ? "hover:bg-slate-100" : "hover:bg-card/90 hover:shadow-md hover:border-blue-200"),
+            hover && (tonal ? "hover:bg-[#EEF2F6]" : "hover:bg-white hover:shadow-md hover:border-[rgba(15,23,46,0.12)]"),
             className
         )}
         onClick={onClick}
@@ -36,11 +36,11 @@ export const AppleButton = ({
     ...props 
 }) => {
     const variants = {
-        primary: "bg-primary text-primary-foreground hover:opacity-90 shadow-sm",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        outline: "bg-transparent border border-border text-foreground hover:bg-accent hover:text-accent-foreground",
-        ghost: "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
-        glass: "bg-background/40 backdrop-blur-md border border-white/10 text-foreground hover:bg-background/60"
+        primary: "bg-[#2563EB] text-white hover:opacity-90 shadow-sm",
+        secondary: "bg-[#EEF2F6] text-[#111827] hover:bg-[#F5F7FA]",
+        outline: "bg-transparent border border-[rgba(15,23,46,0.08)] text-[#111827] hover:bg-[#F5F7FA]",
+        ghost: "bg-transparent text-[#111827] hover:bg-[#F5F7FA]",
+        glass: "bg-white/40 backdrop-blur-md border border-[rgba(15,23,46,0.08)] text-[#111827] hover:bg-white/60"
     };
 
     const sizes = {
@@ -79,16 +79,16 @@ export const AppleButton = ({
  */
 export const AppleInput = ({ label, error, className, ...props }) => (
     <div className="space-y-1.5 w-full">
-        {label && <label className="text-xs font-semibold text-muted-foreground ml-1">{label}</label>}
+        {label && <label className="text-xs font-semibold text-[#5B6475] ml-1">{label}</label>}
         <input 
             className={cn(
-                "w-full bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 px-4 py-3 rounded-xl text-sm placeholder:text-slate-400",
-                error && "ring-destructive/50",
+                "w-full bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all duration-200 px-4 py-3 rounded-xl text-sm placeholder:text-[#5B6475]/50",
+                error && "ring-red-500/50",
                 className
             )}
             {...props}
         />
-        {error && <p className="text-[10px] text-destructive ml-1">{error}</p>}
+        {error && <p className="text-xs text-red-600 ml-1">{error}</p>}
     </div>
 );
 
@@ -97,18 +97,18 @@ export const AppleInput = ({ label, error, className, ...props }) => (
  */
 export const AppleBadge = ({ children, className, variant = 'default' }) => {
     const variants = {
-        default: "bg-secondary text-secondary-foreground",
-        success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-        warning: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
-        error: "bg-destructive/10 text-destructive border-destructive/20",
-        primary: "bg-primary/10 text-primary border-primary/20",
-        muted: "bg-muted/50 text-muted-foreground border-border/50",
+        default: "bg-[#EEF2F6] text-[#111827]",
+        success: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+        warning: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+        error: "bg-red-500/10 text-red-600 border-red-500/20",
+        primary: "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20",
+        muted: "bg-[#F5F7FA] text-[#5B6475] border-[rgba(15,23,46,0.08)]",
         glass: "bg-white/10 backdrop-blur-md border border-white/20 text-white"
     };
 
     return (
         <span className={cn(
-            "px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border border-transparent shadow-sm whitespace-nowrap",
+            "px-3 py-1 text-xs font-semibold rounded-full border border-transparent shadow-sm whitespace-nowrap",
             variants[variant],
             className
         )}>
@@ -124,8 +124,8 @@ export const AppleHeader = ({ title, subtitle, badge, action }) => (
     <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="space-y-2">
             {badge && <div className="mb-2">{badge}</div>}
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900">{title}</h1>
-            {subtitle && <p className="text-sm md:text-lg text-slate-500 max-w-xl font-normal leading-relaxed">{subtitle}</p>}
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-[#111827]">{title}</h1>
+            {subtitle && <p className="text-sm md:text-lg text-[#5B6475] max-w-xl font-normal leading-relaxed">{subtitle}</p>}
         </div>
         {action && <div className="shrink-0">{action}</div>}
     </header>
