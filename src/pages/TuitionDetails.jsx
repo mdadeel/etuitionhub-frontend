@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from "react-hot-toast";
-import demoTuitions from '../data/demoTuitions.json';
+
 import api from '../services/api';
 import { isValidObjectId } from '../utils/validators';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
 import TuitionCard from '../components/shared/TuitionCard';
 import {
     ArrowLeft,
@@ -45,6 +44,7 @@ const TuitionDetails = () => {
     const [tuition, setTuition] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [similarTuitions, setSimilarTuitions] = useState([]);
 
     const [formData, setFormData] = useState({
         qualifications: "",
@@ -58,18 +58,21 @@ const TuitionDetails = () => {
                 const response = await api.get(`/api/tuitions/${id}`);
                 setTuition(response.data);
             } catch (error) {
-                const demoTuition = demoTuitions.find(t => t._id === id);
-                if (demoTuition) {
-                    setTuition(demoTuition);
-                } else {
-                    toast.error('Tuition post not found.');
-                }
+                toast.error('Tuition post not found.');
             } finally {
                 setLoading(false);
             }
         };
         fetchTuitionDetails();
     }, [id]);
+
+    useEffect(() => {
+        if (tuition?._id) {
+            api.get(`/api/tuitions/similar/${tuition._id}`)
+                .then(res => setSimilarTuitions(res.data))
+                .catch(err => console.error(err));
+        }
+    }, [tuition]);
 
     const handleChange = (e) => {
         setFormData({
@@ -127,17 +130,64 @@ const TuitionDetails = () => {
     };
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <LoadingSpinner />
+        <div className="bg-[#F5F7FA] min-h-screen py-8">
+            <div className="max-w-6xl mx-auto px-4">
+                <div className="mb-6">
+                    <div className="w-36 h-4 bg-[#EEF2F6] rounded-full animate-pulse"></div>
+                </div>
+                <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 space-y-4">
+                        <div className="bg-white p-6 rounded-lg border border-[rgba(15,23,46,0.08)]">
+                            <div className="flex gap-2 mb-4">
+                                <div className="w-20 h-6 bg-[#EEF2F6] rounded-full animate-pulse"></div>
+                                <div className="w-16 h-6 bg-[#EEF2F6] rounded-full animate-pulse"></div>
+                            </div>
+                            <div className="w-64 h-7 bg-[#EEF2F6] rounded animate-pulse mb-6"></div>
+                            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[rgba(15,23,46,0.08)]">
+                                <div className="w-20 h-14 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                <div className="w-24 h-14 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                <div className="w-20 h-14 bg-[#EEF2F6] rounded animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-white p-4 rounded-lg border border-[rgba(15,23,46,0.08)] h-32">
+                                <div className="w-28 h-4 bg-[#EEF2F6] rounded animate-pulse mb-3"></div>
+                                <div className="space-y-3">
+                                    <div className="w-full h-3 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                    <div className="w-3/4 h-3 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                </div>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg border border-[rgba(15,23,46,0.08)] h-32">
+                                <div className="w-28 h-4 bg-[#EEF2F6] rounded animate-pulse mb-3"></div>
+                                <div className="space-y-2">
+                                    <div className="w-full h-3 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                    <div className="w-5/6 h-3 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                    <div className="w-2/3 h-3 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <div className="bg-white p-6 rounded-lg border border-[rgba(15,23,46,0.08)] h-56">
+                            <div className="w-32 h-5 bg-[#EEF2F6] rounded animate-pulse mb-4"></div>
+                            <div className="space-y-3">
+                                <div className="w-full h-10 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                <div className="w-full h-10 bg-[#EEF2F6] rounded animate-pulse"></div>
+                                <div className="w-full h-10 bg-[#2563EB]/20 rounded animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 
     if (!tuition) {
         return (
-            <div className="max-w-xl mx-auto px-4 py-20 text-center bg-slate-50 min-h-screen flex flex-col items-center justify-center">
-                <h2 className="text-xl font-semibold text-slate-900 mb-2">Post Unavailable</h2>
-                <p className="text-sm text-slate-600 mb-6">This tuition post doesn't exist or was removed.</p>
-                <Link to="/tuitions" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            <div className="max-w-xl mx-auto px-4 py-20 text-center bg-[#F5F7FA] min-h-screen flex flex-col items-center justify-center">
+                <h2 className="text-xl font-heading text-[#111827] mb-2">Post Unavailable</h2>
+                <p className="text-sm text-[#5B6475] mb-6">This tuition post doesn't exist or was removed.</p>
+                <Link to="/tuitions" className="px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8]">
                     Back to Jobs
                 </Link>
             </div>
@@ -145,11 +195,11 @@ const TuitionDetails = () => {
     }
 
     return (
-        <div className="bg-slate-50 min-h-screen py-8">
+        <div className="bg-[#F5F7FA] min-h-screen py-8">
             <div className="max-w-6xl mx-auto px-4">
                 {/* Back Link */}
                 <div className="mb-6">
-                    <Link to="/tuitions" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600">
+                    <Link to="/tuitions" className="inline-flex items-center gap-2 text-sm text-[#5B6475] hover:text-[#2563EB] transition-colors">
                         <ArrowLeft size={16} />
                         Back to Tuition Jobs
                     </Link>
@@ -159,89 +209,89 @@ const TuitionDetails = () => {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-4">
                         {/* Hero Card */}
-                        <div className="bg-white p-6 rounded-lg border border-slate-200">
+                        <div className="bg-white p-6 rounded-lg border border-[rgba(15,23,46,0.08)]">
                             <div className="flex flex-wrap items-center gap-2 mb-4">
-                                <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">Class {tuition.class_name}</span>
-                                <span className="px-2 py-1 bg-green-50 text-green-600 text-xs font-medium rounded-full">Verified</span>
+                                <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] text-xs font-medium rounded-full">Class {tuition.class_name}</span>
+                                <span className="px-2 py-1 bg-[#059669]/10 text-[#059669] text-xs font-medium rounded-full">Verified</span>
                             </div>
 
-                            <h1 className="text-xl font-semibold text-slate-900 mb-6">
+                            <h1 className="text-xl font-heading text-[#111827] mb-6">
                                 {tuition.subject} Tutor Required
                             </h1>
 
-                            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-200">
+                            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[rgba(15,23,46,0.08)]">
                                 <div>
-                                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1">
-                                        <Banknote size={12} className="text-blue-600" /> Salary
+                                    <p className="text-xs text-[#5B6475] flex items-center gap-1 mb-1">
+                                        <Banknote size={12} className="text-[#2563EB]" /> Salary
                                     </p>
-                                    <p className="text-lg font-semibold text-slate-900">৳{tuition.salary}</p>
+                                    <p className="text-lg font-heading text-[#111827]">৳{tuition.salary}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1">
-                                        <MapPin size={12} className="text-blue-600" /> Location
+                                    <p className="text-xs text-[#5B6475] flex items-center gap-1 mb-1">
+                                        <MapPin size={12} className="text-[#2563EB]" /> Location
                                     </p>
-                                    <p className="text-base font-medium text-slate-900">{tuition.location}</p>
+                                    <p className="text-base font-medium text-[#111827]">{tuition.location}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1">
-                                        <Calendar size={12} className="text-blue-600" /> Schedule
+                                    <p className="text-xs text-[#5B6475] flex items-center gap-1 mb-1">
+                                        <Calendar size={12} className="text-[#2563EB]" /> Schedule
                                     </p>
-                                    <p className="text-base font-medium text-slate-900">{tuition.days_per_week} Days/Wk</p>
+                                    <p className="text-base font-medium text-[#111827]">{tuition.days_per_week} Days/Wk</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Summary & Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-white p-4 rounded-lg border border-slate-200">
-                                <h2 className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
-                                    <Target size={14} className="text-blue-600" /> Student Profile
+                            <div className="bg-white p-4 rounded-lg border border-[rgba(15,23,46,0.08)]">
+                                <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
+                                    <Target size={14} className="text-[#2563EB]" /> Student Profile
                                 </h2>
                                 <div className="space-y-3">
-                                    <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                                        <span className="text-xs text-slate-500">Tutor Gender</span>
-                                        <span className="text-sm font-medium text-slate-900">{tuition.gender || 'Any'}</span>
+                                    <div className="flex justify-between items-center py-2 border-b border-[rgba(15,23,46,0.04)]">
+                                        <span className="text-xs text-[#5B6475]">Tutor Gender</span>
+                                        <span className="text-sm font-medium text-[#111827]">{tuition.gender || 'Any'}</span>
                                     </div>
                                     <div className="flex justify-between items-center py-2">
-                                        <span className="text-xs text-slate-500">Preferred Days</span>
+                                        <span className="text-xs text-[#5B6475]">Preferred Days</span>
                                         <div className="flex gap-1">
                                             {tuition.available_days?.slice(0, 3).map((day, idx) => (
-                                                <span key={idx} className="bg-slate-100 px-2 py-0.5 rounded text-xs text-slate-600">{day.slice(0, 3)}</span>
+                                                <span key={idx} className="bg-[#EEF2F6] px-2 py-0.5 rounded text-xs text-[#5B6475]">{day.slice(0, 3)}</span>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white p-4 rounded-lg border border-slate-200">
-                                <h2 className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
-                                    <BookOpen size={14} className="text-blue-600" /> Job Description
+                            <div className="bg-white p-4 rounded-lg border border-[rgba(15,23,46,0.08)]">
+                                <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
+                                    <BookOpen size={14} className="text-[#2563EB]" /> Job Description
                                 </h2>
-                                <p className="text-sm text-slate-600 leading-relaxed">
+                                <p className="text-sm text-[#5B6475] leading-relaxed">
                                     {tuition.description || "Looking for a dedicated and regular tutor to assist with academic requirements."}
                                 </p>
                             </div>
                         </div>
 
                         {/* Trust Section */}
-                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                        <div className="bg-[#2563EB]/5 p-4 rounded-lg border border-[#2563EB]/20">
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 bg-blue-100 flex items-center justify-center text-blue-600 rounded-lg shrink-0">
+                                <div className="w-10 h-10 bg-[#2563EB]/15 flex items-center justify-center text-[#2563EB] rounded-lg shrink-0">
                                     <ShieldCheck size={20} />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-base font-medium text-slate-900">Verification Guarantee</h3>
-                                    <p className="text-sm text-slate-600 leading-relaxed">
+                                    <h3 className="text-base font-medium text-[#111827]">Verification Guarantee</h3>
+                                    <p className="text-sm text-[#5B6475] leading-relaxed">
                                         This recruitment is monitored by e-TuitionBD. Student information is verified and payment is secured.
                                     </p>
                                     <div className="flex flex-wrap gap-4 pt-2">
-                                        <div className="flex items-center gap-1 text-xs font-medium text-blue-600">
+                                        <div className="flex items-center gap-1 text-xs font-medium text-[#2563EB]">
                                             <CheckCircle size={12} /> Verified
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs font-medium text-blue-600">
+                                        <div className="flex items-center gap-1 text-xs font-medium text-[#2563EB]">
                                             <Lock size={12} /> Privacy
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs font-medium text-blue-600">
+                                        <div className="flex items-center gap-1 text-xs font-medium text-[#2563EB]">
                                             <ShieldAlert size={12} /> Safe
                                         </div>
                                     </div>
@@ -252,33 +302,33 @@ const TuitionDetails = () => {
 
                     {/* Sidebar */}
                     <div className="space-y-4">
-                        <div className="bg-white p-4 rounded-lg border border-slate-200">
+                        <div className="bg-white p-4 rounded-lg border border-[rgba(15,23,46,0.08)]">
                             <div>
-                                <h3 className="text-base font-medium text-slate-900 mb-2">Apply for this Job</h3>
-                                <p className="text-sm text-slate-600 mb-4">
+                                <h3 className="text-base font-heading text-[#111827] mb-2">Apply for this Job</h3>
+                                <p className="text-sm text-[#5B6475] mb-4">
                                     Ready to teach? Submit your credentials and start today.
                                 </p>
 
                                 <div className="space-y-2">
                                     {!user ? (
-                                        <Link to="/login" className="block w-full px-4 py-2.5 bg-slate-100 text-slate-700 font-medium rounded-md hover:bg-slate-200 text-sm text-center">
+                                        <Link to="/login" className="block w-full px-4 py-2.5 bg-[#EEF2F6] text-[#374151] font-medium rounded-lg hover:bg-[#E2E8F0] text-sm text-center transition-colors">
                                             Login to Apply
                                         </Link>
                                     ) : !dbUser ? (
-                                        <button disabled className="w-full px-4 py-2.5 bg-slate-100 text-slate-400 rounded-md text-sm">
+                                        <button disabled className="w-full px-4 py-2.5 bg-[#EEF2F6] text-[#9CA3AF] rounded-lg text-sm">
                                             Loading...
                                         </button>
                                     ) : dbUser?.role === 'tutor' && tuition.status === "approved" ? (
                                         <Dialog open={showModal} onOpenChange={setShowModal}>
                                             <DialogTrigger asChild>
-                                                <button className="w-full px-4 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 text-sm">
+                                                <button className="w-full px-4 py-2.5 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#1D4ED8] text-sm transition-colors">
                                                     Express Interest
                                                 </button>
                                             </DialogTrigger>
-                                            <DialogContent className="max-w-md rounded-lg border-slate-200 p-4 bg-white">
+                                            <DialogContent className="max-w-md rounded-lg border-[rgba(15,23,46,0.08)] p-4 bg-white">
                                                 <DialogHeader>
-                                                    <DialogTitle className="text-lg font-semibold">Tutor Application</DialogTitle>
-                                                    <DialogDescription className="text-sm text-slate-600">
+                                                    <DialogTitle className="text-lg font-heading">Tutor Application</DialogTitle>
+                                                    <DialogDescription className="text-sm text-[#5B6475]">
                                                         Applying for: {tuition.subject} ({tuition.location})
                                                     </DialogDescription>
                                                 </DialogHeader>
@@ -286,35 +336,35 @@ const TuitionDetails = () => {
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                     <div className="space-y-3">
                                                         <div className="space-y-1">
-                                                            <Label className="text-sm font-medium text-slate-600">
+                                                            <Label className="text-sm font-medium text-[#5B6475]">
                                                                 Qualifications
                                                             </Label>
                                                             <Textarea
                                                                 name="qualifications"
                                                                 value={formData.qualifications}
                                                                 onChange={handleChange}
-                                                                className="min-h-[80px] rounded-md"
+                                                                className="min-h-[80px] rounded-lg"
                                                                 placeholder="e.g. B.Sc in Physics..."
                                                                 required
                                                             />
                                                         </div>
 
                                                         <div className="space-y-1">
-                                                            <Label className="text-sm font-medium text-slate-600">
+                                                            <Label className="text-sm font-medium text-[#5B6475]">
                                                                 Experience
                                                             </Label>
                                                             <Textarea
                                                                 name="experience"
                                                                 value={formData.experience}
                                                                 onChange={handleChange}
-                                                                className="min-h-[80px] rounded-md"
+                                                                className="min-h-[80px] rounded-lg"
                                                                 placeholder="Your teaching history..."
                                                                 required
                                                             />
                                                         </div>
 
                                                         <div className="space-y-1">
-                                                            <Label className="text-sm font-medium text-slate-600">
+                                                            <Label className="text-sm font-medium text-[#5B6475]">
                                                                 Expected Salary (৳/mo)
                                                             </Label>
                                                             <Input
@@ -329,10 +379,10 @@ const TuitionDetails = () => {
                                                     </div>
 
                                                     <div className="flex gap-2 pt-2">
-                                                        <button type="button" className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-md hover:bg-slate-50 text-sm" onClick={() => setShowModal(false)}>
+                                                        <button type="button" className="flex-1 px-4 py-2 border border-[rgba(15,23,46,0.08)] text-[#5B6475] rounded-lg hover:bg-[#F5F7FA] text-sm transition-colors" onClick={() => setShowModal(false)}>
                                                             Cancel
                                                         </button>
-                                                        <button type="submit" className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                                                        <button type="submit" className="flex-1 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8] text-sm transition-colors">
                                                             Submit
                                                         </button>
                                                     </div>
@@ -340,7 +390,7 @@ const TuitionDetails = () => {
                                             </DialogContent>
                                         </Dialog>
                                     ) : (
-                                        <div className="p-4 bg-slate-100 rounded-lg text-sm text-slate-600 text-center">
+                                        <div className="p-4 bg-[#EEF2F6] rounded-lg text-sm text-[#5B6475] text-center">
                                             {dbUser?.role !== 'tutor' ? "Tutor profile required" : "Applications closed"}
                                         </div>
                                     )}
@@ -349,21 +399,21 @@ const TuitionDetails = () => {
                         </div>
 
                         {/* Safety Tips */}
-                        <div className="bg-white p-4 rounded-lg border border-slate-200">
-                            <h4 className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
-                                <ShieldAlert size={14} className="text-orange-500" /> Safety Tips
+                        <div className="bg-white p-4 rounded-lg border border-[rgba(15,23,46,0.08)]">
+                            <h4 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
+                                <ShieldAlert size={14} className="text-[#D97706]" /> Safety Tips
                             </h4>
                             <ul className="space-y-2">
-                                <li className="text-xs text-slate-600 flex gap-2">
-                                    <span className="w-1 h-1 bg-orange-500 rounded-full mt-1.5 shrink-0"></span>
+                                <li className="text-xs text-[#5B6475] flex gap-2">
+                                    <span className="w-1 h-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
                                     No advance registration fees
                                 </li>
-                                <li className="text-xs text-slate-600 flex gap-2">
-                                    <span className="w-1 h-1 bg-orange-500 rounded-full mt-1.5 shrink-0"></span>
+                                <li className="text-xs text-[#5B6475] flex gap-2">
+                                    <span className="w-1 h-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
                                     Verify student credentials
                                 </li>
-                                <li className="text-xs text-slate-600 flex gap-2">
-                                    <span className="w-1 h-1 bg-orange-500 rounded-full mt-1.5 shrink-0"></span>
+                                <li className="text-xs text-[#5B6475] flex gap-2">
+                                    <span className="w-1 h-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
                                     Keep communications on platform
                                 </li>
                             </ul>
@@ -372,23 +422,20 @@ const TuitionDetails = () => {
                 </div>
 
                 {/* Similar Jobs */}
-                <div className="mt-8 pt-6 border-t border-slate-200">
+                <div className="mt-8 pt-6 border-t border-[rgba(15,23,46,0.08)]">
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <h2 className="text-lg font-semibold text-slate-900">Similar Tuition Jobs</h2>
+                            <h2 className="text-lg font-heading text-[#111827]">Similar Tuition Jobs</h2>
                         </div>
-                        <Link to="/tuitions" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                        <Link to="/tuitions" className="text-sm text-[#2563EB] hover:underline flex items-center gap-1">
                             View All <ArrowRight size={14} />
                         </Link>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {demoTuitions
-                            .filter(t => t._id !== id)
-                            .slice(0, 3)
-                            .map((item) => (
-                                <TuitionCard key={item._id} tuition={item} />
-                            ))}
+                        {similarTuitions.slice(0, 3).map((item) => (
+                            <TuitionCard key={item._id} tuition={item} />
+                        ))}
                     </div>
                 </div>
             </div>
