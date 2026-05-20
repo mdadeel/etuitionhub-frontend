@@ -1,0 +1,18 @@
+{
+  "translation": {
+    "nav": {
+      "find_tutors": "Find Tutors",
+      "how_it_works": "How it Works",
+      "dashboard": "Dashboard",
+      "login": "Login",
+      "get_started": "Get Started"
+    },
+    "hero": {
+      "title_1": "Master Your Future with",
+      "title_2": "Expert Tutors",
+      "subtitle": "Connect with top-rated educators across Bangladesh. Personalized learning tailored to your goals, pace, and schedule.",
+      "search_placeholder": "What do you want to learn?",
+      "search_btn": "Find Tutors"
+    }
+  }
+}
