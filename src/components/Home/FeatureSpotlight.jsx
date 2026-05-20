@@ -4,21 +4,21 @@ const features = [
     {
         icon: Target,
         title: "Track Progress",
-        description: "Monitor performance and improvements over time with our high-fidelity analytical engine.",
+        description: "Monitor performance and improvements over time with our progress tracking tools.",
         color: "text-blue-600",
         bg: "bg-blue-600/5"
     },
     {
         icon: Bell,
         title: "Real-time Updates",
-        description: "Get instant push notifications on applications, messages, and administrative milestones.",
+        description: "Get instant notifications on your tuition applications, messages, and updates.",
         color: "text-indigo-600",
         bg: "bg-indigo-600/5"
     },
     {
         icon: Headphones,
         title: "Dedicated Support",
-        description: "Our high-priority support team is available 24/7 to ensure your educational success.",
+        description: "Our support team is available 24/7 to help you with any questions or issues.",
         color: "text-emerald-600",
         bg: "bg-emerald-600/5"
     }
@@ -72,7 +72,7 @@ const FeatureSpotlight = () => {
                                     </div>
                                     <div className="absolute top-4 left-4 flex items-center gap-2">
                                         <div className="w-2 h-2 bg-blue-600 rounded-none"></div>
-                                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Real-time Performance Metrics</span>
+                                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Learning Progress</span>
                                     </div>
                                 </div>
                             </div>
@@ -94,14 +94,14 @@ const FeatureSpotlight = () => {
                     <div className="order-1 lg:order-2 space-y-8">
                         <div className="space-y-4">
                             <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-slate-100 text-slate-900 rounded-none border border-slate-200">
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em]">Platform Pulse</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em]">Our Features</span>
                             </div>
                             <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-none">
-                                Managed <br />
-                                <span className="text-blue-600">Progress</span>
+                                Track Your <br />
+                                <span className="text-blue-600">Learning</span>
                             </h2>
                             <p className="text-lg text-slate-500 leading-relaxed font-bold">
-                                Take control of your educational journey with our comprehensive management dashboard. Track every milestone in one sharp interface.
+                                Take control of your educational journey with our comprehensive dashboard. Keep track of tutor interactions and lessons in one simple interface.
                             </p>
                         </div>
 

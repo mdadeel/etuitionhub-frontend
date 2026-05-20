@@ -29,7 +29,7 @@ const FilterBar = ({
                     <Input
                         type="text"
                         placeholder="SEARCH_BY_SUBJECT_OR_COORDINATES..."
-                        className="h-14 pl-12 rounded-none border-border bg-background font-bold focus-visible:ring-primary uppercase text-[11px] tracking-widest"
+                        className="h-14 pl-12 rounded-none border-border bg-background font-bold focus-visible:ring-primary uppercase text-[11px] tracking-widest !text-black"
                         value={filters.search}
                         onChange={(e) => onFilterChange('search', e.target.value)}
                     />

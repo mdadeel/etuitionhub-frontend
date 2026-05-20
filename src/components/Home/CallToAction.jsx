@@ -10,7 +10,7 @@ const CallToAction = () => {
                             Ready to get <span className="text-blue-600">started?</span>
                         </h2>
                         <p className="text-slate-500 text-sm font-black uppercase tracking-[0.2em] max-w-xl mx-auto">
-                            Find the right tutor and start academic transformation.
+                            Find the right tutor and start learning today.
                         </p>
                     </div>
 
@@ -36,11 +36,11 @@ const CallToAction = () => {
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 bg-blue-600 rounded-none"></div>
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Verified Faculty</span>
+                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Verified Tutors</span>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 bg-blue-600 rounded-none"></div>
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Direct Link Active</span>
+                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Direct Contact</span>
                         </div>
                     </div>
                 </div>

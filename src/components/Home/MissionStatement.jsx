@@ -5,7 +5,7 @@ const MissionStatement = () => {
                 <div className="max-w-4xl">
                     <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-none mb-10">
                         We're not another tutoring marketplace. 
-                        <span className="block text-blue-600 mt-2">We're a trust infrastructure.</span>
+                        <span className="block text-blue-600 mt-2">We're built on trust.</span>
                     </h2>
                     
                     <div className="grid md:grid-cols-2 gap-8 items-start">
@@ -22,7 +22,7 @@ const MissionStatement = () => {
                     <div className="mt-12 flex flex-wrap gap-12 items-center border-t border-white/10 pt-10">
                         <div className="flex flex-col">
                             <span className="text-3xl font-black text-white tracking-tighter">100%</span>
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Verification Rate</span>
+                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Verified Profiles</span>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-3xl font-black text-white tracking-tighter">0৳</span>
@@ -30,7 +30,7 @@ const MissionStatement = () => {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-3xl font-black text-white tracking-tighter">Direct</span>
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Parent-Tutor Link</span>
+                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Direct Contact</span>
                         </div>
                     </div>
                 </div>

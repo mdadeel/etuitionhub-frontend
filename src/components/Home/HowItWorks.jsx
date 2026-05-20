@@ -4,21 +4,21 @@ const steps = [
     {
         icon: Search,
         title: "Find",
-        description: "Search tutors by subject, class, and location with our precision-filtered matching engine.",
+        description: "Search tutors by subject, class, and location with our simple search filters.",
         color: "text-blue-600",
         bg: "bg-blue-600/5"
     },
     {
         icon: Star,
         title: "Compare",
-        description: "Review profiles, ratings, and teaching experience to find the perfect pedagogical match.",
+        description: "Review profiles, ratings, and teaching experience to find the perfect teacher.",
         color: "text-blue-600",
         bg: "bg-blue-600/5"
     },
     {
         icon: Users,
         title: "Connect",
-        description: "Contact tutors directly through our secure infrastructure and start learning immediately.",
+        description: "Contact tutors directly through our platform and start learning immediately.",
         color: "text-emerald-600",
         bg: "bg-emerald-600/5"
     }
@@ -30,9 +30,9 @@ const HowItWorks = () => {
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="text-center mb-16 space-y-4">
                     <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none">
-                        Strategic <span className="text-blue-600">Orchestration</span>
+                        How It <span className="text-blue-600">Works</span>
                     </h2>
-                    <p className="text-slate-500 text-sm font-black uppercase tracking-[0.3em]">The blueprint for academic transformation.</p>
+                    <p className="text-slate-500 text-sm font-black uppercase tracking-[0.3em]">Three simple steps to find your tutor.</p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-12 md:gap-px relative bg-white/5 border border-white/10">
