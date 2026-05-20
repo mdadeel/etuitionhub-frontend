@@ -22,7 +22,10 @@ if (!firebaseConfig.apiKey) {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+import { getStorage } from 'firebase/storage';
+
 // Initialize Firebase Authentication
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 export default app;

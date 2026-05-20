@@ -33,29 +33,34 @@ const Avatar = ({
     xl: 'w-6 h-6',
   };
 
+  const hasImage = src && src !== 'null' && src !== 'undefined' && src.trim() !== '';
+
   return (
     <div className={cn('relative shrink-0', sizes[size], className)} {...props}>
-      {src ? (
+      {hasImage ? (
         <img
           src={src}
           alt={alt}
           className={cn(
-            'w-full h-full rounded-xl object-cover border border-[rgba(15,23,46,0.08)]'
+            'w-full h-full rounded-none object-cover border border-[rgba(15,23,46,0.08)]'
           )}
         />
       ) : (
         <div className={cn(
-          'w-full h-full rounded-xl bg-[#EEF2F6] border border-[rgba(15,23,46,0.08)]',
-          'flex items-center justify-center',
-          children ? '' : iconSizes[size]
+          'w-full h-full rounded-none bg-slate-900 border border-slate-800',
+          'flex items-center justify-center'
         )}>
-          {children || alt?.charAt(0) || '?'}
+          {children || (
+            <svg className="w-1/2 h-1/2 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
+              <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+            </svg>
+          )}
         </div>
       )}
       
       {verified && (
         <div className={cn(
-          'absolute -bottom-1 -right-1 bg-[#2563EB] rounded-full flex items-center justify-center border-2 border-white',
+          'absolute -bottom-1 -right-1 bg-[#2563EB] rounded-none flex items-center justify-center border-2 border-white',
           badgeSizes[size]
         )}>
           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
