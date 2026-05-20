@@ -3,16 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { Bookmark, Trash2, ExternalLink } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const SavedTutors = () => {
     const navigate = useNavigate();
     const [savedTutors, setSavedTutors] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchSavedTutors();
-    }, []);
 
     const fetchSavedTutors = async () => {
         try {
@@ -26,12 +21,17 @@ const SavedTutors = () => {
         }
     };
 
+    useEffect(() => {
+        fetchSavedTutors();
+    }, []);
+
     const removeTutor = async (tutorId) => {
         try {
             await api.delete(`/api/bookmarks/${tutorId}`);
             setSavedTutors(savedTutors.filter(t => t._id !== tutorId));
             toast.success('Tutor removed from saved');
         } catch (err) {
+            console.error('Failed to remove tutor:', err);
             toast.error('Failed to remove tutor');
         }
     };
