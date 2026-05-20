@@ -54,10 +54,14 @@ const TuitionDetails = () => {
 
     useEffect(() => {
         const fetchTuitionDetails = async () => {
+            const trimmedId = id?.trim();
+            if (!trimmedId) return;
+
             try {
-                const response = await api.get(`/api/tuitions/${id}`);
+                const response = await api.get(`/api/tuitions/${trimmedId}`);
                 setTuition(response.data);
             } catch (error) {
+                console.error('Failed to fetch tuition:', error);
                 toast.error('Tuition post not found.');
             } finally {
                 setLoading(false);
@@ -119,7 +123,7 @@ const TuitionDetails = () => {
         try {
             const response = await api.post('/api/applications', applicationData);
             if (response.status === 201) {
-                toast.success("Applied successfully! Wait for approval.");
+                toast.success('Application submitted! The student will be notified.');
                 setShowModal(false);
                 setFormData({ qualifications: '', experience: "", expectedSalary: '' });
             }

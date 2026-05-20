@@ -21,6 +21,7 @@ import {
     Clock,
     GraduationCap
 } from 'lucide-react';
+import SEO from '../components/shared/SEO';
 
 const TutorDetails = () => {
     const { id } = useParams();
@@ -30,6 +31,7 @@ const TutorDetails = () => {
     const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
     const [submitting, setSubmitting] = useState(false);
+    const [canReview, setCanReview] = useState(false);
 
     useEffect(() => {
         const fetchTutorDetails = async () => {
@@ -77,6 +79,24 @@ const TutorDetails = () => {
         }
     }, [tutor]);
 
+    useEffect(() => {
+        const checkBookingStatus = async () => {
+            if (user?.email && tutor?.email) {
+                try {
+                    const res = await api.get(`/api/bookings/student/${user.email}`);
+                    const completed = res.data.some(b => 
+                        b.tutorEmail.toLowerCase() === tutor.email.toLowerCase() && 
+                        b.status === 'completed'
+                    );
+                    setCanReview(completed);
+                } catch (error) {
+                    console.error('Failed to check booking eligibility', error);
+                }
+            }
+        };
+        checkBookingStatus();
+    }, [user, tutor]);
+
     const handleContact = async () => {
         if (!tutor) return;
         try {
@@ -95,7 +115,7 @@ const TutorDetails = () => {
         if (!tutor) return;
         try {
             await api.post(`/api/bookmarks/${tutor._id}`);
-            toast.success('Tutor saved to favorites!');
+            toast.success('Tutor saved');
         } catch (err) {
             if (err.response?.status === 400) {
                 toast.error('Tutor already saved');
@@ -120,7 +140,7 @@ const TutorDetails = () => {
             });
             setReviews([res.data, ...reviews]);
             setNewReview({ rating: 5, comment: '' });
-            toast.success('Review submitted!');
+            toast.success('Review submitted');
         } catch (err) {
             toast.error('Failed to submit review');
         } finally {
@@ -198,6 +218,10 @@ const TutorDetails = () => {
 
     return (
         <div className="bg-[#F5F7FA] min-h-screen py-8">
+            <SEO 
+                title={`Book ${tutor.displayName} - Expert Tutor`}
+                description={`Learn with ${tutor.displayName}, an experienced tutor in ${tutor.location}. Subject expertise: ${Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'Various'}.`}
+            />
             <div className="max-w-6xl mx-auto px-4">
                 {/* Back Link */}
                 <div className="mb-6">
@@ -336,7 +360,7 @@ const TutorDetails = () => {
                                 <p className="text-[#5B6475] text-sm">No reviews yet.</p>
                             )}
 
-                            {user && (
+                            {user && canReview ? (
                                 <form onSubmit={handleSubmitReview} className="mt-6 pt-4 border-t border-[rgba(15,23,46,0.08)]">
                                     <h4 className="text-sm font-medium text-[#374151] mb-3">Write a Review</h4>
                                     <div className="flex items-center gap-2 mb-3">
@@ -366,6 +390,10 @@ const TutorDetails = () => {
                                         {submitting ? 'Submitting...' : 'Submit Review'}
                                     </button>
                                 </form>
+                            ) : user && (
+                                <div className="mt-6 pt-4 border-t border-[rgba(15,23,46,0.08)] text-center text-sm text-[#5B6475]">
+                                    You can only write a review after completing a session with this tutor.
+                                </div>
                             )}
                         </div>
                     </div>

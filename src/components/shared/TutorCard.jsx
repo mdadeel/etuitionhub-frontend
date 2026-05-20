@@ -1,136 +1,189 @@
-import { useNavigate } from 'react-router-dom';
-import { Star, MapPin, BookOpen, Clock, CheckCircle, Bookmark } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Highlight from "./Highlight";
+import {
+  Star,
+  MapPin,
+  BookOpen,
+  Clock,
+  CheckCircle,
+  Bookmark,
+} from "lucide-react";
 import { Avatar, Badge, Button, Card } from "@/components/ui";
-import { memo, useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import api from '../../services/api';
-import { toast } from 'react-hot-toast';
+import { memo, useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import api from "../../services/api";
+import { toast } from "react-hot-toast";
 
-const TutorCard = memo(({ tutor }) => {
-    const navigate = useNavigate();
-    const { user } = useAuth();
-    const [isSaved, setIsSaved] = useState(false);
-    const [saving, setSaving] = useState(false);
+const TutorCard = memo(({ tutor, searchQuery = "" }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
-        if (user) {
-            api.get(`/api/bookmarks/check/${tutor._id}`)
-                .then(res => setIsSaved(res.data.isSaved))
-                .catch(() => {});
-        }
-    }, [user, tutor._id]);
+  useEffect(() => {
+    if (user) {
+      api
+        .get(`/api/bookmarks/check/${tutor._id}`)
+        .then((res) => setIsSaved(res.data.isSaved))
+        .catch(() => {});
+    }
+  }, [user, tutor._id]);
 
-    const handleBookmark = async (e) => {
-        e.stopPropagation();
-        if (!user) {
-            toast.error('Please login to save tutors');
-            return;
-        }
-        setSaving(true);
-        try {
-            if (isSaved) {
-                await api.delete(`/api/bookmarks/${tutor._id}`);
-                setIsSaved(false);
-                toast.success('Removed from saved');
-            } else {
-                await api.post(`/api/bookmarks/${tutor._id}`);
-                setIsSaved(true);
-                toast.success('Tutor saved!');
-            }
-        } catch (error) {
-            toast.error('Could not save tutor');
-        }
-        setSaving(false);
-    };
+  const handleBookmark = async (e) => {
+    e.stopPropagation();
+    if (!user) {
+      toast.error("Please login to save tutors");
+      return;
+    }
+    setSaving(true);
+    try {
+      if (isSaved) {
+        await api.delete(`/api/bookmarks/${tutor._id}`);
+        setIsSaved(false);
+        toast.success("Tutor removed");
+      } else {
+        await api.post(`/api/bookmarks/${tutor._id}`);
+        setIsSaved(true);
+        toast.success("Tutor saved to your list");
+      }
+    } catch (error) {
+      toast.error("Could not save tutor");
+    }
+    setSaving(false);
+  };
 
-    if (!tutor) return null;
+  if (!tutor) return null;
 
-    const { _id, displayName, photoURL, qualification, location, subjects = [], isVerified, availableDays = [] } = tutor;
-    const rating = tutor.ratings || tutor.rating || 4.8;
-    const salary = tutor.expectedSalary || 5000;
-    const experience = tutor.experience || '1-2 years';
+  const {
+    _id,
+    displayName,
+    photoURL,
+    qualification,
+    location,
+    subjects = [],
+    isVerified,
+    availableDays = [],
+  } = tutor;
+  const rating = tutor.ratings || tutor.rating || 4.8;
+  const salary = tutor.expectedSalary || 5000;
+  const experience = tutor.experience || "1-2 years";
 
-    const teachingStyles = [
-        "Explains concepts visually",
-        "Concept-based teaching",
-        "Problem-solving approach",
-        "Exam-oriented strategy",
-        "Patient & step-by-step",
-        "Focused on core fundamentals"
-    ];
-    const randomStyle = teachingStyles[Math.floor(Math.random() * teachingStyles.length)];
+  const teachingStyles = [
+    "Explains concepts visually",
+    "Concept-based teaching",
+    "Problem-solving approach",
+    "Exam-oriented strategy",
+    "Patient & step-by-step",
+    "Focused on core fundamentals",
+  ];
+  const randomStyle =
+    teachingStyles[Math.floor(Math.random() * teachingStyles.length)];
 
-    return (
-        <Card
-            hover
-            className="cursor-pointer h-full flex flex-col"
-            onClick={() => navigate(`/tutor/${_id}`)}
+  return (
+    <Card
+      hover
+      className="group cursor-pointer h-full flex flex-col border-slate-200 rounded-2xl hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 transition-all duration-300"
+      onClick={() => navigate(`/tutor/${_id}`)}
+    >
+      <div className="p-5 flex-grow">
+        <div className="flex items-start gap-4">
+          <Avatar
+            src={photoURL}
+            alt={displayName}
+            size="md"
+            verified={isVerified && _id !== "tutor_001"}
+            className="ring-2 ring-slate-100 group-hover:ring-blue-100 transition-all"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="font-semibold text-base text-slate-900 tracking-tight truncate leading-snug">
+                  <Highlight text={displayName} query={searchQuery} />
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5 truncate">
+                  {qualification || "Experienced Tutor"}
+                </p>
+              </div>
+              <button
+                onClick={handleBookmark}
+                disabled={saving}
+                className="shrink-0 p-2 -mr-2 -mt-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                title={isSaved ? "Unsave" : "Save"}
+              >
+                <Bookmark
+                  size={18}
+                  className={
+                    isSaved
+                      ? "fill-blue-600 text-blue-600"
+                      : "transition-colors"
+                  }
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
+          {subjects.slice(0, 3).map((sub, i) => (
+            <Badge
+              key={i}
+              variant="subtle"
+              className="bg-slate-50 text-slate-600 px-2.5 py-1 rounded-full text-xs font-medium border border-slate-100 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors"
+            >
+              <Highlight text={sub} query={searchQuery} />
+            </Badge>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-y-2 gap-x-2 mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600">
+          <span className="flex items-center gap-2 group/stat">
+            <BookOpen
+              size={14}
+              className="text-slate-400 group-hover:text-blue-500 transition-colors"
+            />
+            <span className="truncate">{experience}</span>
+          </span>
+          <span className="flex items-center gap-2">
+            <Star size={14} className="fill-amber-400 text-amber-400" />
+            <span className="font-semibold text-slate-900">
+              {rating.toFixed(1)}
+            </span>
+          </span>
+          <span className="flex items-center gap-2">
+            <MapPin
+              size={14}
+              className="text-slate-400 group-hover:text-blue-500 transition-colors"
+            />
+            <span className="truncate">
+              {(location || "N/A").split(",")[0]}
+            </span>
+          </span>
+          <span className="flex items-center gap-2">
+            <Clock
+              size={14}
+              className="text-slate-400 group-hover:text-blue-500 transition-colors"
+            />
+            <span className="truncate">Fast Response</span>
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between px-5 py-4 border-t border-slate-100 bg-white">
+        <div className="flex items-baseline gap-1">
+          <span className="text-lg font-bold text-slate-900 tracking-tight">
+            ৳{salary.toLocaleString()}
+          </span>
+          <span className="text-xs text-slate-500 font-medium">/mo</span>
+        </div>
+        <Button
+          size="xs"
+          className="bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 font-medium px-4 py-2 h-auto rounded-lg transition-colors border-none"
         >
-            <div className="p-4 flex-grow">
-                <div className="flex items-start gap-3">
-                    <Avatar 
-                        src={photoURL} 
-                        alt={displayName} 
-                        size="md" 
-                        verified={isVerified && _id !== 'tutor_001'} 
-                    />
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                            <h3 className="font-heading text-sm text-[#111827] tracking-tight truncate">{displayName}</h3>
-                            <button
-                                onClick={handleBookmark}
-                                disabled={saving}
-                                className="p-1 hover:bg-[#EEF2F6] rounded-md transition-colors"
-                            >
-                                <Bookmark 
-                                    size={15} 
-                                    className={isSaved ? "fill-[#2563EB] text-[#2563EB]" : "text-[#5B6475]"} 
-                                />
-                            </button>
-                        </div>
-                        <p className="text-[11px] text-[#5B6475]">{qualification || 'Experienced Tutor'}</p>
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-[rgba(15,23,46,0.08)]">
-                    {subjects.slice(0, 3).map((sub, i) => (
-                        <Badge key={i} variant="subtle" size="xs" className="py-0.5 text-[10px]">
-                            {sub}
-                        </Badge>
-                    ))}
-                </div>
-
-                <div className="grid grid-cols-2 gap-y-2 mt-3 pt-3 border-t border-[rgba(15,23,46,0.08)] text-[11px] text-[#5B6475]">
-                    <span className="flex items-center gap-1.5">
-                        <BookOpen size={12} className="text-[#2563EB]" />
-                        <span>Exp {experience.split(' ')[0]}</span>
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <Star size={12} className="fill-current text-amber-500" />
-                        <span className="font-medium text-[#111827]">{rating.toFixed(1)}</span>
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <MapPin size={12} className="text-[#2563EB]" />
-                        <span className="truncate">{(location || 'N/A').split(',')[0]}</span>
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <Clock size={12} className="text-[#2563EB]" />
-                        <span>Resp ~18m</span>
-                    </span>
-                </div>
-            </div>
-
-            <div className="flex items-center justify-between px-4 py-3 bg-[#F5F7FA] border-t border-[rgba(15,23,46,0.08)]">
-                <div className="flex items-baseline">
-                    <span className="text-base font-heading text-[#2563EB]">৳{salary.toLocaleString()}</span>
-                    <span className="text-[10px] text-[#5B6475] ml-1">/mo</span>
-                </div>
-                <Button size="xs">
-                    View
-                </Button>
-            </div>
-        </Card>
-    );
+          View Profile
+        </Button>
+      </div>
+    </Card>
+  );
 });
 
 export default TutorCard;
