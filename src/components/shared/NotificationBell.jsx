@@ -1,19 +1,23 @@
-import { useState, useEffect, useRef } from 'react';
-import { Bell, Check, Trash2 } from 'lucide-react';
-import api from '../../services/api';
+import { useState, useRef, useEffect } from 'react';
+import { Bell, Check, Trash2, Calendar, CreditCard, MessageSquare, Star, FileText, Bookmark, ShieldCheck, ExternalLink } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import useNotifications from '@/hooks/useNotifications';
+import { formatRelativeTime } from '@/utils/dateUtils';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 const NotificationBell = () => {
-    const [notifications, setNotifications] = useState([]);
-    const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
-
-    useEffect(() => {
-        fetchNotifications();
-        const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
-    }, []);
+    const { user } = useAuth();
+    const {
+        notifications,
+        unreadCount,
+        markAsRead,
+        markAllAsRead,
+        deleteNotification,
+        handleAction,
+    } = useNotifications({ userId: user?.uid });
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -25,56 +29,36 @@ const NotificationBell = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const fetchNotifications = async () => {
-        try {
-            const [notifsRes, countRes] = await Promise.all([
-                api.get('/api/notifications'),
-                api.get('/api/notifications/unread-count')
-            ]);
-            setNotifications(notifsRes.data);
-            setUnreadCount(countRes.data.count);
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-        }
-    };
-
-    const markAsRead = async (id) => {
-        try {
-            await api.put(`/api/notifications/${id}/read`);
-            setNotifications(notifications.map(n => n._id === id ? { ...n, isRead: true } : n));
-            setUnreadCount(Math.max(0, unreadCount - 1));
-        } catch (error) {
-            console.error('Error marking notification as read:', error);
-        }
-    };
-
-    const markAllAsRead = async () => {
-        try {
-            await api.put('/api/notifications/read-all');
-            setNotifications(notifications.map(n => ({ ...n, isRead: true })));
-            setUnreadCount(0);
-        } catch (error) {
-            console.error('Error marking all as read:', error);
-        }
-    };
-
-    const deleteNotification = async (id) => {
-        try {
-            await api.delete(`/api/notifications/${id}`);
-            setNotifications(notifications.filter(n => n._id !== id));
-        } catch (error) {
-            console.error('Error deleting notification:', error);
-        }
-    };
-
     const getTypeIcon = (type) => {
+        const iconProps = { size: 16, className: 'text-[#5B6475]' };
         switch (type) {
-            case 'booking': return '📅';
-            case 'payment': return '💳';
-            case 'message': return '💬';
-            case 'review': return '⭐';
-            default: return '🔔';
+            case 'booking': return <Calendar {...iconProps} />;
+            case 'payment': return <CreditCard {...iconProps} />;
+            case 'message': return <MessageSquare {...iconProps} />;
+            case 'review': return <Star {...iconProps} />;
+            case 'application': return <FileText {...iconProps} />;
+            case 'save': return <Bookmark {...iconProps} />;
+            case 'verification': return <ShieldCheck {...iconProps} />;
+            default: return <Bell {...iconProps} />;
         }
+    };
+
+    const renderActions = (notif) => {
+        if (!notif.actions || notif.actions.length === 0) return null;
+        return (
+            <div className="flex gap-1.5 mt-1.5">
+                {notif.actions.map((action, idx) => (
+                    <button
+                        key={idx}
+                        onClick={() => handleAction(notif._id, action.action, action.link)}
+                        className="flex items-center gap-1 text-[10px] font-heading font-bold uppercase tracking-wider text-[#2563EB] hover:text-[#1d4ed8] hover:underline transition-colors"
+                    >
+                        {action.label}
+                        <ExternalLink size={10} />
+                    </button>
+                ))}
+            </div>
+        );
     };
 
     return (
@@ -94,7 +78,7 @@ const NotificationBell = () => {
             {isOpen && (
                 <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-[rgba(15,23,46,0.08)] shadow-xl rounded-lg overflow-hidden z-50">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-[rgba(15,23,46,0.08)]">
-                        <h3 className="font-heading text-sm">Notifications</h3>
+                        <h3 className="font-heading text-sm font-bold">Notifications</h3>
                         {unreadCount > 0 && (
                             <button onClick={markAllAsRead} className="text-xs text-[#2563EB] hover:underline">
                                 Mark all read
@@ -104,40 +88,47 @@ const NotificationBell = () => {
 
                     <div className="max-h-80 overflow-y-auto">
                         {notifications.length === 0 ? (
-                            <div className="p-4 text-center text-sm text-[#5B6475]">
+                            <div className="p-8 text-center text-sm text-[#5B6475]">
+                                <Bell size={24} className="mx-auto mb-2 opacity-30" />
                                 No notifications yet
                             </div>
                         ) : (
-                            notifications.map(notif => (
+                            notifications.slice(0, 10).map(notif => (
                                 <div
                                     key={notif._id}
                                     className={cn(
-                                        "px-4 py-3 border-b border-[rgba(15,23,46,0.08)] hover:bg-[#F5F7FA] transition-colors",
-                                        !notif.isRead && "bg-blue-50/50"
+                                        'px-4 py-3 border-b border-[rgba(15,23,46,0.08)] hover:bg-[#F5F7FA] transition-colors',
+                                        !notif.isRead && 'bg-blue-50/50'
                                     )}
                                 >
                                     <div className="flex items-start gap-3">
-                                        <span className="text-lg">{getTypeIcon(notif.type)}</span>
+                                        <span className="mt-0.5">{getTypeIcon(notif.type)}</span>
                                         <div className="flex-1 min-w-0">
-                                            <p className={cn("text-sm font-heading", !notif.isRead && "text-[#111827]")}>
+                                            <p className={cn('text-sm font-heading leading-tight', !notif.isRead && 'text-[#111827] font-semibold')}>
                                                 {notif.title}
                                             </p>
-                                            <p className="text-xs text-[#5B6475] truncate">
+                                            <p className="text-xs text-[#5B6475] mt-0.5 line-clamp-2">
                                                 {notif.message}
                                             </p>
+                                            {renderActions(notif)}
+                                            <p className="text-[10px] text-[#94A3B8] mt-1">
+                                                {formatRelativeTime(notif.createdAt)}
+                                            </p>
                                         </div>
-                                        <div className="flex items-center gap-1">
+                                        <div className="flex items-center gap-1 flex-shrink-0">
                                             {!notif.isRead && (
                                                 <button
                                                     onClick={() => markAsRead(notif._id)}
-                                                    className="p-1 hover:bg-slate-200 rounded"
+                                                    className="p-1 hover:bg-slate-200 rounded transition-colors"
+                                                    title="Mark as read"
                                                 >
                                                     <Check size={14} className="text-green-600" />
                                                 </button>
                                             )}
                                             <button
                                                 onClick={() => deleteNotification(notif._id)}
-                                                className="p-1 hover:bg-slate-200 rounded"
+                                                className="p-1 hover:bg-slate-200 rounded transition-colors"
+                                                title="Delete"
                                             >
                                                 <Trash2 size={14} className="text-red-500" />
                                             </button>
@@ -147,6 +138,16 @@ const NotificationBell = () => {
                             ))
                         )}
                     </div>
+
+                    {notifications.length > 0 && (
+                        <Link
+                            to="/dashboard/notifications"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-4 py-3 text-center text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] hover:bg-[#F5F7FA] border-t border-[rgba(15,23,46,0.08)] transition-colors"
+                        >
+                            Show All
+                        </Link>
+                    )}
                 </div>
             )}
         </div>
