@@ -1,70 +1,80 @@
-import './app.css'
-import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, useLocation, useSearchParams } from "react-router-dom"
-import Navbar from './components/shared/Navbar'
-import MobileBottomNav from './components/shared/MobileBottomNav'
-import toast, { Toaster } from 'react-hot-toast'
-import Home from "./pages/Home"
-import Footer from './components/shared/Footer'
-import Login from "./pages/Login"
-import Register from './pages/Register'
-import Tuitions from "./pages/Tuitions"
-import Tutors from './pages/Tutors'
-import { AuthProvider } from "./contexts/AuthContext"
-import { ThemeProvider } from './contexts/ThemeContext'
-import Blog from './pages/Blog'
-import TutorDetails from './pages/TutorDetails'
-import TuitionDetails from "./pages/TuitionDetails"
-import PostTuition from './pages/PostTuition'
-import BecomeTutor from './pages/BecomeTutor'
-import About from './pages/About'
-import Contact from "./pages/Contact"
-import Dashboard from './pages/Dashboard'
-import PrivateRoute from "./components/shared/PrivateRoute"
-import PublicRoute from './components/shared/PublicRoute'
-import NotFound from "./pages/NotFound"
-import SessionRoom from "./pages/SessionRoom"
-import Checkout from './pages/Checkout'
-import PaymentSuccess from "./pages/PaymentSuccess"
-import PaymentHistory from './pages/PaymentHistory'
-import AdminLogin from './pages/AdminLogin'
-import PasswordReset from './pages/PasswordReset'
-import { cn } from '@/lib/utils'
+import "./app.css";
+import { useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
+import Navbar from "./components/shared/Navbar";
+import MobileBottomNav from "./components/shared/MobileBottomNav";
+import toast, { Toaster } from "react-hot-toast";
+import Home from "./pages/Home";
+import Footer from "./components/shared/Footer";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Tuitions from "./pages/Tuitions";
+import Tutors from "./pages/Tutors";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import Blog from "./pages/Blog";
+import TutorDetails from "./pages/TutorDetails";
+import TuitionDetails from "./pages/TuitionDetails";
+import PostTuition from "./pages/PostTuition";
+import BecomeTutor from "./pages/BecomeTutor";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Dashboard from "./pages/Dashboard";
+import PrivateRoute from "./components/shared/PrivateRoute";
+import PublicRoute from "./components/shared/PublicRoute";
+import NotFound from "./pages/NotFound";
+import SessionRoom from "./pages/SessionRoom";
+import Checkout from "./pages/Checkout";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentHistory from "./pages/PaymentHistory";
+import AdminLogin from "./pages/AdminLogin";
+import PasswordReset from "./pages/PasswordReset";
+import SearchPage from "./pages/SearchPage";
+import OnboardingTour from "./components/shared/OnboardingTour";
+import { cn } from "@/lib/utils";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
   return null;
 };
 
 const ConditionalNavbar = () => {
   const { pathname } = useLocation();
-  const isDashboard = pathname.startsWith('/dashboard');
-  const isSession = pathname.startsWith('/session');
+  const isDashboard = pathname.startsWith("/dashboard");
+  const isSession = pathname.startsWith("/session");
   if (isDashboard || isSession) return null;
   return <Navbar />;
 };
 
 const ConditionalFooter = () => {
   const { pathname } = useLocation();
-  const isDashboard = pathname.startsWith('/dashboard');
-  const isSession = pathname.startsWith('/session');
+  const isDashboard = pathname.startsWith("/dashboard");
+  const isSession = pathname.startsWith("/session");
   if (isDashboard || isSession) return null;
   return <Footer />;
 };
 
 const MainContent = ({ children }) => {
   const { pathname } = useLocation();
-  const isDashboard = pathname.startsWith('/dashboard');
-  const isSession = pathname.startsWith('/session');
-  
+  const isDashboard = pathname.startsWith("/dashboard");
+  const isSession = pathname.startsWith("/session");
+
   return (
-    <main className={cn(
-      "flex-grow transition-all duration-300",
-      !isDashboard && !isSession ? "pt-14 safe-bottom" : "pt-0"
-    )}>
+    <main
+      className={cn(
+        "flex-grow transition-all duration-300",
+        !isDashboard && !isSession ? "pt-14 safe-bottom" : "pt-0",
+      )}
+    >
       {children}
     </main>
   );
@@ -74,9 +84,9 @@ const SessionExpiryCheck = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    if (searchParams.get('expired') === 'true') {
-      toast.error('Session expired. Please login again.');
-      window.history.replaceState({}, '', '/login');
+    if (searchParams.get("expired") === "true") {
+      toast.error("Session expired. Please login again.");
+      window.history.replaceState({}, "", "/login");
     }
   }, [searchParams]);
 
@@ -104,26 +114,91 @@ let App = () => {
                 <Route path="/post-tuition" element={<PostTuition />} />
                 <Route path="/become-tutor" element={<BecomeTutor />} />
                 <Route path="/blog" element={<Blog />} />
-                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-                <Route path="/password-reset" element={<PublicRoute><PasswordReset /></PublicRoute>} />
-                <Route path="/admin-login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
-                <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-                <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-                <Route path="/checkout/:id" element={<PrivateRoute><Checkout /></PrivateRoute>} />
-                <Route path="/session/:id" element={<PrivateRoute><SessionRoom /></PrivateRoute>} />
-                <Route path="/payment-success" element={<PrivateRoute><PaymentSuccess /></PrivateRoute>} />
-                <Route path="/payment-history" element={<PrivateRoute><PaymentHistory /></PrivateRoute>} />
+                <Route
+                  path="/login"
+                  element={
+                    <PublicRoute>
+                      <Login />
+                    </PublicRoute>
+                  }
+                />
+                <Route
+                  path="/password-reset"
+                  element={
+                    <PublicRoute>
+                      <PasswordReset />
+                    </PublicRoute>
+                  }
+                />
+                <Route
+                  path="/admin-login"
+                  element={
+                    <PublicRoute>
+                      <AdminLogin />
+                    </PublicRoute>
+                  }
+                />
+                <Route
+                  path="/register"
+                  element={
+                    <PublicRoute>
+                      <Register />
+                    </PublicRoute>
+                  }
+                />
+                <Route
+                  path="/dashboard/*"
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/checkout/:id"
+                  element={
+                    <PrivateRoute>
+                      <Checkout />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/session/:id"
+                  element={
+                    <PrivateRoute>
+                      <SessionRoom />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/payment-success"
+                  element={
+                    <PrivateRoute>
+                      <PaymentSuccess />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/payment-history"
+                  element={
+                    <PrivateRoute>
+                      <PaymentHistory />
+                    </PrivateRoute>
+                  }
+                />
+                <Route path="/search" element={<SearchPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </MainContent>
             <ConditionalFooter />
             <MobileBottomNav />
+            <OnboardingTour />
             <Toaster position="top-right" />
           </div>
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

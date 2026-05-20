@@ -2,20 +2,31 @@
 // bhaiya suggested this pattern for consistency
 
 export const ROLES = {
-    STUDENT: 'student',
-    TUTOR: 'tutor',
-    ADMIN: 'admin'
+  STUDENT: "student",
+  TUTOR: "tutor",
+  ADMIN: "admin",
 };
 
 export const STATUS = {
-    PENDING: 'pending',
-    APPROVED: 'approved',
-    REJECTED: 'rejected',
-    COMPLETED: 'completed' // payment status
+  PENDING: "pending",
+  APPROVED: "approved",
+  REJECTED: "rejected",
+  COMPLETED: "completed", // payment status
 };
 
 // medium options for tuition posting
 export const MEDIUMS = {
-    BANGLA: 'Bangla Medium',
-    ENGLISH: 'English Medium'
+  BANGLA: "Bangla Medium",
+  ENGLISH: "English Medium",
 };
+
+export const BANGLADESH_DIVISIONS = [
+  "Dhaka",
+  "Chattogram",
+  "Rajshahi",
+  "Khulna",
+  "Barisal",
+  "Sylhet",
+  "Rangpur",
+  "Mymensingh",
+];
