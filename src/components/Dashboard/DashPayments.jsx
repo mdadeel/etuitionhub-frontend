@@ -80,25 +80,25 @@ const DashPayments = () => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700 selection:bg-primary/30 selection:text-primary">
+        <div className="space-y-10 animate-in fade-in duration-700">
             {/* Header Protocol */}
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-                <div className="space-y-4">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-[rgba(15,23,46,0.08)] pb-6">
+                <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-1.5 bg-blue-600 rounded-full"></div>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Financial Stream</span>
+                        <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
+                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Financial Stream</span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight">Payment Verification</h1>
-                    <p className="text-sm md:text-lg text-muted-foreground font-medium max-w-xl">Systems audit interface for secure financial orchestration.</p>
+                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-[#111827]">Payment Verification</h2>
+                    <p className="text-xs text-[#5B6475] mt-1">Systems audit interface for secure financial orchestration.</p>
                 </div>
                 
                 {pendingCount > 0 && (
-                    <div className="flex items-center gap-4 px-6 py-4 bg-amber-600/10 border border-amber-500/20 rounded-2xl group hover:border-amber-500/40 transition-colors shadow-sm">
-                        <div className="relative flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 shadow-apple-sm"></span>
+                    <div className="flex items-center gap-4 px-6 py-4 bg-amber-500/10 border border-amber-500/20 rounded-none shadow-none">
+                        <div className="relative flex h-2.5 w-2.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-amber-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-none h-2.5 w-2.5 bg-amber-500"></span>
                         </div>
-                        <span className="text-xs font-bold text-amber-600 tracking-tight">
+                        <span className="text-[10px] font-heading font-black uppercase tracking-widest text-amber-700">
                             {pendingCount} Critical Action{pendingCount > 1 ? 's' : ''} Required
                         </span>
                     </div>
@@ -106,7 +106,7 @@ const DashPayments = () => {
             </header>
 
             {/* Matrix Filters */}
-            <div className="flex flex-wrap bg-muted p-1 rounded-2xl gap-1 w-fit border border-border backdrop-blur-md">
+            <div className="flex flex-wrap bg-[#F8FAFC] p-1.5 rounded-none gap-2 border border-[rgba(15,23,46,0.12)] w-fit backdrop-blur-md">
                 {[
                     { id: 'pending_verification', label: 'Verify' },
                     { id: 'verified', label: 'Verified' },
@@ -116,9 +116,9 @@ const DashPayments = () => {
                     <button
                         key={tab.id}
                         onClick={() => setFilter(tab.id)}
-                        className={`px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 rounded-xl ${filter === tab.id
-                            ? 'bg-card text-blue-600 shadow-sm border border-border/60'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        className={`px-6 py-2.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border transition-all duration-300 ${filter === tab.id
+                            ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-none'
+                            : 'text-[#5B6475] border-transparent hover:text-[#111827] hover:bg-[#EEF2F6]'
                             }`}
                     >
                         {tab.label}
@@ -128,91 +128,87 @@ const DashPayments = () => {
 
             {/* Technical Table Matrix */}
             {filteredPayments.length === 0 ? (
-                <div className="py-40 text-center bg-muted/10 border border-dashed border-border rounded-none relative overflow-hidden group">
-                    <Database size={48} className="text-muted-foreground/20 mx-auto mb-8 group-hover:text-primary/20 transition-colors duration-700" strokeWidth={1} />
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] italic">
+                <div className="py-40 text-center bg-[#F8FAFC] border border-[rgba(15,23,46,0.12)] rounded-none relative overflow-hidden group">
+                    <Database size={48} className="text-[#5B6475]/30 mx-auto mb-8 transition-colors duration-700" strokeWidth={1} />
+                    <p className="text-[10px] font-heading font-black text-[#5B6475]/60 uppercase tracking-[0.25em]">
                         No transaction nodes identified in selected matrix.
                     </p>
                 </div>
             ) : (
-            <div className="bg-card border border-border rounded-3xl shadow-xl overflow-hidden relative">
-                    <div className="overflow-x-auto selection:bg-primary/30 selection:text-primary">
+                <div className="bg-white border border-[rgba(15,23,46,0.12)] rounded-none shadow-none overflow-hidden relative">
+                    <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-muted/20 border-b border-border">
-                                    <th className="hidden lg:table-cell px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-400">Timestamp</th>
-                                    <th className="px-4 md:px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-400">Source</th>
-                                    <th className="hidden md:table-cell px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-400">Tutor</th>
-                                    <th className="px-4 md:px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-400">Method</th>
-                                    <th className="hidden xl:table-cell px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">Reference</th>
-                                    <th className="px-4 md:px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-400">Yield</th>
-                                    <th className="px-4 md:px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</th>
-                                    <th className="px-4 md:px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Ops</th>
+                                <tr className="bg-[#F8FAFC] border-b border-[rgba(15,23,46,0.08)] text-[#5B6475]">
+                                    <th className="hidden lg:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Timestamp</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Source</th>
+                                    <th className="hidden md:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Tutor</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Method</th>
+                                    <th className="hidden xl:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-center">Reference</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Yield</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Status</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-right">Ops</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border">
+                            <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
                                 {filteredPayments.map((payment) => {
-                                    const method = PAYMENT_METHOD_LABELS[payment.paymentMethod] || { name: payment.paymentMethod, color: 'bg-muted-foreground' };
+                                    const method = PAYMENT_METHOD_LABELS[payment.paymentMethod] || { name: payment.paymentMethod, color: 'bg-[#5B6475]/30' };
                                     
                                     return (
-                                        <tr key={payment._id} className="hover:bg-muted/30 transition-colors group">
-                                            <td className="hidden lg:table-cell px-8 py-6 text-xs font-bold text-muted-foreground/60 tabular-nums">
+                                        <tr key={payment._id} className="hover:bg-[#F8FAFC] transition-colors group">
+                                            <td className="hidden lg:table-cell px-8 py-6 text-xs font-mono font-bold text-[#5B6475]/60 tabular-nums">
                                                 {new Date(payment.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
-                                                <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{(payment.studentEmail || '').split('@')[0]}</p>
-                                                <p className="text-[9px] md:text-[10px] text-muted-foreground/40 font-bold mt-1 tabular-nums tracking-widest">{payment.senderNumber}</p>
+                                                <p className="text-xs md:text-sm font-bold text-[#111827] leading-tight">{(payment.studentEmail || '').split('@')[0]}</p>
+                                                <p className="text-[9px] md:text-[10px] text-[#5B6475]/40 font-bold mt-1 tabular-nums tracking-widest">{payment.senderNumber}</p>
                                             </td>
                                             <td className="hidden md:table-cell px-8 py-6">
-                                                <p className="text-sm font-bold text-foreground">{payment.tutorName || '—'}</p>
+                                                <p className="text-sm font-bold text-[#111827]">{payment.tutorName || '—'}</p>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={`w-2 h-2 rounded-full ${method.color}`}></div>
-                                                    <span className="text-[9px] md:text-[10px] font-bold text-foreground uppercase tracking-widest">{(method.name || '').split(' ')[0]}</span>
+                                                    <div className={`w-2 h-2 rounded-none ${method.color}`}></div>
+                                                    <span className="text-[9px] md:text-[10px] font-heading font-black text-[#111827] uppercase tracking-widest">{(method.name || '').split(' ')[0]}</span>
                                                 </div>
                                             </td>
                                             <td className="hidden xl:table-cell px-8 py-6 text-center">
-                                                <Badge variant="outline" className="rounded-xl border-blue-500/20 text-blue-600 bg-blue-600/10 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest">
+                                                <span className="rounded-none border border-[#2563EB]/20 text-[#2563EB] bg-[#2563EB]/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest">
                                                     {payment.transactionId}
-                                                </Badge>
+                                                </span>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
-                                                <p className="text-xs md:text-sm font-bold text-foreground tabular-nums italic">৳{payment.amount}</p>
+                                                <p className="text-xs md:text-sm font-heading font-black text-[#111827] tabular-nums italic">৳{payment.amount}</p>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
-                                                <Badge variant="outline" className={`rounded-full px-2 md:px-3 py-0.5 md:py-1 text-[8px] md:text-[9px] font-bold uppercase tracking-widest ${
-                                                    payment.status === 'verified' ? 'text-blue-600 border-blue-500/20 bg-blue-600/10' :
-                                                    payment.status === 'rejected' ? 'text-red-600 border-red-500/20 bg-red-600/10' :
-                                                    'text-amber-600 border-amber-500/20 bg-amber-600/10'
+                                                <span className={`px-2.5 py-1 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${
+                                                    payment.status === 'verified' ? 'text-emerald-700 border-emerald-500/20 bg-emerald-500/10' :
+                                                    payment.status === 'rejected' ? 'text-red-700 border-red-500/20 bg-red-500/10' :
+                                                    'text-amber-700 border-amber-500/20 bg-amber-500/10'
                                                 }`}>
                                                     {payment.status === 'pending_verification' ? 'Verify' : payment.status.toUpperCase().replace('_', ' ')}
-                                                </Badge>
+                                                </span>
                                             </td>
                                             <td className="px-4 md:px-8 py-6 text-right">
                                                 {payment.status === 'pending_verification' ? (
                                                     <div className="flex items-center justify-end gap-2 md:gap-3">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
+                                                        <button
                                                             onClick={() => handleVerify(payment._id)}
                                                             disabled={processingId === payment._id}
-                                                            className="h-8 md:h-9 px-2 md:px-4 rounded-xl border-blue-500/20 text-blue-600 text-[9px] md:text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                                            className="h-8 px-4 rounded-none border border-[#2563EB] bg-[#2563EB] text-white text-[9px] font-heading font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all disabled:opacity-50"
                                                         >
-                                                            <CheckCircle2 size={10} className="md:mr-2" /> <span className="hidden md:inline">Verify</span>
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
+                                                            Verify
+                                                        </button>
+                                                        <button
                                                             onClick={() => handleReject(payment._id)}
                                                             disabled={processingId === payment._id}
-                                                            className="h-8 md:h-9 px-2 md:px-4 rounded-xl text-red-600 text-[9px] md:text-[10px] font-bold uppercase tracking-widest hover:bg-red-600/10 transition-all"
+                                                            className="h-8 px-4 rounded-none text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 text-[9px] font-heading font-black uppercase tracking-widest transition-all disabled:opacity-50"
                                                         >
-                                                            <XCircle size={10} className="md:mr-2" /> <span className="hidden md:inline">Drop</span>
-                                                        </Button>
+                                                            Drop
+                                                        </button>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-[8px] font-black text-muted-foreground/30 uppercase tracking-[0.2em] italic">Done</span>
+                                                    <span className="text-[9px] font-heading font-black text-[#5B6475]/30 uppercase tracking-[0.2em] italic">Done</span>
                                                 )}
                                             </td>
                                         </tr>

@@ -106,27 +106,26 @@ const DashTuitions = () => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="bg-transparent">
-            <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-10 animate-in fade-in duration-700">
+            <header className="mb-8 border-b border-[rgba(15,23,46,0.08)] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="w-8 h-1.5 bg-blue-600 rounded-full"></div>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Marketplace Management</span>
+                    <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
+                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Marketplace Management</span>
                     </div>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Tuition Streams</h1>
-                    <h1 className="text-3xl font-bold text-foreground tracking-tight leading-tight">Tuition Streams</h1>
-                    <p className="text-sm text-slate-500 font-medium mt-1">
+                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-[#111827]">Tuition Streams</h2>
+                    <p className="text-xs text-[#5B6475] mt-1">
                         {tuitions.length} active metadata nodes detected.
                     </p>
                 </div>
 
-                <div className="flex bg-muted p-1 rounded-2xl gap-1 border border-border w-fit backdrop-blur-md">
+                <div className="flex bg-[#F8FAFC] p-1.5 rounded-none gap-2 border border-[rgba(15,23,46,0.12)] w-fit backdrop-blur-md">
                     {['all', 'pending', 'approved'].map(f => (
                         <button
                             key={f}
-                            className={`px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${filter === f
-                                ? 'bg-card text-blue-600 shadow-sm border border-border'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                            className={`px-5 py-2.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border transition-all duration-300 ${filter === f
+                                ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-none'
+                                : 'text-[#5B6475] border-transparent hover:text-[#111827] hover:bg-[#EEF2F6]'
                                 }`}
                             onClick={() => setFilter(f)}
                         >
@@ -136,78 +135,76 @@ const DashTuitions = () => {
                 </div>
             </header>
 
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-separate border-spacing-y-3">
+            <div className="overflow-x-auto border border-[rgba(15,23,46,0.12)] bg-white">
+                <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="text-slate-400">
-                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Scope</th>
-                            <th className="hidden md:table-cell px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Geography</th>
-                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-center">Yield</th>
-                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-center">State</th>
-                            <th className="px-4 md:px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-right">Ops</th>
+                        <tr className="bg-[#F8FAFC] border-b border-[rgba(15,23,46,0.08)] text-[#5B6475]">
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Scope</th>
+                            <th className="hidden md:table-cell px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Geography</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-center">Yield</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-center">State</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-right">Ops</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
                         {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan="5" className="px-6 py-24 text-center">
-                                    <div className="flex flex-col items-center gap-4 opacity-30">
-                                        <ShieldAlert size={48} strokeWidth={1} />
-                                        <p className="text-[10px] font-bold uppercase tracking-widest italic">Universal records empty</p>
+                                <td colSpan="5" className="px-6 py-24 text-center bg-[#F8FAFC]">
+                                    <div className="flex flex-col items-center gap-4">
+                                        <ShieldAlert size={48} className="text-[#5B6475]/30" strokeWidth={1} />
+                                        <p className="text-[10px] font-heading font-black uppercase tracking-[0.25em] text-[#5B6475]/60">Universal records empty</p>
                                     </div>
                                 </td>
                             </tr>
                         ) : (
                             filtered.map((t) => (
-                                <tr key={t._id} className="group">
-                                    <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-l border-border first:rounded-l-2xl group-hover:bg-muted/30 transition-colors">
-                                        <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{t.subject}</p>
-                                        <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{t.class_name}</p>
+                                <tr key={t._id} className="hover:bg-[#F8FAFC] transition-colors">
+                                    <td className="px-4 md:px-6 py-4">
+                                        <p className="text-xs md:text-sm font-bold text-[#111827] leading-tight">{t.subject}</p>
+                                        <p className="text-[9px] font-heading font-black text-[#5B6475]/60 uppercase tracking-widest mt-1">{t.class_name}</p>
                                     </td>
-                                    <td className="hidden md:table-cell px-6 py-5 bg-card border-y border-border group-hover:bg-muted/30 transition-colors">
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.location}</p>
+                                    <td className="hidden md:table-cell px-6 py-4">
+                                        <p className="text-xs font-bold text-[#5B6475] uppercase tracking-wider">{t.location}</p>
                                     </td>
-                                    <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-border text-center group-hover:bg-muted/30 transition-colors">
-                                        <span className="text-xs md:text-sm font-bold text-blue-600 tabular-nums">৳{t.salary}</span>
+                                    <td className="px-4 md:px-6 py-4 text-center">
+                                        <span className="text-xs md:text-sm font-heading font-black text-[#2563EB] tabular-nums">৳{t.salary}</span>
                                     </td>
-                                    <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-border text-center group-hover:bg-muted/30 transition-colors">
-                                        <span className={`px-2 md:px-2.5 py-0.5 md:py-1 text-[8px] md:text-[9px] font-bold uppercase tracking-widest rounded-full border ${t.status === 'approved' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : t.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
+                                    <td className="px-4 md:px-6 py-4 text-center">
+                                        <span className={`px-2.5 py-1 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${
+                                            t.status === 'approved' ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20' : 
+                                            t.status === 'rejected' ? 'bg-red-500/10 text-red-700 border-red-500/20' : 
+                                            'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20'
+                                        }`}>
                                             {t.status.toUpperCase()}
                                         </span>
                                     </td>
-                                    <td className="px-4 md:px-6 py-4 md:py-5 bg-card border-y border-r border-border last:rounded-r-2xl text-right group-hover:bg-muted/30 transition-colors">
-                                        <div className="flex justify-end gap-2 md:gap-3">
-                                            <AppleButton
-                                                size="sm"
-                                                variant="ghost"
-                                                className="h-7 w-7 md:h-8 md:w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                                    <td className="px-4 md:px-6 py-4 text-right">
+                                        <div className="flex justify-end gap-2 md:gap-3 items-center">
+                                            <button
                                                 onClick={() => handleEditClick(t)}
+                                                className="h-8 w-8 p-0 text-[#5B6475]/60 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-none border border-transparent hover:border-[#2563EB]/20 flex items-center justify-center transition-colors"
                                             >
                                                 <Edit2 size={12} />
-                                            </AppleButton>
+                                            </button>
 
                                             {t.status === 'pending' && (
                                                 <>
-                                                    <AppleButton
-                                                        size="sm"
-                                                        variant="primary"
-                                                        className="h-7 md:h-8 px-2 md:px-4 text-[8px] md:text-[10px]"
+                                                    <button
                                                         onClick={() => handleApprove(t._id)}
+                                                        className="h-8 px-4 rounded-none border border-[#2563EB] bg-[#2563EB] text-white text-[9px] font-heading font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all"
                                                     >
-                                                        <Check size={12} className="md:mr-1.5" /> <span className="hidden md:inline">Verify</span>
-                                                    </AppleButton>
-                                                    <AppleButton
-                                                        size="sm"
-                                                        variant="secondary"
-                                                        className="h-7 md:h-8 px-2 md:px-4 text-[8px] md:text-[10px] bg-destructive/10 text-destructive hover:bg-destructive hover:text-white"
+                                                        Verify
+                                                    </button>
+                                                    <button
                                                         onClick={() => handleReject(t._id)}
+                                                        className="h-8 px-4 rounded-none text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 text-[9px] font-heading font-black uppercase tracking-widest transition-all"
                                                     >
-                                                        <X size={12} className="md:mr-1.5" /> <span className="hidden md:inline">Drop</span>
-                                                    </AppleButton>
+                                                        Drop
+                                                    </button>
                                                 </>
                                             )}
                                             {t.status !== 'pending' && (
-                                                <span className="text-[8px] font-bold text-muted-foreground/30 uppercase tracking-[0.1em] md:px-4 self-center">Done</span>
+                                                <span className="text-[9px] font-heading font-black text-[#5B6475]/30 uppercase tracking-[0.2em] italic pr-4">Done</span>
                                             )}
                                         </div>
                                     </td>

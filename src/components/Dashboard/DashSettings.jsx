@@ -71,66 +71,67 @@ const DashSettings = () => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="space-y-10">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="space-y-10 animate-in fade-in duration-700">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[rgba(15,23,46,0.08)] pb-6">
                 <div>
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="w-8 h-1.5 bg-blue-600 rounded-full"></div>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Strategic Parameters</span>
+                    <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
+                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">System Settings</span>
                     </div>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Global Configurations</h1>
-                    <p className="text-sm text-slate-500 font-medium mt-1">
-                        Environment variables and platform constraints.
+                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-[#111827]">System Settings</h2>
+                    <p className="text-xs text-[#5B6475] mt-1">
+                        Manage platform constants and environment variables.
                     </p>
                 </div>
 
                 <div className="flex gap-3">
-                    <AppleButton 
-                        variant="ghost" 
-                        size="sm" 
+                    <button 
                         onClick={loadSettings}
-                        className="h-10 px-4 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                        className="h-10 px-4 rounded-none text-[#5B6475] hover:text-[#111827] border border-[rgba(15,23,46,0.12)] hover:bg-[#EEF2F6] text-[9px] font-heading font-black uppercase tracking-widest transition-all"
                     >
-                        <RefreshCw size={14} className="mr-2" /> Reset
-                    </AppleButton>
-                    <AppleButton 
-                        variant="primary" 
-                        size="sm" 
+                        Reset
+                    </button>
+                    <button 
                         onClick={handleSave}
-                        isLoading={isSaving}
-                        className="h-10 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white shadow-apple-sm"
+                        disabled={isSaving}
+                        className="h-10 px-6 rounded-none bg-[#2563EB] text-white hover:bg-[#1D4ED8] text-[9px] font-heading font-black uppercase tracking-widest transition-all disabled:opacity-50"
                     >
-                        <Save size={14} className="mr-2" /> Deploy Changes
-                    </AppleButton>
+                        {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
                 </div>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {Object.entries(groupedSettings).map(([category, items]) => (
                     <div key={category} className="space-y-4">
-                        <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2 px-1">
-                            {categoryIcons[category]} {category} Parameters
+                        <h3 className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#5B6475] flex items-center gap-2 px-1">
+                            <span className="text-[#2563EB]">{categoryIcons[category]}</span> {category.charAt(0).toUpperCase() + category.slice(1)} Settings
                         </h3>
                         
-                        <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-8 shadow-sm backdrop-blur-sm">
+                        <div className="bg-white border border-[rgba(15,23,46,0.12)] rounded-none p-6 md:p-8 space-y-8 shadow-none">
                             {items.map(setting => (
                                 <div key={setting.key} className="space-y-2">
                                     <div className="flex items-center justify-between px-1">
-                                        <label className="text-[11px] font-bold text-slate-900 uppercase tracking-wider">
+                                        <label className="text-[9px] font-heading font-black text-[#111827] uppercase tracking-widest">
                                             {setting.label}
                                         </label>
                                         <div className="group relative">
-                                            <Info size={12} className="text-muted-foreground/50 cursor-help" />
-                                            <div className="absolute bottom-full right-0 mb-2 w-48 p-2 bg-card border border-border shadow-xl rounded-xl text-[9px] font-medium text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                                            <Info size={12} className="text-[#5B6475]/40 hover:text-[#2563EB] cursor-help transition-colors" />
+                                            <div className="absolute bottom-full right-0 mb-2 w-48 p-3 bg-white border border-[rgba(15,23,46,0.12)] shadow-xl rounded-none text-[9px] font-bold text-[#5B6475] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
                                                 {setting.description}
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <AppleInput
+                                    <input
+                                        type="text"
                                         value={setting.value}
                                         onChange={(e) => handleInputChange(setting.key, e.target.value)}
-                                        className={modifiedKeys.has(setting.key) ? 'ring-4 ring-blue-600/10 bg-blue-50/50 border-blue-600/30' : ''}
+                                        className={`w-full px-4 py-3 text-xs bg-white border rounded-none focus:outline-none focus:border-[#2563EB] transition-all font-heading font-bold placeholder:text-[#5B6475]/40 ${
+                                            modifiedKeys.has(setting.key) 
+                                                ? 'border-[#2563EB] bg-[#2563EB]/5' 
+                                                : 'border-[rgba(15,23,46,0.12)]'
+                                        }`}
                                     />
                                 </div>
                             ))}
@@ -140,15 +141,15 @@ const DashSettings = () => {
             </div>
 
             {modifiedKeys.size > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-10 z-[100] border border-white/10 backdrop-blur-xl">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        {modifiedKeys.size} Parameters Modified
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-white border border-[rgba(15,23,46,0.12)] text-[#111827] px-6 py-4 rounded-none shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-10 z-[100] backdrop-blur-xl">
+                    <span className="text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]">
+                        {modifiedKeys.size} settings modified
                     </span>
                     <button 
                         onClick={handleSave}
-                        className="bg-blue-600 hover:bg-blue-500 px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-apple-sm"
+                        className="bg-[#2563EB] hover:bg-[#1D4ED8] px-5 py-2.5 rounded-none text-[9px] font-heading font-black uppercase tracking-widest text-white transition-all shadow-none"
                     >
-                        Apply Changes
+                        Save Changes
                     </button>
                 </div>
             )}

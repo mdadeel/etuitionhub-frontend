@@ -11,9 +11,10 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, Button } from '../ui';
+import ImportantMails from './ImportantMails';
 
 const Profile = () => {
-    const { user, dbUser, loading: authLoading, refreshUserFromDB, updateUserProfile } = useAuth();
+    const { user, dbUser, refreshUserFromDB, updateUserProfile } = useAuth();
     const [loading, setLoading] = useState(false);
     const { handleSubmit } = useForm();
 
@@ -80,14 +81,12 @@ const Profile = () => {
                 <div className="lg:col-span-4">
                     <Card className="p-8 md:p-10 flex flex-col items-center text-center space-y-6 md:space-y-8" hover={false}>
                         <div className="relative group">
-                            <Avatar className="h-32 w-32 md:h-44 md:w-44 rounded-3xl md:rounded-[2.5rem] border-4 border-white shadow-xl overflow-hidden bg-[#F5F7FA] transition-all duration-500 group-hover:scale-105">
+                            <Avatar className="h-32 w-32 md:h-44 md:w-44 rounded-none border border-[rgba(15,23,46,0.12)] shadow-none overflow-hidden bg-slate-950 transition-all duration-500 group-hover:scale-105">
                                 <AvatarImage 
-                                    src={photoInput || 'https://i.ibb.co/4pDNDk1/default-avatar.png'} 
+                                    src={photoInput} 
                                     className="object-cover"
                                 />
-                                <AvatarFallback className="text-4xl font-bold text-[#5B6475]">
-                                    {user?.displayName?.charAt(0)}
-                                </AvatarFallback>
+                                <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
                             </Avatar>
                             <div className="absolute bottom-1 right-1 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-[rgba(15,23,46,0.08)] cursor-pointer hover:scale-110 transition-transform text-[#5B6475] hover:text-[#2563EB]">
                                 <Camera size={20} />
@@ -198,6 +197,11 @@ const Profile = () => {
                         </Card>
                     </div>
                 </div>
+            </div>
+
+            {/* Important Mails Section */}
+            <div className="mt-10">
+                <ImportantMails />
             </div>
         </div>
     );

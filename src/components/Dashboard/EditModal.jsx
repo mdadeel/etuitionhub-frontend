@@ -4,10 +4,9 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
     DialogFooter,
 } from "@/components/ui/dialog";
-import { AppleButton, AppleInput } from '../shared/AppleUI';
-import { Textarea } from "@/components/ui/textarea";
 
 /**
  * Generic EditModal for Admin Dashboard
@@ -46,14 +45,18 @@ const EditModal = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[500px] bg-card/95 backdrop-blur-2xl border-border/50 rounded-3xl p-0 overflow-hidden">
+            <DialogContent className="sm:max-w-[500px] bg-white border border-[rgba(15,23,46,0.12)] rounded-none p-0 overflow-hidden shadow-2xl">
                 <DialogHeader className="p-8 pb-0">
-                    <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">
+                    <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
+                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Edit Details</span>
+                    </div>
+                    <DialogTitle className="text-lg font-heading font-black tracking-tight text-[#111827] uppercase">
                         {title}
                     </DialogTitle>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                        Operational Integrity: Editing Active Node
-                    </p>
+                    <DialogDescription className="text-[10px] font-bold text-[#5B6475] uppercase tracking-widest mt-1">
+                        Please update the fields below
+                    </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="p-8 space-y-6">
@@ -62,46 +65,49 @@ const EditModal = ({
                             <div key={field.name} className="space-y-1.5">
                                 {field.type === 'textarea' ? (
                                     <div className="space-y-1.5 w-full">
-                                        <label className="text-xs font-semibold text-muted-foreground ml-1">
+                                        <label className="text-[9px] font-heading font-black text-[#111827] uppercase tracking-widest ml-1">
                                             {field.label}
                                         </label>
-                                        <Textarea 
+                                        <textarea 
                                             value={formData[field.name] || ''}
                                             onChange={(e) => handleChange(field.name, e.target.value)}
                                             placeholder={field.placeholder}
-                                            className="min-h-[100px] bg-muted/50 border-none ring-1 ring-border focus:ring-2 focus:ring-primary/20 focus:bg-card transition-all duration-200 px-4 py-3 rounded-xl text-sm"
+                                            className="w-full min-h-[100px] bg-white border border-[rgba(15,23,46,0.12)] rounded-none focus:outline-none focus:border-[#2563EB] transition-all font-heading font-bold text-xs px-4 py-3 placeholder:text-[#5B6475]/40"
                                         />
                                     </div>
                                 ) : (
-                                    <AppleInput 
-                                        label={field.label}
-                                        value={formData[field.name] || ''}
-                                        onChange={(e) => handleChange(field.name, e.target.value)}
-                                        placeholder={field.placeholder}
-                                        type={field.type || 'text'}
-                                    />
+                                    <div className="space-y-1.5 w-full">
+                                        <label className="text-[9px] font-heading font-black text-[#111827] uppercase tracking-widest ml-1">
+                                            {field.label}
+                                        </label>
+                                        <input 
+                                            type={field.type || 'text'}
+                                            value={formData[field.name] || ''}
+                                            onChange={(e) => handleChange(field.name, e.target.value)}
+                                            placeholder={field.placeholder}
+                                            className="w-full px-4 py-3 text-xs bg-white border border-[rgba(15,23,46,0.12)] rounded-none focus:outline-none focus:border-[#2563EB] transition-all font-heading font-bold placeholder:text-[#5B6475]/40"
+                                        />
+                                    </div>
                                 )}
                             </div>
                         ))}
                     </div>
 
                     <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-3">
-                        <AppleButton 
+                        <button 
                             type="button" 
-                            variant="ghost" 
                             onClick={onClose}
-                            className="flex-1 rounded-xl"
+                            className="flex-1 h-10 rounded-none text-[#5B6475] hover:text-[#111827] border border-[rgba(15,23,46,0.12)] hover:bg-[#EEF2F6] text-[9px] font-heading font-black uppercase tracking-widest transition-all"
                         >
                             Cancel
-                        </AppleButton>
-                        <AppleButton 
+                        </button>
+                        <button 
                             type="submit" 
-                            variant="primary"
-                            isLoading={isLoading}
-                            className="flex-1 rounded-xl"
+                            disabled={isLoading}
+                            className="flex-1 h-10 rounded-none bg-[#2563EB] text-white hover:bg-[#1D4ED8] text-[9px] font-heading font-black uppercase tracking-widest transition-all disabled:opacity-50"
                         >
-                            Save Changes
-                        </AppleButton>
+                            {isLoading ? 'Saving...' : 'Save Changes'}
+                        </button>
                     </DialogFooter>
                 </form>
             </DialogContent>
