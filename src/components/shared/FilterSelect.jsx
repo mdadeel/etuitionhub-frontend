@@ -1,11 +1,70 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { ChevronDown, Check, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const FilterSelect = ({ value, onValueChange, options, placeholder, label, icon: Icon }) => {
+const FilterSelect = ({
+    value,
+    onValueChange,
+    options = [],
+    placeholder = 'Select...',
+    label,
+    icon: Icon,
+    multi = false,
+    searchable = false,
+    async: isAsync = false,
+    loadOptions,
+}) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [asyncOptions, setAsyncOptions] = useState([]);
+    const [loadingAsync, setLoadingAsync] = useState(false);
     const containerRef = useRef(null);
+    const searchInputRef = useRef(null);
 
+    const displayOptions = useMemo(() => {
+        const source = isAsync ? asyncOptions : options;
+        if (!searchable || isAsync || !searchQuery) return source;
+        const q = searchQuery.toLowerCase();
+        return source.filter(opt => {
+            const label = typeof opt === 'object' ? opt.label : opt;
+            return label.toLowerCase().includes(q);
+        });
+    }, [isAsync, asyncOptions, options, searchable, searchQuery]);
+    const selectedValues = useMemo(
+        () => (multi ? (Array.isArray(value) ? value : []) : [value].filter(Boolean)),
+        [multi, value]
+    );
+
+    // Async loading
+    useEffect(() => {
+        if (!isOpen || !isAsync || !loadOptions) return;
+        const timer = setTimeout(async () => {
+            if (!searchQuery && options.length > 0) {
+                setAsyncOptions(options);
+                return;
+            }
+            setLoadingAsync(true);
+            try {
+                const results = await loadOptions(searchQuery);
+                setAsyncOptions(results || []);
+            } catch {
+                setAsyncOptions([]);
+            } finally {
+                setLoadingAsync(false);
+            }
+        }, 200);
+        return () => clearTimeout(timer);
+    }, [searchQuery, isOpen, isAsync, loadOptions, options]);
+
+    // Focus search input when dropdown opens
+    useEffect(() => {
+        if (isOpen && searchable && searchInputRef.current) {
+            setTimeout(() => searchInputRef.current?.focus(), 50);
+        }
+        if (!isOpen) setSearchQuery('');
+    }, [isOpen, searchable]);
+
+    // Click outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -16,74 +75,143 @@ const FilterSelect = ({ value, onValueChange, options, placeholder, label, icon:
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const isSelected = useCallback((optValue) => {
+        if (multi) return selectedValues.includes(optValue);
+        return String(value) === String(optValue);
+    }, [multi, selectedValues, value]);
+
+    const handleSelect = useCallback((optValue) => {
+        if (multi) {
+            const newVal = selectedValues.includes(optValue)
+                ? selectedValues.filter(v => v !== optValue)
+                : [...selectedValues, optValue];
+            onValueChange(newVal);
+        } else {
+            onValueChange(optValue);
+            setIsOpen(false);
+        }
+    }, [multi, selectedValues, onValueChange]);
+
+    const handleRemoveChip = useCallback((e, chipValue) => {
+        e.stopPropagation();
+        const newVal = selectedValues.filter(v => v !== chipValue);
+        onValueChange(newVal);
+    }, [selectedValues, onValueChange]);
+
+    // Compute display text
+    const getOptionLabel = (optVal) => {
+        const allOpts = isAsync ? [...asyncOptions, ...options] : options;
+        const match = allOpts.find(o => (typeof o === 'object' ? o.value : o) === optVal);
+        if (!match) return optVal;
+        return typeof match === 'object' ? match.label : match;
+    };
+
+    const displayText = multi
+        ? selectedValues.length === 0
+            ? placeholder
+            : `${selectedValues.length} selected`
+        : selectedValues.length > 0
+            ? getOptionLabel(selectedValues[0])
+            : placeholder;
+
+    const hasValue = multi ? selectedValues.length > 0 : selectedValues.length > 0;
+
     return (
-        <div className="relative w-full" ref={containerRef}>
+        <div className="relative" ref={containerRef}>
             {label && (
-                <label className="text-sm font-medium text-slate-600 mb-2 block">
+                <label className="block text-xs font-heading font-bold text-[#5B6475] mb-1.5 uppercase tracking-wider">
                     {label}
                 </label>
             )}
-
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "flex h-10 w-full items-center justify-between bg-slate-50 border border-slate-200 rounded-md px-3 text-sm transition-all",
-                    "hover:bg-slate-100 hover:border-slate-300",
-                    "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300",
-                    isOpen && "ring-2 ring-blue-500/20 border-blue-300 bg-white"
+                    'w-full flex items-center justify-between gap-2 h-10 px-3 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl text-sm transition-all',
+                    'hover:border-[#2563EB]/30 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20',
+                    hasValue ? 'text-[#111827]' : 'text-[#5B6475]'
                 )}
             >
-                <div className="flex items-center gap-2 overflow-hidden">
-                    {Icon && <Icon size={14} className="text-slate-400 shrink-0" />}
-                    <span className={cn(
-                        "truncate",
-                        (!value || value === 'All') ? 'text-slate-400' : 'text-slate-900'
-                    )}>
-                        {value || placeholder}
-                    </span>
-                </div>
-                <ChevronDown
-                    size={14}
-                    className={cn(
-                        "text-slate-400 shrink-0 transition-transform duration-200",
-                        isOpen && "rotate-180 text-blue-600"
+                <div className="flex items-center gap-2 min-w-0">
+                    {Icon && <Icon size={14} className="shrink-0 opacity-55" />}
+                    {multi && selectedValues.length > 0 ? (
+                        <div className="flex items-center gap-1 flex-wrap">
+                            {selectedValues.slice(0, 3).map(v => (
+                                <span key={v} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#F5F7FA] text-[10px] font-medium text-[#5B6475] border border-[rgba(15,23,46,0.08)] rounded">
+                                    {getOptionLabel(v)}
+                                    <X
+                                        size={10}
+                                        className="cursor-pointer hover:text-red-500"
+                                        onClick={(e) => handleRemoveChip(e, v)}
+                                    />
+                                </span>
+                            ))}
+                            {selectedValues.length > 3 && (
+                                <span className="text-[10px] text-[#94A3B8]">
+                                    +{selectedValues.length - 3}
+                                </span>
+                            )}
+                        </div>
+                    ) : (
+                        <span className="truncate">{displayText}</span>
                     )}
-                />
+                </div>
+                <ChevronDown size={14} className={cn('shrink-0 transition-transform', isOpen && 'rotate-180')} />
             </button>
 
             {isOpen && (
-                <ul className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                    {options.map((option) => {
-                        const val = typeof option === 'string' ? option : option.value;
-                        const labelText = typeof option === 'string' ? option : option.label;
-                        const isSelected = value === val;
-
-                        return (
-                            <li
-                                key={val}
-                                onClick={() => {
-                                    onValueChange(val);
-                                    setIsOpen(false);
-                                }}
-                                className={cn(
-                                    "flex w-full cursor-pointer items-center justify-between px-3 py-2 text-sm transition-colors",
-                                    isSelected
-                                        ? "bg-blue-50 text-blue-600"
-                                        : "text-slate-700 hover:bg-slate-50"
-                                )}
-                            >
-                                <span className="truncate">{labelText}</span>
-                                {isSelected && <Check size={14} />}
-                            </li>
-                        );
-                    })}
-                    {options.length === 0 && (
-                        <li className="py-4 text-center text-sm text-slate-500">
-                            No results
-                        </li>
+                <div className="absolute z-50 mt-1 w-full bg-white border border-[rgba(15,23,46,0.08)] shadow-lg rounded-xl overflow-hidden">
+                    {searchable && (
+                        <div className="p-2 border-b border-[rgba(15,23,46,0.08)]">
+                            <div className="relative">
+                                <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+                                <input
+                                    ref={searchInputRef}
+                                    type="text"
+                                    placeholder="Search..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-7 pr-3 h-8 text-xs bg-[#F8FAFC] border border-[rgba(15,23,46,0.08)] rounded-lg outline-none focus:ring-1 focus:ring-[#2563EB]/20 !text-black"
+                                />
+                            </div>
+                        </div>
                     )}
-                </ul>
+                    <ul className="max-h-60 overflow-y-auto py-1">
+                        {loadingAsync ? (
+                            <li className="px-3 py-2 text-xs text-[#5B6475] text-center">Loading...</li>
+                        ) : displayOptions.length === 0 ? (
+                            <li className="px-3 py-2 text-xs text-[#5B6475] text-center">No results</li>
+                        ) : (
+                            displayOptions.map((opt, idx) => {
+                                const optValue = typeof opt === 'object' ? opt.value : opt;
+                                const optLabel = typeof opt === 'object' ? opt.label : opt;
+                                const selected = isSelected(optValue);
+                                return (
+                                    <li
+                                        key={idx}
+                                        onClick={() => handleSelect(optValue)}
+                                        className={cn(
+                                            'flex items-center justify-between px-3 py-2 text-sm cursor-pointer transition-colors',
+                                            selected ? 'bg-[#2563EB]/10 text-[#2563EB] font-medium' : 'text-[#5B6475] hover:bg-[#F8FAFC]'
+                                        )}
+                                    >
+                                        <span>{optLabel}</span>
+                                        {multi ? (
+                                            <div className={cn(
+                                                'w-4 h-4 rounded border flex items-center justify-center transition-colors',
+                                                selected ? 'bg-[#2563EB] border-[#2563EB]' : 'border-[#D1D5DB]'
+                                            )}>
+                                                {selected && <Check size={10} className="text-white" />}
+                                            </div>
+                                        ) : selected ? (
+                                            <Check size={14} className="text-[#2563EB]" />
+                                        ) : null}
+                                    </li>
+                                );
+                            })
+                        )}
+                    </ul>
+                </div>
             )}
         </div>
     );
