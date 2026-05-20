@@ -10,10 +10,15 @@ import Newsletter from '../components/Home/Newsletter';
 import FAQ from '../components/Home/FAQ';
 import MissionStatement from '../components/Home/MissionStatement';
 import FeatureSpotlight from '../components/Home/FeatureSpotlight';
+import SEO from '../components/shared/SEO';
 
 const Home = () => {
     return (
         <div className="bg-background">
+            <SEO 
+                title="Find the Best Tutors in Bangladesh" 
+                keywords="tutor, online tutor, home tutor, bangladesh tuition, e-tuitionBD, find tutors"
+            />
             <HomeBanner />
             <FeaturedCategories />
             <PopularTutors />

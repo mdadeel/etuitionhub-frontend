@@ -1,273 +1,390 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import toast from 'react-hot-toast';
-import api from '../services/api';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
+import api from "../services/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Briefcase, CheckCircle, ArrowRight, ArrowLeft, GraduationCap, BookOpen, MapPin, Phone, DollarSign, ShieldCheck } from "lucide-react";
+import { BANGLADESH_DIVISIONS } from "../utils/constants";
+import {
+  Briefcase,
+  CheckCircle,
+  ArrowRight,
+  ArrowLeft,
+  GraduationCap,
+  BookOpen,
+  MapPin,
+  Phone,
+  DollarSign,
+  ShieldCheck,
+} from "lucide-react";
 
 const SUBJECT_OPTIONS = [
-    'Mathematics', 'English', 'Bangla', 'Physics', 'Chemistry',
-    'Biology', 'Higher Math', 'General Science', 'ICT',
-    'Accounting', 'Finance', 'Economics', 'History', 'Geography'
+  "Mathematics",
+  "English",
+  "Bangla",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Higher Math",
+  "General Science",
+  "ICT",
+  "Accounting",
+  "Finance",
+  "Economics",
+  "History",
+  "Geography",
 ];
 
 const BecomeTutor = () => {
-    const { user, dbUser, userRole, loading: authLoading, refreshUserFromDB } = useAuth();
-    const navigate = useNavigate();
-    const [step, setStep] = useState(1);
-    const [submitting, setSubmitting] = useState(false);
-    const [name, setName] = useState(dbUser?.displayName || user?.displayName || '');
-    const [phone, setPhone] = useState(dbUser?.mobileNumber || '');
-    const [qualification, setQualification] = useState(dbUser?.qualification || '');
-    const [subjects, setSubjects] = useState(dbUser?.subjects || []);
-    const [expectedSalary, setExpectedSalary] = useState(dbUser?.expectedSalary || '');
-    const [location, setLocation] = useState(dbUser?.location || '');
+  const {
+    user,
+    dbUser,
+    userRole,
+    loading: authLoading,
+    refreshUserFromDB,
+  } = useAuth();
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [name, setName] = useState(
+    dbUser?.displayName || user?.displayName || "",
+  );
+  const [phone, setPhone] = useState(dbUser?.mobileNumber || "");
+  const [qualification, setQualification] = useState(
+    dbUser?.qualification || "",
+  );
+  const [subjects, setSubjects] = useState(dbUser?.subjects || []);
+  const [expectedSalary, setExpectedSalary] = useState(
+    dbUser?.expectedSalary || "",
+  );
+  const [location, setLocation] = useState(dbUser?.location || "");
 
-    const isAlreadyTutor = userRole === 'tutor';
+  const isAlreadyTutor = userRole === "tutor";
 
-    const toggleSubject = (subject) => {
-        setSubjects(prev =>
-            prev.includes(subject)
-                ? prev.filter(s => s !== subject)
-                : [...prev, subject]
-        );
-    };
+  const toggleSubject = (subject) => {
+    setSubjects((prev) =>
+      prev.includes(subject)
+        ? prev.filter((s) => s !== subject)
+        : [...prev, subject],
+    );
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!user) {
-            navigate('/register');
-            return;
-        }
-
-        if (!name || !qualification || subjects.length === 0 || !location) {
-            toast.error('Please fill in all required fields');
-            return;
-        }
-
-        setSubmitting(true);
-        try {
-            await api.patch(`/api/users/by-email/${user.email}`, {
-                displayName: name,
-                mobileNumber: phone,
-                qualification,
-                subjects,
-                expectedSalary: expectedSalary ? parseInt(expectedSalary) : undefined,
-                location,
-                role: 'tutor'
-            });
-
-            toast.success('Tutor profile created successfully!');
-            await refreshUserFromDB(user.email);
-            navigate('/dashboard');
-        } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to create tutor profile');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    if (authLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-8 h-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
-                    <span className="text-sm text-slate-500">Loading...</span>
-                </div>
-            </div>
-        );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      navigate("/register");
+      return;
     }
 
+    if (
+      !name ||
+      !phone ||
+      !qualification ||
+      subjects.length === 0 ||
+      !location
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.patch(`/api/users/by-email/${user.email}`, {
+        displayName: name,
+        mobileNumber: phone,
+        qualification,
+        subjects,
+        expectedSalary: expectedSalary ? parseInt(expectedSalary) : undefined,
+        location,
+        role: "tutor",
+      });
+
+      toast.success("Tutor profile created successfully!");
+      await refreshUserFromDB(user.email);
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error(
+        err.response?.data?.error || "Failed to create tutor profile",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (authLoading) {
     return (
-        <div className="bg-slate-50 min-h-screen py-12">
-            <div className="max-w-3xl mx-auto px-6">
-                {/* Header */}
-                <div className="mb-8">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-4"
-                    >
-                        <ArrowLeft size={16} /> Back
-                    </button>
-                    <h1 className="text-2xl font-bold text-slate-900 mb-2">Become a tutor</h1>
-                    <p className="text-slate-600">Create your tutor profile and connect with students</p>
-                </div>
-
-                {!user ? (
-                    <div className="bg-white border border-slate-200 p-8 rounded-xl text-center">
-                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Briefcase size={28} className="text-slate-400" />
-                        </div>
-                        <h2 className="text-lg font-semibold text-slate-900 mb-2">Create an account first</h2>
-                        <p className="text-slate-600 mb-6">You need an account to register as a tutor</p>
-                        <div className="flex items-center justify-center gap-4">
-                            <Link
-                                to="/login"
-                                className="px-5 py-2.5 border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50"
-                            >
-                                Sign In
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
-                            >
-                                Create Account
-                            </Link>
-                        </div>
-                    </div>
-                ) : isAlreadyTutor ? (
-                    <div className="bg-white border border-slate-200 p-8 rounded-xl text-center">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <ShieldCheck size={28} className="text-green-600" />
-                        </div>
-                        <h2 className="text-lg font-semibold text-slate-900 mb-2">You're already a tutor</h2>
-                        <p className="text-slate-600 mb-6">Your tutor profile is active. Manage it from your dashboard.</p>
-                        <Link
-                            to="/dashboard"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
-                        >
-                            Go to Dashboard <ArrowRight size={16} />
-                        </Link>
-                    </div>
-                ) : (
-                    <>
-                        {/* Step indicator */}
-                        <div className="flex items-center gap-4 mb-8">
-                            {[1, 2].map(s => (
-                                <div key={s} className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium ${
-                                        step >= s ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'
-                                    }`}>
-                                        {step > s ? <CheckCircle size={14} /> : s}
-                                    </div>
-                                    <span className={`text-sm font-medium ${
-                                        step >= s ? 'text-slate-900' : 'text-slate-400'
-                                    }`}>
-                                        {s === 1 ? 'Basic Info' : 'Subjects & Location'}
-                                    </span>
-                                    {s < 2 && <div className="w-8 h-0.5 bg-slate-200" />}
-                                </div>
-                            ))}
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-xl p-6 space-y-6">
-                            {step === 1 && (
-                                <div className="space-y-5">
-                                    <div className="space-y-2">
-                                        <Label className="text-sm font-medium text-slate-700">Full Name *</Label>
-                                        <Input
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            placeholder="Your full name"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-sm font-medium text-slate-700">Phone Number</Label>
-                                        <Input
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
-                                            placeholder="01XXXXXXXXX"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-sm font-medium text-slate-700">Qualification *</Label>
-                                        <Textarea
-                                            value={qualification}
-                                            onChange={(e) => setQualification(e.target.value)}
-                                            placeholder="e.g. BSc in Mathematics, University of Dhaka"
-                                            className="min-h-[100px] resize-none"
-                                            required
-                                        />
-                                    </div>
-
-                                    <Button
-                                        type="button"
-                                        onClick={() => setStep(2)}
-                                        className="w-full h-11"
-                                    >
-                                        Next Step <ArrowRight size={16} className="ml-2" />
-                                    </Button>
-                                </div>
-                            )}
-
-                            {step === 2 && (
-                                <div className="space-y-5">
-                                    <div className="space-y-2">
-                                        <Label className="text-sm font-medium text-slate-700">
-                                            Subjects You Teach * ({subjects.length} selected)
-                                        </Label>
-                                        <div className="flex flex-wrap gap-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                                            {SUBJECT_OPTIONS.map(subject => (
-                                                <button
-                                                    key={subject}
-                                                    type="button"
-                                                    onClick={() => toggleSubject(subject)}
-                                                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-                                                        subjects.includes(subject)
-                                                            ? 'bg-blue-600 text-white border-blue-600'
-                                                            : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
-                                                    }`}
-                                                >
-                                                    {subject}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-medium text-slate-700">Expected Salary</Label>
-                                            <Input
-                                                value={expectedSalary}
-                                                onChange={(e) => setExpectedSalary(e.target.value)}
-                                                type="number"
-                                                placeholder="5000"
-                                            />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-medium text-slate-700">Location *</Label>
-                                            <Input
-                                                value={location}
-                                                onChange={(e) => setLocation(e.target.value)}
-                                                placeholder="e.g. Dhanmondi, Dhaka"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-4 pt-2">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={() => setStep(1)}
-                                            className="h-11 px-5"
-                                        >
-                                            Back
-                                        </Button>
-                                        <Button
-                                            type="submit"
-                                            disabled={submitting}
-                                            className="flex-1 h-11"
-                                        >
-                                            {submitting ? 'Creating Profile...' : 'Create Tutor Profile'}
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-                        </form>
-                    </>
-                )}
-            </div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+          <span className="text-sm text-slate-500">Loading...</span>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="bg-[#F5F7FA] min-h-screen">
+      <div className="container-narrow px-6 py-8">
+        {/* Header */}
+        <div className="mb-8 text-center md:text-left">
+          <h1 className="text-2xl md:text-3xl font-heading text-slate-900 mb-2">
+            Become a tutor
+          </h1>
+          <p className="text-sm text-slate-600 max-w-lg mx-auto md:mx-0">
+            Create your professional tutor profile and start connecting with students across Bangladesh.
+          </p>
+        </div>
+
+        {!user ? (
+          <div className="bg-white border border-slate-200 rounded-2xl p-10 md:p-14 text-center shadow-sm">
+            <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-primary/[0.02]">
+              <Briefcase size={28} className="text-primary/60" />
+            </div>
+            <h2 className="text-xl font-heading text-slate-900 mb-3">
+              Create an account first
+            </h2>
+            <p className="text-sm text-slate-600 mb-8 max-w-sm mx-auto">
+              You need a verified account to register as a tutor on our platform.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto px-8"
+              >
+                <Link to="/login">Sign In</Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                className="w-full sm:w-auto px-8"
+              >
+                <Link to="/register">Create Account</Link>
+              </Button>
+            </div>
+          </div>
+        ) : isAlreadyTutor ? (
+          <div className="bg-white border border-slate-200 rounded-2xl p-10 md:p-14 text-center shadow-sm">
+            <div className="w-16 h-16 bg-success/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-success/[0.02]">
+              <ShieldCheck size={28} className="text-success" />
+            </div>
+            <h2 className="text-xl font-heading text-slate-900 mb-3">
+              You're already a tutor
+            </h2>
+            <p className="text-sm text-slate-600 mb-8 max-w-sm mx-auto">
+              Your tutor profile is active. You can manage your availability and applications from your dashboard.
+            </p>
+            <Button
+              asChild
+              size="lg"
+              className="px-8"
+            >
+              <Link to="/dashboard" className="gap-2">
+                Go to Dashboard <ArrowRight size={18} />
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Step indicator */}
+            <div className="flex items-center justify-center gap-8 md:gap-12">
+              {[1, 2].map((s) => (
+                <div key={s} className="relative flex flex-col items-center gap-2">
+                  <div
+                    className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-semibold transition-all duration-300 ${
+                      step >= s
+                        ? "bg-primary text-white shadow-md ring-4 ring-primary/10"
+                        : "bg-slate-100 text-slate-400"
+                    }`}
+                  >
+                    {step > s ? <CheckCircle size={16} /> : s}
+                  </div>
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 ${
+                      step >= s ? "text-slate-900" : "text-slate-400"
+                    }`}
+                  >
+                    {s === 1 ? "Basic Info" : "Details"}
+                  </span>
+                  {s === 1 && (
+                    <div className={`absolute left-full top-4 w-8 md:w-12 h-0.5 -translate-x-1/2 transition-colors duration-300 ${
+                      step > 1 ? "bg-primary" : "bg-slate-200"
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 space-y-8 shadow-sm"
+            >
+              {step === 1 && (
+                <div className="space-y-6">
+                  <div className="space-y-2.5">
+                    <Label className="text-sm font-semibold text-slate-900 ml-1">
+                      Full Name
+                    </Label>
+                    <Input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter your full name"
+                      className="h-11 bg-white border-slate-200 !text-black focus:border-primary focus:ring-primary/10 placeholder:text-slate-400"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <Label className="text-sm font-semibold text-slate-900 ml-1">
+                      Phone Number
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <Input
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="01XXXXXXXXX"
+                        className="h-11 pl-11 bg-white border-slate-200 !text-black focus:border-primary focus:ring-primary/10 placeholder:text-slate-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <Label className="text-sm font-semibold text-slate-900 ml-1">
+                      Academic Qualification
+                    </Label>
+                    <Textarea
+                      value={qualification}
+                      onChange={(e) => setQualification(e.target.value)}
+                      placeholder="e.g. BSc in Mathematics, University of Dhaka. Mention your current status."
+                      className="min-h-[120px] py-3 resize-none bg-white border-slate-200 !text-black focus:border-primary focus:ring-primary/10 placeholder:text-slate-400"
+                      required
+                    />
+                  </div>
+
+                  <Button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    size="lg"
+                    className="w-full gap-2 group"
+                  >
+                    Continue <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+                  </Button>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-semibold text-slate-900 ml-1">
+                        Subjects You Teach ({subjects.length} selected)
+                      </Label>
+                      {subjects.length > 0 && (
+                        <button 
+                          type="button" 
+                          onClick={() => setSubjects([])}
+                          className="text-xs text-primary hover:underline font-medium"
+                        >
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2.5 p-5 bg-slate-50/50 rounded-2xl border border-slate-100">
+                      {SUBJECT_OPTIONS.map((subject) => {
+                        const isSelected = subjects.includes(subject);
+                        return (
+                          <button
+                            key={subject}
+                            type="button"
+                            onClick={() => toggleSubject(subject)}
+                            className={`px-4 py-2 text-sm rounded-full font-medium transition-all duration-300 border ${
+                              isSelected
+                                ? "bg-primary text-white border-primary shadow-sm scale-105"
+                                : "bg-white text-slate-600 border-slate-200 hover:border-primary/30 hover:bg-primary/[0.02]"
+                            }`}
+                          >
+                            {subject}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2.5">
+                      <Label className="text-sm font-semibold text-slate-900 ml-1">
+                        Expected Monthly Salary
+                      </Label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">৳</span>
+                        <Input
+                          value={expectedSalary}
+                          onChange={(e) => setExpectedSalary(e.target.value)}
+                          type="number"
+                          placeholder="5000"
+                          className="h-11 pl-8 bg-white border-slate-200 !text-black focus:border-primary focus:ring-primary/10 placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <Label className="text-sm font-semibold text-slate-900 ml-1">
+                        Preferred Division
+                      </Label>
+                      <div className="relative">
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                        <select
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                          className="w-full h-11 pl-11 pr-4 rounded-md border border-slate-200 bg-white text-sm !text-black focus:border-primary focus:ring-primary/10 appearance-none outline-none transition-all cursor-pointer"
+                          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundSize: '1em', backgroundPosition: 'right 1rem center', backgroundRepeat: 'no-repeat' }}
+                          required
+                        >
+                          <option value="">Select division</option>
+                          {BANGLADESH_DIVISIONS.map((d) => (
+                            <option key={d} value={d}>
+                              {d}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      onClick={() => setStep(1)}
+                      className="w-full sm:w-auto px-10 h-12"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={submitting}
+                      size="lg"
+                      className="flex-1 w-full h-12"
+                    >
+                      {submitting
+                        ? "Creating Profile..."
+                        : "Create Tutor Profile"}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default BecomeTutor;
