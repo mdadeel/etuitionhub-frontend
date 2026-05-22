@@ -30,7 +30,7 @@ const NotificationBell = () => {
     }, []);
 
     const getTypeIcon = (type) => {
-        const iconProps = { size: 16, className: 'text-[#5B6475]' };
+        const iconProps = { size: 16, className: 'text-muted-foreground' };
         switch (type) {
             case 'booking': return <Calendar {...iconProps} />;
             case 'payment': return <CreditCard {...iconProps} />;
@@ -65,7 +65,7 @@ const NotificationBell = () => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2 text-[#5B6475] hover:text-[#111827] hover:bg-[#F5F7FA] rounded-lg transition-colors relative"
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition-colors relative"
             >
                 <Bell size={20} />
                 {unreadCount > 0 && (
@@ -76,8 +76,8 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-[rgba(15,23,46,0.08)] shadow-xl rounded-lg overflow-hidden z-50">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-[rgba(15,23,46,0.08)]">
+                <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-border shadow-xl rounded-lg overflow-hidden z-50">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                         <h3 className="font-heading text-sm font-bold">Notifications</h3>
                         {unreadCount > 0 && (
                             <button onClick={markAllAsRead} className="text-xs text-[#2563EB] hover:underline">
@@ -88,7 +88,7 @@ const NotificationBell = () => {
 
                     <div className="max-h-80 overflow-y-auto">
                         {notifications.length === 0 ? (
-                            <div className="p-8 text-center text-sm text-[#5B6475]">
+                            <div className="p-8 text-center text-sm text-muted-foreground">
                                 <Bell size={24} className="mx-auto mb-2 opacity-30" />
                                 No notifications yet
                             </div>
@@ -97,17 +97,17 @@ const NotificationBell = () => {
                                 <div
                                     key={notif._id}
                                     className={cn(
-                                        'px-4 py-3 border-b border-[rgba(15,23,46,0.08)] hover:bg-[#F5F7FA] transition-colors',
-                                        !notif.isRead && 'bg-blue-50/50'
+                                        'px-4 py-3 border-b border-border hover:bg-background transition-colors',
+                                        !notif.isRead && 'bg-primary/5'
                                     )}
                                 >
                                     <div className="flex items-start gap-3">
                                         <span className="mt-0.5">{getTypeIcon(notif.type)}</span>
                                         <div className="flex-1 min-w-0">
-                                            <p className={cn('text-sm font-heading leading-tight', !notif.isRead && 'text-[#111827] font-semibold')}>
+                                            <p className={cn('text-sm font-heading leading-tight', !notif.isRead && 'text-foreground font-semibold')}>
                                                 {notif.title}
                                             </p>
-                                            <p className="text-xs text-[#5B6475] mt-0.5 line-clamp-2">
+                                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                                                 {notif.message}
                                             </p>
                                             {renderActions(notif)}
@@ -119,7 +119,7 @@ const NotificationBell = () => {
                                             {!notif.isRead && (
                                                 <button
                                                     onClick={() => markAsRead(notif._id)}
-                                                    className="p-1 hover:bg-slate-200 rounded transition-colors"
+                                                    className="p-1 hover:bg-muted rounded transition-colors"
                                                     title="Mark as read"
                                                 >
                                                     <Check size={14} className="text-green-600" />
@@ -127,7 +127,7 @@ const NotificationBell = () => {
                                             )}
                                             <button
                                                 onClick={() => deleteNotification(notif._id)}
-                                                className="p-1 hover:bg-slate-200 rounded transition-colors"
+                                                className="p-1 hover:bg-muted rounded transition-colors"
                                                 title="Delete"
                                             >
                                                 <Trash2 size={14} className="text-red-500" />
@@ -143,7 +143,7 @@ const NotificationBell = () => {
                         <Link
                             to="/dashboard/notifications"
                             onClick={() => setIsOpen(false)}
-                            className="block px-4 py-3 text-center text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] hover:bg-[#F5F7FA] border-t border-[rgba(15,23,46,0.08)] transition-colors"
+                            className="block px-4 py-3 text-center text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] hover:bg-background border-t border-border transition-colors"
                         >
                             Show All
                         </Link>

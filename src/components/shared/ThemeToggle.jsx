@@ -8,7 +8,7 @@ const ThemeToggle = ({ className }) => {
     return (
         <button
             onClick={toggleTheme}
-            className={`relative p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all active:scale-95 group overflow-hidden ${className}`}
+            className={`relative p-2 rounded-xl bg-muted dark:bg-slate-800 text-muted-foreground dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all active:scale-95 group overflow-hidden ${className}`}
             aria-label="Toggle Theme"
         >
             <AnimatePresence mode="wait" initial={false}>

@@ -17,7 +17,7 @@ const EmptyState = ({
     if (variant === 'minimal') {
         return (
             <div className={cn("flex flex-col items-center justify-center py-20 px-6 text-center", className)}>
-                <SearchX size={40} className="text-muted-foreground/30 mb-6" strokeWidth={1.5} />
+                <SearchX size={40} className="text-muted-foreground mb-6" strokeWidth={1.5} />
                 <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
                 <p className="text-sm text-muted-foreground mb-8 max-w-xs">{message}</p>
                 {onAction && (
@@ -38,7 +38,7 @@ const EmptyState = ({
             
             <div className="relative z-10 flex flex-col items-center">
                 <div className="w-20 h-20 bg-background border border-border shadow-apple-sm rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-                    <SearchX size={32} className="text-muted-foreground/30 group-hover:text-primary transition-colors duration-500" strokeWidth={1.5} />
+                    <SearchX size={32} className="text-muted-foreground group-hover:text-primary transition-colors duration-500" strokeWidth={1.5} />
                 </div>
                 
                 <span className="mb-4 px-3 py-1 bg-muted/50 text-muted-foreground rounded-full text-[10px] font-bold uppercase tracking-widest border border-border/50 opacity-0 group-hover:opacity-100 transition-all duration-500 scale-90 group-hover:scale-100">

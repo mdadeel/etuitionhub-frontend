@@ -1,6 +1,7 @@
 import { Joyride, STATUS } from 'react-joyride';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../services/api';
 
 const TOUR_STEPS = [
@@ -8,8 +9,8 @@ const TOUR_STEPS = [
         target: 'body',
         content: (
             <div>
-                <h3 className="font-bold text-lg text-[#111827] mb-2">👋 Welcome to e-tuitionBD!</h3>
-                <p className="text-[#5B6475] text-sm">Let us show you around in 30 seconds.</p>
+                <h3 className="font-bold text-lg text-foreground mb-2">👋 Welcome to e-tuitionBD!</h3>
+                <p className="text-muted-foreground text-sm">Let us show you around in 30 seconds.</p>
             </div>
         ),
         placement: 'center',
@@ -19,8 +20,8 @@ const TOUR_STEPS = [
         target: '[data-tour="find-tutors"]',
         content: (
             <div>
-                <h3 className="font-bold text-[#111827] mb-1">🔍 Find Tutors</h3>
-                <p className="text-[#5B6475] text-sm">Browse hundreds of verified tutors. Filter by subject, location, price, and language.</p>
+                <h3 className="font-bold text-foreground mb-1">🔍 Find Tutors</h3>
+                <p className="text-muted-foreground text-sm">Browse hundreds of verified tutors. Filter by subject, location, price, and language.</p>
             </div>
         ),
         placement: 'bottom',
@@ -29,8 +30,8 @@ const TOUR_STEPS = [
         target: '[data-tour="search-bar"]',
         content: (
             <div>
-                <h3 className="font-bold text-[#111827] mb-1">🎯 Quick Search</h3>
-                <p className="text-[#5B6475] text-sm">Search by tutor name, subject, or location instantly.</p>
+                <h3 className="font-bold text-foreground mb-1">🎯 Quick Search</h3>
+                <p className="text-muted-foreground text-sm">Search by tutor name, subject, or location instantly.</p>
             </div>
         ),
         placement: 'bottom',
@@ -39,8 +40,8 @@ const TOUR_STEPS = [
         target: '[data-tour="lang-switcher"]',
         content: (
             <div>
-                <h3 className="font-bold text-[#111827] mb-1">🌐 Language Switch</h3>
-                <p className="text-[#5B6475] text-sm">Switch between English and Bengali at any time.</p>
+                <h3 className="font-bold text-foreground mb-1">🌐 Language Switch</h3>
+                <p className="text-muted-foreground text-sm">Switch between English and Bengali at any time.</p>
             </div>
         ),
         placement: 'bottom',
@@ -49,8 +50,8 @@ const TOUR_STEPS = [
         target: 'body',
         content: (
             <div>
-                <h3 className="font-bold text-lg text-[#111827] mb-2">🚀 You are all set!</h3>
-                <p className="text-[#5B6475] text-sm">Start by searching for a tutor, or browse the full list.</p>
+                <h3 className="font-bold text-lg text-foreground mb-2">🚀 You are all set!</h3>
+                <p className="text-muted-foreground text-sm">Start by searching for a tutor, or browse the full list.</p>
             </div>
         ),
         placement: 'center',
@@ -59,6 +60,7 @@ const TOUR_STEPS = [
 
 const OnboardingTour = () => {
     const { user, dbUser, loading, refreshUserFromDB } = useAuth();
+    const { theme } = useTheme();
     const [run, setRun] = useState(false);
 
     useEffect(() => {
@@ -109,16 +111,16 @@ const OnboardingTour = () => {
             styles={{
                 options: {
                     primaryColor: '#2563EB',
-                    backgroundColor: '#ffffff',
-                    textColor: '#111827',
+                    backgroundColor: theme === 'dark' ? '#0F172E' : '#ffffff',
+                    textColor: theme === 'dark' ? '#f8fafc' : '#111827',
                     zIndex: 10000,
-                    arrowColor: '#ffffff',
+                    arrowColor: theme === 'dark' ? '#0F172E' : '#ffffff',
                     overlayColor: 'rgba(0, 0, 0, 0.5)',
                 },
                 tooltip: {
                     borderRadius: '12px',
                     padding: '16px',
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                    boxShadow: theme === 'dark' ? '0 20px 60px rgba(0,0,0,0.3)' : '0 20px 60px rgba(0,0,0,0.15)',
                 },
                 buttonNext: {
                     backgroundColor: '#2563EB',
@@ -128,11 +130,11 @@ const OnboardingTour = () => {
                     padding: '8px 16px',
                 },
                 buttonBack: {
-                    color: '#5B6475',
+                    color: theme === 'dark' ? '#94A3B8' : '#5B6475',
                     fontSize: '13px',
                 },
                 buttonSkip: {
-                    color: '#5B6475',
+                    color: theme === 'dark' ? '#94A3B8' : '#5B6475',
                     fontSize: '12px',
                 },
             }}

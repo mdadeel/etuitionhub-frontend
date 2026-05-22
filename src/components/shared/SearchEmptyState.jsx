@@ -24,19 +24,19 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = [] }) => {
 
     return (
         <div className="flex flex-col items-center justify-center py-16 px-4">
-            <div className="w-16 h-16 bg-[#F5F7FA] rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mb-4">
                 <SearchX size={28} className="text-[#94A3B8]" />
             </div>
-            <h3 className="font-heading font-black text-lg text-[#111827] mb-1">
+            <h3 className="font-heading font-black text-lg text-foreground mb-1">
                 No {type} found
             </h3>
             {query && (
-                <p className="text-sm text-[#5B6475] mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                     No results for "<span className="font-semibold">{query}</span>"
                 </p>
             )}
             {!query && (
-                <p className="text-sm text-[#5B6475] mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                     Try adjusting your filters or search term
                 </p>
             )}
@@ -49,7 +49,7 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = [] }) => {
                         {suggestions.map((s, i) => (
                             <span
                                 key={i}
-                                className="px-3 py-1.5 text-xs bg-[#F5F7FA] text-[#5B6475] border border-[rgba(15,23,46,0.08)]"
+                                className="px-3 py-1.5 text-xs bg-background text-muted-foreground border border-border"
                             >
                                 {s}
                             </span>

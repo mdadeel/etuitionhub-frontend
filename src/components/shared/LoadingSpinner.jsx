@@ -23,9 +23,9 @@ const LoadingSpinner = ({ size = 'lg', fullScreen = true }) => {
                         Synchronizing
                     </p>
                     <div className="flex gap-1 mt-2">
-                        <div className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                        <div className="w-1 h-1 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                        <div className="w-1 h-1 bg-primary/40 rounded-full animate-bounce"></div>
+                        <div className="w-1 h-1 bg-primary/70 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-1 h-1 bg-primary/70 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-1 h-1 bg-primary/70 rounded-full animate-bounce"></div>
                     </div>
                 </div>
             </div>

@@ -119,7 +119,7 @@ const FilterSelect = ({
     return (
         <div className="relative" ref={containerRef}>
             {label && (
-                <label className="block text-xs font-heading font-bold text-[#5B6475] mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-heading font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">
                     {label}
                 </label>
             )}
@@ -127,9 +127,9 @@ const FilterSelect = ({
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    'w-full flex items-center justify-between gap-2 h-10 px-3 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl text-sm transition-all',
+                    'w-full flex items-center justify-between gap-2 h-10 px-3 bg-card border border-border rounded-xl text-sm transition-all',
                     'hover:border-[#2563EB]/30 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20',
-                    hasValue ? 'text-[#111827]' : 'text-[#5B6475]'
+                    hasValue ? 'text-foreground' : 'text-muted-foreground'
                 )}
             >
                 <div className="flex items-center gap-2 min-w-0">
@@ -137,7 +137,7 @@ const FilterSelect = ({
                     {multi && selectedValues.length > 0 ? (
                         <div className="flex items-center gap-1 flex-wrap">
                             {selectedValues.slice(0, 3).map(v => (
-                                <span key={v} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#F5F7FA] text-[10px] font-medium text-[#5B6475] border border-[rgba(15,23,46,0.08)] rounded">
+                                <span key={v} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-background text-[10px] font-medium text-muted-foreground border border-border rounded">
                                     {getOptionLabel(v)}
                                     <X
                                         size={10}
@@ -160,9 +160,9 @@ const FilterSelect = ({
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 mt-1 w-full bg-white border border-[rgba(15,23,46,0.08)] shadow-lg rounded-xl overflow-hidden">
+                <div className="absolute z-50 mt-1 w-full bg-card border border-border shadow-lg rounded-xl overflow-hidden">
                     {searchable && (
-                        <div className="p-2 border-b border-[rgba(15,23,46,0.08)]">
+                        <div className="p-2 border-b border-border">
                             <div className="relative">
                                 <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                                 <input
@@ -171,16 +171,16 @@ const FilterSelect = ({
                                     placeholder="Search..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-7 pr-3 h-8 text-xs bg-[#F8FAFC] border border-[rgba(15,23,46,0.08)] rounded-lg outline-none focus:ring-1 focus:ring-[#2563EB]/20 !text-black"
+                                    className="w-full pl-7 pr-3 h-8 text-xs bg-background border border-border rounded-lg outline-none focus:ring-1 focus:ring-[#2563EB]/20 text-foreground"
                                 />
                             </div>
                         </div>
                     )}
                     <ul className="max-h-60 overflow-y-auto py-1">
                         {loadingAsync ? (
-                            <li className="px-3 py-2 text-xs text-[#5B6475] text-center">Loading...</li>
+                            <li className="px-3 py-2 text-xs text-muted-foreground text-center">Loading...</li>
                         ) : displayOptions.length === 0 ? (
-                            <li className="px-3 py-2 text-xs text-[#5B6475] text-center">No results</li>
+                            <li className="px-3 py-2 text-xs text-muted-foreground text-center">No results</li>
                         ) : (
                             displayOptions.map((opt, idx) => {
                                 const optValue = typeof opt === 'object' ? opt.value : opt;
@@ -192,7 +192,7 @@ const FilterSelect = ({
                                         onClick={() => handleSelect(optValue)}
                                         className={cn(
                                             'flex items-center justify-between px-3 py-2 text-sm cursor-pointer transition-colors',
-                                            selected ? 'bg-[#2563EB]/10 text-[#2563EB] font-medium' : 'text-[#5B6475] hover:bg-[#F8FAFC]'
+                                            selected ? 'bg-[#2563EB]/10 text-[#2563EB] font-medium' : 'text-muted-foreground hover:bg-background'
                                         )}
                                     >
                                         <span>{optLabel}</span>

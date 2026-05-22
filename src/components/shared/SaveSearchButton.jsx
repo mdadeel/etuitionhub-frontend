@@ -29,11 +29,11 @@ const SaveSearchButton = ({ query, filters = {} }) => {
         <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wider text-[#5B6475] border border-[rgba(15,23,46,0.08)] hover:bg-[#F5F7FA] transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground border border-border hover:bg-background transition-colors disabled:opacity-50"
             title="Get notified when new results match this search"
         >
             {saving ? (
-                <span className="w-3 h-3 border border-[#5B6475] border-t-transparent rounded-full animate-spin" />
+                <span className="w-3 h-3 border border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
             ) : (
                 <Bell size={12} />
             )}

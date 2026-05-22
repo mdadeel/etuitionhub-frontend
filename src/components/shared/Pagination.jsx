@@ -62,10 +62,10 @@ const Pagination = ({
                 onClick={_onPrev}
                 disabled={!_hasPrev}
                 className={cn(
-                    "p-2 rounded-md border border-slate-200 transition-colors",
+                    "p-2 rounded-md border border-border transition-colors",
                     _hasPrev
-                        ? "hover:bg-slate-50 text-slate-600"
-                        : "text-slate-300 cursor-not-allowed bg-slate-50"
+                        ? "hover:bg-background text-muted-foreground"
+                        : "text-slate-300 cursor-not-allowed bg-background"
                 )}
             >
                 <ChevronLeft size={16} />
@@ -83,7 +83,7 @@ const Pagination = ({
                                     "min-w-[32px] h-8 px-2 rounded-md text-sm font-medium transition-colors",
                                     currentPage === page
                                         ? "bg-blue-600 text-white"
-                                        : "text-slate-600 hover:bg-slate-100"
+                                        : "text-muted-foreground hover:bg-muted"
                                 )}
                             >
                                 {page}
@@ -97,10 +97,10 @@ const Pagination = ({
                 onClick={_onNext}
                 disabled={!_hasNext}
                 className={cn(
-                    "p-2 rounded-md border border-slate-200 transition-colors",
+                    "p-2 rounded-md border border-border transition-colors",
                     _hasNext
-                        ? "hover:bg-slate-50 text-slate-600"
-                        : "text-slate-300 cursor-not-allowed bg-slate-50"
+                        ? "hover:bg-background text-muted-foreground"
+                        : "text-slate-300 cursor-not-allowed bg-background"
                 )}
             >
                 <ChevronRight size={16} />
