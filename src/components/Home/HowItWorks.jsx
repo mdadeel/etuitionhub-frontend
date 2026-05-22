@@ -32,10 +32,10 @@ const HowItWorks = () => {
                     <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none">
                         How It <span className="text-blue-600">Works</span>
                     </h2>
-                    <p className="text-slate-500 text-sm font-black uppercase tracking-[0.3em]">Three simple steps to find your tutor.</p>
+                    <p className="text-muted-foreground text-sm font-black uppercase tracking-[0.3em]">Three simple steps to find your tutor.</p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-12 md:gap-px relative bg-white/5 border border-white/10">
+                <div className="grid md:grid-cols-3 gap-12 md:gap-px relative bg-card/5 border border-white/10">
                     {steps.map((step, idx) => (
                         <div key={idx} className="relative flex flex-col items-center text-center p-12 bg-slate-950 transition-all hover:bg-slate-900">
                             {/* Step Number Badge */}
@@ -49,7 +49,7 @@ const HowItWorks = () => {
 
                             <div className="space-y-4">
                                 <h3 className="text-xl font-black text-white tracking-tighter uppercase">{step.title}</h3>
-                                <p className="text-slate-500 text-[11px] font-bold uppercase tracking-tight leading-relaxed max-w-xs mx-auto">
+                                <p className="text-muted-foreground text-[11px] font-bold uppercase tracking-tight leading-relaxed max-w-xs mx-auto">
                                     {step.description}
                                 </p>
                             </div>

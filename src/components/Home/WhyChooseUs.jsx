@@ -5,12 +5,12 @@ const FeatureBlock = ({ icon: Icon, title, description, features }) => (
     <div className="grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-5">
             <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-[#EEF2F6] rounded-xl flex items-center justify-center shrink-0 border border-[rgba(15,23,46,0.08)]">
+                <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center shrink-0 border border-border">
                     <Icon className="w-6 h-6 text-[#2563EB]" />
                 </div>
                 <div>
-                    <h3 className="text-xl font-heading text-[#111827] mb-2">{title}</h3>
-                    <p className="text-base text-[#5B6475] leading-relaxed">{description}</p>
+                    <h3 className="text-xl font-heading text-foreground mb-2">{title}</h3>
+                    <p className="text-base text-muted-foreground leading-relaxed">{description}</p>
                 </div>
             </div>
         </div>
@@ -21,8 +21,8 @@ const FeatureBlock = ({ icon: Icon, title, description, features }) => (
                         <div key={idx} className="flex items-start gap-3">
                             <CheckCircle className="w-5 h-5 text-[#2563EB] mt-0.5" />
                             <div>
-                                <p className="text-sm font-medium text-[#111827] mb-1">{feature.title}</p>
-                                <p className="text-xs text-[#5B6475]">{feature.desc}</p>
+                                <p className="text-sm font-medium text-foreground mb-1">{feature.title}</p>
+                                <p className="text-xs text-muted-foreground">{feature.desc}</p>
                             </div>
                         </div>
                     ))}
@@ -34,7 +34,7 @@ const FeatureBlock = ({ icon: Icon, title, description, features }) => (
 
 const WhyChooseUs = () => {
     return (
-        <section className="py-20 bg-[#F5F7FA] relative overflow-hidden">
+        <section className="py-20 bg-background relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6">
                 <SectionHeader
                     title={<>Why parents <span className="text-[#2563EB]">trust us</span> with their children's education</>}
@@ -67,8 +67,8 @@ const WhyChooseUs = () => {
                                         <div key={idx} className="flex items-start gap-3">
                                             <feature.icon className="w-5 h-5 text-[#2563EB] mt-0.5" />
                                             <div>
-                                                <p className="text-sm font-medium text-[#111827] mb-1">{feature.title}</p>
-                                                <p className="text-xs text-[#5B6475]">{feature.desc}</p>
+                                                <p className="text-sm font-medium text-foreground mb-1">{feature.title}</p>
+                                                <p className="text-xs text-muted-foreground">{feature.desc}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -77,12 +77,12 @@ const WhyChooseUs = () => {
                         </div>
                         <div className="lg:col-span-5 order-1 lg:order-2">
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-[#EEF2F6] rounded-xl flex items-center justify-center shrink-0 border border-[rgba(15,23,46,0.08)]">
+                                <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center shrink-0 border border-border">
                                     <MessageCircle className="w-6 h-6 text-[#2563EB]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-heading text-[#111827] mb-2">Direct Connection</h3>
-                                    <p className="text-base text-[#5B6475] leading-relaxed">
+                                    <h3 className="text-xl font-heading text-foreground mb-2">Direct Connection</h3>
+                                    <p className="text-base text-muted-foreground leading-relaxed">
                                         No middlemen, no agents. Message tutors directly, discuss your child's needs, and build a relationship based on trust and transparency.
                                     </p>
                                 </div>

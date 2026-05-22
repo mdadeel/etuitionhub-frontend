@@ -9,7 +9,7 @@ const CallToAction = () => {
                         <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none uppercase">
                             Ready to get <span className="text-blue-600">started?</span>
                         </h2>
-                        <p className="text-slate-500 text-sm font-black uppercase tracking-[0.2em] max-w-xl mx-auto">
+                        <p className="text-muted-foreground text-sm font-black uppercase tracking-[0.2em] max-w-xl mx-auto">
                             Find the right tutor and start learning today.
                         </p>
                     </div>
@@ -23,7 +23,7 @@ const CallToAction = () => {
                         </Link>
                         <Link
                             to="/tutors"
-                            className="w-full sm:w-auto px-12 h-14 bg-transparent text-white border border-white/20 font-black uppercase tracking-[0.2em] text-[10px] rounded-none hover:bg-white/10 transition-all flex items-center justify-center"
+                            className="w-full sm:w-auto px-12 h-14 bg-transparent text-white border border-white/20 font-black uppercase tracking-[0.2em] text-[10px] rounded-none hover:bg-card/10 transition-all flex items-center justify-center"
                         >
                             Browse Tutors
                         </Link>
@@ -32,15 +32,15 @@ const CallToAction = () => {
                     <div className="pt-10 border-t border-white/5 flex flex-wrap justify-center gap-12">
                         <div className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 bg-blue-600 rounded-none"></div>
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Instant Matching</span>
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Instant Matching</span>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 bg-blue-600 rounded-none"></div>
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Verified Tutors</span>
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Verified Tutors</span>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 bg-blue-600 rounded-none"></div>
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Direct Contact</span>
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Direct Contact</span>
                         </div>
                     </div>
                 </div>

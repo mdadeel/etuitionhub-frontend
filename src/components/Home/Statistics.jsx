@@ -11,13 +11,13 @@ const stats = [
 
 const Statistics = () => {
     return (
-        <section className="py-16 bg-white relative overflow-hidden">
+        <section className="py-16 bg-card relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
                     {stats.map((stat, i) => (
                         <div key={i} className="flex flex-col items-center md:items-start space-y-2">
                             <div className="flex items-baseline gap-1">
-                                <span className="text-3xl md:text-4xl font-heading text-[#111827] tracking-tight tabular-nums">
+                                <span className="text-3xl md:text-4xl font-heading text-foreground tracking-tight tabular-nums">
                                     <CountUp 
                                         end={stat.value} 
                                         duration={3} 
@@ -30,7 +30,7 @@ const Statistics = () => {
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-0.5 bg-[#2563EB] rounded-full"></div>
-                                <span className="text-xs font-medium text-[#5B6475] whitespace-nowrap">
+                                <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
                                     {stat.label}
                                 </span>
                             </div>

@@ -15,11 +15,11 @@ const categories = [
 
 const FeaturedCategories = () => {
     return (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-card">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="mb-12">
-                    <h2 className="text-4xl md:text-5xl font-heading text-[#111827] tracking-tight leading-[0.95] mb-4">Find your subject</h2>
-                    <p className="text-lg text-[#5B6475] leading-relaxed font-body">From school preparation to university-level coaching</p>
+                    <h2 className="text-4xl md:text-5xl font-heading text-foreground tracking-tight leading-[0.95] mb-4">Find your subject</h2>
+                    <p className="text-lg text-muted-foreground leading-relaxed font-body">From school preparation to university-level coaching</p>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -29,7 +29,7 @@ const FeaturedCategories = () => {
                             to={`/tutors?subject=${cat.slug}`}
                             className="block"
                         >
-                            <Card hover className={`p-5 relative h-full ${cat.tag ? 'bg-[#F5F7FA]' : ''}`}>
+                            <Card hover className={`p-5 relative h-full ${cat.tag ? 'bg-background' : ''}`}>
                                 {cat.tag && (
                                     <Badge variant="dark" size="xs" className="absolute -top-2 right-4">
                                         {cat.tag}
@@ -37,12 +37,12 @@ const FeaturedCategories = () => {
                                 )}
 
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-10 h-10 flex items-center justify-center bg-[#EEF2F6] rounded-lg border border-[rgba(15,23,46,0.08)]">
-                                        <cat.icon className="w-5 h-5 text-[#111827]" />
+                                    <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-lg border border-border">
+                                        <cat.icon className="w-5 h-5 text-foreground" />
                                     </div>
-                                    <span className="font-heading text-base text-[#111827] tracking-tight">{cat.label}</span>
+                                    <span className="font-heading text-base text-foreground tracking-tight">{cat.label}</span>
                                 </div>
-                                <div className="text-sm text-[#5B6475]">{cat.count} tutors</div>
+                                <div className="text-sm text-muted-foreground">{cat.count} tutors</div>
                             </Card>
                         </Link>
                     ))}
