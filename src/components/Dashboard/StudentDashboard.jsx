@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { AppleCard, AppleHeader, AppleButton } from "../shared/AppleUI";
 import FilterSelect from "../shared/FilterSelect";
 import { cn } from "@/lib/utils";
-import { BANGLADESH_DIVISIONS } from "../../utils/constants";
+import { BANGLADESH_DIVISIONS, MEDIUM_OPTIONS } from "../../utils/constants";
 
 /**
  * StudentDashboard Component — Refined Apple Aesthetic
@@ -186,7 +186,7 @@ const StudentDashboard = () => {
 
       {/* Tab Navigation */}
       <div className="w-full overflow-hidden">
-        <div className="flex items-center gap-1 bg-[#EEF2F6] p-1 rounded-none border border-[rgba(15,23,46,0.08)] w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+        <div className="flex items-center gap-1 bg-muted p-1 rounded-none border border-border w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -194,8 +194,8 @@ const StudentDashboard = () => {
               className={cn(
                 "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-none whitespace-nowrap min-w-fit",
                 activeTab === tab.id
-                  ? "bg-white text-[#2563EB] shadow-sm border border-[rgba(15,23,46,0.08)]"
-                  : "text-[#5B6475] hover:text-[#111827] hover:bg-white/50",
+                  ? "bg-card text-[#2563EB] shadow-sm border border-border"
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/50",
               )}
             >
               <tab.icon
@@ -222,14 +222,14 @@ const StudentDashboard = () => {
               <div className="w-12 h-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
                 <Database size={24} />
               </div>
-              <p className="text-xs font-semibold text-[#5B6475] mb-2">
+              <p className="text-xs font-semibold text-muted-foreground mb-2">
                 Active Requests
               </p>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">
+                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
                   {myTuitions.length}
                 </span>
-                <span className="text-xs font-semibold text-[#5B6475]">
+                <span className="text-xs font-semibold text-muted-foreground">
                   Requests
                 </span>
               </div>
@@ -239,14 +239,14 @@ const StudentDashboard = () => {
               <div className="w-12 h-12 rounded-none bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
                 <FileText size={24} />
               </div>
-              <p className="text-xs font-semibold text-[#5B6475] mb-2">
+              <p className="text-xs font-semibold text-muted-foreground mb-2">
                 Tutor Applications
               </p>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">
+                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
                   {applications.length}
                 </span>
-                <span className="text-xs font-semibold text-[#5B6475]">
+                <span className="text-xs font-semibold text-muted-foreground">
                   Applications
                 </span>
               </div>
@@ -259,14 +259,14 @@ const StudentDashboard = () => {
               <div className="w-12 h-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                 <UserCheck size={24} />
               </div>
-              <p className="text-xs font-semibold text-[#5B6475] mb-2">
+              <p className="text-xs font-semibold text-muted-foreground mb-2">
                 Engagements
               </p>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">
+                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
                   {bookings.filter((b) => b.isAccepted).length}
                 </span>
-                <span className="text-xs font-semibold text-[#5B6475]">
+                <span className="text-xs font-semibold text-muted-foreground">
                   Sessions
                 </span>
               </div>
@@ -284,10 +284,10 @@ const StudentDashboard = () => {
                 <Plus size={24} />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#111827] tracking-tight">
+                <h2 className="text-xl font-bold text-foreground tracking-tight">
                   Post a New Request
                 </h2>
-                <p className="text-xs text-[#5B6475] mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   Define your academic requirements to find the best tutor.
                 </p>
               </div>
@@ -296,7 +296,7 @@ const StudentDashboard = () => {
             <form onSubmit={handleSubmit(onPostTuition)} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-[#5B6475] ml-1">
+                  <Label className="text-xs font-semibold text-muted-foreground ml-1">
                     Subject / Topic *
                   </Label>
                   <Input
@@ -304,7 +304,7 @@ const StudentDashboard = () => {
                       required: "Subject is required",
                     })}
                     placeholder="e.g. Higher Mathematics"
-                    className="h-11 rounded-none bg-[#F5F7FA] border-[rgba(15,23,46,0.08)]"
+                    className="h-11 rounded-none bg-background border-border"
                   />
                   {errors.subject && (
                     <p className="text-xs text-red-600 ml-1">
@@ -314,7 +314,7 @@ const StudentDashboard = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-[#5B6475] ml-1">
+                  <Label className="text-xs font-semibold text-muted-foreground ml-1">
                     Class Level *
                   </Label>
                   <Controller
@@ -345,14 +345,14 @@ const StudentDashboard = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-[#5B6475] ml-1">
+                  <Label className="text-xs font-semibold text-muted-foreground ml-1">
                     Monthly Budget (BDT) *
                   </Label>
                   <Input
                     {...register("salary", { required: "Budget is required" })}
                     type="number"
                     placeholder="5000"
-                    className="h-11 rounded-none bg-[#F5F7FA] border-[rgba(15,23,46,0.08)]"
+                    className="h-11 rounded-none bg-background border-border"
                   />
                   {errors.salary && (
                     <p className="text-xs text-red-600 ml-1">
@@ -362,7 +362,7 @@ const StudentDashboard = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-[#5B6475] ml-1">
+                  <Label className="text-xs font-semibold text-muted-foreground ml-1">
                     Curriculum *
                   </Label>
                   <Controller
@@ -374,7 +374,7 @@ const StudentDashboard = () => {
                         value={field.value}
                         onValueChange={field.onChange}
                         placeholder="Select Medium"
-                        options={["Bangla Medium", "English Medium"]}
+                        options={MEDIUM_OPTIONS}
                       />
                     )}
                   />
@@ -387,7 +387,7 @@ const StudentDashboard = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs font-semibold text-[#5B6475] ml-1">
+                <Label className="text-xs font-semibold text-muted-foreground ml-1">
                   Division *
                 </Label>
                 <Controller
@@ -434,18 +434,18 @@ const StudentDashboard = () => {
         <AppleCard className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]">
+              <thead className="bg-background border-b border-border">
                 <tr>
-                  <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">
+                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
                     Subject
                   </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">
+                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
                     Budget
                   </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">
+                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
                     Status
                   </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-right">
+                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">
                     Actions
                   </th>
                 </tr>
@@ -455,7 +455,7 @@ const StudentDashboard = () => {
                   <tr>
                     <td
                       colSpan="4"
-                      className="p-20 text-center text-sm text-[#5B6475] italic"
+                      className="p-20 text-center text-sm text-muted-foreground italic"
                     >
                       No active requests.
                     </td>
@@ -464,13 +464,13 @@ const StudentDashboard = () => {
                   myTuitions.map((job) => (
                     <tr
                       key={job._id}
-                      className="hover:bg-[#F5F7FA]/50 transition-colors"
+                      className="hover:bg-background/50 transition-colors"
                     >
                       <td className="px-8 py-6">
-                        <p className="text-sm font-bold text-[#111827]">
+                        <p className="text-sm font-bold text-foreground">
                           {job.subject}
                         </p>
-                        <p className="text-xs text-[#5B6475] font-medium mt-1">
+                        <p className="text-xs text-muted-foreground font-medium mt-1">
                           {job.class_name}
                         </p>
                       </td>
@@ -479,7 +479,7 @@ const StudentDashboard = () => {
                       </td>
                       <td className="px-8 py-6">
                         <span
-                          className={`px-2.5 py-1 text-xs font-semibold rounded-none ${job.status === "approved" ? "bg-[#2563EB]/10 text-[#2563EB]" : "bg-[#F5F7FA] text-[#5B6475]"}`}
+                          className={`px-2.5 py-1 text-xs font-semibold rounded-none ${job.status === "approved" ? "bg-[#2563EB]/10 text-[#2563EB]" : "bg-background text-muted-foreground"}`}
                         >
                           {job.status === "approved" ? "Active" : "Pending"}
                         </span>
@@ -516,10 +516,10 @@ const StudentDashboard = () => {
             <AppleCard className="col-span-full p-32 text-center border-dashed">
               <Search
                 size={48}
-                className="text-[#5B6475]/20 mx-auto mb-8"
+                className="text-muted-foreground/20 mx-auto mb-8"
                 strokeWidth={1}
               />
-              <p className="text-sm font-medium text-[#5B6475] italic">
+              <p className="text-sm font-medium text-muted-foreground italic">
                 No incoming applications yet.
               </p>
             </AppleCard>
@@ -533,26 +533,26 @@ const StudentDashboard = () => {
                 <div className="relative z-10">
                   <div className="flex justify-between items-start mb-6">
                     <div>
-                      <h3 className="text-xl font-bold text-[#111827] tracking-tight">
+                      <h3 className="text-xl font-bold text-foreground tracking-tight">
                         {app.tutorName}
                       </h3>
-                      <p className="text-xs text-[#5B6475] mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {app.tutorEmail}
                       </p>
                     </div>
                     <span
-                      className={`px-2.5 py-1 text-xs font-semibold rounded-none ${app.status === "approved" ? "bg-[#2563EB]/10 text-[#2563EB]" : app.status === "rejected" ? "bg-red-500/10 text-red-600" : "bg-[#F5F7FA] text-[#5B6475]"}`}
+                      className={`px-2.5 py-1 text-xs font-semibold rounded-none ${app.status === "approved" ? "bg-[#2563EB]/10 text-[#2563EB]" : app.status === "rejected" ? "bg-red-500/10 text-red-600" : "bg-background text-muted-foreground"}`}
                     >
                       {app.status}
                     </span>
                   </div>
 
                   <div className="space-y-4 mb-8">
-                    <div className="p-4 rounded-none bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] text-xs text-[#5B6475] leading-relaxed italic">
+                    <div className="p-4 rounded-none bg-background border border-border text-xs text-muted-foreground leading-relaxed italic">
                       "{app.qualifications}"
                     </div>
-                    <div className="flex justify-between items-center pt-4 border-t border-[rgba(15,23,46,0.08)]">
-                      <span className="text-xs font-semibold text-[#5B6475]">
+                    <div className="flex justify-between items-center pt-4 border-t border-border">
+                      <span className="text-xs font-semibold text-muted-foreground">
                         Expected Salary
                       </span>
                       <span className="text-lg font-bold text-[#2563EB] tabular-nums">
@@ -590,18 +590,18 @@ const StudentDashboard = () => {
         <AppleCard className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]">
+              <thead className="bg-background border-b border-border">
                 <tr>
-                  <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">
+                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
                     Tutor Name
                   </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">
+                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
                     Subject
                   </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">
+                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-center">
                     Contact
                   </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-right">
+                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">
                     Verification
                   </th>
                 </tr>
@@ -611,7 +611,7 @@ const StudentDashboard = () => {
                   <tr>
                     <td
                       colSpan="4"
-                      className="p-20 text-center text-sm text-[#5B6475] italic"
+                      className="p-20 text-center text-sm text-muted-foreground italic"
                     >
                       No verified engagements yet.
                     </td>
@@ -620,14 +620,14 @@ const StudentDashboard = () => {
                   bookings.map((booking) => (
                     <tr
                       key={booking._id}
-                      className="hover:bg-[#F5F7FA]/50 transition-colors"
+                      className="hover:bg-background/50 transition-colors"
                     >
                       <td className="px-8 py-6">
-                        <p className="text-sm font-bold text-[#111827]">
+                        <p className="text-sm font-bold text-foreground">
                           {booking.tutor_name || booking.tutorName}
                         </p>
                       </td>
-                      <td className="px-8 py-6 text-sm font-semibold text-[#5B6475]">
+                      <td className="px-8 py-6 text-sm font-semibold text-muted-foreground">
                         {booking.subject}
                       </td>
                       <td className="px-8 py-6 text-center">
