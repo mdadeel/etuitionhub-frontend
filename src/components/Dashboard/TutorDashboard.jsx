@@ -108,7 +108,7 @@ const TutorDashboard = () => {
 
             {/* Tab Navigation */}
             <div className="w-full overflow-hidden">
-                <div className="flex items-center gap-1 bg-[#EEF2F6] p-1 rounded-none border border-[rgba(15,23,46,0.08)] w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+                <div className="flex items-center gap-1 bg-muted p-1 rounded-none border border-border w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -116,8 +116,8 @@ const TutorDashboard = () => {
                             className={cn(
                                 "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-none whitespace-nowrap min-w-fit",
                                 activeTab === tab.id
-                                    ? "bg-white text-[#2563EB] shadow-sm border border-[rgba(15,23,46,0.08)]"
-                                    : "text-[#5B6475] hover:text-[#111827] hover:bg-white/50"
+                                    ? "bg-card text-[#2563EB] shadow-sm border border-border"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-card/50"
                             )}
                         >
                             <tab.icon size={14} className={activeTab === tab.id ? 'text-[#2563EB]' : 'opacity-50'} />
@@ -135,10 +135,10 @@ const TutorDashboard = () => {
                             <div className="w-12 h-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
                                 <FileText size={24} />
                             </div>
-                            <p className="text-xs font-semibold text-[#5B6475] mb-2">Total Applications</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-2">Total Applications</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">{apps.length}</span>
-                                <span className="text-xs font-semibold text-[#5B6475]">Sent</span>
+                                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">{apps.length}</span>
+                                <span className="text-xs font-semibold text-muted-foreground">Sent</span>
                             </div>
                         </AppleCard>
 
@@ -146,10 +146,10 @@ const TutorDashboard = () => {
                             <div className="w-12 h-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                                 <UserCheck size={24} />
                             </div>
-                            <p className="text-xs font-semibold text-[#5B6475] mb-2">Active Engagements</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-2">Active Engagements</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">{activeEngagements}</span>
-                                <span className="text-xs font-semibold text-[#5B6475]">Jobs</span>
+                                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">{activeEngagements}</span>
+                                <span className="text-xs font-semibold text-muted-foreground">Jobs</span>
                             </div>
                         </AppleCard>
 
@@ -157,10 +157,10 @@ const TutorDashboard = () => {
                             <div className="w-12 h-12 rounded-none bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
                                 <TrendingUp size={24} />
                             </div>
-                            <p className="text-xs font-semibold text-[#5B6475] mb-2">Total Earnings</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-2">Total Earnings</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-2xl md:text-5xl font-bold text-[#111827] tracking-tighter tabular-nums">৳{totalEarnings}</span>
-                                <span className="text-xs font-semibold text-[#5B6475]">BDT</span>
+                                <span className="text-2xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">৳{totalEarnings}</span>
+                                <span className="text-xs font-semibold text-muted-foreground">BDT</span>
                             </div>
                         </AppleCard>
                     </div>
@@ -168,23 +168,23 @@ const TutorDashboard = () => {
                     <AppleCard className="p-8 overflow-hidden relative">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         <div className="relative z-10">
-                            <h3 className="text-lg font-bold text-[#111827] tracking-tight mb-6">Recent Activity</h3>
+                            <h3 className="text-lg font-bold text-foreground tracking-tight mb-6">Recent Activity</h3>
                             {apps.length === 0 ? (
-                                <p className="text-sm text-[#5B6475] italic">No recent activity detected.</p>
+                                <p className="text-sm text-muted-foreground italic">No recent activity detected.</p>
                             ) : (
                                 <div className="space-y-4">
                                     {apps.slice(0, 3).map((app) => (
-                                        <div key={app._id} className="flex items-center justify-between p-4 rounded-none bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)]">
+                                        <div key={app._id} className="flex items-center justify-between p-4 rounded-none bg-background border border-border">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-8 h-8 rounded-none bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] flex items-center justify-center">
+                                                <div className="w-8 h-8 rounded-none bg-background border border-border flex items-center justify-center">
                                                     <FileText size={14} className="text-[#2563EB]/60" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-bold text-[#111827]">{app.tuitionId?.subject}</p>
-                                                    <p className="text-xs font-medium text-[#5B6475] mt-0.5">{app.status}</p>
+                                                    <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
+                                                    <p className="text-xs font-medium text-muted-foreground mt-0.5">{app.status}</p>
                                                 </div>
                                             </div>
-                                            <span className="text-xs font-bold text-[#5B6475] tabular-nums">
+                                            <span className="text-xs font-bold text-muted-foreground tabular-nums">
                                                 {new Date(app.createdAt).toLocaleDateString()}
                                             </span>
                                         </div>
@@ -201,30 +201,30 @@ const TutorDashboard = () => {
                 <AppleCard className="overflow-hidden">
                     {apps.length === 0 ? (
                         <div className="p-32 text-center">
-                            <Database size={48} className="text-[#5B6475]/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-[#5B6475] italic">No applications in the pipeline.</p>
+                            <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
+                            <p className="text-sm font-medium text-muted-foreground italic">No applications in the pipeline.</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]">
+                                <thead className="bg-background border-b border-border">
                                     <tr>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Subject</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Expected Fee</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Status</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-right">Action</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">Subject</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-center">Expected Fee</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-center">Status</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[rgba(15,23,46,0.08)]">
                                     {apps.map((app) => (
-                                        <tr key={app._id} className="hover:bg-[#F5F7FA]/50 transition-colors">
+                                        <tr key={app._id} className="hover:bg-background/50 transition-colors">
                                             <td className="px-8 py-6">
-                                                <p className="text-sm font-bold text-[#111827]">{app.tuitionId?.subject}</p>
-                                                <p className="text-xs text-[#5B6475] font-medium mt-1">{app.studentEmail}</p>
+                                                <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
+                                                <p className="text-xs text-muted-foreground font-medium mt-1">{app.studentEmail}</p>
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-[#2563EB] tabular-nums">৳{app.expectedSalary}</td>
                                             <td className="px-8 py-6 text-center">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${app.status === 'approved' ? 'bg-[#2563EB]/10 text-[#2563EB]' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-[#F5F7FA] text-[#5B6475]'}`}>
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${app.status === 'approved' ? 'bg-[#2563EB]/10 text-[#2563EB]' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-background text-muted-foreground'}`}>
                                                     {app.status}
                                                 </span>
                                             </td>
@@ -236,7 +236,7 @@ const TutorDashboard = () => {
                                                     >
                                                         Recall Application
                                                     </button>
-                                                ) : <span className="text-xs text-[#5B6475]/40 italic">Locked</span>}
+                                                ) : <span className="text-xs text-muted-foreground/40 italic">Locked</span>}
                                             </td>
                                         </tr>
                                     ))}
@@ -252,8 +252,8 @@ const TutorDashboard = () => {
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-6">
                     {apps.filter(a => a.status === 'approved').length === 0 ? (
                         <AppleCard className="md:col-span-2 p-32 text-center border-dashed">
-                             <UserCheck size={48} className="text-[#5B6475]/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-[#5B6475] italic">No active engagements identified.</p>
+                             <UserCheck size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
+                            <p className="text-sm font-medium text-muted-foreground italic">No active engagements identified.</p>
                         </AppleCard>
                     ) : (
                         apps.filter(a => a.status === 'approved').map(app => (
@@ -264,16 +264,16 @@ const TutorDashboard = () => {
                                         <div className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                                         <span className="text-xs font-bold text-[#2563EB]">Active Connection</span>
                                     </div>
-                                    <h3 className="text-xl font-bold text-[#111827] mb-8 tracking-tight">{app.tuitionId?.subject}</h3>
+                                    <h3 className="text-xl font-bold text-foreground mb-8 tracking-tight">{app.tuitionId?.subject}</h3>
                                     
                                     <div className="space-y-4 mb-8">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xs font-semibold text-[#5B6475]">Student Email</span>
-                                            <span className="text-xs font-bold text-[#111827]">{app.studentEmail}</span>
+                                            <span className="text-xs font-semibold text-muted-foreground">Student Email</span>
+                                            <span className="text-xs font-bold text-foreground">{app.studentEmail}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xs font-semibold text-[#5B6475]">Monthly Fee</span>
-                                            <span className="text-sm font-bold text-[#2563EB] tabular-nums">৳{app.expectedSalary} <span className="text-xs text-[#5B6475] opacity-50">/mo</span></span>
+                                            <span className="text-xs font-semibold text-muted-foreground">Monthly Fee</span>
+                                            <span className="text-sm font-bold text-[#2563EB] tabular-nums">৳{app.expectedSalary} <span className="text-xs text-muted-foreground opacity-50">/mo</span></span>
                                         </div>
                                     </div>
                                     
@@ -292,49 +292,49 @@ const TutorDashboard = () => {
             {/* revenue tab */}
             {activeTab === 'revenue' && (
                 <AppleCard className="overflow-hidden">
-                    <div className="p-8 border-b border-[rgba(15,23,46,0.08)] bg-[#F5F7FA]/50 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="p-8 border-b border-border bg-background/50 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div>
-                             <h2 className="text-lg font-bold text-[#111827] tracking-tight flex items-center gap-2">
+                             <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-[#2563EB]"></div>
                                 Earnings Report
                             </h2>
-                            <p className="text-xs font-medium text-[#5B6475] mt-1">Audit trail for all completed tutor payments.</p>
+                            <p className="text-xs font-medium text-muted-foreground mt-1">Audit trail for all completed tutor payments.</p>
                         </div>
-                        <div className="bg-white px-8 py-4 rounded-none border border-[rgba(15,23,46,0.08)] shadow-sm">
-                            <p className="text-xs font-semibold text-[#5B6475] mb-1">Total Earnings</p>
+                        <div className="bg-card px-8 py-4 rounded-none border border-border shadow-sm">
+                            <p className="text-xs font-semibold text-muted-foreground mb-1">Total Earnings</p>
                             <p className="text-2xl font-bold text-[#2563EB] tracking-tight tabular-nums">৳{totalEarnings}</p>
                         </div>
                     </div>
 
                     {revenue.length === 0 ? (
                         <div className="p-32 text-center">
-                            <Banknote size={48} className="text-[#5B6475]/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-[#5B6475] italic">No payment history found.</p>
+                            <Banknote size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
+                            <p className="text-sm font-medium text-muted-foreground italic">No payment history found.</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]">
+                                <thead className="bg-background border-b border-border">
                                     <tr>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Date</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Subject / Student</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Amount</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-right">Status</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">Date</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">Subject / Student</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-center">Amount</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[rgba(15,23,46,0.08)]">
                                     {revenue.map((payment) => (
-                                        <tr key={payment._id} className="hover:bg-[#F5F7FA]/50 transition-colors">
-                                            <td className="px-8 py-6 text-xs font-bold text-[#5B6475] uppercase tabular-nums tracking-widest">
+                                        <tr key={payment._id} className="hover:bg-background/50 transition-colors">
+                                            <td className="px-8 py-6 text-xs font-bold text-muted-foreground uppercase tabular-nums tracking-widest">
                                                 {new Date(payment.createdAt).toLocaleDateString()}
                                             </td>
                                             <td className="px-8 py-6">
-                                                <p className="text-sm font-bold text-[#111827]">{payment.tuitionId?.subject || 'Tutoring Fee'}</p>
-                                                <p className="text-xs text-[#5B6475] font-medium mt-1">{payment.studentEmail}</p>
+                                                <p className="text-sm font-bold text-foreground">{payment.tuitionId?.subject || 'Tutoring Fee'}</p>
+                                                <p className="text-xs text-muted-foreground font-medium mt-1">{payment.studentEmail}</p>
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-[#2563EB] tabular-nums">৳{payment.amount}</td>
                                             <td className="px-8 py-6 text-right">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${payment.status === 'verified' ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-[#F5F7FA] text-[#5B6475]'}`}>
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${payment.status === 'verified' ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-background text-muted-foreground'}`}>
                                                     {payment.status}
                                                 </span>
                                             </td>

@@ -39,7 +39,7 @@ const AdminDashboard = () => {
 
             {/* Navigation Tabs */}
             <div className="w-full overflow-hidden">
-                <div className="flex bg-[#F8FAFC] p-1.5 rounded-none gap-2 overflow-x-auto border border-[rgba(15,23,46,0.12)] w-full max-w-full backdrop-blur-md scrollbar-hide flex-nowrap">
+                <div className="flex bg-background p-1.5 rounded-none gap-2 overflow-x-auto border border-border w-full max-w-full backdrop-blur-md scrollbar-hide flex-nowrap">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
                                 "px-6 py-3 text-[10px] font-heading font-black uppercase tracking-widest rounded-none transition-all duration-300 flex items-center gap-2 whitespace-nowrap min-w-fit border",
                                 activeTab === tab.id
                                     ? "bg-[#2563EB] text-white border-[#2563EB]"
-                                    : "text-[#5B6475] border-transparent hover:text-[#111827] hover:bg-[#EEF2F6]"
+                                    : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                             )}
                         >
                             {tab.label}

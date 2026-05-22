@@ -28,7 +28,12 @@ import {
 } from "../shared/AppleUI";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { BANGLADESH_DIVISIONS } from "../../utils/constants";
+import {
+  BANGLADESH_DIVISIONS,
+  GENDER_OPTIONS,
+  LANGUAGE_OPTIONS,
+  WEEK_DAYS,
+} from "../../utils/constants";
 
 const SUBJECT_OPTIONS = [
   "Mathematics",
@@ -57,6 +62,9 @@ const TutorProfile = () => {
   const [location, setLocation] = useState("");
   const [photoInput, setPhotoInput] = useState("");
   const [nameInput, setNameInput] = useState("");
+  const [gender, setGender] = useState("");
+  const [languagePreference, setLanguagePreference] = useState("both");
+  const [availableDays, setAvailableDays] = useState([]);
 
   useEffect(() => {
     if (dbUser) {
@@ -67,8 +75,17 @@ const TutorProfile = () => {
       setSubjects(dbUser.subjects || []);
       setExpectedSalary(dbUser.expectedSalary || "");
       setLocation(dbUser.location || "");
+      setGender(dbUser.gender || "");
+      setLanguagePreference(dbUser.languagePreference || "both");
+      setAvailableDays(dbUser.availableDays || []);
     }
   }, [dbUser, user]);
+
+  const toggleDay = (day) => {
+    setAvailableDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
+    );
+  };
 
   const toggleSubject = (subject) => {
     setSubjects((prev) =>
@@ -94,6 +111,9 @@ const TutorProfile = () => {
         subjects,
         expectedSalary: expectedSalary ? parseInt(expectedSalary) : undefined,
         location,
+        gender,
+        languagePreference,
+        availableDays,
       };
 
       await api.patch(`/api/users/by-email/${user?.email}`, updateData);
@@ -110,22 +130,22 @@ const TutorProfile = () => {
 
   return (
     <div className="max-w-5xl mx-auto pb-20">
-      <div className="mb-12 space-y-2 border-b border-slate-200 pb-8">
-        <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">
+      <div className="mb-12 space-y-2 border-b border-border pb-8">
+        <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">
           Tutor Profile
         </h1>
-        <p className="text-slate-500 text-xs font-black uppercase tracking-widest">
+        <p className="text-muted-foreground text-xs font-black uppercase tracking-widest">
           Manage your tutoring profile and qualifications.
         </p>
       </div>
 
       <div className="space-y-8">
         {/* Profile Preview Card - Sharp */}
-        <div className="bg-white border border-slate-200 rounded-none shadow-none">
+        <div className="bg-card border border-border rounded-none shadow-none">
           <div className="p-6 md:p-8 flex flex-col md:flex-row gap-8">
             {/* Left: Profile Image */}
             <div className="relative shrink-0 mx-auto md:mx-0">
-              <div className="w-48 h-48 md:w-56 md:h-56 rounded-none overflow-hidden border border-slate-200">
+              <div className="w-48 h-48 md:w-56 md:h-56 rounded-none overflow-hidden border border-border">
                 <img
                   src={
                     photoInput || "https://i.ibb.co/4pDNDk1/default-avatar.png"
@@ -134,46 +154,32 @@ const TutorProfile = () => {
                   alt="Profile"
                 />
               </div>
-              {dbUser?._id !== "tutor_001" && (
-                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white px-3 py-1.5 rounded-none border border-slate-900 flex items-center gap-2 whitespace-nowrap shadow-sm">
-                  <div className="w-4 h-4 rounded-none bg-blue-600 flex items-center justify-center">
-                    <CheckCircle2 size={10} className="text-white" />
-                  </div>
-                  <span className="text-[9px] font-black text-slate-900 uppercase tracking-tighter">
-                    Verified Tutor
-                  </span>
-                </div>
-              )}
+              {/* Verified badge removed as per request */}
             </div>
 
             {/* Right: Info */}
             <div className="flex-1 flex flex-col justify-center space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                {dbUser?._id !== "tutor_001" && (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-slate-900 rounded-none text-[9px] font-black uppercase tracking-widest border border-slate-200">
-                    <ShieldCheck size={10} />
-                    Verified
-                  </div>
-                )}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-slate-500 rounded-none text-[9px] font-black uppercase tracking-widest border border-slate-200">
+                {/* Verified label removed as per request */}
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-muted text-muted-foreground rounded-none text-[9px] font-black uppercase tracking-widest border border-border">
                   <MapPin size={10} />
                   {location || "Location not set"}
                 </div>
               </div>
 
-              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
+              <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tighter uppercase leading-none">
                 {nameInput || "Tutor Name"}
               </h2>
 
-              <div className="flex items-center gap-2 text-slate-500 font-bold uppercase tracking-tight">
+              <div className="flex items-center gap-2 text-muted-foreground font-bold uppercase tracking-tight">
                 <GraduationCap className="text-blue-600" size={18} />
                 <span className="text-xs">
                   {qualification || "Qualifications not specified"}
                 </span>
               </div>
 
-              <div className="pt-4 border-t border-slate-100">
-                <p className="text-slate-500 text-xs font-bold leading-relaxed max-w-2xl italic uppercase tracking-tight">
+              <div className="pt-4 border-t border-border">
+                <p className="text-muted-foreground text-xs font-bold leading-relaxed max-w-2xl italic uppercase tracking-tight">
                   "Passionate about making concepts easy to understand. Helping
                   students achieve their academic goals with personalized
                   guidance."
@@ -183,37 +189,37 @@ const TutorProfile = () => {
           </div>
 
           {/* Bottom Stats Strip */}
-          <div className="bg-slate-50 border-t border-slate-200 px-6 md:px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
+          <div className="bg-background border-t border-border px-6 md:px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-none bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-900">
+              <div className="w-10 h-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
                 <Wallet size={16} />
               </div>
               <div>
                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">
                   Monthly Fee
                 </p>
-                <p className="text-lg font-black text-slate-900 tracking-tighter">
+                <p className="text-lg font-black text-foreground tracking-tighter">
                   ৳{parseInt(expectedSalary || 0).toLocaleString()}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-none bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-900">
+              <div className="w-10 h-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
                 <Briefcase size={16} />
               </div>
               <div>
                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">
                   Experience
                 </p>
-                <p className="text-lg font-black text-slate-900 tracking-tighter">
+                <p className="text-lg font-black text-foreground tracking-tighter">
                   4+ Years
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-none bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-900">
+              <div className="w-10 h-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
                 <Star size={16} className="fill-blue-600 text-blue-600" />
               </div>
               <div>
@@ -221,10 +227,12 @@ const TutorProfile = () => {
                   Rating
                 </p>
                 <div className="flex items-baseline gap-1.5">
-                  <p className="text-lg font-black text-slate-900 tracking-tighter">
+                  <p className="text-lg font-black text-foreground tracking-tighter">
                     4.9
                   </p>
-                  <p className="text-[10px] text-slate-400 font-bold">(128)</p>
+                  <p className="text-[10px] text-muted-foreground font-bold">
+                    (128)
+                  </p>
                 </div>
               </div>
             </div>
@@ -245,56 +253,56 @@ const TutorProfile = () => {
         {/* Edit Form Section */}
         <div className="space-y-6">
           {/* Basic Info */}
-          <div className="p-8 bg-white border border-slate-200 rounded-none shadow-none">
-            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+          <div className="p-8 bg-card border border-border rounded-none shadow-none">
+            <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-8 flex items-center gap-3">
               <ShieldCheck className="text-blue-600" size={16} />
               Update Information
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                   Full Name
                 </label>
                 <input
                   type="text"
-                  className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
+                  className="w-full h-11 bg-background border border-border px-4 rounded-none text-xs font-bold text-foreground focus:border-blue-600 outline-none transition-all placeholder:text-muted-foreground"
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
                   placeholder="Your full name"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                   Phone Number
                 </label>
                 <input
                   type="tel"
-                  className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
+                  className="w-full h-11 bg-background border border-border px-4 rounded-none text-xs font-bold text-foreground focus:border-blue-600 outline-none transition-all placeholder:text-muted-foreground"
                   value={mobileInput}
                   onChange={(e) => setMobileInput(e.target.value)}
                   placeholder="01700000000"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                   Profile Photo URL
                 </label>
                 <input
                   type="url"
-                  className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
+                  className="w-full h-11 bg-background border border-border px-4 rounded-none text-xs font-bold text-foreground focus:border-blue-600 outline-none transition-all placeholder:text-muted-foreground"
                   value={photoInput}
                   onChange={(e) => setPhotoInput(e.target.value)}
                   placeholder="https://example.com/photo.jpg"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                   Division
                 </label>
                 <select
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full h-11 bg-slate-50 border border-slate-200 px-4 text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all"
+                  className="w-full h-11 bg-background border border-border px-4 text-xs font-bold text-foreground focus:border-blue-600 outline-none transition-all"
                 >
                   <option value="">Select division</option>
                   {BANGLADESH_DIVISIONS.map((d) => (
@@ -308,26 +316,26 @@ const TutorProfile = () => {
           </div>
 
           {/* Professional Info */}
-          <div className="p-8 bg-white border border-slate-200 rounded-none shadow-none">
-            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8 flex items-center gap-3">
+          <div className="p-8 bg-card border border-border rounded-none shadow-none">
+            <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-8 flex items-center gap-3">
               <GraduationCap className="text-blue-600" size={16} />
               Professional Details
             </h3>
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                   Qualification
                 </label>
                 <input
                   type="text"
-                  className="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
+                  className="w-full h-11 bg-background border border-border px-4 rounded-none text-xs font-bold text-foreground focus:border-blue-600 outline-none transition-all placeholder:text-muted-foreground"
                   value={qualification}
                   onChange={(e) => setQualification(e.target.value)}
                   placeholder="e.g. B.Sc in Engineering, HSC with GPA 5"
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                   Subjects You Can Teach
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -340,7 +348,7 @@ const TutorProfile = () => {
                         "px-4 py-2 text-[10px] font-black rounded-none border transition-all uppercase tracking-widest",
                         subjects.includes(subject)
                           ? "bg-blue-600 text-white border-blue-600"
-                          : "bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900",
+                          : "bg-background border-border text-muted-foreground hover:border-foreground hover:text-foreground",
                       )}
                     >
                       {subject}
@@ -348,19 +356,79 @@ const TutorProfile = () => {
                   ))}
                 </div>
               </div>
+
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                  Available Days
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {WEEK_DAYS.map((day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleDay(day)}
+                      className={cn(
+                        "px-4 py-2 text-[10px] font-black rounded-none border transition-all uppercase tracking-widest",
+                        availableDays.includes(day)
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "bg-background border-border text-muted-foreground hover:border-foreground hover:text-foreground",
+                      )}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                    Gender
+                  </label>
+                  <select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="w-full h-11 bg-background border border-border px-4 text-xs font-bold text-foreground focus:border-blue-600 outline-none transition-all"
+                  >
+                    <option value="">Select gender</option>
+                    {GENDER_OPTIONS.map((g) => (
+                      <option key={g} value={g}>
+                        {g}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                    Language Preference
+                  </label>
+                  <select
+                    value={languagePreference}
+                    onChange={(e) => setLanguagePreference(e.target.value)}
+                    className="w-full h-11 bg-background border border-border px-4 text-xs font-bold text-foreground focus:border-blue-600 outline-none transition-all"
+                  >
+                    {LANGUAGE_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                     Expected Monthly Salary (BDT)
                   </label>
                   <div className="relative">
                     <DollarSign
                       size={14}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
                     />
                     <input
                       type="number"
-                      className="w-full h-11 bg-slate-50 border border-slate-200 pl-11 pr-4 rounded-none text-xs font-bold text-slate-900 focus:border-blue-600 outline-none transition-all placeholder:text-slate-300"
+                      className="w-full h-11 bg-background border border-border pl-11 pr-4 rounded-none text-xs font-bold text-foreground focus:border-blue-600 outline-none transition-all placeholder:text-muted-foreground"
                       value={expectedSalary}
                       onChange={(e) => setExpectedSalary(e.target.value)}
                       placeholder="5000"

@@ -107,25 +107,25 @@ const DashTuitions = () => {
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
-            <header className="mb-8 border-b border-[rgba(15,23,46,0.08)] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <header className="mb-8 border-b border-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-2 mb-3">
                         <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
                         <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Marketplace Management</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-[#111827]">Tuition Streams</h2>
-                    <p className="text-xs text-[#5B6475] mt-1">
+                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">Tuition Streams</h2>
+                    <p className="text-xs text-muted-foreground mt-1">
                         {tuitions.length} active metadata nodes detected.
                     </p>
                 </div>
 
-                <div className="flex bg-[#F8FAFC] p-1.5 rounded-none gap-2 border border-[rgba(15,23,46,0.12)] w-fit backdrop-blur-md">
+                <div className="flex bg-background p-1.5 rounded-none gap-2 border border-border w-fit backdrop-blur-md">
                     {['all', 'pending', 'approved'].map(f => (
                         <button
                             key={f}
                             className={`px-5 py-2.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border transition-all duration-300 ${filter === f
                                 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-none'
-                                : 'text-[#5B6475] border-transparent hover:text-[#111827] hover:bg-[#EEF2F6]'
+                                : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted'
                                 }`}
                             onClick={() => setFilter(f)}
                         >
@@ -135,36 +135,36 @@ const DashTuitions = () => {
                 </div>
             </header>
 
-            <div className="overflow-x-auto border border-[rgba(15,23,46,0.12)] bg-white">
+            <div className="overflow-x-auto border border-border bg-card">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-[#F8FAFC] border-b border-[rgba(15,23,46,0.08)] text-[#5B6475]">
-                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Scope</th>
-                            <th className="hidden md:table-cell px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Geography</th>
-                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-center">Yield</th>
-                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-center">State</th>
-                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-right">Ops</th>
+                        <tr className="bg-muted/30 border-b border-border text-foreground">
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70">Scope</th>
+                            <th className="hidden md:table-cell px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70">Geography</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70 text-center">Yield</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70 text-center">State</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70 text-right">Ops</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
                         {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan="5" className="px-6 py-24 text-center bg-[#F8FAFC]">
+                                <td colSpan="5" className="px-6 py-24 text-center bg-muted/20">
                                     <div className="flex flex-col items-center gap-4">
-                                        <ShieldAlert size={48} className="text-[#5B6475]/30" strokeWidth={1} />
-                                        <p className="text-[10px] font-heading font-black uppercase tracking-[0.25em] text-[#5B6475]/60">Universal records empty</p>
+                                        <ShieldAlert size={48} className="text-muted-foreground" strokeWidth={1} />
+                                        <p className="text-[10px] font-heading font-black uppercase tracking-[0.25em] text-muted-foreground">Universal records empty</p>
                                     </div>
                                 </td>
                             </tr>
                         ) : (
                             filtered.map((t) => (
-                                <tr key={t._id} className="hover:bg-[#F8FAFC] transition-colors">
+                                <tr key={t._id} className="hover:bg-background transition-colors">
                                     <td className="px-4 md:px-6 py-4">
-                                        <p className="text-xs md:text-sm font-bold text-[#111827] leading-tight">{t.subject}</p>
-                                        <p className="text-[9px] font-heading font-black text-[#5B6475]/60 uppercase tracking-widest mt-1">{t.class_name}</p>
+                                        <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{t.subject}</p>
+                                        <p className="text-[9px] font-heading font-black text-muted-foreground uppercase tracking-widest mt-1">{t.class_name}</p>
                                     </td>
                                     <td className="hidden md:table-cell px-6 py-4">
-                                        <p className="text-xs font-bold text-[#5B6475] uppercase tracking-wider">{t.location}</p>
+                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t.location}</p>
                                     </td>
                                     <td className="px-4 md:px-6 py-4 text-center">
                                         <span className="text-xs md:text-sm font-heading font-black text-[#2563EB] tabular-nums">৳{t.salary}</span>
@@ -182,7 +182,7 @@ const DashTuitions = () => {
                                         <div className="flex justify-end gap-2 md:gap-3 items-center">
                                             <button
                                                 onClick={() => handleEditClick(t)}
-                                                className="h-8 w-8 p-0 text-[#5B6475]/60 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-none border border-transparent hover:border-[#2563EB]/20 flex items-center justify-center transition-colors"
+                                                className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-none border border-transparent hover:border-primary/20 flex items-center justify-center transition-colors"
                                             >
                                                 <Edit2 size={12} />
                                             </button>
@@ -204,7 +204,7 @@ const DashTuitions = () => {
                                                 </>
                                             )}
                                             {t.status !== 'pending' && (
-                                                <span className="text-[9px] font-heading font-black text-[#5B6475]/30 uppercase tracking-[0.2em] italic pr-4">Done</span>
+                                                <span className="text-[9px] font-heading font-black text-muted-foreground/60 uppercase tracking-[0.2em] italic pr-4">Done</span>
                                             )}
                                         </div>
                                     </td>

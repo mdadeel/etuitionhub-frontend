@@ -72,14 +72,14 @@ const DashSettings = () => {
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[rgba(15,23,46,0.08)] pb-6">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-6">
                 <div>
                     <div className="flex items-center gap-2 mb-3">
                         <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
                         <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">System Settings</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-[#111827]">System Settings</h2>
-                    <p className="text-xs text-[#5B6475] mt-1">
+                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">System Settings</h2>
+                    <p className="text-xs text-muted-foreground mt-1">
                         Manage platform constants and environment variables.
                     </p>
                 </div>
@@ -87,7 +87,7 @@ const DashSettings = () => {
                 <div className="flex gap-3">
                     <button 
                         onClick={loadSettings}
-                        className="h-10 px-4 rounded-none text-[#5B6475] hover:text-[#111827] border border-[rgba(15,23,46,0.12)] hover:bg-[#EEF2F6] text-[9px] font-heading font-black uppercase tracking-widest transition-all"
+                        className="h-10 px-4 rounded-none text-muted-foreground hover:text-foreground border border-border hover:bg-muted text-[9px] font-heading font-black uppercase tracking-widest transition-all"
                     >
                         Reset
                     </button>
@@ -104,20 +104,20 @@ const DashSettings = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {Object.entries(groupedSettings).map(([category, items]) => (
                     <div key={category} className="space-y-4">
-                        <h3 className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#5B6475] flex items-center gap-2 px-1">
+                        <h3 className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-muted-foreground flex items-center gap-2 px-1">
                             <span className="text-[#2563EB]">{categoryIcons[category]}</span> {category.charAt(0).toUpperCase() + category.slice(1)} Settings
                         </h3>
                         
-                        <div className="bg-white border border-[rgba(15,23,46,0.12)] rounded-none p-6 md:p-8 space-y-8 shadow-none">
+                        <div className="bg-card border border-border rounded-none p-6 md:p-8 space-y-8 shadow-none">
                             {items.map(setting => (
                                 <div key={setting.key} className="space-y-2">
                                     <div className="flex items-center justify-between px-1">
-                                        <label className="text-[9px] font-heading font-black text-[#111827] uppercase tracking-widest">
+                                        <label className="text-[9px] font-heading font-black text-foreground uppercase tracking-widest">
                                             {setting.label}
                                         </label>
                                         <div className="group relative">
-                                            <Info size={12} className="text-[#5B6475]/40 hover:text-[#2563EB] cursor-help transition-colors" />
-                                            <div className="absolute bottom-full right-0 mb-2 w-48 p-3 bg-white border border-[rgba(15,23,46,0.12)] shadow-xl rounded-none text-[9px] font-bold text-[#5B6475] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                                            <Info size={12} className="text-muted-foreground/40 hover:text-[#2563EB] cursor-help transition-colors" />
+                                            <div className="absolute bottom-full right-0 mb-2 w-48 p-3 bg-card border border-border shadow-xl rounded-none text-[9px] font-bold text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
                                                 {setting.description}
                                             </div>
                                         </div>
@@ -127,10 +127,10 @@ const DashSettings = () => {
                                         type="text"
                                         value={setting.value}
                                         onChange={(e) => handleInputChange(setting.key, e.target.value)}
-                                        className={`w-full px-4 py-3 text-xs bg-white border rounded-none focus:outline-none focus:border-[#2563EB] transition-all font-heading font-bold placeholder:text-[#5B6475]/40 ${
+                                        className={`w-full px-4 py-3 text-xs bg-card border rounded-none focus:outline-none focus:border-[#2563EB] transition-all font-heading font-bold placeholder:text-muted-foreground/40 ${
                                             modifiedKeys.has(setting.key) 
                                                 ? 'border-[#2563EB] bg-[#2563EB]/5' 
-                                                : 'border-[rgba(15,23,46,0.12)]'
+                                                : 'border-border'
                                         }`}
                                     />
                                 </div>
@@ -141,8 +141,8 @@ const DashSettings = () => {
             </div>
 
             {modifiedKeys.size > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-white border border-[rgba(15,23,46,0.12)] text-[#111827] px-6 py-4 rounded-none shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-10 z-[100] backdrop-blur-xl">
-                    <span className="text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-card border border-border text-foreground px-6 py-4 rounded-none shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-10 z-[100] backdrop-blur-xl">
+                    <span className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">
                         {modifiedKeys.size} settings modified
                     </span>
                     <button 

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 const PAGE_SIZE = 20;
 
 const getTypeIcon = (type, size = 18) => {
-    const props = { size, className: 'text-[#5B6475]' };
+    const props = { size, className: 'text-muted-foreground' };
     switch (type) {
         case 'booking': return <Calendar {...props} />;
         case 'payment': return <CreditCard {...props} />;
@@ -84,10 +84,10 @@ const NotificationPage = () => {
         <div className="max-w-3xl mx-auto">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="font-heading font-black text-2xl text-[#111827] uppercase tracking-wider">
+                    <h1 className="font-heading font-black text-2xl text-foreground uppercase tracking-wider">
                         Notifications
                     </h1>
-                    <p className="text-sm text-[#5B6475] mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                         {unreadCount > 0
                             ? `You have ${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}`
                             : 'All caught up!'}
@@ -122,12 +122,12 @@ const NotificationPage = () => {
             ) : !Array.isArray(notifications) || notifications.length === 0 ? (
                 <div className="text-center py-20">
                     <Bell size={40} className="mx-auto mb-4 text-[#94A3B8]" />
-                    <p className="font-heading font-bold text-[#5B6475]">No notifications yet</p>
+                    <p className="font-heading font-bold text-muted-foreground">No notifications yet</p>
                 </div>
             ) : (
                 <div className="space-y-1">
                     <div className="flex items-center px-4 py-2">
-                        <label className="flex items-center gap-2 text-xs text-[#5B6475] cursor-pointer">
+                        <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
                             <input
                                 type="checkbox"
                                 checked={selectedIds.size === notifications.length && notifications.length > 0}
@@ -142,7 +142,7 @@ const NotificationPage = () => {
                         <div
                             key={notif._id}
                             className={cn(
-                                'flex items-start gap-4 px-4 py-4 border border-[rgba(15,23,46,0.08)] bg-white transition-colors',
+                                'flex items-start gap-4 px-4 py-4 border border-border bg-card transition-colors',
                                 !notif.isRead && 'bg-blue-50/30 border-blue-100'
                             )}
                         >
@@ -156,10 +156,10 @@ const NotificationPage = () => {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <p className={cn('text-sm font-heading', !notif.isRead && 'font-bold text-[#111827]')}>
+                                        <p className={cn('text-sm font-heading', !notif.isRead && 'font-bold text-foreground')}>
                                             {notif.title}
                                         </p>
-                                        <p className="text-sm text-[#5B6475] mt-0.5">
+                                        <p className="text-sm text-muted-foreground mt-0.5">
                                             {notif.message}
                                         </p>
                                         {renderActions(notif)}
@@ -171,7 +171,7 @@ const NotificationPage = () => {
                                         {!notif.isRead && (
                                             <button
                                                 onClick={() => markAsRead(notif._id)}
-                                                className="p-1.5 hover:bg-slate-200 rounded transition-colors"
+                                                className="p-1.5 hover:bg-muted rounded transition-colors"
                                                 title="Mark as read"
                                             >
                                                 <Check size={14} className="text-green-600" />
@@ -179,7 +179,7 @@ const NotificationPage = () => {
                                         )}
                                         <button
                                             onClick={() => deleteNotification(notif._id)}
-                                            className="p-1.5 hover:bg-slate-200 rounded transition-colors"
+                                            className="p-1.5 hover:bg-muted rounded transition-colors"
                                             title="Delete"
                                         >
                                             <Trash2 size={14} className="text-red-500" />
@@ -193,15 +193,15 @@ const NotificationPage = () => {
             )}
 
             {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-8 pt-6 border-t border-[rgba(15,23,46,0.08)]">
-                    <p className="text-xs text-[#5B6475]">
+                <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+                    <p className="text-xs text-muted-foreground">
                         Page {pagination.page} of {pagination.totalPages}
                     </p>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => goToPage(pagination.page - 1)}
                             disabled={pagination.page <= 1}
-                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-[rgba(15,23,46,0.12)] hover:bg-[#F8FAFC] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-background transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             <ChevronLeft size={14} />
                             Previous
@@ -209,7 +209,7 @@ const NotificationPage = () => {
                         <button
                             onClick={() => goToPage(pagination.page + 1)}
                             disabled={pagination.page >= pagination.totalPages}
-                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-[rgba(15,23,46,0.12)] hover:bg-[#F8FAFC] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-background transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Next
                             <ChevronRight size={14} />

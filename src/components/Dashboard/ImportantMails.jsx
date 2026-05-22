@@ -85,8 +85,8 @@ const ImportantMails = () => {
         <Card className="p-6 md:p-8" hover={false}>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h2 className="text-xl font-bold text-[#111827]">Important Inbox</h2>
-                    <p className="text-sm text-[#5B6475] mt-1">Admin notices, booking confirmations, and critical alerts.</p>
+                    <h2 className="text-xl font-bold text-foreground">Important Inbox</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Admin notices, booking confirmations, and critical alerts.</p>
                 </div>
                 <div className="w-12 h-12 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center text-[#2563EB]">
                     <Mail size={24} />
@@ -94,9 +94,9 @@ const ImportantMails = () => {
             </div>
 
             {mails.length === 0 ? (
-                <div className="py-12 text-center text-[#5B6475] bg-[#F5F7FA] rounded-2xl border border-[rgba(15,23,46,0.08)]">
+                <div className="py-12 text-center text-muted-foreground bg-background rounded-2xl border border-border">
                     <MailOpen size={32} className="mx-auto mb-3 opacity-20" />
-                    <p className="text-sm font-medium text-[#111827]">No important mails</p>
+                    <p className="text-sm font-medium text-foreground">No important mails</p>
                     <p className="text-xs mt-1">You're all caught up!</p>
                 </div>
             ) : (
@@ -130,22 +130,22 @@ const ImportantMails = () => {
                                 className={cn(
                                     "p-5 border rounded-2xl transition-all relative group overflow-hidden cursor-pointer",
                                     mail.isRead 
-                                        ? "bg-white border-[rgba(15,23,46,0.08)]" 
-                                        : "bg-[#EEF2F6] border-[#2563EB]/20 shadow-sm"
+                                        ? "bg-card border-border" 
+                                        : "bg-muted border-[#2563EB]/20 shadow-sm"
                                 )}
                             >
                                 <div className="flex justify-between items-start mb-2 pr-10">
                                     <h3 className={cn(
                                         "text-sm", 
-                                        mail.isRead ? "font-semibold text-[#111827]" : "font-bold text-[#2563EB]"
+                                        mail.isRead ? "font-semibold text-foreground" : "font-bold text-[#2563EB]"
                                     )}>
                                         {mail.subject}
                                     </h3>
-                                    <span className="text-[10px] font-label text-[#5B6475] whitespace-nowrap ml-4">
+                                    <span className="text-[10px] font-label text-muted-foreground whitespace-nowrap ml-4">
                                         {new Date(mail.createdAt).toLocaleDateString()}
                                     </span>
                                 </div>
-                                <p className="text-sm text-[#5B6475] leading-relaxed pr-8 whitespace-pre-line">
+                                <p className="text-sm text-muted-foreground leading-relaxed pr-8 whitespace-pre-line">
                                     {mail.body}
                                 </p>
 

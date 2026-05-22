@@ -39,7 +39,7 @@ const SavedTuitions = () => {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="w-6 h-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
-        <span className="ml-3 text-sm text-[#5B6475]">
+        <span className="ml-3 text-sm text-muted-foreground">
           Loading saved tuitions...
         </span>
       </div>
@@ -50,10 +50,10 @@ const SavedTuitions = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-heading text-[#111827]">
+          <h2 className="text-xl font-heading text-foreground">
             Saved Tuitions
           </h2>
-          <p className="text-sm text-[#5B6475]">
+          <p className="text-sm text-muted-foreground">
             {savedTuitions.length} tuition
             {savedTuitions.length !== 1 ? "s" : ""} saved
           </p>
@@ -61,12 +61,12 @@ const SavedTuitions = () => {
       </div>
 
       {savedTuitions.length === 0 ? (
-        <div className="py-16 text-center bg-white border border-[rgba(15,23,46,0.08)] rounded-xl">
-          <Bookmark size={40} className="mx-auto text-[#5B6475]/30 mb-4" />
-          <h3 className="text-lg font-heading text-[#111827] mb-2">
+        <div className="py-16 text-center bg-card border border-border rounded-xl">
+          <Bookmark size={40} className="mx-auto text-muted-foreground/30 mb-4" />
+          <h3 className="text-lg font-heading text-foreground mb-2">
             No saved tuitions yet
           </h3>
-          <p className="text-sm text-[#5B6475] mb-6">
+          <p className="text-sm text-muted-foreground mb-6">
             Browse tuitions and save your favorites for quick access.
           </p>
           <button
@@ -81,28 +81,28 @@ const SavedTuitions = () => {
           {savedTuitions.map((tuition) => (
             <div
               key={tuition._id}
-              className="bg-white border border-[rgba(15,23,46,0.08)] rounded-xl p-4 hover:shadow-lg hover:border-[#2563EB]/20 transition-all"
+              className="bg-card border border-border rounded-xl p-4 hover:shadow-lg hover:border-[#2563EB]/20 transition-all"
             >
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-12 h-12 rounded-lg bg-[#2563EB]/10 flex items-center justify-center flex-shrink-0">
                   <Bookmark size={20} className="text-[#2563EB]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-heading text-sm text-[#111827] truncate">
+                  <h3 className="font-heading text-sm text-foreground truncate">
                     {tuition.subject}
                   </h3>
-                  <p className="text-xs text-[#5B6475] truncate">
+                  <p className="text-xs text-muted-foreground truncate">
                     {tuition.class_name || "N/A"}
                   </p>
                   {tuition.location && (
-                    <p className="text-xs text-[#5B6475] truncate">
+                    <p className="text-xs text-muted-foreground truncate">
                       {tuition.location}
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-[rgba(15,23,46,0.08)]">
+              <div className="flex items-center justify-between pt-3 border-t border-border">
                 {tuition.salary && (
                   <span className="text-sm font-heading text-[#2563EB]">
                     ৳{tuition.salary.toLocaleString()}/mo

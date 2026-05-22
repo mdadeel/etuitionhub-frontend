@@ -82,14 +82,14 @@ const DashPayments = () => {
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             {/* Header Protocol */}
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-[rgba(15,23,46,0.08)] pb-6">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-6">
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
                         <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
                         <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Financial Stream</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-[#111827]">Payment Verification</h2>
-                    <p className="text-xs text-[#5B6475] mt-1">Systems audit interface for secure financial orchestration.</p>
+                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">Payment Verification</h2>
+                    <p className="text-xs text-muted-foreground mt-1">Systems audit interface for secure financial orchestration.</p>
                 </div>
                 
                 {pendingCount > 0 && (
@@ -106,7 +106,7 @@ const DashPayments = () => {
             </header>
 
             {/* Matrix Filters */}
-            <div className="flex flex-wrap bg-[#F8FAFC] p-1.5 rounded-none gap-2 border border-[rgba(15,23,46,0.12)] w-fit backdrop-blur-md">
+            <div className="flex flex-wrap bg-background p-1.5 rounded-none gap-2 border border-border w-fit backdrop-blur-md">
                 {[
                     { id: 'pending_verification', label: 'Verify' },
                     { id: 'verified', label: 'Verified' },
@@ -118,7 +118,7 @@ const DashPayments = () => {
                         onClick={() => setFilter(tab.id)}
                         className={`px-6 py-2.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border transition-all duration-300 ${filter === tab.id
                             ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-none'
-                            : 'text-[#5B6475] border-transparent hover:text-[#111827] hover:bg-[#EEF2F6]'
+                            : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted'
                             }`}
                     >
                         {tab.label}
@@ -128,48 +128,48 @@ const DashPayments = () => {
 
             {/* Technical Table Matrix */}
             {filteredPayments.length === 0 ? (
-                <div className="py-40 text-center bg-[#F8FAFC] border border-[rgba(15,23,46,0.12)] rounded-none relative overflow-hidden group">
-                    <Database size={48} className="text-[#5B6475]/30 mx-auto mb-8 transition-colors duration-700" strokeWidth={1} />
-                    <p className="text-[10px] font-heading font-black text-[#5B6475]/60 uppercase tracking-[0.25em]">
+                <div className="py-40 text-center bg-background border border-border rounded-none relative overflow-hidden group">
+                    <Database size={48} className="text-muted-foreground/30 mx-auto mb-8 transition-colors duration-700" strokeWidth={1} />
+                    <p className="text-[10px] font-heading font-black text-muted-foreground/60 uppercase tracking-[0.25em]">
                         No transaction nodes identified in selected matrix.
                     </p>
                 </div>
             ) : (
-                <div className="bg-white border border-[rgba(15,23,46,0.12)] rounded-none shadow-none overflow-hidden relative">
+                <div className="bg-card border border-border rounded-none shadow-none overflow-hidden relative">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-[#F8FAFC] border-b border-[rgba(15,23,46,0.08)] text-[#5B6475]">
-                                    <th className="hidden lg:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Timestamp</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Source</th>
-                                    <th className="hidden md:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Tutor</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Method</th>
-                                    <th className="hidden xl:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-center">Reference</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Yield</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60">Status</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-[#5B6475]/60 text-right">Ops</th>
+                                <tr className="bg-background border-b border-border text-muted-foreground">
+                                    <th className="hidden lg:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Timestamp</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Source</th>
+                                    <th className="hidden md:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Tutor</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Method</th>
+                                    <th className="hidden xl:table-cell px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60 text-center">Reference</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Yield</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Status</th>
+                                    <th className="px-4 md:px-8 py-5 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60 text-right">Ops</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
+                            <tbody className="divide-y divide-border/40">
                                 {filteredPayments.map((payment) => {
-                                    const method = PAYMENT_METHOD_LABELS[payment.paymentMethod] || { name: payment.paymentMethod, color: 'bg-[#5B6475]/30' };
+                                    const method = PAYMENT_METHOD_LABELS[payment.paymentMethod] || { name: payment.paymentMethod, color: 'bg-muted-foreground/30' };
                                     
                                     return (
-                                        <tr key={payment._id} className="hover:bg-[#F8FAFC] transition-colors group">
-                                            <td className="hidden lg:table-cell px-8 py-6 text-xs font-mono font-bold text-[#5B6475]/60 tabular-nums">
+                                        <tr key={payment._id} className="hover:bg-background transition-colors group">
+                                            <td className="hidden lg:table-cell px-8 py-6 text-xs font-mono font-bold text-muted-foreground/60 tabular-nums">
                                                 {new Date(payment.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
-                                                <p className="text-xs md:text-sm font-bold text-[#111827] leading-tight">{(payment.studentEmail || '').split('@')[0]}</p>
-                                                <p className="text-[9px] md:text-[10px] text-[#5B6475]/40 font-bold mt-1 tabular-nums tracking-widest">{payment.senderNumber}</p>
+                                                <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{(payment.studentEmail || '').split('@')[0]}</p>
+                                                <p className="text-[9px] md:text-[10px] text-muted-foreground/40 font-bold mt-1 tabular-nums tracking-widest">{payment.senderNumber}</p>
                                             </td>
                                             <td className="hidden md:table-cell px-8 py-6">
-                                                <p className="text-sm font-bold text-[#111827]">{payment.tutorName || '—'}</p>
+                                                <p className="text-sm font-bold text-foreground">{payment.tutorName || '—'}</p>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
                                                 <div className="flex items-center gap-2">
                                                     <div className={`w-2 h-2 rounded-none ${method.color}`}></div>
-                                                    <span className="text-[9px] md:text-[10px] font-heading font-black text-[#111827] uppercase tracking-widest">{(method.name || '').split(' ')[0]}</span>
+                                                    <span className="text-[9px] md:text-[10px] font-heading font-black text-foreground uppercase tracking-widest">{(method.name || '').split(' ')[0]}</span>
                                                 </div>
                                             </td>
                                             <td className="hidden xl:table-cell px-8 py-6 text-center">
@@ -178,7 +178,7 @@ const DashPayments = () => {
                                                 </span>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
-                                                <p className="text-xs md:text-sm font-heading font-black text-[#111827] tabular-nums italic">৳{payment.amount}</p>
+                                                <p className="text-xs md:text-sm font-heading font-black text-foreground tabular-nums italic">৳{payment.amount}</p>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
                                                 <span className={`px-2.5 py-1 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${
@@ -208,7 +208,7 @@ const DashPayments = () => {
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-[9px] font-heading font-black text-[#5B6475]/30 uppercase tracking-[0.2em] italic">Done</span>
+                                                    <span className="text-[9px] font-heading font-black text-muted-foreground/30 uppercase tracking-[0.2em] italic">Done</span>
                                                 )}
                                             </td>
                                         </tr>
