@@ -69,7 +69,7 @@ const Profile = () => {
                         <p className="text-sm text-[#5B6475] mt-1">Manage your personal information and profile details.</p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <span className="px-3 py-1.5 text-xs font-semibold rounded-full bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">
+                        <span className="px-3 py-1.5 text-xs font-semibold rounded-none bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">
                             {dbUser?.role?.charAt(0).toUpperCase() + dbUser?.role?.slice(1) || 'User'}
                         </span>
                     </div>
@@ -88,7 +88,7 @@ const Profile = () => {
                                 />
                                 <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
                             </Avatar>
-                            <div className="absolute bottom-1 right-1 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-[rgba(15,23,46,0.08)] cursor-pointer hover:scale-110 transition-transform text-[#5B6475] hover:text-[#2563EB]">
+                            <div className="absolute bottom-1 right-1 w-12 h-12 bg-white rounded-none flex items-center justify-center shadow-lg border border-[rgba(15,23,46,0.08)] cursor-pointer hover:scale-110 transition-transform text-[#5B6475] hover:text-[#2563EB]">
                                 <Camera size={20} />
                             </div>
                         </div>
@@ -108,7 +108,7 @@ const Profile = () => {
                                     <label className="text-xs font-semibold text-[#5B6475] ml-1">Full Name</label>
                                     <input 
                                         type="text"
-                                        className="w-full bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] px-4 py-3.5 rounded-xl text-sm font-medium text-[#111827] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]/40"
+                                        className="w-full bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] px-4 py-3.5 rounded-none text-sm font-medium text-[#111827] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]/40"
                                         value={nameInput}
                                         onChange={(e) => setNameInput(e.target.value)}
                                         placeholder="Enter your name"
@@ -119,7 +119,7 @@ const Profile = () => {
                                     <div className="relative group">
                                         <input 
                                             type="email"
-                                            className="w-full bg-[#EEF2F6] border border-[rgba(15,23,46,0.08)] px-4 py-3.5 rounded-xl text-xs font-medium text-[#5B6475] cursor-not-allowed transition-all"
+                                            className="w-full bg-[#EEF2F6] border border-[rgba(15,23,46,0.08)] px-4 py-3.5 rounded-none text-xs font-medium text-[#5B6475] cursor-not-allowed transition-all"
                                             value={user?.email || ''}
                                             readOnly
                                         />
@@ -134,7 +134,7 @@ const Profile = () => {
                                     <label className="text-xs font-semibold text-[#5B6475] ml-1">Phone Number</label>
                                     <input 
                                         type="tel"
-                                        className="w-full bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] px-4 py-3.5 rounded-xl text-sm font-medium text-[#111827] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]/40"
+                                        className="w-full bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] px-4 py-3.5 rounded-none text-sm font-medium text-[#111827] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]/40"
                                         value={mobileInput}
                                         onChange={(e) => setMobileInput(e.target.value)}
                                         placeholder="e.g. 01700000000"
@@ -145,7 +145,7 @@ const Profile = () => {
                                     <div className="relative group">
                                         <input 
                                             type="url"
-                                            className="w-full bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] px-4 py-3.5 rounded-xl text-sm font-medium text-[#111827] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]/40"
+                                            className="w-full bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] px-4 py-3.5 rounded-none text-sm font-medium text-[#111827] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]/40"
                                             value={photoInput}
                                             onChange={(e) => setPhotoInput(e.target.value)}
                                             placeholder="https://example.com/photo.jpg"
@@ -183,7 +183,7 @@ const Profile = () => {
                     <div className="mt-8">
                         <Card className="p-6 bg-[#2563EB]/5 border border-[#2563EB]/10" hover={false}>
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-[rgba(15,23,46,0.08)]">
+                                <div className="w-10 h-10 rounded-none bg-white flex items-center justify-center shrink-0 shadow-sm border border-[rgba(15,23,46,0.08)]">
                                     <ShieldCheck className="text-[#2563EB]" size={20} />
                                 </div>
                                 <div>

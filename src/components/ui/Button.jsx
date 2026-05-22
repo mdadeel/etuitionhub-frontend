@@ -25,7 +25,7 @@ const Button = ({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300',
+        'inline-flex items-center justify-center font-medium rounded-none transition-all duration-300',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]/30 focus-visible:ring-offset-2',
         'disabled:opacity-50 disabled:pointer-events-none',
         variants[variant],

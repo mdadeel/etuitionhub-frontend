@@ -103,18 +103,18 @@ const TutorDashboard = () => {
             <AppleHeader 
                 title={`Welcome back, ${user?.displayName?.split(' ')[0]}`}
                 subtitle="Here's a summary of your professional activity and performance."
-                badge={<span className="px-3 py-1 text-xs font-semibold rounded-full bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">Specialist Dashboard</span>}
+                badge={<span className="px-3 py-1 text-xs font-semibold rounded-none bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">Tutor Dashboard</span>}
             />
 
             {/* Tab Navigation */}
             <div className="w-full overflow-hidden">
-                <div className="flex items-center gap-1 bg-[#EEF2F6] p-1 rounded-2xl border border-[rgba(15,23,46,0.08)] w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+                <div className="flex items-center gap-1 bg-[#EEF2F6] p-1 rounded-none border border-[rgba(15,23,46,0.08)] w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-xl whitespace-nowrap min-w-fit",
+                                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-none whitespace-nowrap min-w-fit",
                                 activeTab === tab.id
                                     ? "bg-white text-[#2563EB] shadow-sm border border-[rgba(15,23,46,0.08)]"
                                     : "text-[#5B6475] hover:text-[#111827] hover:bg-white/50"
@@ -132,7 +132,7 @@ const TutorDashboard = () => {
                 <div className="space-y-10">
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                         <AppleCard className="p-6 md:p-10 group" hover={false}>
-                            <div className="w-12 h-12 rounded-2xl bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
+                            <div className="w-12 h-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
                                 <FileText size={24} />
                             </div>
                             <p className="text-xs font-semibold text-[#5B6475] mb-2">Total Applications</p>
@@ -143,7 +143,7 @@ const TutorDashboard = () => {
                         </AppleCard>
 
                         <AppleCard className="p-6 md:p-10 group" hover={false}>
-                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
+                            <div className="w-12 h-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                                 <UserCheck size={24} />
                             </div>
                             <p className="text-xs font-semibold text-[#5B6475] mb-2">Active Engagements</p>
@@ -154,7 +154,7 @@ const TutorDashboard = () => {
                         </AppleCard>
 
                         <AppleCard className="p-6 md:p-10 group col-span-2 lg:col-span-1" hover={false}>
-                            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
+                            <div className="w-12 h-12 rounded-none bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
                                 <TrendingUp size={24} />
                             </div>
                             <p className="text-xs font-semibold text-[#5B6475] mb-2">Total Earnings</p>
@@ -174,9 +174,9 @@ const TutorDashboard = () => {
                             ) : (
                                 <div className="space-y-4">
                                     {apps.slice(0, 3).map((app) => (
-                                        <div key={app._id} className="flex items-center justify-between p-4 rounded-2xl bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)]">
+                                        <div key={app._id} className="flex items-center justify-between p-4 rounded-none bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)]">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-8 h-8 rounded-xl bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] flex items-center justify-center">
+                                                <div className="w-8 h-8 rounded-none bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] flex items-center justify-center">
                                                     <FileText size={14} className="text-[#2563EB]/60" />
                                                 </div>
                                                 <div>
@@ -210,7 +210,7 @@ const TutorDashboard = () => {
                                 <thead className="bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]">
                                     <tr>
                                         <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Subject</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Expected Yield</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Expected Fee</th>
                                         <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Status</th>
                                         <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-right">Action</th>
                                     </tr>
@@ -224,7 +224,7 @@ const TutorDashboard = () => {
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-[#2563EB] tabular-nums">৳{app.expectedSalary}</td>
                                             <td className="px-8 py-6 text-center">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${app.status === 'approved' ? 'bg-[#2563EB]/10 text-[#2563EB]' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-[#F5F7FA] text-[#5B6475]'}`}>
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${app.status === 'approved' ? 'bg-[#2563EB]/10 text-[#2563EB]' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-[#F5F7FA] text-[#5B6475]'}`}>
                                                     {app.status}
                                                 </span>
                                             </td>
@@ -258,7 +258,7 @@ const TutorDashboard = () => {
                     ) : (
                         apps.filter(a => a.status === 'approved').map(app => (
                             <AppleCard key={app._id} className="p-4 md:p-8 group relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#2563EB]/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#2563EB]/5 rounded-none -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
                                 <div className="relative z-10">
                                     <div className="flex items-center gap-2 mb-6">
                                         <div className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse"></div>
@@ -268,16 +268,16 @@ const TutorDashboard = () => {
                                     
                                     <div className="space-y-4 mb-8">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xs font-semibold text-[#5B6475]">Student Node</span>
+                                            <span className="text-xs font-semibold text-[#5B6475]">Student Email</span>
                                             <span className="text-xs font-bold text-[#111827]">{app.studentEmail}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xs font-semibold text-[#5B6475]">Cycle Yield</span>
+                                            <span className="text-xs font-semibold text-[#5B6475]">Monthly Fee</span>
                                             <span className="text-sm font-bold text-[#2563EB] tabular-nums">৳{app.expectedSalary} <span className="text-xs text-[#5B6475] opacity-50">/mo</span></span>
                                         </div>
                                     </div>
                                     
-                                    <AppleButton asChild variant="outline" className="w-full h-11 rounded-xl">
+                                    <AppleButton asChild variant="outline" className="w-full h-11 rounded-none">
                                         <a href={`mailto:${app.studentEmail}`} className="flex items-center justify-center gap-2">
                                             Send Message <ArrowUpRight size={14} />
                                         </a>
@@ -296,12 +296,12 @@ const TutorDashboard = () => {
                         <div>
                              <h2 className="text-lg font-bold text-[#111827] tracking-tight flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-[#2563EB]"></div>
-                                Yield Report
+                                Earnings Report
                             </h2>
-                            <p className="text-xs font-medium text-[#5B6475] mt-1">Audit trail for all completed node transmissions.</p>
+                            <p className="text-xs font-medium text-[#5B6475] mt-1">Audit trail for all completed tutor payments.</p>
                         </div>
-                        <div className="bg-white px-8 py-4 rounded-2xl border border-[rgba(15,23,46,0.08)] shadow-sm">
-                            <p className="text-xs font-semibold text-[#5B6475] mb-1">Total Yield</p>
+                        <div className="bg-white px-8 py-4 rounded-none border border-[rgba(15,23,46,0.08)] shadow-sm">
+                            <p className="text-xs font-semibold text-[#5B6475] mb-1">Total Earnings</p>
                             <p className="text-2xl font-bold text-[#2563EB] tracking-tight tabular-nums">৳{totalEarnings}</p>
                         </div>
                     </div>
@@ -309,7 +309,7 @@ const TutorDashboard = () => {
                     {revenue.length === 0 ? (
                         <div className="p-32 text-center">
                             <Banknote size={48} className="text-[#5B6475]/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-[#5B6475] italic">No financial history logs identified.</p>
+                            <p className="text-sm font-medium text-[#5B6475] italic">No payment history found.</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
@@ -317,8 +317,8 @@ const TutorDashboard = () => {
                                 <thead className="bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]">
                                     <tr>
                                         <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Date</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Source Node</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Yield</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">Subject / Student</th>
+                                        <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-center">Amount</th>
                                         <th className="px-8 py-5 text-xs font-semibold text-[#5B6475] text-right">Status</th>
                                     </tr>
                                 </thead>
@@ -329,12 +329,12 @@ const TutorDashboard = () => {
                                                 {new Date(payment.createdAt).toLocaleDateString()}
                                             </td>
                                             <td className="px-8 py-6">
-                                                <p className="text-sm font-bold text-[#111827]">{payment.tuitionId?.subject || 'External Node'}</p>
+                                                <p className="text-sm font-bold text-[#111827]">{payment.tuitionId?.subject || 'Tutoring Fee'}</p>
                                                 <p className="text-xs text-[#5B6475] font-medium mt-1">{payment.studentEmail}</p>
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-[#2563EB] tabular-nums">৳{payment.amount}</td>
                                             <td className="px-8 py-6 text-right">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${payment.status === 'verified' ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-[#F5F7FA] text-[#5B6475]'}`}>
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${payment.status === 'verified' ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-[#F5F7FA] text-[#5B6475]'}`}>
                                                     {payment.status}
                                                 </span>
                                             </td>

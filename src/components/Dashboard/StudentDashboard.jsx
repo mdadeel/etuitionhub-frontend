@@ -178,7 +178,7 @@ const StudentDashboard = () => {
         title={`Hello, ${user?.displayName?.split(" ")[0]}`}
         subtitle="Manage your tutoring requests and find the perfect match for your studies."
         badge={
-          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">
+          <span className="px-3 py-1 text-xs font-semibold rounded-none bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">
             Student Dashboard
           </span>
         }
@@ -186,13 +186,13 @@ const StudentDashboard = () => {
 
       {/* Tab Navigation */}
       <div className="w-full overflow-hidden">
-        <div className="flex items-center gap-1 bg-[#EEF2F6] p-1 rounded-2xl border border-[rgba(15,23,46,0.08)] w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+        <div className="flex items-center gap-1 bg-[#EEF2F6] p-1 rounded-none border border-[rgba(15,23,46,0.08)] w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-xl whitespace-nowrap min-w-fit",
+                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-none whitespace-nowrap min-w-fit",
                 activeTab === tab.id
                   ? "bg-white text-[#2563EB] shadow-sm border border-[rgba(15,23,46,0.08)]"
                   : "text-[#5B6475] hover:text-[#111827] hover:bg-white/50",
@@ -219,7 +219,7 @@ const StudentDashboard = () => {
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             <AppleCard className="p-6 md:p-10 group" hover={false}>
-              <div className="w-12 h-12 rounded-2xl bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
+              <div className="w-12 h-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
                 <Database size={24} />
               </div>
               <p className="text-xs font-semibold text-[#5B6475] mb-2">
@@ -230,13 +230,13 @@ const StudentDashboard = () => {
                   {myTuitions.length}
                 </span>
                 <span className="text-xs font-semibold text-[#5B6475]">
-                  Nodes
+                  Requests
                 </span>
               </div>
             </AppleCard>
 
             <AppleCard className="p-6 md:p-10 group" hover={false}>
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
+              <div className="w-12 h-12 rounded-none bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
                 <FileText size={24} />
               </div>
               <p className="text-xs font-semibold text-[#5B6475] mb-2">
@@ -247,7 +247,7 @@ const StudentDashboard = () => {
                   {applications.length}
                 </span>
                 <span className="text-xs font-semibold text-[#5B6475]">
-                  Apps
+                  Applications
                 </span>
               </div>
             </AppleCard>
@@ -256,7 +256,7 @@ const StudentDashboard = () => {
               className="p-6 md:p-10 group col-span-2 lg:col-span-1"
               hover={false}
             >
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
+              <div className="w-12 h-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                 <UserCheck size={24} />
               </div>
               <p className="text-xs font-semibold text-[#5B6475] mb-2">
@@ -277,10 +277,10 @@ const StudentDashboard = () => {
       {/* Post Job Tab */}
       {activeTab === "post-job" && (
         <AppleCard className="p-8 md:p-12 max-w-4xl mx-auto relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-none -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-10">
-              <div className="w-12 h-12 rounded-2xl bg-[#2563EB] text-white flex items-center justify-center shadow-lg shadow-[#2563EB]/20">
+              <div className="w-12 h-12 rounded-none bg-[#2563EB] text-white flex items-center justify-center shadow-lg shadow-[#2563EB]/20">
                 <Plus size={24} />
               </div>
               <div>
@@ -304,7 +304,7 @@ const StudentDashboard = () => {
                       required: "Subject is required",
                     })}
                     placeholder="e.g. Higher Mathematics"
-                    className="h-11 rounded-xl bg-[#F5F7FA] border-[rgba(15,23,46,0.08)]"
+                    className="h-11 rounded-none bg-[#F5F7FA] border-[rgba(15,23,46,0.08)]"
                   />
                   {errors.subject && (
                     <p className="text-xs text-red-600 ml-1">
@@ -352,7 +352,7 @@ const StudentDashboard = () => {
                     {...register("salary", { required: "Budget is required" })}
                     type="number"
                     placeholder="5000"
-                    className="h-11 rounded-xl bg-[#F5F7FA] border-[rgba(15,23,46,0.08)]"
+                    className="h-11 rounded-none bg-[#F5F7FA] border-[rgba(15,23,46,0.08)]"
                   />
                   {errors.salary && (
                     <p className="text-xs text-red-600 ml-1">
@@ -412,7 +412,7 @@ const StudentDashboard = () => {
 
               <AppleButton
                 type="submit"
-                className="w-full h-12 rounded-xl shadow-lg shadow-[#2563EB]/20"
+                className="w-full h-12 rounded-none shadow-lg shadow-[#2563EB]/20"
                 disabled={submitting}
               >
                 {submitting ? (
@@ -440,7 +440,7 @@ const StudentDashboard = () => {
                     Subject
                   </th>
                   <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">
-                    Yield
+                    Budget
                   </th>
                   <th className="px-8 py-5 text-xs font-semibold text-[#5B6475]">
                     Status
@@ -479,7 +479,7 @@ const StudentDashboard = () => {
                       </td>
                       <td className="px-8 py-6">
                         <span
-                          className={`px-2.5 py-1 text-xs font-semibold rounded-full ${job.status === "approved" ? "bg-[#2563EB]/10 text-[#2563EB]" : "bg-[#F5F7FA] text-[#5B6475]"}`}
+                          className={`px-2.5 py-1 text-xs font-semibold rounded-none ${job.status === "approved" ? "bg-[#2563EB]/10 text-[#2563EB]" : "bg-[#F5F7FA] text-[#5B6475]"}`}
                         >
                           {job.status === "approved" ? "Active" : "Pending"}
                         </span>
@@ -541,14 +541,14 @@ const StudentDashboard = () => {
                       </p>
                     </div>
                     <span
-                      className={`px-2.5 py-1 text-xs font-semibold rounded-full ${app.status === "approved" ? "bg-[#2563EB]/10 text-[#2563EB]" : app.status === "rejected" ? "bg-red-500/10 text-red-600" : "bg-[#F5F7FA] text-[#5B6475]"}`}
+                      className={`px-2.5 py-1 text-xs font-semibold rounded-none ${app.status === "approved" ? "bg-[#2563EB]/10 text-[#2563EB]" : app.status === "rejected" ? "bg-red-500/10 text-red-600" : "bg-[#F5F7FA] text-[#5B6475]"}`}
                     >
                       {app.status}
                     </span>
                   </div>
 
                   <div className="space-y-4 mb-8">
-                    <div className="p-4 rounded-xl bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] text-xs text-[#5B6475] leading-relaxed italic">
+                    <div className="p-4 rounded-none bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)] text-xs text-[#5B6475] leading-relaxed italic">
                       "{app.qualifications}"
                     </div>
                     <div className="flex justify-between items-center pt-4 border-t border-[rgba(15,23,46,0.08)]">
@@ -565,13 +565,13 @@ const StudentDashboard = () => {
                     <div className="flex gap-3">
                       <AppleButton
                         variant="outline"
-                        className="flex-1 h-10 rounded-xl text-xs"
+                        className="flex-1 h-10 rounded-none text-xs"
                         onClick={() => handleReject(app._id)}
                       >
                         Decline
                       </AppleButton>
                       <AppleButton
-                        className="flex-1 h-10 rounded-xl text-xs"
+                        className="flex-1 h-10 rounded-none text-xs"
                         onClick={() => handleApprove(app._id)}
                       >
                         Approve
@@ -640,13 +640,13 @@ const StudentDashboard = () => {
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="flex flex-col items-end gap-2">
-                          <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#2563EB]/10 text-[#2563EB]">
-                            Protocol Active
+                          <span className="px-2.5 py-1 text-xs font-semibold rounded-none bg-[#2563EB]/10 text-[#2563EB]">
+                            Active
                           </span>
                           {booking.isAccepted && (
                             <AppleButton
                               size="sm"
-                              className="h-7 px-3 text-xs rounded-lg"
+                              className="h-7 px-3 text-xs rounded-none"
                               onClick={() =>
                                 navigate(`/session/${booking._id}`)
                               }

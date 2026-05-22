@@ -112,10 +112,10 @@ const TutorProfile = () => {
     <div className="max-w-5xl mx-auto pb-20">
       <div className="mb-12 space-y-2 border-b border-slate-200 pb-8">
         <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">
-          Professional Dossier
+          Tutor Profile
         </h1>
         <p className="text-slate-500 text-xs font-black uppercase tracking-widest">
-          Manage your professional tutoring profile and qualifications.
+          Manage your tutoring profile and qualifications.
         </p>
       </div>
 
@@ -380,12 +380,12 @@ const TutorProfile = () => {
             {loading ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                Synchronizing...
+                Saving...
               </>
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                Commit Changes
+                Save Changes
               </>
             )}
           </button>

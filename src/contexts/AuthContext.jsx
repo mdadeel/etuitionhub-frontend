@@ -97,6 +97,19 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Check if user exists in database by email
+    const checkUserExists = async (email) => {
+        try {
+            console.log('Checking user existence for:', email);
+            const res = await api.get(`/api/users/check/${email.toLowerCase()}`);
+            return res.data.exists;
+        } catch (error) {
+            console.error('Error checking user existence:', error);
+            return false;
+        }
+    };
+
+
     // JWT generation helper
     const setJWT = async (email) => {
         if (!email) return;
@@ -238,6 +251,42 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Google register - preserve selected role for new users, intercept existing users
+    const googleRegister = async (role = 'student') => {
+        setLoading(true);
+        try {
+            let result = await signInWithPopup(auth, googleProvider);
+            const email = result.user.email;
+
+            // Check if user already exists in DB
+            const exists = await checkUserExists(email);
+            if (exists) {
+                // User already exists! Sign out of Firebase session immediately
+                await signOut(auth);
+                const error = new Error('User already exists');
+                error.code = 'USER_EXISTS';
+                throw error;
+            }
+
+            // Save new user to DB with selected role
+            console.log('Google register - saving new user with role:', role);
+            const dbRecord = await saveUserToDB(result.user, role);
+
+            // Update local state immediately with DB data
+            setDbUser(dbRecord);
+            setUserRole(dbRecord.role);
+
+            // Generate JWT immediately
+            await setJWT(email);
+
+            return result;
+        } catch (error) {
+            console.error('Google registration error:', error.code, error.message);
+            setLoading(false);
+            throw error;
+        }
+    };
+
     // Logout - token clear korbo
     const logout = () => {
         setLoading(true);
@@ -279,9 +328,11 @@ export const AuthProvider = ({ children }) => {
         register,
         updateUserProfile,
         refreshUserFromDB,
+        checkUserExists,
         login,
         resetPassword,
         googleLogin,
+        googleRegister,
         logout
     };
 

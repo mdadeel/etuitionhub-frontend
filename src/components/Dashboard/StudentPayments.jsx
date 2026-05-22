@@ -73,7 +73,7 @@ const StudentPayments = () => {
             rejected: { variant: 'error', label: 'Rejected' }
         };
         const { variant, label } = variants[status] || { variant: 'default', label: status };
-        return <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${variant === 'warning' ? 'bg-amber-500/10 text-amber-600' : variant === 'primary' ? 'bg-primary/10 text-primary' : variant === 'success' ? 'bg-green-500/10 text-green-600' : variant === 'error' ? 'bg-red-500/10 text-red-600' : 'bg-muted text-muted-foreground'}`}>{label}</span>;
+        return <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-none ${variant === 'warning' ? 'bg-amber-500/10 text-amber-600' : variant === 'primary' ? 'bg-primary/10 text-primary' : variant === 'success' ? 'bg-green-500/10 text-green-600' : variant === 'error' ? 'bg-red-500/10 text-red-600' : 'bg-muted text-muted-foreground'}`}>{label}</span>;
     };
 
     return (
@@ -81,9 +81,9 @@ const StudentPayments = () => {
             <AppleHeader 
                 title="Payment History" 
                 subtitle="Track all your transactions and payment activities."
-                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-secondary/10 text-secondary">Financial Records</span>}
+                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-none bg-secondary/10 text-secondary">Financial Records</span>}
                 action={
-                    <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-2xl border border-green-500/20">
+                    <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-none border border-green-500/20">
                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                         <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Live Sync</span>
                     </div>
@@ -93,7 +93,7 @@ const StudentPayments = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 <AppleCard className="p-6 group">
-                    <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-none bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <Banknote size={20} />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Total Transactions</p>
@@ -104,7 +104,7 @@ const StudentPayments = () => {
                 </AppleCard>
 
                 <AppleCard className="p-6 group">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <TrendingUp size={20} />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Total Spent</p>
@@ -115,7 +115,7 @@ const StudentPayments = () => {
                 </AppleCard>
 
                 <AppleCard className="p-6 group">
-                    <div className="w-10 h-10 rounded-2xl bg-orange-500/10 text-orange-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-none bg-orange-500/10 text-orange-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <AlertCircle size={20} />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Pending</p>
@@ -126,7 +126,7 @@ const StudentPayments = () => {
                 </AppleCard>
 
                 <AppleCard className="p-6 group">
-                    <div className="w-10 h-10 rounded-2xl bg-green-500/10 text-green-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-none bg-green-500/10 text-green-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <CheckCircle2 size={20} />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Completed</p>
@@ -138,13 +138,13 @@ const StudentPayments = () => {
             </div>
 
             {/* Filters */}
-            <div className="flex items-center gap-1 bg-muted/30 p-1.5 rounded-2xl border border-border/40 w-fit max-w-full overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-1 bg-muted/30 p-1.5 rounded-none border border-border/40 w-fit max-w-full overflow-x-auto scrollbar-hide">
                 {filterOptions.map(opt => (
                     <button
                         key={opt.id}
                         onClick={() => setFilter(opt.id)}
                         className={cn(
-                            "flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all duration-300 rounded-xl whitespace-nowrap",
+                            "flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all duration-300 rounded-none whitespace-nowrap",
                             filter === opt.id
                                 ? "bg-background text-primary shadow-sm shadow-primary/5 border border-border/40"
                                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -152,7 +152,7 @@ const StudentPayments = () => {
                     >
                         {opt.label}
                         <span className={cn(
-                            "px-2 py-0.5 text-[10px] rounded-full",
+                            "px-2 py-0.5 text-[10px] rounded-none",
                             filter === opt.id ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
                         )}>
                             {opt.count}
@@ -219,7 +219,7 @@ const StudentPayments = () => {
                                                 <span className="text-lg font-bold text-primary tabular-nums">৳{payment.amount?.toLocaleString()}</span>
                                             </td>
                                             <td className="px-8 py-6 text-center">
-                                                <span className="text-xs font-mono text-muted-foreground bg-muted/30 px-2 py-1 rounded-lg">
+                                                <span className="text-xs font-mono text-muted-foreground bg-muted/30 px-2 py-1 rounded-none">
                                                     {payment.transactionId || 'N/A'}
                                                 </span>
                                             </td>

@@ -13,8 +13,10 @@ export const ThemeProvider = ({ children }) => {
         const root = window.document.documentElement;
         if (theme === 'dark') {
             root.classList.add('dark');
+            root.classList.remove('light');
         } else {
             root.classList.remove('dark');
+            root.classList.add('light');
         }
         localStorage.setItem('theme', theme);
     }, [theme]);

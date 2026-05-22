@@ -26,7 +26,7 @@ const Badge = ({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 font-medium rounded-lg border',
+        'inline-flex items-center gap-1.5 font-medium rounded-none border',
         variants[variant],
         sizes[size],
         className

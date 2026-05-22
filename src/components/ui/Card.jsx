@@ -21,7 +21,7 @@ const Card = ({
   return (
     <div
       className={cn(
-        'rounded-xl',
+        'rounded-none',
         variants[variant],
         hoverStyles,
         className

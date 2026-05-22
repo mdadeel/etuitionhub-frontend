@@ -99,7 +99,7 @@ const VerificationFlow = () => {
     if (status === 'pending_review') {
         return (
             <Card className="p-10 text-center max-w-xl mx-auto mt-10">
-                <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-yellow-100 rounded-none flex items-center justify-center mx-auto mb-6">
                     <Clock size={40} className="text-yellow-600" />
                 </div>
                 <h2 className="text-2xl font-bold text-[#111827] mb-3">Verification Pending</h2>
@@ -114,14 +114,14 @@ const VerificationFlow = () => {
     if (status === 'verified_basic' || status === 'verified_premium') {
         return (
             <Card className="p-10 text-center max-w-xl mx-auto mt-10 border-emerald-200">
-                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-emerald-100 rounded-none flex items-center justify-center mx-auto mb-6">
                     <CheckCircle size={40} className="text-emerald-600" />
                 </div>
                 <h2 className="text-2xl font-bold text-[#111827] mb-3">You are Verified!</h2>
                 <p className="text-[#5B6475] mb-6">
                     Your profile has the verified badge. This helps build trust with students and increases your booking rate.
                 </p>
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full font-semibold">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-none font-semibold">
                     <ShieldCheck size={18} /> Verified Tutor
                 </div>
             </Card>
@@ -138,7 +138,7 @@ const VerificationFlow = () => {
             </div>
 
             <Card className="p-6 md:p-10">
-                <div className="flex items-start gap-4 p-4 mb-8 bg-blue-50 text-blue-800 rounded-xl">
+                <div className="flex items-start gap-4 p-4 mb-8 bg-blue-50 text-blue-800 rounded-none">
                     <AlertCircle size={24} className="shrink-0 mt-0.5" />
                     <p className="text-sm leading-relaxed">
                         <strong>Why verify?</strong> Verified tutors appear higher in search results and receive 3x more bookings. Your documents are encrypted and only accessible by admins.
@@ -149,7 +149,7 @@ const VerificationFlow = () => {
                     {/* NID Upload */}
                     <div className="space-y-3">
                         <label className="text-sm font-semibold text-[#111827]">National ID / Passport</label>
-                        <div className="border-2 border-dashed border-[rgba(15,23,46,0.15)] rounded-2xl p-8 text-center hover:bg-[#F9FAFB] transition-colors relative">
+                        <div className="border-2 border-dashed border-[rgba(15,23,46,0.15)] rounded-none p-8 text-center hover:bg-[#F9FAFB] transition-colors relative">
                             <input 
                                 type="file" 
                                 accept="image/*,.pdf"
@@ -171,7 +171,7 @@ const VerificationFlow = () => {
                     {/* Certificate Upload */}
                     <div className="space-y-3">
                         <label className="text-sm font-semibold text-[#111827]">Latest Academic Certificate</label>
-                        <div className="border-2 border-dashed border-[rgba(15,23,46,0.15)] rounded-2xl p-8 text-center hover:bg-[#F9FAFB] transition-colors relative">
+                        <div className="border-2 border-dashed border-[rgba(15,23,46,0.15)] rounded-none p-8 text-center hover:bg-[#F9FAFB] transition-colors relative">
                             <input 
                                 type="file" 
                                 accept="image/*,.pdf"
@@ -196,7 +196,7 @@ const VerificationFlow = () => {
                                 <span>Uploading documents...</span>
                                 <span>{Math.round(progress)}%</span>
                             </div>
-                            <div className="w-full h-2 bg-[#EEF2F6] rounded-full overflow-hidden">
+                            <div className="w-full h-2 bg-[#EEF2F6] rounded-none overflow-hidden">
                                 <div 
                                     className="h-full bg-[#2563EB] transition-all duration-300" 
                                     style={{ width: `${progress}%` }} 
