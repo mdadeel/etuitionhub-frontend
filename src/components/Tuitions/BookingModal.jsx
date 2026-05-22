@@ -59,7 +59,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-md bg-white">
+            <DialogContent className="sm:max-w-md bg-card">
                 <DialogHeader>
                     <DialogTitle>Book Session with {tutorName}</DialogTitle>
                     <DialogDescription>
@@ -82,9 +82,9 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                                 className="w-full px-3 py-2 border rounded-lg"
                             />
                         </div>
-                        <p className="mb-2 font-medium text-sm text-gray-700">Available Slots:</p>
+                        <p className="mb-2 font-medium text-sm text-foreground/80">Available Slots:</p>
                         {availability.length === 0 ? (
-                            <p className="text-gray-500 text-sm italic">No slots available right now.</p>
+                            <p className="text-muted-foreground text-sm italic">No slots available right now.</p>
                         ) : (
                             <div className="grid grid-cols-2 gap-2">
                                 {availability.map((day, idx) => (
@@ -112,7 +112,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
                 {step === 2 && (
                     <div className="py-4">
-                        <p className="mb-4 text-sm text-gray-600">You have selected <span className="font-semibold text-gray-900">{selectedSlot?.startTime} to {selectedSlot?.endTime}</span>. Choose your payment method to confirm:</p>
+                        <p className="mb-4 text-sm text-muted-foreground">You have selected <span className="font-semibold text-foreground">{selectedSlot?.startTime} to {selectedSlot?.endTime}</span>. Choose your payment method to confirm:</p>
                         <div className="flex flex-col gap-3 mt-6">
                             <Button className="bg-[#E2136E] hover:bg-[#b00f55] text-white w-full" onClick={() => handleConfirm('bkash')}>
                                 Pay with bKash
@@ -130,8 +130,8 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                         <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Check className="w-6 h-6" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900">Booking Confirmed!</h3>
-                        <p className="text-sm text-gray-500 mt-2">Your session has been successfully scheduled.</p>
+                        <h3 className="text-lg font-medium text-foreground">Booking Confirmed!</h3>
+                        <p className="text-sm text-muted-foreground mt-2">Your session has been successfully scheduled.</p>
                         <Button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={onClose}>Done</Button>
                     </div>
                 )}

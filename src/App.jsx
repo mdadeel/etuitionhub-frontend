@@ -18,6 +18,7 @@ import Tuitions from "./pages/Tuitions";
 import Tutors from "./pages/Tutors";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { ChatProvider } from "./contexts/ChatContext";
 import Blog from "./pages/Blog";
 import TutorDetails from "./pages/TutorDetails";
 import TuitionDetails from "./pages/TuitionDetails";
@@ -37,6 +38,7 @@ import AdminLogin from "./pages/AdminLogin";
 import PasswordReset from "./pages/PasswordReset";
 import SearchPage from "./pages/SearchPage";
 import OnboardingTour from "./components/shared/OnboardingTour";
+import FloatingChat from "./components/shared/FloatingChat";
 import { cn } from "@/lib/utils";
 
 const ScrollToTop = () => {
@@ -97,8 +99,9 @@ let App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <SessionExpiryCheck />
+        <ChatProvider>
+          <BrowserRouter>
+            <SessionExpiryCheck />
           <ScrollToTop />
           <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
             <ConditionalNavbar />
@@ -190,12 +193,14 @@ let App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </MainContent>
-            <ConditionalFooter />
-            <MobileBottomNav />
-            <OnboardingTour />
-            <Toaster position="top-right" />
-          </div>
-        </BrowserRouter>
+              <ConditionalFooter />
+              <MobileBottomNav />
+              <FloatingChat />
+              <OnboardingTour />
+              <Toaster position="top-right" />
+            </div>
+          </BrowserRouter>
+        </ChatProvider>
       </AuthProvider>
     </ThemeProvider>
   );
