@@ -3,7 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 import api from "../services/api";
-import { BANGLADESH_DIVISIONS } from "../utils/constants";
+import {
+  BANGLADESH_DIVISIONS,
+  SUBJECT_OPTIONS,
+  GENDER_OPTIONS,
+  WEEK_DAYS,
+  MEDIUM_OPTIONS,
+} from "../utils/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +24,16 @@ const PostTuition = () => {
   const [salary, setSalary] = useState("");
   const [medium, setMedium] = useState("");
   const [location, setLocation] = useState("");
+  const [gender, setGender] = useState("");
+  const [daysPerWeek, setDaysPerWeek] = useState("");
+  const [availableDays, setAvailableDays] = useState([]);
+  const [description, setDescription] = useState("");
+
+  const toggleDay = (day) => {
+    setAvailableDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +43,15 @@ const PostTuition = () => {
       return;
     }
 
-    if (!subject || !className || !salary || !medium || !location) {
+    if (
+      !subject ||
+      !className ||
+      !salary ||
+      !medium ||
+      !location ||
+      !gender ||
+      !daysPerWeek
+    ) {
       toast.error("All fields are required");
       return;
     }
@@ -41,6 +65,10 @@ const PostTuition = () => {
         medium,
         location,
         student_email: user.email,
+        gender,
+        days_per_week: parseInt(daysPerWeek),
+        available_days: availableDays,
+        description: description || undefined,
         status: "pending",
       });
       toast.success("Tuition posted successfully!");
@@ -54,49 +82,49 @@ const PostTuition = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F7FA]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="w-8 h-8 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
-          <span className="text-sm text-[#5B6475]">Loading...</span>
+          <span className="text-sm text-muted-foreground">Loading...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#F5F7FA] min-h-screen py-12">
+    <div className="bg-background min-h-screen py-12">
       <div className="max-w-3xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm text-[#5B6475] hover:text-[#111827] mb-4 transition-colors"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
           >
             <ArrowLeft size={16} /> Back
           </button>
-          <h1 className="text-2xl font-heading text-[#111827] mb-2">
+          <h1 className="text-2xl font-heading text-foreground mb-2">
             Post a tuition requirement
           </h1>
-          <p className="text-[#5B6475]">
+          <p className="text-muted-foreground">
             Fill in your academic needs and we'll match you with suitable tutors
           </p>
         </div>
 
         {!user ? (
-          <div className="bg-white border border-[rgba(15,23,46,0.08)] p-8 rounded-xl text-center shadow-sm">
-            <div className="w-16 h-16 bg-[#EEF2F6] rounded-xl flex items-center justify-center mx-auto mb-4">
-              <GraduationCap size={28} className="text-[#5B6475]" />
+          <div className="bg-card border border-border p-8 rounded-xl text-center shadow-sm">
+            <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center mx-auto mb-4">
+              <GraduationCap size={28} className="text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-heading text-[#111827] mb-2">
+            <h2 className="text-lg font-heading text-foreground mb-2">
               Login required
             </h2>
-            <p className="text-[#5B6475] mb-6">
+            <p className="text-muted-foreground mb-6">
               You need to be logged in to post a tuition request
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link
                 to="/login"
-                className="px-5 py-2.5 border border-[rgba(15,23,46,0.08)] text-[#111827] font-medium rounded-lg hover:bg-[#F5F7FA] transition-colors"
+                className="px-5 py-2.5 border border-border text-foreground font-medium rounded-lg hover:bg-background transition-colors"
               >
                 Sign In
               </Link>
@@ -111,29 +139,36 @@ const PostTuition = () => {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="bg-white border border-[rgba(15,23,46,0.08)] rounded-xl p-6 space-y-6 shadow-sm"
+            className="bg-card border border-border rounded-xl p-6 space-y-6 shadow-sm"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-[#111827]">
+                <Label className="text-sm font-medium text-foreground">
                   Subject *
                 </Label>
-                <Input
+                <select
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="e.g. Higher Mathematics"
+                  className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
                   required
-                />
+                >
+                  <option value="">Select subject</option>
+                  {SUBJECT_OPTIONS.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-[#111827]">
+                <Label className="text-sm font-medium text-foreground">
                   Class Level *
                 </Label>
                 <select
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
-                  className="w-full h-10 px-3 border border-[rgba(15,23,46,0.08)] rounded-lg text-sm bg-[#F5F7FA] text-[#111827] focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
+                  className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
                   required
                 >
                   <option value="">Select class</option>
@@ -160,7 +195,7 @@ const PostTuition = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-[#111827]">
+                <Label className="text-sm font-medium text-foreground">
                   Monthly Budget (BDT) *
                 </Label>
                 <Input
@@ -173,35 +208,33 @@ const PostTuition = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-[#111827]">
+                <Label className="text-sm font-medium text-foreground">
                   Curriculum *
                 </Label>
                 <select
                   value={medium}
                   onChange={(e) => setMedium(e.target.value)}
-                  className="w-full h-10 px-3 border border-[rgba(15,23,46,0.08)] rounded-lg text-sm bg-[#F5F7FA] text-[#111827] focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
+                  className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
                   required
                 >
                   <option value="">Select medium</option>
-                  {["Bangla Medium", "English Medium", "Cambridge", "IB"].map(
-                    (m) => (
-                      <option key={m} value={m}>
-                        {m}
-                      </option>
-                    ),
-                  )}
+                  {MEDIUM_OPTIONS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-[#111827]">
+              <Label className="text-sm font-medium text-foreground">
                 Division *
               </Label>
               <select
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full h-10 px-3 border border-[rgba(15,23,46,0.08)] rounded-lg text-sm bg-[#F5F7FA] text-[#111827] focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
+                className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
                 required
               >
                 <option value="">Select division</option>
@@ -211,6 +244,78 @@ const PostTuition = () => {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">
+                Preferred Tutor Gender *
+              </Label>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all"
+                required
+              >
+                <option value="">Select gender</option>
+                {GENDER_OPTIONS.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">
+                Days Per Week *
+              </Label>
+              <Input
+                value={daysPerWeek}
+                onChange={(e) => setDaysPerWeek(e.target.value)}
+                type="number"
+                min="1"
+                max="7"
+                placeholder="e.g. 3"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">
+                Available Days
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {WEEK_DAYS.map((day) => {
+                  const isSelected = availableDays.includes(day);
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleDay(day)}
+                      className={`px-4 py-2 text-sm rounded-lg font-medium transition-all border ${
+                        isSelected
+                          ? "bg-[#2563EB] text-white border-[#2563EB]"
+                          : "bg-background text-muted-foreground border-border hover:border-[#2563EB]/30"
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">
+                Additional Details
+              </Label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe what you're looking for in a tutor, specific requirements, etc."
+                className="w-full min-h-[100px] px-3 py-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all resize-none"
+                rows={3}
+              />
             </div>
 
             <div className="flex items-center gap-4 pt-2">
