@@ -1,7 +1,8 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useRef } from "react";
-import { User, LogOut, Menu, X, Search, Bell } from "lucide-react";
+import { User, LogOut, Menu, X, Search, Bell, Sun, Moon } from "lucide-react";
+import { useTheme } from "../../contexts/ThemeContext";
 import NotificationBell from "./NotificationBell";
 import { toast } from "react-hot-toast";
 import Cookies from "js-cookie";
@@ -14,6 +15,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout, userRole, setLoading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
@@ -141,7 +143,7 @@ const Navbar = () => {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full h-16",
-        "bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)]",
+        "bg-background border-b border-border",
         isScrolled ? "shadow-sm shadow-[rgba(0,0,0,0.04)]" : "",
       )}
     >
@@ -164,7 +166,7 @@ const Navbar = () => {
                 />
               </svg>
             </div>
-            <span className="text-[#111827] font-heading text-lg tracking-tight hidden sm:block">
+            <span className="text-foreground font-heading text-lg tracking-tight hidden sm:block">
               e-tuition<span className="text-[#2563EB]">BD</span>
             </span>
           </Link>
@@ -180,8 +182,8 @@ const Navbar = () => {
                 to={link.path}
                 className={({ isActive }) =>
                   cn(
-                    "text-[#5B6475] hover:text-[#111827] transition-colors duration-300 font-label text-xs tracking-wide",
-                    isActive && "text-[#111827]",
+                    "text-muted-foreground hover:text-foreground transition-colors duration-300 font-label text-xs tracking-wide",
+                    isActive && "text-foreground",
                   )
                 }
               >
@@ -198,12 +200,12 @@ const Navbar = () => {
             className="w-full relative"
             data-tour="search-bar"
           >
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5B6475]/60" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               ref={searchInputRef}
               type="text"
               placeholder="Search tutors..."
-              className="w-full pl-10 pr-4 h-10 rounded-lg text-sm bg-[#EEF2F6] border border-[rgba(15,23,46,0.08)] !text-black focus:outline-none focus:border-[#2563EB]/30 focus:ring-2 focus:ring-[#2563EB]/10 transition-all duration-300 placeholder:text-[#5B6475]"
+              className="w-full pl-10 pr-4 h-10 rounded-lg text-sm bg-muted border border-border !text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all duration-300 placeholder:text-muted-foreground"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setShowDropdown(true)}
@@ -213,12 +215,12 @@ const Navbar = () => {
               (searchQuery.length >= 2 || recentSearches.length > 0) && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full left-0 right-0 mt-1 bg-white border border-[rgba(15,23,46,0.08)] shadow-lg rounded-xl overflow-hidden z-50"
+                  className="absolute top-full left-0 right-0 mt-1 bg-card border border-border shadow-lg rounded-xl overflow-hidden z-50"
                 >
                   {searchQuery.length >= 2 &&
                     suggestions.tutors.length === 0 &&
                     suggestions.tuitions.length === 0 && (
-                      <div className="px-4 py-3 text-sm text-[#5B6475] text-center">
+                      <div className="px-4 py-3 text-sm text-muted-foreground text-center">
                         No results for &ldquo;{searchQuery}&rdquo;
                       </div>
                     )}
@@ -246,7 +248,7 @@ const Navbar = () => {
                             navigate(`/search?q=${encodeURIComponent(s)}`);
                             setShowDropdown(false);
                           }}
-                          className="w-full px-4 py-2 text-sm text-left text-[#5B6475] hover:bg-[#F8FAFC] flex items-center gap-2"
+                          className="w-full px-4 py-2 text-sm text-left text-muted-foreground hover:bg-background flex items-center gap-2"
                         >
                           <Search size={12} />
                           {s}
@@ -266,13 +268,13 @@ const Navbar = () => {
                           key={tutor._id}
                           to={`/tutor/${tutor._id}`}
                           onClick={() => setShowDropdown(false)}
-                          className="flex items-center gap-3 px-4 py-2 hover:bg-[#F8FAFC] transition-colors"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-background transition-colors"
                         >
-                          <div className="w-8 h-8 bg-[#F5F7FA] rounded-full flex items-center justify-center text-xs font-heading font-bold text-[#5B6475]">
+                          <div className="w-8 h-8 bg-background rounded-full flex items-center justify-center text-xs font-heading font-bold text-muted-foreground">
                             {tutor.displayName?.charAt(0)}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-[#111827]">
+                            <p className="text-sm font-medium text-foreground">
                               {tutor.displayName}
                             </p>
                             {tutor.subjects && (
@@ -297,15 +299,15 @@ const Navbar = () => {
                           key={tuition._id}
                           to={`/tuition/${tuition._id}`}
                           onClick={() => setShowDropdown(false)}
-                          className="flex items-center gap-3 px-4 py-2 hover:bg-[#F8FAFC] transition-colors"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-background transition-colors"
                         >
-                          <div className="w-8 h-8 bg-[#EEF2F6] rounded-lg flex items-center justify-center">
-                            <span className="text-xs font-bold text-[#5B6475]">
+                          <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
+                            <span className="text-xs font-bold text-muted-foreground">
                               T
                             </span>
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-[#111827]">
+                            <p className="text-sm font-medium text-foreground">
                               {tuition.subject}
                             </p>
                             <p className="text-[10px] text-[#94A3B8]">
@@ -322,7 +324,7 @@ const Navbar = () => {
                     <Link
                       to={`/search?q=${encodeURIComponent(searchQuery)}`}
                       onClick={() => setShowDropdown(false)}
-                      className="block px-4 py-3 text-center text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] border-t border-[rgba(15,23,46,0.08)] hover:bg-[#F8FAFC] transition-colors"
+                      className="block px-4 py-3 text-center text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] border-t border-border hover:bg-background transition-colors"
                     >
                       View All Results &rarr;
                     </Link>
@@ -336,52 +338,58 @@ const Navbar = () => {
         <div className="flex items-center justify-end gap-6">
           {user ? (
             <div className="flex items-center gap-5">
+              {/* Theme Toggle - icon only */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300"
+                aria-label={theme === "light" ? "Dark Mode" : "Light Mode"}
+              >
+                {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+              </button>
+
               {/* Notification Bell */}
               <NotificationBell />
 
-              {/* User Info + Avatar - warm, personal */}
-              <div className="flex items-center gap-3">
-                <div className="hidden md:flex flex-col items-end">
-                  <span className="text-[#111827] font-heading text-sm leading-none">
-                    {user.displayName?.split(" ")[0]}
-                  </span>
-                  <span className="text-[#2563EB] font-label text-xs tracking-wider mt-0.5">
-                    {userRole || "Member"}
-                  </span>
+              {/* User Avatar with Dropdown */}
+              <div className="relative group">
+                <div className="w-9 h-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300">
+                  {user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center bg-background text-muted-foreground text-xs font-heading">
+                      {user.displayName?.charAt(0)}
+                    </div>
+                  )}
                 </div>
 
-                <div className="relative group">
-                  <div className="w-9 h-9 bg-[#EEF2F6] border border-[rgba(15,23,46,0.08)] rounded-lg overflow-hidden cursor-pointer hover:border-[#2563EB]/30 transition-all duration-300">
-                    {user.photoURL ? (
-                      <img
-                        src={user.photoURL}
-                        alt={user.displayName}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-[#F5F7FA] text-[#5B6475] text-xs font-heading">
-                        {user.displayName?.charAt(0)}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Dropdown - soft, calm */}
-                  <div className="absolute right-0 top-full pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300">
-                    <div className="w-52 bg-white border border-[rgba(15,23,46,0.08)] shadow-xl rounded-lg overflow-hidden">
-                      <Link
-                        to="/dashboard/profile"
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-[#111827] hover:bg-[#F5F7FA] transition-all"
-                      >
-                        <User size={16} /> My Profile
-                      </Link>
-                      <div className="h-px bg-[rgba(15,23,46,0.08)]" />
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-all text-left"
-                      >
-                        <LogOut size={16} /> Logout Session
-                      </button>
+                {/* Dropdown */}
+                <div className="absolute right-0 top-full pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300">
+                  <div className="w-52 bg-card border border-border shadow-xl rounded-lg overflow-hidden">
+                    <div className="px-4 py-3 border-b border-border">
+                      <p className="text-sm font-heading text-foreground truncate">
+                        {user.displayName}
+                      </p>
+                      <p className="text-xs text-primary font-label tracking-wider mt-0.5">
+                        {userRole || "Member"}
+                      </p>
                     </div>
+                    <Link
+                      to="/dashboard/profile"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-background transition-all"
+                    >
+                      <User size={16} /> My Profile
+                    </Link>
+                    <div className="h-px bg-border" />
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-all text-left"
+                    >
+                      <LogOut size={16} /> Logout Session
+                    </button>
                   </div>
                 </div>
               </div>
@@ -390,7 +398,7 @@ const Navbar = () => {
             <div className="flex items-center gap-5">
               <Link
                 to="/login"
-                className="text-[#5B6475] hover:text-[#111827] transition-colors duration-300 font-label text-xs tracking-wide"
+                className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-label text-xs tracking-wide"
               >
                 {t("nav.login", "Sign In")}
               </Link>
@@ -405,7 +413,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="lg:hidden p-2 text-[#5B6475] hover:text-[#111827] hover:bg-[#EEF2F6] rounded-lg transition-all duration-300"
+            className="lg:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -415,14 +423,14 @@ const Navbar = () => {
 
       {/* Mobile Menu - calm, welcoming */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-[100%] left-0 right-0 bg-[#F5F7FA] border-b border-[rgba(15,23,46,0.08)] shadow-xl z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="lg:hidden absolute top-[100%] left-0 right-0 bg-background border-b border-border shadow-xl z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="container-premium py-5">
             <form onSubmit={handleSearch} className="mb-5 relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5B6475]" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search tutors..."
-                className="w-full pl-10 pr-4 h-11 rounded-lg bg-[#EEF2F6] border border-[rgba(15,23,46,0.08)] !text-black text-sm placeholder:text-[#5B6475]"
+                className="w-full pl-10 pr-4 h-11 rounded-lg bg-muted border border-border text-foreground text-sm placeholder:text-muted-foreground"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -438,7 +446,7 @@ const Navbar = () => {
                       "px-4 py-3 text-sm font-heading transition-all duration-300",
                       isActive
                         ? "bg-[#2563EB] text-white shadow-sm"
-                        : "text-[#5B6475] hover:bg-[#EEF2F6] hover:text-[#111827]",
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )
                   }
                 >
