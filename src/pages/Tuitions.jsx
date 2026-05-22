@@ -84,30 +84,30 @@ const Tuitions = () => {
   };
 
   return (
-    <div className="bg-[#F5F7FA] min-h-screen">
+    <div className="bg-background min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="md:block hidden">
-            <h1 className="text-xl font-heading text-[#111827]">
+            <h1 className="text-xl font-heading text-foreground">
               Available Tuition Jobs
             </h1>
-            <p className="text-sm text-[#5B6475]">
+            <p className="text-sm text-muted-foreground">
               Find the perfect teaching opportunity that matches your skills.
             </p>
           </div>
           <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border border-[rgba(15,23,46,0.08)]">
-              <span className="text-lg font-heading text-[#111827]">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-card rounded-xl border border-border">
+              <span className="text-lg font-heading text-foreground">
                 {pagination?.totalItems || 0}
               </span>
-              <span className="text-xs text-[#5B6475]">Jobs</span>
+              <span className="text-xs text-muted-foreground">Jobs</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border border-[rgba(15,23,46,0.08)]">
-              <span className="text-lg font-heading text-[#111827]">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-card rounded-xl border border-border">
+              <span className="text-lg font-heading text-foreground">
                 {totalPages}
               </span>
-              <span className="text-xs text-[#5B6475]">Pages</span>
+              <span className="text-xs text-muted-foreground">Pages</span>
             </div>
           </div>
         </div>
@@ -115,11 +115,11 @@ const Tuitions = () => {
         {/* Mobile Search Bar */}
         <div className="lg:hidden mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5B6475]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search tuitions..."
-              className="w-full pl-9 pr-4 h-11 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm text-[#111827] placeholder:text-[#5B6475]"
+              className="w-full pl-9 pr-4 h-11 bg-card border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm text-foreground placeholder:text-muted-foreground"
               value={searchQuery}
               onChange={(e) => updateFilter("search", e.target.value)}
             />
@@ -137,7 +137,7 @@ const Tuitions = () => {
             {(filters.subjects.length > 0 ||
               filters.classFilter ||
               filters.locationFilter) && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-[#2563EB] text-[10px] flex items-center justify-center rounded-full border-2 border-white">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-card text-[#2563EB] text-[10px] flex items-center justify-center rounded-full border-2 border-white">
                 {(filters.subjects.length > 0 ? 1 : 0) +
                   (filters.classFilter ? 1 : 0) +
                   (filters.locationFilter ? 1 : 0)}
@@ -157,7 +157,7 @@ const Tuitions = () => {
           >
             <div
               className={cn(
-                "bg-white w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-xl lg:border lg:border-[rgba(15,23,46,0.08)] lg:sticky lg:top-20 lg:w-full lg:h-auto lg:shadow-sm transition-transform duration-300",
+                "bg-card w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-xl lg:border lg:border-border lg:sticky lg:top-20 lg:w-full lg:h-auto lg:shadow-sm transition-transform duration-300",
                 isMobileFiltersOpen
                   ? "translate-x-0"
                   : "-translate-x-full lg:translate-x-0",
@@ -167,12 +167,12 @@ const Tuitions = () => {
                 <h3 className="text-lg font-heading">Filters</h3>
                 <button
                   onClick={() => setIsMobileFiltersOpen(false)}
-                  className="p-2 hover:bg-[#F5F7FA] rounded-full"
+                  className="p-2 hover:bg-background rounded-full"
                 >
                   <X size={20} />
                 </button>
               </div>
-              <h3 className="hidden lg:flex text-sm font-medium text-[#111827] mb-4 flex items-center gap-2">
+              <h3 className="hidden lg:flex text-sm font-medium text-foreground mb-4 flex items-center gap-2">
                 <Filter size={14} /> Filters
               </h3>
 
@@ -217,7 +217,7 @@ const Tuitions = () => {
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-[#5B6475] block">
+                    <label className="text-sm font-medium text-muted-foreground block">
                       Subjects
                     </label>
                     {filters.subjects.length > 0 && (
@@ -243,7 +243,7 @@ const Tuitions = () => {
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                           filters.subjects.includes(subject)
                             ? "bg-[#2563EB] text-white"
-                            : "bg-[#F5F7FA] text-[#5B6475] hover:bg-[#EEF2F6] border border-[rgba(15,23,46,0.08)]"
+                            : "bg-background text-muted-foreground hover:bg-muted border border-border"
                         }`}
                       >
                         {subject}
@@ -254,7 +254,7 @@ const Tuitions = () => {
 
                 {/* Max Fee */}
                 <div>
-                  <label className="block text-xs font-heading font-bold text-[#5B6475] mb-1.5 uppercase tracking-wider">
+                  <label className="block text-xs font-heading font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">
                     Max Fee: ৳{filters.maxPrice || 20000}
                   </label>
                   <input
@@ -278,7 +278,7 @@ const Tuitions = () => {
               {hasActiveFilters && (
                 <button
                   onClick={handleClearAll}
-                  className="w-full mt-4 px-3 py-2 text-sm text-[#5B6475] border border-[rgba(15,23,46,0.08)] rounded-xl hover:bg-[#F5F7FA] flex items-center justify-center gap-2 transition-colors"
+                  className="w-full mt-4 px-3 py-2 text-sm text-muted-foreground border border-border rounded-xl hover:bg-background flex items-center justify-center gap-2 transition-colors"
                 >
                   <X size={14} /> Clear Filters
                 </button>
@@ -297,13 +297,13 @@ const Tuitions = () => {
           <main className="lg:col-span-3">
             {loading && tuitions.length === 0 && (
               <div className="py-12 text-center">
-                <p className="text-sm text-[#5B6475]">Loading tuitions...</p>
+                <p className="text-sm text-muted-foreground">Loading tuitions...</p>
               </div>
             )}
 
             {filters.search && (
               <div className="mb-4 flex items-center gap-2">
-                <span className="text-sm text-[#5B6475]">Searching for:</span>
+                <span className="text-sm text-muted-foreground">Searching for:</span>
                 <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-sm font-medium">
                   "{filters.search}"
                 </span>
@@ -315,12 +315,12 @@ const Tuitions = () => {
                 <h3 className="text-lg font-heading text-red-600 mb-2">
                   Error
                 </h3>
-                <p className="text-sm text-[#5B6475] max-w-md mx-auto">
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
                   {error}
                 </p>
               </div>
             ) : tuitions.length === 0 && !loading ? (
-              <div className="bg-white border border-[rgba(15,23,46,0.08)] rounded-xl">
+              <div className="bg-card border border-border rounded-xl">
                 <SearchEmptyState
                   query={searchQuery}
                   type="tuitions"

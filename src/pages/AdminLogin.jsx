@@ -96,7 +96,7 @@ const AdminLogin = () => {
                         </button>
                     </div>
 
-                    <p className="text-center mt-6 text-sm text-gray-500">
+                    <p className="text-center mt-6 text-sm text-muted-foreground">
                         Not an admin? <Link to="/login" className="text-teal-400 hover:underline">Return to User Login</Link>
                     </p>
                 </div>

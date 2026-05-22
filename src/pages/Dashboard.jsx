@@ -52,12 +52,12 @@ const Dashboard = () => {
   // Inline loading state - no spinner page
   if (loading || (user && !dbUser)) {
     return (
-      <div className="flex h-screen bg-[#F8FAFC]">
-        <div className="w-72 bg-white border-r border-[rgba(15,23,46,0.12)] hidden lg:flex" />
+      <div className="flex h-screen bg-background">
+        <div className="w-72 bg-card border-r border-border hidden lg:flex" />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
-            <span className="text-xs font-heading font-bold uppercase tracking-wider text-[#5B6475]">Loading dashboard...</span>
+            <span className="text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">Loading dashboard...</span>
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden">
       {/* Desktop Sidebar */}
       <DashboardSidebar role={role} />
 
@@ -80,7 +80,7 @@ const Dashboard = () => {
       {/* Mobile Sidebar Content */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 w-72 bg-white z-[70] lg:hidden transition-transform duration-300 border-r border-[rgba(15,23,46,0.12)] overflow-y-auto",
+          "fixed inset-y-0 left-0 w-72 bg-card z-[70] lg:hidden transition-transform duration-300 border-r border-border overflow-y-auto",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -89,40 +89,40 @@ const Dashboard = () => {
 
       <main className="flex-1 h-full overflow-y-auto overflow-x-hidden relative flex flex-col">
         {/* Dashboard Top Navbar */}
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[rgba(15,23,46,0.12)]">
+        <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between h-16 px-6">
             {/* Left: Mobile menu toggle + breadcrumb */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="lg:hidden p-2 hover:bg-[#F8FAFC] rounded-none border border-[rgba(15,23,46,0.12)] transition-colors"
+                className="lg:hidden p-2 hover:bg-background rounded-none border border-border transition-colors"
               >
-                <Menu size={20} className="text-[#5B6475]" />
+                <Menu size={20} className="text-muted-foreground" />
               </button>
               <nav className="flex items-center gap-2 font-heading font-black text-[10px] uppercase tracking-widest">
                 <Link
                   to="/"
-                  className="text-[#5B6475] hover:text-[#111827] transition-colors flex items-center gap-1.5"
+                  className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
                 >
                   <Home size={12} />
                   <span className="hidden sm:inline">Home</span>
                 </Link>
                 <span className="text-[#E2E8F0] font-normal">/</span>
-                <span className="text-[#111827]">Dashboard</span>
+                <span className="text-foreground">Dashboard</span>
               </nav>
             </div>
 
             {/* Right: User info + notifications */}
             <div className="flex items-center gap-4">
               <NotificationBell />
-              <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-[rgba(15,23,46,0.12)]">
+              <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-border">
                 <div className="text-right">
-                  <p className="text-xs font-heading font-black text-[#111827] uppercase tracking-wider">
+                  <p className="text-xs font-heading font-black text-foreground uppercase tracking-wider">
                     {user?.displayName?.split(" ")[0]}
                   </p>
-                  <p className="text-[9px] font-heading font-bold text-[#5B6475] uppercase tracking-widest mt-0.5">{role}</p>
+                  <p className="text-[9px] font-heading font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{role}</p>
                 </div>
-                <div className="w-9 h-9 bg-[#EEF2F6] rounded-none overflow-hidden border border-[rgba(15,23,46,0.12)]">
+                <div className="w-9 h-9 bg-muted rounded-none overflow-hidden border border-border">
                   {user?.photoURL ? (
                     <img
                       src={user.photoURL}
@@ -130,7 +130,7 @@ const Dashboard = () => {
                       className="w-full h-full object-cover rounded-none"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#5B6475] text-xs font-heading font-black uppercase">
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-heading font-black uppercase">
                       {user?.displayName?.charAt(0)}
                     </div>
                   )}

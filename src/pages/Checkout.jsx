@@ -209,7 +209,7 @@ const Checkout = () => {
                                                     {method.name}
                                                 </span>
                                                 {method.badge && (
-                                                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded ml-2">
+                                                    <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded ml-2">
                                                         {method.badge}
                                                     </span>
                                                 )}

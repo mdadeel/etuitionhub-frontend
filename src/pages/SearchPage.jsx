@@ -104,7 +104,7 @@ const SearchPage = () => {
   }, [activeIndex]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="relative mb-8">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94A3B8]" />
@@ -115,7 +115,7 @@ const SearchPage = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search tutors and tuitions..."
-            className="w-full pl-12 pr-4 h-14 bg-white border border-[rgba(15,23,46,0.08)] rounded-xl text-lg outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm"
+            className="w-full pl-12 pr-4 h-14 bg-card border border-border rounded-xl text-lg outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm"
             autoFocus
           />
           {input && (
@@ -124,7 +124,7 @@ const SearchPage = () => {
                 setInput("");
                 inputRef.current?.focus();
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#5B6475] hover:text-[#111827]"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
             >
               Clear
             </button>
@@ -139,7 +139,7 @@ const SearchPage = () => {
 
         {!loading && debouncedQuery.length >= 2 && totalResults === 0 && (
           <div className="text-center py-20">
-            <p className="text-lg text-[#5B6475]">
+            <p className="text-lg text-muted-foreground">
               No results for &ldquo;{debouncedQuery}&rdquo;
             </p>
           </div>
@@ -153,7 +153,7 @@ const SearchPage = () => {
             </div>
             <div ref={resultsRef} className="grid md:grid-cols-2 gap-6">
               <div>
-                <h2 className="font-heading font-black text-sm uppercase tracking-wider text-[#5B6475] mb-4">
+                <h2 className="font-heading font-black text-sm uppercase tracking-wider text-muted-foreground mb-4">
                   Tutors ({tutors.length})
                 </h2>
                 <div className="space-y-3">
@@ -176,7 +176,7 @@ const SearchPage = () => {
               </div>
 
               <div>
-                <h2 className="font-heading font-black text-sm uppercase tracking-wider text-[#5B6475] mb-4">
+                <h2 className="font-heading font-black text-sm uppercase tracking-wider text-muted-foreground mb-4">
                   Tuitions ({tuitions.length})
                 </h2>
                 <div className="space-y-3">
@@ -208,7 +208,7 @@ const SearchPage = () => {
         {!loading && (!debouncedQuery || debouncedQuery.length < 2) && (
           <div className="text-center py-20">
             <Search size={48} className="mx-auto mb-4 text-[#E2E8F0]" />
-            <p className="text-lg text-[#5B6475]">
+            <p className="text-lg text-muted-foreground">
               Type at least 2 characters to search
             </p>
           </div>
