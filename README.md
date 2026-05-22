@@ -1,90 +1,179 @@
-# e-TuitionBD 🎓
+# e-TuitionBD — Frontend
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=flat-square&logo=nodedotjs)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Latest-47A248?style=flat-square&logo=mongodb)](https://www.mongodb.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Socket.IO](https://img.shields.io/badge/Socket.IO-4-010101?style=flat-square&logo=socket.io)](https://socket.io/)
+[![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?style=flat-square&logo=firebase)](https://firebase.google.com/)
+[![Stripe](https://img.shields.io/badge/Stripe-22-008CDD?style=flat-square&logo=stripe)](https://stripe.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-0055FF?style=flat-square&logo=framer)](https://www.framer.com/motion/)
 [![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](LICENSE)
 
-**e-TuitionBD** is a high-fidelity, online tuition marketplace designed for the modern academic landscape in Bangladesh. It connects verified specialists with students who demand excellence through a precision-engineered interface.
+Tuition marketplace for Bangladesh. Connects students with verified tutors across all curricula (Bangla, English, Cambridge, IB).
 
----
+## Pages
 
-## 🖼️ Homescreen Preview
+### Public
 
-![e-TuitionBD Homescreen](./public/homescreen.png)
+| Route | Page | Features |
+|-------|------|----------|
+| `/` | **Home** | Hero with search, featured categories, popular tutors, animated stats, testimonials, FAQ accordion, newsletter signup, mission statement |
+| `/tutors` | **Tutors** | Browse/search with advanced filters (subject, class, area, language, price), URL-synced state, infinite scroll, save tutors |
+| `/tuitions` | **Tuitions** | Browse tuition posts with filters (class, location, subject, price), URL-synced state, save tuitions |
+| `/tutor/:id` | **Tutor Details** | Full profile, qualifications, subjects, availability, reviews/ratings, booking |
+| `/tuition/:id` | **Tuition Details** | Full post details, apply as tutor |
+| `/search` | **Search** | Unified search across tutors/tuitions, autocomplete suggestions, keyboard nav, recent searches |
+| `/about` | **About** | Platform mission, stats, values, coverage |
+| `/contact` | **Contact** | Contact form, email/phone/location |
+| `/blog` | **Blog** | Static blog posts |
+| `/login` | **Login** | Email/password, Google login, demo credentials, role-based redirect |
+| `/register` | **Register** | Two-step registration (role → form), Google register with role |
+| `/become-tutor` | **Become Tutor** | Multi-step application (personal info, qualifications, subjects, availability, salary, location) |
+| `/post-tuition` | **Post Tuition** | Tuition creation (subject, class, salary, medium, location, gender preference, days, description) |
 
-*The new "Precision Learning" hero section featuring dynamic image shuffling and verified expert networking.*
+### Authenticated
 
----
+| Route | Page | Features |
+|-------|------|----------|
+| `/dashboard` | **Dashboard** | Role-aware hub (Student/Tutor/Admin) with sidebar, stats, recent activity |
+| `/dashboard/profile` | **Profile** | Edit personal info, avatar, preferences |
+| `/dashboard/my-profile` | **Tutor Profile** | Tutor-specific: subjects, qualifications, availability |
+| `/dashboard/notifications` | **Notifications** | Full history, mark read, batch operations, real-time updates |
+| `/dashboard/messages` | **Chat** | Full-page real-time messaging with Socket.IO |
+| `/dashboard/verification` | **Verification** | Document upload (NID, certificates) via Firebase Storage, status tracking |
+| `/dashboard/saved-tutors` | **Saved Tutors** | Bookmarked tutor profiles |
+| `/dashboard/saved-tuitions` | **Saved Tuitions** | Bookmarked tuition posts |
+| `/dashboard/sessions` | **Sessions** | View/manage tutoring sessions (tutor) |
+| `/dashboard/users` | **Users** | User directory, role management, search (admin) |
+| `/dashboard/analytics` | **Analytics** | Platform stats, charts via Recharts (admin) |
+| `/dashboard/payments` | **Payments** | Transaction oversight, verification (admin) |
+| `/dashboard/tuitions` | **Tuitions** | Approve/reject/manage posts (admin) |
+| `/dashboard/verifications` | **Verifications** | Review tutor documents (admin) |
+| `/dashboard/settings` | **Settings** | Platform settings (admin) |
+| `/checkout/:id` | **Checkout** | Multi-method payment (Stripe, bKash, Nagad, Rocket, Bank) |
+| `/session/:id` | **Session Room** | WebRTC video/audio calls with simple-peer, text chat |
+| `/payment-success` | **Payment Success** | Payment confirmation |
 
-## ✨ Key Features
+## Features
 
-- **👤 Dual-Node Ecosystem**: Specialized workflows for **Tutors** (profile optimization, lead tracking) and **Students** (specialist discovery, secure booking).
-- **📚 Intelligent Marketplace**: Advanced filtering by subject, location, and class with real-time search integration.
-- **💳 Multi-Channel Payments**: 
-  - **Global**: Seamless Stripe integration for instant card transactions.
-  - **Local**: Manual verification flow for bKash and Nagad payments.
-- **📊 Unified Dashboard**: Comprehensive tracking for applications, active streams, and payment history.
-- **🛡️ Enterprise-Grade Security**: JWT-based auth protocols, Firebase storage integration, and role-based access control (RBAC).
-- **🤖 AI-Orchestrated Dev**: Engineered using the **Antigravity Kit**, leveraging 20+ specialist agents to ensure peak code quality and UX performance.
+### Role-Based Dashboards
 
----
+Three distinct dashboard experiences:
 
-## 🛠️ Tech Stack
+- **Student**: Post tuition requests, browse tutor applications, manage bookings, saved tutors/tuitions, payment history
+- **Tutor**: Manage profile, set availability, track applications, manage sessions, verification documents
+- **Admin**: User management, tuition approval workflow, payment verification, platform analytics (charts: user distribution, tuition status, revenue, search trends), platform settings
 
-### Frontend Architecture
-- **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
-- **Animation**: [Framer Motion](https://www.framer.com/motion/) + [AOS](https://michalsnik.github.io/aos/)
-- **State Management**: React Hook Form + Context API
+### Real-Time Chat
 
-### Backend Infrastructure
-- **Runtime**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
-- **Database**: [MongoDB](https://www.mongodb.com/) (Mongoose ORM)
-- **Security**: Helmet, Rate Limiting, BcryptJS
-- **Analytics**: Winston Logging + Recharts
+Socket.IO-powered messaging system:
+- Conversation sidebar with last message preview
+- Read receipts, typing indicators
+- Emoji reactions (toggle on any message)
+- Floating chat widget (Facebook Messenger style)
+- Unread badges
 
----
+### Search & Discovery
 
-## ⚙️ Quick Start
+- **Global search**: Unified tutors + tuitions with autocomplete
+- **Advanced filters**: Subject, class, location, language, price range, sort
+- **URL-synced filters**: Shareable filter state
+- **Keyboard navigation**: Cmd+K / `/` to focus search
+- **Infinite scroll** on browse pages
+- **Save search alerts**: Get notified when new matches appear
 
-### 1. Clone & Install
+### Payment
+
+- **Stripe**: Instant card payments
+- **bKash / Nagad / Rocket**: Manual transaction ID entry with admin verification
+- **Bank Transfer**: Manual verification flow
+- **Admin verification queue**: Review, approve, or reject payments
+
+### Avatars
+
+DiceBear pixel art avatars generated from user email/name as fallback when no photo URL is set. Gender-aware (male/female pixel art styles).
+
+### Authentication
+
+- **Firebase Auth**: Email/password + Google OAuth
+- **JWT tokens**: Backend session management with refresh token rotation
+- **Role-based routing**: Redirect to appropriate dashboard on login
+- **Demo credentials**: Quick access for admin/student testing
+
+### Verification System
+
+Tutors upload documents (NID, certificates) to Firebase Storage. Admin reviews and issues verification status: `unverified` → `pending_review` → `verified_basic` → `verified_premium`.
+
+### Onboarding Tour
+
+Guided 5-step `react-joyride` tour for first-time logged-in users. Highlights dashboard navigation, search, profile settings. Completion status persisted to backend.
+
+### Video Sessions
+
+WebRTC-based session room using `simple-peer` and Socket.IO signaling. Includes mic/video toggle, chat, booking verification, call timer.
+
+### Notifications
+
+Real-time notification system covering: bookings, payments, messages, reviews, applications, verification updates, admin broadcasts. Unread count in header, dropdown preview, full history page with batch operations.
+
+### Internationalization
+
+i18n foundation with English and Bengali translations (expandable via JSON locale files). Currently covers navigation.
+
+### Design System
+
+**"Technical Emerald Minimalism"** — Apple-inspired sharp-edged UI:
+- **Fonts**: Inter (body), Space Grotesk (headings)
+- **Colors**: Primary `#2563EB`, dark mode `#081225`, light mode `#F5F7FA`
+- **Components**: Radix primitives + shadcn/ui customized with CSS custom properties
+- **Dark mode**: Class-based toggle, persisted to localStorage, respects system preference
+- **Animations**: Framer Motion, GSAP, AOS, react-countup
+- **AppleUI**: Alternative sharp-edged design system (AppleCard, AppleButton, AppleBadge)
+
+## Tech Stack
+
+| Category | Libraries |
+|----------|-----------|
+| **Core** | React 19, React Router 7, react-helmet-async |
+| **Build** | Vite 7, PostCSS |
+| **Styling** | Tailwind 3, clsx, tailwind-merge, class-variance-authority, daisyui |
+| **Components** | Radix UI (Select, Dialog, Avatar, Label, Slot, Separator), shadcn |
+| **Icons** | lucide-react, react-icons |
+| **Auth** | Firebase 12 (Auth + Storage), js-cookie |
+| **Real-time** | socket.io-client |
+| **Payments** | @stripe/stripe-js |
+| **Video** | simple-peer (WebRTC) |
+| **Animations** | framer-motion, GSAP, AOS, react-countup |
+| **Forms** | react-hook-form |
+| **Charts** | recharts |
+| **Alerts** | react-hot-toast, sweetalert2 |
+| **Tour** | react-joyride |
+| **Ratings** | @smastrom/react-rating |
+| **PWA** | vite-plugin-pwa (Workbox) |
+| **i18n** | i18next, react-i18next |
+
+## Setup
+
 ```bash
-git clone https://github.com/mdadeel/e-tuitionBD.git
 npm install
+
+# Environment
+cp .env.example .env  # Fill in VITE_FIREBASE_*, VITE_API_URL
+
+npm run dev    # Dev server
+npm run build  # Production build
+npm run lint   # Lint check
 ```
 
-### 2. Configure Environment
-Create `.env` files in both `backend-api` and `frontend-client` (see `.env.example` in respective folders).
+## Environment Variables
 
-### 3. Launch Development
-```bash
-# Start Backend
-cd etuitionhub--backend
-npm run dev
-
-# Start Frontend
-cd etuitionhub-frontend
-npm run dev
-```
-
----
-
-## 🎨 Design Philosophy: "Emerald Trust"
-
-The platform adheres to a **Technical Minimalist** aesthetic, prioritizing clarity and trust signals. 
-
-- **Border Radius**: 16px (Apple-inspired smoothness)
-- **Primary Color**: `#10b981` (Emerald 500) — Represents growth and precision.
-- **Typography**: `Inter Variable` for UI, `Geist Mono` for metadata.
-
----
-
-## 📄 License
-
-This project is licensed under the **ISC License**.
-
----
-
-*Built with ❤️ by the e-TuitionBD Development Team.*
+| Variable | Purpose |
+|----------|---------|
+| `VITE_FIREBASE_API_KEY` | Firebase Auth |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase Auth |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Document uploads |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase |
+| `VITE_FIREBASE_APP_ID` | Firebase |
+| `VITE_API_URL` | Backend URL (default `http://localhost:5000`) |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe payments |
