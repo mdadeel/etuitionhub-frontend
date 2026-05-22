@@ -6,6 +6,7 @@ const Avatar = ({
   alt, 
   size = 'md',
   verified = false,
+  gender,
   className,
   ...props 
 }) => {
@@ -35,29 +36,19 @@ const Avatar = ({
 
   const hasImage = src && src !== 'null' && src !== 'undefined' && src.trim() !== '';
 
+  const avatarSrc = hasImage
+    ? src
+    : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(alt || 'user')}${gender ? `&gender=${gender.toLowerCase()}` : ''}`;
+
   return (
     <div className={cn('relative shrink-0', sizes[size], className)} {...props}>
-      {hasImage ? (
-        <img
-          src={src}
-          alt={alt}
-          className={cn(
-            'w-full h-full rounded-none object-cover border border-[rgba(15,23,46,0.08)]'
-          )}
-        />
-      ) : (
-        <div className={cn(
-          'w-full h-full rounded-none bg-slate-900 border border-slate-800',
-          'flex items-center justify-center'
-        )}>
-          {children || (
-            <svg className="w-1/2 h-1/2 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
-              <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
-            </svg>
-          )}
-        </div>
-      )}
-      
+      <img
+        src={avatarSrc}
+        alt={alt || 'Avatar'}
+        className={cn(
+          'w-full h-full rounded-none object-cover border border-border'
+        )}
+      />
       {verified && (
         <div className={cn(
           'absolute -bottom-1 -right-1 bg-[#2563EB] rounded-none flex items-center justify-center border-2 border-white',

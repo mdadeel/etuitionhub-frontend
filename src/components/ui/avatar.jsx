@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 function Avatar({
   className,
   size = "default",
+  gender,
   ...props
 }) {
   return (
@@ -22,11 +23,19 @@ function Avatar({
 
 function AvatarImage({
   className,
+  src,
+  alt,
+  gender,
   ...props
 }) {
+  const avatarSrc = src && src !== 'null' && src !== 'undefined' && src.trim() !== ''
+    ? src
+    : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(alt || 'user')}${gender ? `&gender=${gender.toLowerCase()}` : ''}`;
+
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
+      src={avatarSrc}
       className={cn("aspect-square size-full rounded-none object-cover", className)}
       {...props} />
   );
