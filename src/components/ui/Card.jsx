@@ -8,9 +8,9 @@ const Card = ({
   ...props 
 }) => {
   const variants = {
-    default: 'bg-white border border-[rgba(15,23,46,0.08)]',
-    elevated: 'bg-white border border-[rgba(15,23,46,0.08)] shadow-sm shadow-[rgba(0,0,0,0.04)]',
-    subtle: 'bg-[#F5F7FA] border border-[rgba(15,23,46,0.08)]',
+    default: 'bg-card border border-border',
+    elevated: 'bg-card border border-border shadow-sm shadow-[rgba(0,0,0,0.04)]',
+    subtle: 'bg-background border border-border',
     dark: 'bg-[#0F172E] border border-[rgba(255,255,255,0.08)]',
   };
 

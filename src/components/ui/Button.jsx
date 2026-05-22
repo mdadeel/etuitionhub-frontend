@@ -9,9 +9,9 @@ const Button = ({
 }) => {
   const variants = {
     primary: 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] hover:shadow-md',
-    secondary: 'bg-[#EEF2F6] text-[#111827] hover:bg-[#E2E8F0] border border-[rgba(15,23,46,0.08)]',
-    outline: 'bg-transparent text-[#111827] border border-[#111827] hover:bg-[#111827] hover:text-white',
-    ghost: 'bg-transparent text-[#5B6475] hover:bg-[#EEF2F6] hover:text-[#111827]',
+    secondary: 'bg-muted text-foreground hover:bg-muted/80 border border-border',
+    outline: 'bg-transparent text-foreground border border-foreground hover:bg-foreground hover:text-background',
+    ghost: 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground',
     link: 'bg-transparent text-[#2563EB] hover:underline p-0 h-auto',
   };
 

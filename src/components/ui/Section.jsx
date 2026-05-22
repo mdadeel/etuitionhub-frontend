@@ -8,9 +8,9 @@ const Section = ({
   ...props 
 }) => {
   const variants = {
-    default: 'bg-[#F5F7FA]',
-    white: 'bg-white',
-    subtle: 'bg-[#EEF2F6]',
+    default: 'bg-background',
+    white: 'bg-card',
+    subtle: 'bg-muted',
     dark: 'bg-[#0F172E]',
   };
 
