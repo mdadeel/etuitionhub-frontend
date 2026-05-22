@@ -5,7 +5,6 @@ import {
   MapPin,
   BookOpen,
   Clock,
-  CheckCircle,
   Bookmark,
 } from "lucide-react";
 import { Avatar, Badge, Button, Card } from "@/components/ui";
@@ -82,7 +81,7 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
   return (
     <Card
       hover
-      className="group cursor-pointer h-full flex flex-col border-slate-200 rounded-2xl hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 transition-all duration-300"
+      className="group cursor-pointer h-full flex flex-col border-border rounded-2xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 transition-all duration-300"
       onClick={() => navigate(`/tutor/${_id}`)}
     >
       <div className="p-5 flex-grow">
@@ -91,30 +90,31 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
             src={photoURL}
             alt={displayName}
             size="md"
+            gender={tutor.gender}
             verified={isVerified && _id !== "tutor_001"}
-            className="ring-2 ring-slate-100 group-hover:ring-blue-100 transition-all"
+            className="ring-2 ring-border group-hover:ring-primary/30 transition-all"
           />
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="font-semibold text-base text-slate-900 tracking-tight truncate leading-snug">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-base text-foreground tracking-tight truncate leading-snug">
                   <Highlight text={displayName} query={searchQuery} />
                 </h3>
-                <p className="text-xs text-slate-500 font-medium mt-0.5 truncate">
+                <p className="text-xs text-muted-foreground font-medium mt-0.5 truncate" title={qualification}>
                   {qualification || "Experienced Tutor"}
                 </p>
               </div>
               <button
                 onClick={handleBookmark}
                 disabled={saving}
-                className="shrink-0 p-2 -mr-2 -mt-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                className="shrink-0 p-2 -mr-2 -mt-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
                 title={isSaved ? "Unsave" : "Save"}
               >
                 <Bookmark
                   size={18}
                   className={
                     isSaved
-                      ? "fill-blue-600 text-blue-600"
+                      ? "fill-primary text-primary"
                       : "transition-colors"
                   }
                 />
@@ -123,61 +123,72 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
-          {subjects.slice(0, 3).map((sub, i) => (
-            <Badge
-              key={i}
-              variant="subtle"
-              className="bg-slate-50 text-slate-600 px-2.5 py-1 rounded-full text-xs font-medium border border-slate-100 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors"
+        <div className="flex items-center gap-1.5 mt-4 pt-4 border-t border-border overflow-hidden w-full">
+          <div className="flex items-center gap-1.5 overflow-hidden flex-1">
+            {subjects.slice(0, 3).map((sub, i) => (
+              <Badge
+                key={i}
+                variant="subtle"
+                className="shrink-0 bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full text-[9px] font-medium border border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors truncate max-w-[85px]"
+                title={sub}
+              >
+                <Highlight text={sub} query={searchQuery} />
+              </Badge>
+            ))}
+          </div>
+          {subjects.length > 3 && (
+            <span
+              className="text-[10px] text-muted-foreground font-bold shrink-0 ml-auto cursor-help"
+              title={subjects.slice(3).join(", ")}
             >
-              <Highlight text={sub} query={searchQuery} />
-            </Badge>
-          ))}
+              ...
+            </span>
+          )}
         </div>
 
-        <div className="grid grid-cols-2 gap-y-2 gap-x-2 mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600">
-          <span className="flex items-center gap-2 group/stat">
+        <div className="grid grid-cols-2 gap-y-1.5 gap-x-2 mt-4 pt-3 border-t border-border text-[9px] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
             <BookOpen
-              size={14}
-              className="text-slate-400 group-hover:text-blue-500 transition-colors"
+              size={10}
+              className="text-muted-foreground/60"
             />
             <span className="truncate">{experience}</span>
           </span>
-          <span className="flex items-center gap-2">
-            <Star size={14} className="fill-amber-400 text-amber-400" />
-            <span className="font-semibold text-slate-900">
+          <span className="flex items-center gap-1.5">
+            <Star size={10} className="fill-amber-400 text-amber-400" />
+            <span className="font-semibold text-foreground">
               {rating.toFixed(1)}
             </span>
           </span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5">
             <MapPin
-              size={14}
-              className="text-slate-400 group-hover:text-blue-500 transition-colors"
+              size={10}
+              className="text-muted-foreground/60"
             />
             <span className="truncate">
               {(location || "N/A").split(",")[0]}
             </span>
           </span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5">
             <Clock
-              size={14}
-              className="text-slate-400 group-hover:text-blue-500 transition-colors"
+              size={10}
+              className="text-muted-foreground/60"
             />
             <span className="truncate">Fast Response</span>
           </span>
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-5 py-4 border-t border-slate-100 bg-white">
+      <div className="flex items-center justify-between px-5 py-3 border-t border-border">
         <div className="flex items-baseline gap-1">
-          <span className="text-lg font-bold text-slate-900 tracking-tight">
+          <span className="text-lg font-bold text-foreground tracking-tight">
             ৳{salary.toLocaleString()}
           </span>
-          <span className="text-xs text-slate-500 font-medium">/mo</span>
+          <span className="text-xs text-muted-foreground font-medium">/mo</span>
         </div>
         <Button
-          size="xs"
-          className="bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 font-medium px-4 py-2 h-auto rounded-lg transition-colors border-none"
+          size="sm"
+          className="font-semibold text-xs uppercase tracking-wider rounded-lg"
         >
           View Profile
         </Button>
