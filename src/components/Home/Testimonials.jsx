@@ -27,7 +27,7 @@ const testimonials = [
 
 const Testimonials = () => {
     return (
-        <section className="py-20 bg-[#F5F7FA] overflow-hidden relative">
+        <section className="py-20 bg-background overflow-hidden relative">
             <div className="max-w-7xl mx-auto px-6">
                 <SectionHeader
                     title={<>Stories from <span className="text-[#2563EB]">real families</span></>}
@@ -45,17 +45,17 @@ const Testimonials = () => {
                                 ))}
                             </div>
 
-                            <p className="text-base text-[#5B6475] leading-relaxed font-body mb-8 italic">
+                            <p className="text-base text-muted-foreground leading-relaxed font-body mb-8 italic">
                                 "{t.text}"
                             </p>
 
-                            <div className="flex items-center gap-4 pt-6 border-t border-[rgba(15,23,46,0.08)]">
-                                <Avatar size="md">
-                                    <User className="w-6 h-6 text-[#5B6475]" />
+                            <div className="flex items-center gap-4 pt-6 border-t border-border">
+                                <Avatar size="md" alt={t.name}>
+                                    <User className="w-6 h-6 text-muted-foreground" />
                                 </Avatar>
                                 <div>
-                                    <p className="text-sm font-heading text-[#111827] mb-0.5">{t.name}</p>
-                                    <p className="text-xs text-[#5B6475]">{t.role} · {t.location}</p>
+                                    <p className="text-sm font-heading text-foreground mb-0.5">{t.name}</p>
+                                    <p className="text-xs text-muted-foreground">{t.role} · {t.location}</p>
                                 </div>
                             </div>
                         </Card>

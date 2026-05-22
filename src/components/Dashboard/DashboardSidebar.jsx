@@ -84,14 +84,14 @@ const DashboardSidebar = ({ role }) => {
   };
 
   return (
-    <aside className="w-72 h-full hidden lg:flex flex-col flex-shrink-0 relative border-r border-[rgba(15,23,46,0.12)] bg-white">
+    <aside className="w-72 h-full hidden lg:flex flex-col flex-shrink-0 relative border-r border-border bg-card">
       <div className="flex flex-col h-full py-8 px-6">
         {/* User Identity Section */}
         <div className="mb-10 px-2 relative">
-          <div className="flex items-center gap-4 p-4 rounded-none bg-[#F8FAFC] border border-[rgba(15,23,46,0.12)] transition-all hover:bg-[#EEF2F6]">
+          <div className="flex items-center gap-4 p-4 rounded-none bg-background border border-border transition-all hover:bg-muted">
             <div className="relative">
               <Avatar className="h-12 w-12 rounded-none border-2 border-white shadow-none">
-                <AvatarImage src={user?.photoURL} className="object-cover rounded-none" />
+                <AvatarImage src={user?.photoURL} alt={dbUser?.displayName || user?.displayName} gender={dbUser?.gender} className="object-cover rounded-none" />
                 <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
               </Avatar>
               {role?.toLowerCase() !== "student" &&
@@ -102,10 +102,10 @@ const DashboardSidebar = ({ role }) => {
                 )}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-xs font-heading font-black text-[#111827] truncate uppercase tracking-wider">
+              <span className="text-xs font-heading font-black text-foreground truncate uppercase tracking-wider">
                 {user?.displayName || "User"}
               </span>
-              <span className="text-[9px] font-heading font-bold text-[#5B6475]/60 uppercase tracking-widest mt-0.5">
+              <span className="text-[9px] font-heading font-bold text-muted-foreground/60 uppercase tracking-widest mt-0.5">
                 {roleInfo.label}
               </span>
             </div>
@@ -115,7 +115,7 @@ const DashboardSidebar = ({ role }) => {
         {/* Navigation Section */}
         <div className="flex-grow space-y-8">
           <div>
-            <p className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#5B6475]/40 mb-5 px-4">
+            <p className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-muted-foreground/40 mb-5 px-4">
               Main Menu
             </p>
             <ul className="space-y-2">
@@ -129,7 +129,7 @@ const DashboardSidebar = ({ role }) => {
                         "flex items-center justify-between px-4 py-3 rounded-none transition-all duration-300 group border",
                         isActive
                           ? "bg-[#2563EB] border-[#2563EB] text-white shadow-none"
-                          : "text-[#5B6475] border-transparent hover:bg-[#F8FAFC] hover:text-[#111827]",
+                          : "text-muted-foreground border-transparent hover:bg-background hover:text-foreground",
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -158,7 +158,7 @@ const DashboardSidebar = ({ role }) => {
         </div>
 
         {/* Bottom Actions */}
-        <div className="space-y-3 mt-auto pt-6 border-t border-[rgba(15,23,46,0.08)] px-2">
+        <div className="space-y-3 mt-auto pt-6 border-t border-border px-2">
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-none text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 transition-all group"

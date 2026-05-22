@@ -63,14 +63,14 @@ const AdminVerifications = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-[rgba(15,23,46,0.08)] pb-6">
+            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border pb-6">
                 <div>
                     <div className="flex items-center gap-2 mb-3">
                         <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
                         <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Verifications</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-[#111827]">Pending Verifications</h2>
-                    <p className="text-xs text-[#5B6475] mt-1">Review tutor documents to grant the verified badge.</p>
+                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">Pending Verifications</h2>
+                    <p className="text-xs text-muted-foreground mt-1">Review tutor documents to grant the verified badge.</p>
                 </div>
                 <div className="px-4 py-2 bg-amber-500/10 text-amber-700 border border-amber-500/20 rounded-none text-[10px] font-heading font-black uppercase tracking-widest flex items-center gap-2 w-fit">
                     <ShieldAlert size={12} />
@@ -79,33 +79,33 @@ const AdminVerifications = () => {
             </header>
 
             {pendingUsers.length === 0 ? (
-                <div className="border border-[rgba(15,23,46,0.12)] p-12 text-center bg-[#F8FAFC] rounded-none relative overflow-hidden group">
+                <div className="border border-border p-12 text-center bg-background rounded-none relative overflow-hidden group">
                     <CheckCircle size={40} className="mx-auto mb-4 text-emerald-500/30" strokeWidth={1} />
-                    <h3 className="text-sm font-heading font-black uppercase tracking-widest text-[#111827]">All caught up!</h3>
-                    <p className="text-xs text-[#5B6475] mt-1">There are no pending verification requests.</p>
+                    <h3 className="text-sm font-heading font-black uppercase tracking-widest text-foreground">All caught up!</h3>
+                    <p className="text-xs text-muted-foreground mt-1">There are no pending verification requests.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {pendingUsers.map(user => (
-                        <div key={user._id} className="border border-[rgba(15,23,46,0.12)] rounded-none bg-white p-6 shadow-none flex flex-col justify-between">
+                        <div key={user._id} className="border border-border rounded-none bg-card p-6 shadow-none flex flex-col justify-between">
                             <div>
                                 <div className="flex items-center gap-4 mb-6">
-                                    <Avatar className="h-10 w-10 rounded-none border border-[rgba(15,23,46,0.12)] shadow-none">
-                                        <AvatarImage src={user.photoURL} className="object-cover rounded-none" />
+                                    <Avatar className="h-10 w-10 rounded-none border border-border shadow-none">
+                                        <AvatarImage src={user.photoURL} alt={user.displayName} gender={user.gender} className="object-cover rounded-none" />
                                         <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
                                     </Avatar>
                                     <div>
-                                        <h3 className="font-bold text-[#111827] text-sm">{user.displayName}</h3>
-                                        <p className="text-xs text-[#5B6475] lowercase tracking-tight">{user.email}</p>
+                                        <h3 className="font-bold text-foreground text-sm">{user.displayName}</h3>
+                                        <p className="text-xs text-muted-foreground lowercase tracking-tight">{user.email}</p>
                                     </div>
                                 </div>
                                 
-                                <div className="space-y-3 mb-6 bg-[#F8FAFC] p-4 rounded-none border border-[rgba(15,23,46,0.06)]">
-                                    <h4 className="text-[9px] font-heading font-black text-[#111827] uppercase tracking-widest">Uploaded Documents</h4>
+                                <div className="space-y-3 mb-6 bg-background p-4 rounded-none border border-[rgba(15,23,46,0.06)]">
+                                    <h4 className="text-[9px] font-heading font-black text-foreground uppercase tracking-widest">Uploaded Documents</h4>
                                     {user.verificationDocuments && user.verificationDocuments.length > 0 ? (
                                         user.verificationDocuments.map((doc, idx) => (
                                             <div key={idx} className="flex items-center justify-between">
-                                                <span className="text-xs font-medium text-[#5B6475]">{doc.docType}</span>
+                                                <span className="text-xs font-medium text-muted-foreground">{doc.docType}</span>
                                                 <a 
                                                     href={doc.docUrl} 
                                                     target="_blank" 
@@ -117,7 +117,7 @@ const AdminVerifications = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-xs text-[#5B6475]/40 italic">No documents attached.</p>
+                                        <p className="text-xs text-muted-foreground/40 italic">No documents attached.</p>
                                     )}
                                 </div>
                             </div>

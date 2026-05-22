@@ -34,7 +34,7 @@ const HomeBanner = () => {
     };
 
     return (
-        <section className="bg-[#F5F7FA] overflow-hidden">
+        <section className="bg-background overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 pt-24 pb-16">
                 <div className="grid lg:grid-cols-12 gap-12 items-start">
 
@@ -48,11 +48,11 @@ const HomeBanner = () => {
 
                         {/* Editorial Headline */}
                         <div className="space-y-4">
-                            <h1 className="text-5xl lg:text-6xl font-heading text-[#111827] tracking-tight leading-[0.95]">
+                            <h1 className="text-5xl lg:text-6xl font-heading text-foreground tracking-tight leading-[0.95]">
                                 Your child is in
                                 <span className="block text-[#2563EB]">safe hands.</span>
                             </h1>
-                            <p className="text-lg text-[#5B6475] max-w-xl leading-relaxed font-body">
+                            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed font-body">
                                 Real tutors. Verified credentials. Direct connection. We help you find teachers who genuinely care about your child's academic journey.
                             </p>
                         </div>
@@ -61,10 +61,10 @@ const HomeBanner = () => {
                         <Card variant="elevated" className="p-6">
                             <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-10 gap-4 mb-5">
                                 <div className="md:col-span-3">
-                                    <label className="text-xs font-medium text-[#111827] mb-1.5 block">Subject</label>
+                                    <label className="text-xs font-medium text-foreground mb-1.5 block">Subject</label>
                                     <div className="relative">
                                         <select
-                                            className="w-full h-11 pl-3 pr-8 border border-[rgba(15,23,46,0.12)] rounded-lg text-sm font-medium bg-white text-[#111827] appearance-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all duration-300"
+                                            className="w-full h-11 pl-3 pr-8 border border-border rounded-lg text-sm font-medium bg-card text-foreground appearance-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all duration-300"
                                             value={searchData.subject}
                                             onChange={(e) => setSearchData({ ...searchData, subject: e.target.value })}
                                         >
@@ -74,14 +74,14 @@ const HomeBanner = () => {
                                             <option value="physics">Physics</option>
                                         </select>
                                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <Search className="w-4 h-4 text-[#5B6475]" />
+                                            <Search className="w-4 h-4 text-muted-foreground" />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="md:col-span-3">
-                                    <label className="text-xs font-medium text-[#111827] mb-1.5 block">Class Level</label>
+                                    <label className="text-xs font-medium text-foreground mb-1.5 block">Class Level</label>
                                     <select
-                                        className="w-full h-11 px-3 border border-[rgba(15,23,46,0.12)] rounded-lg text-sm font-medium bg-white text-[#111827] appearance-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all duration-300"
+                                        className="w-full h-11 px-3 border border-border rounded-lg text-sm font-medium bg-card text-foreground appearance-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all duration-300"
                                         value={searchData.classLevel}
                                         onChange={(e) => setSearchData({ ...searchData, classLevel: e.target.value })}
                                     >
@@ -93,11 +93,11 @@ const HomeBanner = () => {
                                 </div>
                                 <div className="md:col-span-4 flex items-end gap-3">
                                     <div className="flex-1">
-                                        <label className="text-xs font-medium text-[#111827] mb-1.5 block">Location</label>
+                                        <label className="text-xs font-medium text-foreground mb-1.5 block">Location</label>
                                         <input
                                             type="text"
                                             placeholder="Enter area or city"
-                                            className="w-full h-11 px-3 border border-[rgba(15,23,46,0.12)] rounded-lg text-sm font-medium bg-white text-[#111827] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all duration-300 placeholder:text-[#5B6475]"
+                                            className="w-full h-11 px-3 border border-border rounded-lg text-sm font-medium bg-card text-foreground outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all duration-300 placeholder:text-muted-foreground"
                                             value={searchData.location}
                                             onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
                                         />
@@ -110,16 +110,16 @@ const HomeBanner = () => {
                             </form>
 
                             {/* Trust Signals */}
-                            <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-[rgba(15,23,46,0.08)]">
-                                <div className="flex items-center gap-2 text-xs text-[#5B6475]">
+                            <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-border">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     <CheckCircle className="w-4 h-4 text-[#2563EB]" />
                                     <span>Verified credentials</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-[#5B6475]">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     <MessageCircle className="w-4 h-4 text-[#2563EB]" />
                                     <span>Direct messaging</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-[#5B6475]">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     <Users className="w-4 h-4 text-[#2563EB]" />
                                     <span>No platform fees</span>
                                 </div>
@@ -137,31 +137,31 @@ const HomeBanner = () => {
                             </Badge>
 
                             <div className="flex items-start gap-4">
-                                <Avatar size="lg" verified={tutorPreview.verified} />
+                                <Avatar size="lg" verified={tutorPreview.verified} alt={tutorPreview.name} />
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg font-heading text-[#111827] tracking-tight mb-1">{tutorPreview.name}</h3>
-                                    <p className="text-sm font-medium text-[#5B6475]">{tutorPreview.subjects}</p>
-                                    <p className="text-sm text-[#5B6475] mt-1">{tutorPreview.location}</p>
+                                    <h3 className="text-lg font-heading text-foreground tracking-tight mb-1">{tutorPreview.name}</h3>
+                                    <p className="text-sm font-medium text-muted-foreground">{tutorPreview.subjects}</p>
+                                    <p className="text-sm text-muted-foreground mt-1">{tutorPreview.location}</p>
                                 </div>
                             </div>
 
-                            <p className="text-sm italic text-[#5B6475] mt-4 px-1">"{tutorPreview.style}"</p>
+                            <p className="text-sm italic text-muted-foreground mt-4 px-1">"{tutorPreview.style}"</p>
 
-                            <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-[rgba(15,23,46,0.08)]">
+                            <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-border">
                                 <div className="text-center">
                                     <div className="flex items-center justify-center gap-1.5 text-[#2563EB] mb-1">
                                         <Star size={14} className="fill-current" />
-                                        <span className="font-heading text-lg text-[#111827]">{tutorPreview.rating}</span>
+                                        <span className="font-heading text-lg text-foreground">{tutorPreview.rating}</span>
                                     </div>
-                                    <p className="text-xs text-[#5B6475]">({tutorPreview.reviews})</p>
+                                    <p className="text-xs text-muted-foreground">({tutorPreview.reviews})</p>
                                 </div>
-                                <div className="text-center border-x border-[rgba(15,23,46,0.08)]">
-                                    <div className="font-heading text-lg text-[#111827] mb-1">{tutorPreview.fee}</div>
-                                    <p className="text-xs text-[#5B6475]">per month</p>
+                                <div className="text-center border-x border-border">
+                                    <div className="font-heading text-lg text-foreground mb-1">{tutorPreview.fee}</div>
+                                    <p className="text-xs text-muted-foreground">per month</p>
                                 </div>
                                 <div className="text-center">
-                                    <div className="font-heading text-lg text-[#111827] mb-1">12+</div>
-                                    <p className="text-xs text-[#5B6475]">students taught</p>
+                                    <div className="font-heading text-lg text-foreground mb-1">12+</div>
+                                    <p className="text-xs text-muted-foreground">students taught</p>
                                 </div>
                             </div>
 
@@ -174,25 +174,25 @@ const HomeBanner = () => {
                         <Card variant="subtle" className="p-6">
                             <div className="grid grid-cols-3 gap-6">
                                 <div className="text-center">
-                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-3 border border-[rgba(15,23,46,0.08)] shadow-sm">
+                                    <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
                                         <Users className="w-5 h-5 text-[#2563EB]" />
                                     </div>
-                                    <div className="text-xl font-heading text-[#111827] leading-none mb-1">47</div>
-                                    <p className="text-xs text-[#5B6475]">matched today</p>
+                                    <div className="text-xl font-heading text-foreground leading-none mb-1">47</div>
+                                    <p className="text-xs text-muted-foreground">matched today</p>
                                 </div>
-                                <div className="text-center border-x border-[rgba(15,23,46,0.08)]">
-                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-3 border border-[rgba(15,23,46,0.08)] shadow-sm">
+                                <div className="text-center border-x border-border">
+                                    <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
                                         <GraduationCap className="w-5 h-5 text-[#2563EB]" />
                                     </div>
-                                    <div className="text-xl font-heading text-[#111827] leading-none mb-1">23</div>
-                                    <p className="text-xs text-[#5B6475]">new this week</p>
+                                    <div className="text-xl font-heading text-foreground leading-none mb-1">23</div>
+                                    <p className="text-xs text-muted-foreground">new this week</p>
                                 </div>
                                 <div className="text-center">
-                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-3 border border-[rgba(15,23,46,0.08)] shadow-sm">
+                                    <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
                                         <Clock className="w-5 h-5 text-[#2563EB]" />
                                     </div>
-                                    <div className="text-xl font-heading text-[#111827] leading-none mb-1">18m</div>
-                                    <p className="text-xs text-[#5B6475]">response time</p>
+                                    <div className="text-xl font-heading text-foreground leading-none mb-1">18m</div>
+                                    <p className="text-xs text-muted-foreground">response time</p>
                                 </div>
                             </div>
                         </Card>
@@ -200,7 +200,7 @@ const HomeBanner = () => {
                 </div>
 
                 {/* Bottom Trust Features */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-[rgba(15,23,46,0.08)]">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-border">
                     {[
                         { icon: CheckCircle, title: "Verified", desc: "Credential-checked tutors you can trust." },
                         { icon: MessageCircle, title: "Direct", desc: "Message and connect directly." },
@@ -208,12 +208,12 @@ const HomeBanner = () => {
                         { icon: Heart, title: "Proven", desc: "Delivering real academic results." }
                     ].map((feature, idx) => (
                         <div key={idx} className="flex items-start gap-3">
-                            <div className="w-8 h-8 bg-[#EEF2F6] rounded-lg flex items-center justify-center shrink-0 mt-0.5 border border-[rgba(15,23,46,0.08)]">
+                            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center shrink-0 mt-0.5 border border-border">
                                 <feature.icon className="w-4 h-4 text-[#2563EB]" />
                             </div>
                             <div>
-                                <h4 className="font-heading text-sm text-[#111827] mb-1">{feature.title}</h4>
-                                <p className="text-xs text-[#5B6475] leading-relaxed">{feature.desc}</p>
+                                <h4 className="font-heading text-sm text-foreground mb-1">{feature.title}</h4>
+                                <p className="text-xs text-muted-foreground leading-relaxed">{feature.desc}</p>
                             </div>
                         </div>
                     ))}
