@@ -18,7 +18,11 @@ export const STATUS = {
 export const MEDIUMS = {
   BANGLA: "Bangla Medium",
   ENGLISH: "English Medium",
+  CAMBRIDGE: "Cambridge",
+  IB: "IB",
 };
+
+export const MEDIUM_OPTIONS = Object.values(MEDIUMS);
 
 export const BANGLADESH_DIVISIONS = [
   "Dhaka",
@@ -29,4 +33,39 @@ export const BANGLADESH_DIVISIONS = [
   "Sylhet",
   "Rangpur",
   "Mymensingh",
+];
+
+export const SUBJECT_OPTIONS = [
+  "Mathematics",
+  "English",
+  "Bangla",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Higher Math",
+  "General Science",
+  "ICT",
+  "Accounting",
+  "Finance",
+  "Economics",
+  "History",
+  "Geography",
+];
+
+export const GENDER_OPTIONS = ["Male", "Female", "Other"];
+
+export const LANGUAGE_OPTIONS = [
+  { value: "english", label: "English" },
+  { value: "bangla", label: "Bangla" },
+  { value: "both", label: "Both" },
+];
+
+export const WEEK_DAYS = [
+  "Saturday",
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
 ];
