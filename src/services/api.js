@@ -7,7 +7,7 @@ import API_URL from '../config/api';
 const api = axios.create({
     baseURL: API_URL,
     withCredentials: true,
-    timeout: 10000
+    timeout: 30000
 });
 
 // request interceptor - add token
