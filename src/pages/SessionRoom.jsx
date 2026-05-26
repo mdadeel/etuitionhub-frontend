@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
 import API_URL from '../config/api';
+import api from '../services/api';
+import Cookies from 'js-cookie';
 import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../contexts/AuthContext';
@@ -37,12 +39,8 @@ export default function SessionRoom() {
                     return;
                 }
                 
-                const response = await fetch(`${API_URL}/api/bookings/${bookingId}`);
-                if (!response.ok) {
-                    navigate('/dashboard');
-                    return;
-                }
-                const booking = await response.json();
+                const response = await api.get(`/api/bookings/${bookingId}`);
+                const booking = response.data;
                 
                 if (!booking || (booking.studentEmail !== userEmail && booking.tutorEmail !== userEmail)) {
                     navigate('/dashboard');
@@ -60,7 +58,10 @@ export default function SessionRoom() {
     }, [bookingId, user, dbUser, navigate]);
 
     useEffect(() => {
-        socket.current = io(API_URL);
+        const token = Cookies.get('token');
+        socket.current = io(API_URL, {
+            auth: { token },
+        });
 
         const userId = user?.email || dbUser?.email || "anonymous";
 

@@ -14,8 +14,7 @@ import {
 import FilterSelect from "../components/shared/FilterSelect";
 import SearchEmptyState from "../components/shared/SearchEmptyState";
 import SaveSearchButton from "../components/shared/SaveSearchButton";
-import axios from "axios";
-import API_URL from "../config/api";
+import api from "../services/api";
 import { cn } from "@/lib/utils";
 
 const Tutors = () => {
@@ -107,8 +106,8 @@ const Tutors = () => {
           params.append("sort", sortBy);
         }
 
-        const response = await axios.get(
-          `${API_URL}/api/tutors?${params.toString()}`,
+        const response = await api.get(
+          `/api/tutors?${params.toString()}`,
         );
         const tutorsData = response.data.data || response.data;
         setTutors(Array.isArray(tutorsData) ? tutorsData : []);
@@ -255,7 +254,7 @@ const Tutors = () => {
             onClick={() => setIsMobileFiltersOpen(true)}
             className="lg:hidden fixed z-40 bg-[#2563EB] text-white h-14 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:bg-[#1D4ED8] active:scale-[0.98] transition-all"
             style={{
-              bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
+              bottom: "calc(env(safe-area-inset-bottom) + 5.25rem)",
               left: "1rem",
               right: "1rem",
             }}

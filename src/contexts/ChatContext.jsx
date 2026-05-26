@@ -43,35 +43,40 @@ export const ChatProvider = ({ children }) => {
         }
     }, [user]);
 
+    // Poll online status every 30s (works on Vercel, no WebSocket needed)
+    useEffect(() => {
+        if (!user) return;
+        const fetchOnline = async () => {
+            try {
+                const res = await api.get('/api/users/online');
+                const ids = res.data.online.map(u => u._id.toString());
+                setOnlineUsers(new Set(ids));
+            } catch {}
+        };
+        fetchOnline();
+        const interval = setInterval(fetchOnline, 30000);
+        return () => clearInterval(interval);
+    }, [user]);
+
     // Initialize Socket
     useEffect(() => {
         const token = Cookies.get('token');
         if (!token || !user) return;
 
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         
+        // NOTE: WebSockets do NOT work on Vercel (serverless functions don't support
+        // persistent connections). Online status uses REST polling instead (above).
+        // Real-time chat (messages, typing) requires a persistent host (Railway/Render).
         socketRef.current = io(backendUrl, {
             auth: { token },
-            query: { token }
+            // Start with polling so the connection at least establishes on serverless hosts;
+            // upgrade to websocket only on platforms that support it (Railway, Render, etc.)
+            transports: ['polling', 'websocket'],
         });
 
         socketRef.current.on('connect', () => {
             console.log('Global Socket connected for chat');
-        });
-
-        // --- Online Status ---
-        socketRef.current.on('online-users', (userIds) => {
-            setOnlineUsers(new Set(userIds));
-        });
-        socketRef.current.on('user-online', (userId) => {
-            setOnlineUsers(prev => new Set([...prev, userId]));
-        });
-        socketRef.current.on('user-offline', (userId) => {
-            setOnlineUsers(prev => {
-                const next = new Set(prev);
-                next.delete(userId);
-                return next;
-            });
         });
 
         // --- Typing Indicators ---

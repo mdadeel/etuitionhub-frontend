@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../services/api';
-import socket, { connectSocket, disconnectSocket } from '../services/socket';
 
 const useNotifications = ({ userId, pageSize = 20 } = {}) => {
     const [notifications, setNotifications] = useState([]);
@@ -93,43 +92,18 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
         }
     }, []);
 
-    // Socket.IO real-time updates
-    useEffect(() => {
-        if (!userId) return;
-
-        connectSocket(userId);
-
-        const handleNewNotification = (notification) => {
-            setNotifications(prev => [notification, ...prev]);
-            setUnreadCount(prev => prev + 1);
-        };
-
-        socket.on('notification:new', handleNewNotification);
-
-        return () => {
-            socket.off('notification:new', handleNewNotification);
-        };
-    }, [userId]);
-
-    // Polling fallback
+    // Poll notifications every 10s (works on Vercel, no WebSocket needed)
     useEffect(() => {
         refetch(1);
         intervalRef.current = setInterval(() => {
             api.get('/api/notifications/unread-count').then(res => {
                 setUnreadCount(res.data.count);
             }).catch(() => {});
-        }, 30000);
+        }, 10000);
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
         };
     }, [refetch]);
-
-    // Cleanup socket on unmount
-    useEffect(() => {
-        return () => {
-            disconnectSocket();
-        };
-    }, []);
 
     return {
         notifications,

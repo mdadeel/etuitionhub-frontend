@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { storage } from '../../utils/firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { Upload, CheckCircle, Clock, AlertCircle, FileText, Image as ImageIcon } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, FileText, Image as ImageIcon } from 'lucide-react';
 import { Card, Button } from '../ui';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -30,26 +28,16 @@ const VerificationFlow = () => {
         if (type === 'cert') setCertFile(file);
     };
 
-    const uploadToFirebase = (file, path) => {
-        return new Promise((resolve, reject) => {
-            const storageRef = ref(storage, path);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-
-            uploadTask.on(
-                'state_changed',
-                (snapshot) => {
-                    const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    setProgress(p);
-                },
-                (error) => {
-                    reject(error);
-                },
-                async () => {
-                    const url = await getDownloadURL(uploadTask.snapshot.ref);
-                    resolve(url);
-                }
-            );
+    const uploadToBackend = async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await api.post('/api/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            onUploadProgress: (e) => {
+                if (e.total) setProgress((e.loaded / e.total) * 100);
+            },
         });
+        return res.data.url;
     };
 
     const handleSubmit = async (e) => {
@@ -61,19 +49,9 @@ const VerificationFlow = () => {
 
         setUploading(true);
         try {
-            // Upload NID
-            const nidUrl = await uploadToFirebase(
-                nidFile, 
-                `verifications/${user.uid}/nid_${Date.now()}`
-            );
-            
-            // Upload Certificate
-            const certUrl = await uploadToFirebase(
-                certFile, 
-                `verifications/${user.uid}/cert_${Date.now()}`
-            );
+            const nidUrl = await uploadToBackend(nidFile);
+            const certUrl = await uploadToBackend(certFile);
 
-            // Update Backend
             const documents = [
                 { docUrl: nidUrl, docType: 'National ID' },
                 { docUrl: certUrl, docType: 'Certificate' }

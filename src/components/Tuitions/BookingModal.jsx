@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import API_URL from '../../config/api';
+import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
@@ -16,9 +15,9 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
     useEffect(() => {
         if (isOpen && tutorId) {
             const url = selectedDate 
-                ? `${API_URL}/api/tutors/${tutorId}/availability?date=${selectedDate}`
-                : `${API_URL}/api/tutors/${tutorId}/availability`;
-            axios.get(url)
+                ? `/api/tutors/${tutorId}/availability?date=${selectedDate}`
+                : `/api/tutors/${tutorId}/availability`;
+            api.get(url)
                 .then(res => setAvailability(res.data))
                 .catch(err => console.error(err));
         }
@@ -26,8 +25,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
     const handleConfirm = async (method) => {
         try {
-            // 1. Create the booking
-            const bookingRes = await axios.post(`${API_URL}/api/bookings`, {
+            const bookingRes = await api.post('/api/bookings', {
                 tutorId,
                 tutorName,
                 studentEmail: user?.email || dbUser?.email,
@@ -39,9 +37,8 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
             
             const bookingId = bookingRes.data._id || 'mock-id';
             
-            // 2. Initiate Payment (bKash or Nagad)
-            const paymentRes = await axios.post(`${API_URL}/api/payments/${method}/create`, {
-                amount: 500, // mock amount
+            const paymentRes = await api.post(`/api/payments/${method}/create`, {
+                amount: 500,
                 bookingId: bookingId,
                 tutorName: tutorName
             });
