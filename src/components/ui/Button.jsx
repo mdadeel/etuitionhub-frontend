@@ -8,11 +8,11 @@ const Button = ({
   ...props 
 }) => {
   const variants = {
-    primary: 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] hover:shadow-md',
+    primary: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md',
     secondary: 'bg-muted text-foreground hover:bg-muted/80 border border-border',
-    outline: 'bg-transparent text-foreground border border-foreground hover:bg-foreground hover:text-background',
+    outline: 'bg-transparent text-foreground border border-primary hover:bg-primary hover:text-primary-foreground',
     ghost: 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground',
-    link: 'bg-transparent text-[#2563EB] hover:underline p-0 h-auto',
+    link: 'bg-transparent text-primary hover:underline p-0 h-auto',
   };
 
   const sizes = {
@@ -25,8 +25,8 @@ const Button = ({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center font-medium rounded-none transition-all duration-300',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]/30 focus-visible:ring-offset-2',
+        'inline-flex items-center justify-center font-medium rounded transition-all duration-300',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
         'disabled:opacity-50 disabled:pointer-events-none',
         variants[variant],
         sizes[size],

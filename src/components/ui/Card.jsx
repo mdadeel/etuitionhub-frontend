@@ -15,13 +15,13 @@ const Card = ({
   };
 
   const hoverStyles = hover 
-    ? 'hover:border-[#2563EB]/20 hover:shadow-lg hover:shadow-[rgba(0,0,0,0.04)] hover:-translate-y-0.5 transition-all duration-300'
+    ? 'hover:border-primary/20 hover:shadow-lg hover:shadow-[rgba(0,0,0,0.04)] hover:-translate-y-0.5 transition-all duration-300'
     : '';
 
   return (
     <div
       className={cn(
-        'rounded-none',
+        'rounded',
         variants[variant],
         hoverStyles,
         className

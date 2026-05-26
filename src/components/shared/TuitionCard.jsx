@@ -50,7 +50,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "" }) => {
 
   return (
     <div
-      className={`group flex flex-col p-5 bg-card border border-border rounded-2xl hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 transition-all duration-300 cursor-pointer ${className}`}
+      className={`group flex flex-col p-5 bg-card border border-border rounded hover:shadow-premium hover:border-primary/20 transition-all duration-300 cursor-pointer ${className}`}
       onClick={handleViewDetails}
     >
       <div className="flex justify-between items-start gap-4 mb-3">
@@ -106,7 +106,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "" }) => {
           <span className="text-xs text-muted-foreground font-medium">/mo</span>
         </div>
         <button
-          className="flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors group/btn"
+          className="flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded transition-colors group/btn"
           onClick={handleViewDetails}
         >
           View Details

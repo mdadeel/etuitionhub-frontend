@@ -27,38 +27,51 @@ const testimonials = [
 
 const Testimonials = () => {
     return (
-        <section className="py-20 bg-background overflow-hidden relative">
+        <section className="py-20 bg-background overflow-hidden relative border-b border-border/50">
             <div className="max-w-7xl mx-auto px-6">
                 <SectionHeader
-                    title={<>Stories from <span className="text-[#2563EB]">real families</span></>}
+                    title={<>Stories from <span className="text-primary font-semibold">real families</span></>}
                     subtitle="Authentic experiences from parents and students who found their perfect tutor match through our platform."
+                    className="opacity-0 animate-fade-in-up"
+                    style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}
                 />
 
                 <div className="grid lg:grid-cols-3 gap-8">
                     {testimonials.map((t, idx) => (
-                        <Card key={idx} hover className="p-8">
-                            <Quote className="w-8 h-8 text-[#2563EB]/20 mb-6" />
-
-                            <div className="flex items-center gap-1 mb-6">
-                                {[...Array(t.rating)].map((_, i) => (
-                                    <Star key={i} size={14} className="fill-amber-500 text-amber-500" />
-                                ))}
-                            </div>
-
-                            <p className="text-base text-muted-foreground leading-relaxed font-body mb-8 italic">
-                                "{t.text}"
-                            </p>
-
-                            <div className="flex items-center gap-4 pt-6 border-t border-border">
-                                <Avatar size="md" alt={t.name}>
-                                    <User className="w-6 h-6 text-muted-foreground" />
-                                </Avatar>
+                        <div 
+                            key={idx} 
+                            className="opacity-0 animate-fade-in-up" 
+                            style={{ 
+                                animationDelay: `${200 + idx * 150}ms`,
+                                animationFillMode: 'forwards'
+                            }}
+                        >
+                            <Card hover className="p-8 h-full flex flex-col justify-between">
                                 <div>
-                                    <p className="text-sm font-heading text-foreground mb-0.5">{t.name}</p>
-                                    <p className="text-xs text-muted-foreground">{t.role} · {t.location}</p>
+                                    <Quote className="w-8 h-8 text-primary/10 mb-6" />
+
+                                    <div className="flex items-center gap-1 mb-5">
+                                        {[...Array(t.rating)].map((_, i) => (
+                                            <Star key={i} size={14} className="fill-amber-500 text-amber-500" />
+                                        ))}
+                                    </div>
+
+                                    <p className="text-[15px] text-muted-foreground leading-relaxed font-body mb-8 italic">
+                                        "{t.text}"
+                                    </p>
                                 </div>
-                            </div>
-                        </Card>
+
+                                <div className="flex items-center gap-4 pt-6 border-t border-border/60">
+                                    <Avatar size="md" alt={t.name}>
+                                        <User className="w-5 h-5 text-muted-foreground" />
+                                    </Avatar>
+                                    <div>
+                                        <p className="text-sm font-heading text-foreground mb-0.5">{t.name}</p>
+                                        <p className="text-xs text-muted-foreground font-body">{t.role} · {t.location}</p>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
                     ))}
                 </div>
             </div>

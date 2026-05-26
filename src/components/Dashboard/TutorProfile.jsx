@@ -33,24 +33,8 @@ import {
   GENDER_OPTIONS,
   LANGUAGE_OPTIONS,
   WEEK_DAYS,
+  SUBJECT_OPTIONS,
 } from "../../utils/constants";
-
-const SUBJECT_OPTIONS = [
-  "Mathematics",
-  "English",
-  "Bangla",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Higher Math",
-  "General Science",
-  "ICT",
-  "Accounting",
-  "Finance",
-  "Economics",
-  "History",
-  "Geography",
-];
 
 const TutorProfile = () => {
   const { user, dbUser, loading: authLoading, refreshUserFromDB } = useAuth();
@@ -65,6 +49,8 @@ const TutorProfile = () => {
   const [gender, setGender] = useState("");
   const [languagePreference, setLanguagePreference] = useState("both");
   const [availableDays, setAvailableDays] = useState([]);
+  const [bio, setBio] = useState("");
+  const [experience, setExperience] = useState("");
 
   useEffect(() => {
     if (dbUser) {
@@ -78,6 +64,8 @@ const TutorProfile = () => {
       setGender(dbUser.gender || "");
       setLanguagePreference(dbUser.languagePreference || "both");
       setAvailableDays(dbUser.availableDays || []);
+      setBio(dbUser.bio || "");
+      setExperience(dbUser.experience || "");
     }
   }, [dbUser, user]);
 
@@ -114,6 +102,8 @@ const TutorProfile = () => {
         gender,
         languagePreference,
         availableDays,
+        bio,
+        experience,
       };
 
       await api.patch(`/api/users/by-email/${user?.email}`, updateData);
@@ -180,9 +170,7 @@ const TutorProfile = () => {
 
               <div className="pt-4 border-t border-border">
                 <p className="text-muted-foreground text-xs font-bold leading-relaxed max-w-2xl italic uppercase tracking-tight">
-                  "Passionate about making concepts easy to understand. Helping
-                  students achieve their academic goals with personalized
-                  guidance."
+                  "{bio || 'No bio added yet'}"
                 </p>
               </div>
             </div>
@@ -213,7 +201,7 @@ const TutorProfile = () => {
                   Experience
                 </p>
                 <p className="text-lg font-black text-foreground tracking-tighter">
-                  4+ Years
+                  {experience || 'N/A'}
                 </p>
               </div>
             </div>

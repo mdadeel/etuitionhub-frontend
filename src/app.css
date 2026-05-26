@@ -23,21 +23,21 @@ body {
     --popover: 222 47% 10%;
     --popover-foreground: 210 40% 98%;
 
-    /* Muted Blue - #2563EB */
-    --primary: 217 91% 60%;
+    /* Pine Emerald Primary */
+    --primary: 162 84% 32%;
     --primary-foreground: 210 40% 98%;
 
-    /* Calm Blue Accent - #4F8CFF */
-    --secondary: 215 100% 65%;
+    /* Forest Mint Secondary */
+    --secondary: 162 40% 55%;
     --secondary-foreground: 210 40% 98%;
 
     /* Muted neutrals */
     --muted: 215 25% 14%;
     --muted-foreground: 215 20% 60%;
 
-    /* Intelligent Cyan Glow - #6EE7F9 (very limited) */
-    --accent: 185 70% 70%;
-    --accent-foreground: 210 40% 98%;
+    /* Amber Gold Accent */
+    --accent: 38 95% 52%;
+    --accent-foreground: 222 47% 6%;
 
     /* Destructive */
     --destructive: 0 62% 30%;
@@ -46,10 +46,10 @@ body {
     /* Soft borders */
     --border: 215 25% 18%;
     --input: 215 25% 18%;
-    --ring: 217 91% 60%;
+    --ring: 162 84% 32%;
 
-    /* Unified softer corners */
-    --radius: 8px;
+    /* Sharp technical corners */
+    --radius: 4px;
 
     /* Success/Warning */
     --success: 142 71% 45%;
@@ -69,19 +69,20 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 10%;
 
-    /* Muted blue: #2563EB */
-    --primary: 217 91% 60%;
+    /* Pine Emerald Primary */
+    --primary: 162 84% 32%;
     --primary-foreground: 0 0% 100%;
 
-    /* Calm blue accent: #4F8CFF */
-    --secondary: 215 100% 65%;
+    /* Forest Mint Secondary */
+    --secondary: 162 40% 55%;
     --secondary-foreground: 0 0% 100%;
 
     /* Secondary surface: #EEF2F6 */
     --muted: 210 20% 94%;
     --muted-foreground: 215 20% 40%;
 
-    --accent: 185 70% 70%;
+    /* Amber Gold Accent */
+    --accent: 38 95% 52%;
     --accent-foreground: 215 25% 10%;
 
     --destructive: 0 84% 60%;
@@ -90,7 +91,7 @@ body {
     /* Soft border: rgba(15, 23, 46, 0.08) */
     --border: 215 32% 88%;
     --input: 215 32% 88%;
-    --ring: 217 91% 60%;
+    --ring: 162 84% 32%;
   }
 }
 
@@ -537,4 +538,138 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .shimmer-bg {
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--border)) 50%, hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite linear;
+  }
+}#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Premium Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Premium Background Patterns */
+.bg-dot-pattern {
+  background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: rgba(0, 0, 0, 0.03);
+}
+
+.dark .bg-dot-pattern {
+  color: rgba(255, 255, 255, 0.02);
+}
+
+/* Animations */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+
+.highlight-pulse {
+  animation: pulse-ring 2s infinite;
 }

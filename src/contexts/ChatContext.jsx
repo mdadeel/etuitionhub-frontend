@@ -26,8 +26,9 @@ export const ChatProvider = ({ children }) => {
         if (!user) return;
         try {
             const res = await api.get('/api/messages/conversations');
-            setConversations(res.data);
-            const total = res.data.reduce((acc, conv) => acc + (conv.unreadCount || 0), 0);
+            const convs = Array.isArray(res.data) ? res.data : (res.data.conversations || []);
+            setConversations(convs);
+            const total = convs.reduce((acc, conv) => acc + (conv.unreadCount || 0), 0);
             setUnreadTotal(total);
         } catch (error) {
             console.error('Error fetching conversations:', error);

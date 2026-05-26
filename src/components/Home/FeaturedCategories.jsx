@@ -15,9 +15,9 @@ const categories = [
 
 const FeaturedCategories = () => {
     return (
-        <section className="py-20 bg-card">
+        <section className="py-20 bg-card relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="mb-12">
+                <div className="mb-12 border-l-2 border-primary pl-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                     <h2 className="text-4xl md:text-5xl font-heading text-foreground tracking-tight leading-[0.95] mb-4">Find your subject</h2>
                     <p className="text-lg text-muted-foreground leading-relaxed font-body">From school preparation to university-level coaching</p>
                 </div>
@@ -27,9 +27,10 @@ const FeaturedCategories = () => {
                         <Link
                             key={cat.slug}
                             to={`/tutors?subject=${cat.slug}`}
-                            className="block"
+                            className="block opacity-0 animate-scale-in"
+                            style={{ animationDelay: `${150 + idx * 60}ms` }}
                         >
-                            <Card hover className={`p-5 relative h-full ${cat.tag ? 'bg-background' : ''}`}>
+                            <Card hover className={`p-5 relative h-full transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-premium border border-border/50 hover:border-primary/30 ${cat.tag ? 'bg-background' : ''}`}>
                                 {cat.tag && (
                                     <Badge variant="dark" size="xs" className="absolute -top-2 right-4">
                                         {cat.tag}
@@ -37,7 +38,7 @@ const FeaturedCategories = () => {
                                 )}
 
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-lg border border-border">
+                                    <div className="w-10 h-10 flex items-center justify-center bg-muted rounded border border-border">
                                         <cat.icon className="w-5 h-5 text-foreground" />
                                     </div>
                                     <span className="font-heading text-base text-foreground tracking-tight">{cat.label}</span>

@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { 
@@ -16,11 +15,11 @@ import ImportantMails from './ImportantMails';
 const Profile = () => {
     const { user, dbUser, refreshUserFromDB, updateUserProfile } = useAuth();
     const [loading, setLoading] = useState(false);
-    const { handleSubmit } = useForm();
 
     const [photoInput, setPhotoInput] = useState('');
     const [nameInput, setNameInput] = useState('');
     const [mobileInput, setMobileInput] = useState('');
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         if (dbUser?.displayName || user?.displayName) {
@@ -90,7 +89,29 @@ const Profile = () => {
                                 />
                                 <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
                             </Avatar>
-                            <div className="absolute bottom-1 right-1 w-12 h-12 bg-card rounded-none flex items-center justify-center shadow-lg border border-border cursor-pointer hover:scale-110 transition-transform text-muted-foreground hover:text-[#2563EB]">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                ref={fileInputRef}
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    const formData = new FormData();
+                                    formData.append('file', file);
+                                    try {
+                                        const res = await api.post('/api/upload', formData);
+                                        setPhotoInput(res.data.url);
+                                        toast.success('Photo uploaded');
+                                    } catch (err) {
+                                        toast.error('Upload failed');
+                                    }
+                                }}
+                            />
+                            <div
+                                className="absolute bottom-1 right-1 w-12 h-12 bg-card rounded-none flex items-center justify-center shadow-lg border border-border cursor-pointer hover:scale-110 transition-transform text-muted-foreground hover:text-[#2563EB]"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
                                 <Camera size={20} />
                             </div>
                         </div>
@@ -104,7 +125,7 @@ const Profile = () => {
                 {/* Edit Form Section */}
                 <div className="lg:col-span-8">
                     <Card className="p-8 md:p-12" hover={false}>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                        <form onSubmit={onSubmit} className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-3">
                                     <label className="text-xs font-semibold text-muted-foreground ml-1">Full Name</label>

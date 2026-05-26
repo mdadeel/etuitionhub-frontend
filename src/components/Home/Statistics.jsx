@@ -15,7 +15,11 @@ const Statistics = () => {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
                     {stats.map((stat, i) => (
-                        <div key={i} className="flex flex-col items-center md:items-start space-y-2">
+                        <div 
+                            key={i} 
+                            className="flex flex-col items-center md:items-start space-y-2 opacity-0 animate-fade-in-up"
+                            style={{ animationDelay: `${100 + i * 100}ms` }}
+                        >
                             <div className="flex items-baseline gap-1">
                                 <span className="text-3xl md:text-4xl font-heading text-foreground tracking-tight tabular-nums">
                                     <CountUp 
@@ -29,7 +33,7 @@ const Statistics = () => {
                                 </span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-0.5 bg-[#2563EB] rounded-full"></div>
+                                <div className="w-2 h-0.5 bg-primary rounded-full"></div>
                                 <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
                                     {stat.label}
                                 </span>

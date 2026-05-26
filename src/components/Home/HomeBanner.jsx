@@ -34,23 +34,25 @@ const HomeBanner = () => {
     };
 
     return (
-        <section className="bg-background overflow-hidden">
+        <section className="bg-background bg-pattern-academic relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 pt-24 pb-16">
                 <div className="grid lg:grid-cols-12 gap-12 items-start">
 
                     {/* LEFT - Emotional Content & Search */}
                     <div className="lg:col-span-7 space-y-8">
                         {/* Trust Badge */}
-                        <Badge variant="primary">
-                            <ShieldCheck className="w-4 h-4" />
-                            2,500+ verified tutors across Bangladesh
-                        </Badge>
+                        <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                            <Badge variant="primary">
+                                <ShieldCheck className="w-4 h-4" />
+                                2,500+ verified tutors across Bangladesh
+                            </Badge>
+                        </div>
 
                         {/* Editorial Headline */}
-                        <div className="space-y-4">
+                        <div className="space-y-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
                             <h1 className="text-5xl lg:text-6xl font-heading text-foreground tracking-tight leading-[0.95]">
                                 Your child is in
-                                <span className="block text-[#2563EB]">safe hands.</span>
+                                <span className="block text-primary">safe hands.</span>
                             </h1>
                             <p className="text-lg text-muted-foreground max-w-xl leading-relaxed font-body">
                                 Real tutors. Verified credentials. Direct connection. We help you find teachers who genuinely care about your child's academic journey.
@@ -58,13 +60,13 @@ const HomeBanner = () => {
                         </div>
 
                         {/* Search Interface */}
-                        <Card variant="elevated" className="p-6">
-                            <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-10 gap-4 mb-5">
-                                <div className="md:col-span-3">
-                                    <label className="text-xs font-medium text-foreground mb-1.5 block">Subject</label>
+                        <Card variant="elevated" className="p-5 opacity-0 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+                            <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-stretch gap-3 mb-4">
+                                <div className="flex-1 min-w-[130px]">
+                                    <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1 block">Subject</label>
                                     <div className="relative">
                                         <select
-                                            className="w-full h-11 pl-3 pr-8 border border-border rounded-lg text-sm font-medium bg-card text-foreground appearance-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all duration-300"
+                                            className="w-full h-11 pl-3 pr-8 border border-border rounded bg-card text-foreground appearance-none focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all text-sm font-medium"
                                             value={searchData.subject}
                                             onChange={(e) => setSearchData({ ...searchData, subject: e.target.value })}
                                         >
@@ -74,14 +76,15 @@ const HomeBanner = () => {
                                             <option value="physics">Physics</option>
                                         </select>
                                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <Search className="w-4 h-4 text-muted-foreground" />
+                                            <Search className="w-3.5 h-3.5 text-muted-foreground" />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="md:col-span-3">
-                                    <label className="text-xs font-medium text-foreground mb-1.5 block">Class Level</label>
+                                <div className="w-px bg-border hidden md:block self-stretch my-2" />
+                                <div className="flex-1 min-w-[130px]">
+                                    <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1 block">Class Level</label>
                                     <select
-                                        className="w-full h-11 px-3 border border-border rounded-lg text-sm font-medium bg-card text-foreground appearance-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 outline-none transition-all duration-300"
+                                        className="w-full h-11 px-3 border border-border rounded bg-card text-foreground appearance-none focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all text-sm font-medium"
                                         value={searchData.classLevel}
                                         onChange={(e) => setSearchData({ ...searchData, classLevel: e.target.value })}
                                     >
@@ -91,19 +94,20 @@ const HomeBanner = () => {
                                         <option value="university">University</option>
                                     </select>
                                 </div>
-                                <div className="md:col-span-4 flex items-end gap-3">
-                                    <div className="flex-1">
-                                        <label className="text-xs font-medium text-foreground mb-1.5 block">Location</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter area or city"
-                                            className="w-full h-11 px-3 border border-border rounded-lg text-sm font-medium bg-card text-foreground outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all duration-300 placeholder:text-muted-foreground"
-                                            value={searchData.location}
-                                            onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
-                                        />
-                                    </div>
-                                    <Button type="submit">
-                                        <Search className="w-4 h-4" />
+                                <div className="w-px bg-border hidden md:block self-stretch my-2" />
+                                <div className="flex-1 min-w-[150px]">
+                                    <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1 block">Location</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter area or city"
+                                        className="w-full h-11 px-3 border border-border rounded bg-card text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-sm font-medium placeholder:text-muted-foreground/50"
+                                        value={searchData.location}
+                                        onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
+                                    />
+                                </div>
+                                <div className="flex items-end">
+                                    <Button type="submit" className="h-11 w-full md:w-auto px-6">
+                                        <Search className="w-4 h-4 mr-2" />
                                         <span>Search</span>
                                     </Button>
                                 </div>
@@ -112,15 +116,15 @@ const HomeBanner = () => {
                             {/* Trust Signals */}
                             <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-border">
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <CheckCircle className="w-4 h-4 text-[#2563EB]" />
+                                    <CheckCircle className="w-4 h-4 text-primary" />
                                     <span>Verified credentials</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <MessageCircle className="w-4 h-4 text-[#2563EB]" />
+                                    <MessageCircle className="w-4 h-4 text-primary" />
                                     <span>Direct messaging</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <Users className="w-4 h-4 text-[#2563EB]" />
+                                    <Users className="w-4 h-4 text-primary" />
                                     <span>No platform fees</span>
                                 </div>
                             </div>
@@ -128,7 +132,7 @@ const HomeBanner = () => {
                     </div>
 
                     {/* RIGHT - Tutor Preview & Trust Signals */}
-                    <div className="lg:col-span-5 space-y-6 lg:translate-y-4">
+                    <div className="lg:col-span-5 space-y-6 lg:translate-y-4 opacity-0 animate-scale-in" style={{ animationDelay: '550ms' }}>
                         {/* Featured Tutor Card */}
                         <Card variant="elevated" hover className="p-6 relative">
                             <Badge variant="primary" className="absolute -top-2 -right-2">
@@ -149,7 +153,7 @@ const HomeBanner = () => {
 
                             <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-border">
                                 <div className="text-center">
-                                    <div className="flex items-center justify-center gap-1.5 text-[#2563EB] mb-1">
+                                    <div className="flex items-center justify-center gap-1.5 text-primary mb-1">
                                         <Star size={14} className="fill-current" />
                                         <span className="font-heading text-lg text-foreground">{tutorPreview.rating}</span>
                                     </div>
@@ -175,21 +179,21 @@ const HomeBanner = () => {
                             <div className="grid grid-cols-3 gap-6">
                                 <div className="text-center">
                                     <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
-                                        <Users className="w-5 h-5 text-[#2563EB]" />
+                                        <Users className="w-5 h-5 text-primary" />
                                     </div>
                                     <div className="text-xl font-heading text-foreground leading-none mb-1">47</div>
                                     <p className="text-xs text-muted-foreground">matched today</p>
                                 </div>
                                 <div className="text-center border-x border-border">
                                     <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
-                                        <GraduationCap className="w-5 h-5 text-[#2563EB]" />
+                                        <GraduationCap className="w-5 h-5 text-primary" />
                                     </div>
                                     <div className="text-xl font-heading text-foreground leading-none mb-1">23</div>
                                     <p className="text-xs text-muted-foreground">new this week</p>
                                 </div>
                                 <div className="text-center">
                                     <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
-                                        <Clock className="w-5 h-5 text-[#2563EB]" />
+                                        <Clock className="w-5 h-5 text-primary" />
                                     </div>
                                     <div className="text-xl font-heading text-foreground leading-none mb-1">18m</div>
                                     <p className="text-xs text-muted-foreground">response time</p>
@@ -200,7 +204,7 @@ const HomeBanner = () => {
                 </div>
 
                 {/* Bottom Trust Features */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-border">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-border opacity-0 animate-fade-in-up" style={{ animationDelay: '700ms' }}>
                     {[
                         { icon: CheckCircle, title: "Verified", desc: "Credential-checked tutors you can trust." },
                         { icon: MessageCircle, title: "Direct", desc: "Message and connect directly." },
@@ -209,7 +213,7 @@ const HomeBanner = () => {
                     ].map((feature, idx) => (
                         <div key={idx} className="flex items-start gap-3">
                             <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center shrink-0 mt-0.5 border border-border">
-                                <feature.icon className="w-4 h-4 text-[#2563EB]" />
+                                <feature.icon className="w-4 h-4 text-primary" />
                             </div>
                             <div>
                                 <h4 className="font-heading text-sm text-foreground mb-1">{feature.title}</h4>

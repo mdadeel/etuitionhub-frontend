@@ -83,7 +83,7 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
   return (
     <Card
       hover
-      className="group cursor-pointer h-full flex flex-col border-border rounded-2xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 transition-all duration-300"
+      className="group cursor-pointer h-full flex flex-col border-border rounded overflow-hidden hover:shadow-premium hover:border-primary/20 transition-all duration-300"
       onClick={() => navigate(`/tutor/${_id}`)}
     >
       <div className="p-5 flex-grow">
@@ -190,7 +190,7 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
         </div>
         <Button
           size="sm"
-          className="font-semibold text-xs uppercase tracking-wider rounded-lg"
+          className="font-semibold text-xs uppercase tracking-wider rounded"
         >
           View Profile
         </Button>

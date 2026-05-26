@@ -60,7 +60,6 @@ const StudentPayments = () => {
         { id: 'all', label: 'All', count: stats.total },
         { id: 'pending_verification', label: 'Pending', count: stats.pending },
         { id: 'verified', label: 'Verified', count: payments.filter(p => p.status === 'verified').length },
-        { id: 'verified', label: 'Verified', count: payments.filter(p => p.status === 'verified').length },
         { id: 'rejected', label: 'Rejected', count: payments.filter(p => p.status === 'rejected').length }
     ];
 

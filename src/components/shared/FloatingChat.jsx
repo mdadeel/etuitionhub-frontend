@@ -42,6 +42,9 @@ const FloatingChat = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [sending, setSending] = useState(false);
+    const [replyingToMessage, setReplyingToMessage] = useState(null);
+    const [editingMessage, setEditingMessage] = useState(null);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = useCallback(() => {
@@ -62,7 +65,8 @@ const FloatingChat = () => {
             }
             try {
                 const res = await api.get(`/api/messages/${floatingActiveConv._id}`);
-                setMessages(res.data.filter(m => m && m.text));
+                const msgs = Array.isArray(res.data) ? res.data : (res.data.messages || []);
+                setMessages(msgs.filter(m => m && m.text));
                 scrollToBottom();
                 if (floatingActiveConv.unreadCount > 0) {
                     markAsRead(floatingActiveConv._id);
@@ -119,16 +123,19 @@ const FloatingChat = () => {
     }, [socket, floatingActiveConv, isFloatingOpen]);
 
     const sendMessage = async () => {
-        if (!newMessage.trim() || !floatingActiveConv) return;
+        if (!newMessage.trim() || !floatingActiveConv || sending) return;
 
         const otherParticipant = floatingActiveConv.participants.find(p => p.email !== user.email);
         if (!otherParticipant) return;
 
         const text = newMessage.trim();
+        const replyToId = replyingToMessage ? replyingToMessage._id : null;
         setNewMessage('');
+        setReplyingToMessage(null);
+        setSending(true);
 
         try {
-            const res = await api.post('/api/messages', { receiverId: otherParticipant._id, text });
+            const res = await api.post('/api/messages', { receiverId: otherParticipant._id, text, replyToId });
             const sentMsg = res.data;
 
             setMessages(prev => [...prev, sentMsg]);
@@ -142,6 +149,8 @@ const FloatingChat = () => {
         } catch (error) {
             console.error('Error sending message:', error);
             toast.error('Failed to send message');
+        } finally {
+            setSending(false);
         }
     };
 
@@ -173,6 +182,55 @@ const FloatingChat = () => {
     const handleStopTyping = () => {
         if (socket && floatingActiveConv) {
             socket.emit('stop-typing', { room: floatingActiveConv._id, senderId: user.uid });
+        }
+    };
+
+    const handleEdit = (msg) => {
+        setEditingMessage(msg);
+        setNewMessage(msg.text);
+        setReplyingToMessage(null);
+    };
+
+    const handleSaveEdit = async () => {
+        if (!newMessage.trim() || !editingMessage) return;
+        const text = newMessage.trim();
+        const messageId = editingMessage._id;
+
+        try {
+            const res = await api.patch(`/api/messages/${messageId}`, { text });
+            const updatedMsg = res.data;
+
+            setMessages(prev => prev.map(msg => msg._id === messageId ? updatedMsg : msg));
+            setEditingMessage(null);
+            setNewMessage('');
+
+            if (socket) {
+                socket.emit('message-edited', { ...updatedMsg, room: floatingActiveConv._id });
+            }
+        } catch (error) {
+            console.error('Error editing message:', error);
+            toast.error('Failed to edit message');
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingMessage(null);
+        setNewMessage('');
+    };
+
+    const handleDelete = async (messageId) => {
+        try {
+            await api.delete(`/api/messages/${messageId}`);
+            setMessages(prev => prev.map(msg =>
+                msg._id === messageId ? { ...msg, isDeleted: true, text: "This message was deleted", reactions: {} } : msg
+            ));
+            if (socket) {
+                socket.emit('message-deleted', { messageId, room: floatingActiveConv._id });
+            }
+            fetchConversations();
+        } catch (error) {
+            console.error('Error deleting message:', error);
+            toast.error('Failed to delete message');
         }
     };
 
@@ -337,6 +395,9 @@ const FloatingChat = () => {
                                                         otherParticipant={otherParticipant}
                                                         handleReact={handleReact}
                                                         isLastInBlock={isLastInBlock}
+                                                        onReply={setReplyingToMessage}
+                                                        onEdit={handleEdit}
+                                                        onDelete={handleDelete}
                                                     />
                                                 </React.Fragment>
                                             );
@@ -367,11 +428,16 @@ const FloatingChat = () => {
                                 <ChatInputBar
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
-                                    onSend={sendMessage}
+                                    onSend={editingMessage ? handleSaveEdit : sendMessage}
                                     onTyping={handleTyping}
                                     onStopTyping={handleStopTyping}
-                                    placeholder="Aa..."
+                                    placeholder={editingMessage ? "Edit your message..." : "Aa..."}
                                     compact
+                                    sending={sending}
+                                    replyingTo={replyingToMessage}
+                                    onCancelReply={() => setReplyingToMessage(null)}
+                                    editingMessage={editingMessage}
+                                    onCancelEdit={handleCancelEdit}
                                 />
                             </>
                         )}

@@ -1,4 +1,4 @@
-import { Mail, Zap, CheckCircle2 } from 'lucide-react';
+import { Mail, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -26,69 +26,65 @@ const Newsletter = () => {
             setSubmitting(false);
         }
     };
-    return (
-        <section className="py-24 bg-card relative overflow-hidden border-b border-border">
-            {/* Background Grid Motif */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-                <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-            </div>
 
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="bg-slate-950 p-12 md:p-16 text-center space-y-12 border border-white/10 relative overflow-hidden">
-                    {/* Industrial Header */}
-                    <div className="flex flex-col items-center space-y-6 relative z-10">
-                        <div className="inline-flex items-center gap-3 px-3 py-1 bg-card/5 border border-white/10">
-                            <Zap size={14} className="text-blue-500" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Newsletter</span>
+    return (
+        <section className="py-20 bg-background relative overflow-hidden border-b border-border/50">
+            <div className="max-w-7xl mx-auto px-6 relative z-10 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+                <div className="bg-card border border-border/80 rounded p-12 md:p-16 text-center space-y-10 shadow-premium relative overflow-hidden">
+                    
+                    {/* Header */}
+                    <div className="flex flex-col items-center space-y-4 relative z-10">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+                            <Mail size={12} className="text-primary" />
+                            <span className="text-xs font-medium text-primary">Newsletter</span>
                         </div>
                         
-                        <div className="space-y-4">
-                            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none uppercase">
-                                Stay Inside <br />
-                                <span className="text-blue-600">The Loop</span>
+                        <div className="space-y-3">
+                            <h2 className="text-3xl md:text-5xl font-heading text-foreground tracking-tight leading-tight">
+                                Stay inside <span className="text-primary font-semibold">the loop</span>
                             </h2>
-                            <p className="text-muted-foreground text-xs font-bold max-w-sm mx-auto uppercase tracking-wider leading-relaxed">
+                            <p className="text-muted-foreground text-sm max-w-md mx-auto font-body leading-relaxed">
                                 Get verified tutor updates and learning tips delivered directly to your inbox.
                             </p>
                         </div>
                     </div>
 
-                    {/* Technical Form */}
-                    <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 max-w-2xl mx-auto relative z-10 border border-white/10">
+                    {/* Subscription Form */}
+                    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto w-full relative z-10">
                         <div className="relative flex-1 group">
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
-                                <Mail className="w-4 h-4 text-muted-foreground group-focus-within:text-blue-500 transition-colors" />
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                                <Mail className="w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             </div>
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Enter your email address"
-                                className="w-full h-16 pl-16 pr-6 bg-card/[0.02] text-white placeholder:text-foreground/80 focus:outline-none focus:bg-card/[0.05] transition-all font-heading text-xs font-black uppercase tracking-widest"
+                                className="w-full h-12 pl-11 pr-4 bg-background border border-border text-foreground placeholder:text-muted-foreground/80 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all rounded text-sm font-body"
                                 required
                             />
                         </div>
                         <button 
                             type="submit" 
                             disabled={submitting}
-                            className="h-16 px-12 bg-blue-600 text-white font-black uppercase tracking-[0.2em] text-[11px] hover:bg-card hover:text-slate-950 transition-all border-l border-white/10 disabled:opacity-50"
+                            className="h-12 px-8 bg-primary text-primary-foreground font-heading font-medium text-sm rounded hover:bg-primary/95 transition-all active:scale-[0.98] disabled:opacity-50 shrink-0 shadow-md hover:shadow-lg flex items-center justify-center"
                         >
-                            {submitting ? 'Processing...' : 'Subscribe'}
+                            {submitting ? 'Subscribing...' : 'Subscribe'}
                         </button>
                     </form>
 
-                    {/* Trust Bar */}
-                    <div className="flex flex-wrap justify-center items-center gap-8 pt-8 border-t border-white/5 relative z-10">
-                        <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                            <CheckCircle2 size={12} className="text-emerald-500" />
-                            <span>No Spam</span>
+                    {/* Trust Indicators */}
+                    <div className="flex flex-wrap justify-center items-center gap-6 pt-8 border-t border-border/60 relative z-10 text-xs text-muted-foreground font-body">
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle2 size={14} className="text-primary/70" />
+                            <span>No spam</span>
                         </div>
-                        <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                            <CheckCircle2 size={12} className="text-emerald-500" />
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle2 size={14} className="text-primary/70" />
                             <span>Your email is secure</span>
                         </div>
-                        <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                            <CheckCircle2 size={12} className="text-emerald-500" />
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle2 size={14} className="text-primary/70" />
                             <span>Unsubscribe anytime</span>
                         </div>
                     </div>

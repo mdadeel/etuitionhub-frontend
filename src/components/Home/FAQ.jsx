@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Plus } from "lucide-react";
+import { SectionHeader } from '@/components/ui';
+import { cn } from '@/lib/utils';
 
 const faqs = [
     { question: "How do you verify tutors?", answer: "Every tutor submits their academic certificates and national ID. We verify all documents manually before activating their profile to ensure 100% academic integrity." },
@@ -13,50 +15,55 @@ const FAQ = () => {
     const [activeIndex, setActiveIndex] = useState(null);
 
     return (
-        <section className="py-16 bg-card border-b border-border relative overflow-hidden">
+        <section className="py-20 bg-card border-b border-border relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="max-w-3xl mx-auto text-center mb-12 space-y-4 flex flex-col items-center">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-muted text-foreground rounded-none border border-border">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Questions & Answers</span>
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter leading-none uppercase">
-                        Frequently Asked <br />
-                        <span className="text-blue-600">Questions</span>
-                    </h2>
-                    <p className="text-muted-foreground text-sm font-black uppercase tracking-[0.3em]">Got questions? We've got answers.</p>
-                </div>
+                <SectionHeader
+                    badge="Questions & Answers"
+                    title={<>Frequently Asked <span className="text-primary font-semibold">Questions</span></>}
+                    subtitle="Got questions? We've got answers."
+                    align="center"
+                    className="opacity-0 animate-fade-in-up"
+                    style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}
+                />
 
-                <div className="max-w-4xl mx-auto space-y-px bg-border border border-border w-full">
-                    {faqs.map((faq, idx) => (
-                        <div
-                            key={idx}
-                            className={`bg-card rounded-none transition-all ${
-                                activeIndex === idx ? 'bg-background' : 'hover:bg-background/50'
-                            }`}
-                        >
-                            <button
-                                className="w-full flex items-center justify-between p-6 text-left outline-none"
-                                onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}
-                            >
-                                <span className={`text-sm font-black uppercase tracking-tight transition-colors ${
-                                    activeIndex === idx ? 'text-blue-600' : 'text-foreground'
-                                }`}>
-                                    {faq.question}
-                                </span>
-                                <div className={`w-8 h-8 flex items-center justify-center rounded-none transition-all shrink-0 border ${
-                                    activeIndex === idx ? 'bg-blue-600 border-blue-600 text-white rotate-45' : 'bg-muted border-border text-slate-400'
-                                }`}>
-                                    <Plus size={16} strokeWidth={3} />
-                                </div>
-                            </button>
+                <div className="max-w-3xl mx-auto divide-y divide-border/60 border-t border-b border-border/60 mt-12 opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms', animationFillMode: 'forwards' }}>
+                    {faqs.map((faq, idx) => {
+                        const isOpen = activeIndex === idx;
+                        return (
+                            <div key={idx} className="py-2 transition-colors">
+                                <button
+                                    className="w-full flex items-center justify-between py-5 text-left outline-none group"
+                                    onClick={() => setActiveIndex(isOpen ? null : idx)}
+                                >
+                                    <span className={cn(
+                                        "text-[15px] sm:text-base font-heading font-medium tracking-tight transition-colors duration-250",
+                                        isOpen ? 'text-primary' : 'text-foreground group-hover:text-primary/90'
+                                    )}>
+                                        {faq.question}
+                                    </span>
+                                    <div className={cn(
+                                        "w-8 h-8 flex items-center justify-center rounded-full border transition-all duration-300 shrink-0",
+                                        isOpen 
+                                            ? 'bg-primary/10 border-primary/20 text-primary rotate-45' 
+                                            : 'bg-muted/50 border-border/60 text-muted-foreground group-hover:bg-muted group-hover:text-foreground'
+                                    )}>
+                                        <Plus size={16} />
+                                    </div>
+                                </button>
 
-                            {activeIndex === idx && (
-                                <div className="px-6 pb-6 text-xs text-muted-foreground font-bold uppercase tracking-tight leading-relaxed max-w-2xl border-t border-border pt-4">
-                                    {faq.answer}
+                                <div className={cn(
+                                    "grid transition-all duration-300 ease-in-out",
+                                    isOpen ? "grid-rows-[1fr] opacity-100 mb-5" : "grid-rows-[0fr] opacity-0"
+                                )}>
+                                    <div className="overflow-hidden">
+                                        <p className="text-sm text-muted-foreground font-body leading-relaxed max-w-2xl">
+                                            {faq.answer}
+                                        </p>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    ))}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </section>

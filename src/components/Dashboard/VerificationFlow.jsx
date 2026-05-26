@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { CheckCircle, Clock, AlertCircle, FileText, Image as ImageIcon } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, FileText, Image as ImageIcon, ShieldCheck } from 'lucide-react';
 import { Card, Button } from '../ui';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
