@@ -59,8 +59,18 @@ export default function SessionRoom() {
 
     useEffect(() => {
         const token = Cookies.get('token');
+
+        // No WebRTC on Vercel (serverless, no persistent connections)
+        if (API_URL.includes('vercel')) {
+            console.log('SessionRoom: WebRTC/Video not available on Vercel');
+            return;
+        }
+
         socket.current = io(API_URL, {
             auth: { token },
+            reconnectionAttempts: 3,
+            reconnectionDelay: 1000,
+            timeout: 5000,
         });
 
         const userId = user?.email || dbUser?.email || "anonymous";

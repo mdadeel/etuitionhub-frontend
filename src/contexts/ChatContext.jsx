@@ -68,11 +68,19 @@ export const ChatProvider = ({ children }) => {
         // NOTE: WebSockets do NOT work on Vercel (serverless functions don't support
         // persistent connections). Online status uses REST polling instead (above).
         // Real-time chat (messages, typing) requires a persistent host (Railway/Render).
+        if (backendUrl.includes('vercel')) {
+            console.log('Socket.IO disabled: Vercel serverless does not support persistent connections');
+            return;
+        }
+
         socketRef.current = io(backendUrl, {
             auth: { token },
             // Start with polling so the connection at least establishes on serverless hosts;
             // upgrade to websocket only on platforms that support it (Railway, Render, etc.)
             transports: ['polling', 'websocket'],
+            reconnectionAttempts: 3,
+            reconnectionDelay: 1000,
+            timeout: 5000,
         });
 
         socketRef.current.on('connect', () => {
