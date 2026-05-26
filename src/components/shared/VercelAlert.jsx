@@ -1,0 +1,41 @@
+import { useState, useEffect } from 'react';
+import { AlertTriangle, X } from 'lucide-react';
+
+const VercelAlert = () => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const isVercel = apiUrl.includes('vercel');
+    const dismissed = localStorage.getItem('vercelAlertDismissed');
+    if (isVercel && !dismissed) {
+      setVisible(true);
+    }
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[9999] bg-amber-50 border-b border-amber-200 text-amber-900 text-sm">
+      <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-start gap-3">
+        <AlertTriangle size={18} className="shrink-0 mt-0.5 text-amber-600" />
+        <p className="flex-1">
+          This site is running on a <strong>free Vercel tier</strong>. Real-time features like chat,
+          video sessions, and instant notifications are unavailable. Some data may reset after redeploys.
+          Upgrade to a production server for full functionality.
+        </p>
+        <button
+          onClick={() => {
+            setVisible(false);
+            localStorage.setItem('vercelAlertDismissed', 'true');
+          }}
+          className="shrink-0 p-1 rounded hover:bg-amber-200/50 transition-colors"
+        >
+          <X size={16} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default VercelAlert;

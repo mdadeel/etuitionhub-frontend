@@ -39,6 +39,7 @@ import PasswordReset from "./pages/PasswordReset";
 import SearchPage from "./pages/SearchPage";
 import OnboardingTour from "./components/shared/OnboardingTour";
 import FloatingChat from "./components/shared/FloatingChat";
+import VercelAlert from "./components/shared/VercelAlert";
 import { cn } from "@/lib/utils";
 
 const ScrollToTop = () => {
@@ -63,6 +64,21 @@ const ConditionalFooter = () => {
   const isSession = pathname.startsWith("/session");
   if (isDashboard || isSession) return null;
   return <Footer />;
+};
+
+const ConditionalMobileBottomNav = () => {
+  const { pathname } = useLocation();
+  const isSession = pathname.startsWith("/session");
+  const isCheckout = pathname.startsWith("/checkout");
+  if (isSession || isCheckout) return null;
+  return <MobileBottomNav />;
+};
+
+const ConditionalFloatingChat = () => {
+  const { pathname } = useLocation();
+  const isSession = pathname.startsWith("/session");
+  if (isSession) return null;
+  return <FloatingChat />;
 };
 
 const MainContent = ({ children }) => {
@@ -104,6 +120,7 @@ let App = () => {
             <SessionExpiryCheck />
           <ScrollToTop />
           <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
+            <VercelAlert />
             <ConditionalNavbar />
             <MainContent>
               <Routes>
@@ -194,8 +211,8 @@ let App = () => {
               </Routes>
             </MainContent>
               <ConditionalFooter />
-              <MobileBottomNav />
-              <FloatingChat />
+              <ConditionalMobileBottomNav />
+              <ConditionalFloatingChat />
               <OnboardingTour />
               <Toaster position="top-right" />
             </div>
