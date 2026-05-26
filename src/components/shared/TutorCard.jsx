@@ -20,7 +20,9 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    // Only check bookmark status for real MongoDB ObjectIDs (24 hex chars)
+    const isRealId = /^[a-f\d]{24}$/i.test(tutor._id);
+    if (user && isRealId) {
       api
         .get(`/api/bookmarks/check/${tutor._id}`)
         .then((res) => setIsSaved(res.data.isSaved))
@@ -91,7 +93,7 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
             alt={displayName}
             size="md"
             gender={tutor.gender}
-            verified={isVerified && _id !== "tutor_001"}
+            verified={isVerified}
             className="ring-2 ring-border group-hover:ring-primary/30 transition-all"
           />
           <div className="flex-1 min-w-0">
