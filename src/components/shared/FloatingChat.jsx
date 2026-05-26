@@ -198,7 +198,7 @@ const FloatingChat = () => {
         : false;
 
     return (
-        <div className="fixed bottom-5 right-5 z-[100] flex flex-col items-end select-none">
+        <div className="fixed bottom-20 md:bottom-5 right-5 z-[100] flex flex-col items-end select-none">
             
             {/* ── Chat Window ── */}
             {isFloatingOpen && (

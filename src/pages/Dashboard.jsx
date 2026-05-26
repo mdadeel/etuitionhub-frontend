@@ -87,7 +87,7 @@ const Dashboard = () => {
         <DashboardSidebar role={role} />
       </div>
 
-      <main className="flex-1 h-full overflow-y-auto overflow-x-hidden relative flex flex-col">
+      <main className="flex-1 h-full overflow-y-auto overflow-x-hidden relative flex flex-col safe-bottom">
         {/* Dashboard Top Navbar */}
         <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between h-16 px-6">
