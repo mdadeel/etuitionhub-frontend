@@ -583,7 +583,7 @@ body {
     background-size: 200% 100%;
     animation: shimmer 1.6s infinite linear;
   }
-
+}
 
 /* Premium Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
