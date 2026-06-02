@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Send, Smile, X, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const POPULAR_EMOJIS = ['😀', '😂', '🔥', '👍', '❤️', '👏', '🎉', '💡', '✨', '🙏', '🌟', '👀', '💯', '🤔', '💀', '🎈'];
@@ -108,84 +107,65 @@ const ChatInputBar = ({
             "bg-background/95 backdrop-blur-xl relative z-40 border-t border-border/50",
             compact ? "p-3" : "p-4 pb-6"
         )}>
-            <AnimatePresence>
-                {/* Replying To Quote Preview Banner */}
-                {replyingTo && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 10, height: 0 }}
-                        animate={{ opacity: 1, y: 0, height: 'auto' }}
-                        exit={{ opacity: 0, y: 10, height: 0 }}
-                        className="mb-3 mx-2 overflow-hidden"
-                    >
-                        <div className="px-3 py-2 bg-muted border-l-4 border-primary rounded-xl text-sm flex items-center justify-between gap-4 shadow-sm ring-1 ring-black/5">
-                            <div className="min-w-0 flex-1">
-                                <p className="text-[11px] font-bold text-primary tracking-wide uppercase">Replying to message</p>
-                                <p className="text-muted-foreground truncate mt-0.5">{replyingTo.text}</p>
-                            </div>
-                            <button 
-                                type="button" 
-                                onClick={onCancelReply}
-                                className="w-7 h-7 flex items-center justify-center bg-background/50 hover:bg-background text-foreground rounded-full shadow-sm transition-all active:scale-90"
-                            >
-                                <X size={14} />
-                            </button>
+            {/* Replying To Quote Preview Banner */}
+            {replyingTo && (
+                <div className="mb-3 mx-2 overflow-hidden">
+                    <div className="px-3 py-2 bg-muted border-l-4 border-primary rounded-xl text-sm flex items-center justify-between gap-4 shadow-sm ring-1 ring-black/5">
+                        <div className="min-w-0 flex-1">
+                            <p className="text-[11px] font-bold text-primary tracking-wide uppercase">Replying to message</p>
+                            <p className="text-muted-foreground truncate mt-0.5">{replyingTo.text}</p>
                         </div>
-                    </motion.div>
-                )}
+                        <button 
+                            type="button" 
+                            onClick={onCancelReply}
+                            className="size-7 flex items-center justify-center bg-background/50 hover:bg-background text-foreground rounded-full shadow-sm transition-all active:scale-90"
+                        >
+                            <X size={14} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
-                {/* Editing Message Quote Preview Banner */}
-                {editingMessage && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 10, height: 0 }}
-                        animate={{ opacity: 1, y: 0, height: 'auto' }}
-                        exit={{ opacity: 0, y: 10, height: 0 }}
-                        className="mb-3 mx-2 overflow-hidden"
-                    >
-                        <div className="px-3 py-2 bg-muted border-l-4 border-accent rounded-xl text-sm flex items-center justify-between gap-4 shadow-sm ring-1 ring-black/5">
-                            <div className="min-w-0 flex-1">
-                                <p className="text-[11px] font-bold text-accent tracking-wide uppercase">Editing message</p>
-                                <p className="text-muted-foreground truncate mt-0.5">{editingMessage.text}</p>
-                            </div>
-                            <button 
-                                type="button" 
-                                onClick={onCancelEdit}
-                                className="w-7 h-7 flex items-center justify-center bg-background/50 hover:bg-background text-foreground rounded-full shadow-sm transition-all active:scale-90"
-                            >
-                                <X size={14} />
-                            </button>
+            {/* Editing Message Quote Preview Banner */}
+            {editingMessage && (
+                <div className="mb-3 mx-2 overflow-hidden">
+                    <div className="px-3 py-2 bg-muted border-l-4 border-accent rounded-xl text-sm flex items-center justify-between gap-4 shadow-sm ring-1 ring-black/5">
+                        <div className="min-w-0 flex-1">
+                            <p className="text-[11px] font-bold text-accent tracking-wide uppercase">Editing message</p>
+                            <p className="text-muted-foreground truncate mt-0.5">{editingMessage.text}</p>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        <button 
+                            type="button" 
+                            onClick={onCancelEdit}
+                            className="size-7 flex items-center justify-center bg-background/50 hover:bg-background text-foreground rounded-full shadow-sm transition-all active:scale-90"
+                        >
+                            <X size={14} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Emoji Selection Popover */}
-            <AnimatePresence>
-                {showEmojiPicker && (
-                    <motion.div 
-                        ref={emojiTrayRef}
-                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                        className="absolute bottom-full mb-4 left-4 z-50 bg-card border border-border shadow-2xl rounded-2xl p-3 grid grid-cols-8 gap-2 w-72 ring-1 ring-black/10"
-                    >
-                        <div className="col-span-8 mb-1 px-1 flex justify-between items-center">
-                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Quick Reactions</span>
-                        </div>
-                        {POPULAR_EMOJIS.map(emoji => (
-                            <motion.button
-                                key={emoji}
-                                whileHover={{ scale: 1.25 }}
-                                whileTap={{ scale: 0.9 }}
-                                type="button"
-                                onClick={() => insertEmoji(emoji)}
-                                className="hover:bg-muted/80 p-1.5 text-xl rounded-xl flex items-center justify-center transition-colors"
-                            >
-                                {emoji}
-                            </motion.button>
-                        ))}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {showEmojiPicker && (
+                <div 
+                    ref={emojiTrayRef}
+                    className="absolute bottom-full mb-4 left-4 z-50 bg-card border border-border shadow-2xl rounded-2xl p-3 grid grid-cols-8 gap-2 w-72 ring-1 ring-black/10"
+                >
+                    <div className="col-span-8 mb-1 px-1 flex justify-between items-center">
+                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Quick Reactions</span>
+                    </div>
+                    {POPULAR_EMOJIS.map(emoji => (
+                        <button
+                            key={emoji}
+                            type="button"
+                            onClick={() => insertEmoji(emoji)}
+                            className="hover:bg-muted/80 p-1.5 text-xl rounded-xl flex items-center justify-center transition-all hover:scale-125 active:scale-90"
+                        >
+                            {emoji}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             <div className="flex items-end gap-3 max-w-5xl mx-auto">
                 <div className={cn(
@@ -195,7 +175,7 @@ const ChatInputBar = ({
                     <button
                         type="button"
                         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                        className="shrink-0 w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-primary transition-all active:scale-90 mb-[2px]"
+                        className="shrink-0 size-9 flex items-center justify-center text-muted-foreground hover:text-primary transition-all active:scale-90 mb-[2px]"
                     >
                         <Smile size={22} strokeWidth={2.2} />
                     </button>
@@ -214,19 +194,17 @@ const ChatInputBar = ({
                     />
                 </div>
 
-                <motion.button
-                    whileHover={{ scale: !sending && value.trim() ? 1.05 : 1 }}
-                    whileTap={{ scale: !sending && value.trim() ? 0.9 : 1 }}
+                <button
                     type="button"
                     onClick={handleSend}
                     disabled={!value.trim() || sending}
                     aria-label="Send message"
                     className={cn(
-                        "shrink-0 flex items-center justify-center transition-all duration-300 mb-0.5 rounded-full shadow-sm",
+                        "shrink-0 flex items-center justify-center transition-all duration-300 mb-0.5 rounded-full shadow-sm active:scale-95",
                         value.trim() && !sending
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105"
                             : "bg-muted text-muted-foreground/40 cursor-not-allowed",
-                        compact ? "w-10 h-10" : "w-11 h-11"
+                        compact ? "size-10" : "size-11"
                     )}
                 >
                     {sending ? (
@@ -234,7 +212,7 @@ const ChatInputBar = ({
                     ) : (
                         <Send size={18} className="translate-x-[1px] -translate-y-[1px]" strokeWidth={2.5} />
                     )}
-                </motion.button>
+                </button>
             </div>
         </div>
     );

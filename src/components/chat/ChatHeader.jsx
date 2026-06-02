@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { Avatar } from '@/components/ui';
+import { Avatar } from '@/components/ui/avatar';
 import { useChat } from '../../contexts/ChatContext';
 
 const ChatHeader = ({ conversation, user, onBack }) => {
@@ -28,9 +28,9 @@ const ChatHeader = ({ conversation, user, onBack }) => {
                 
                 <div className="flex items-center gap-3 cursor-pointer group">
                     <div className="relative">
-                        <Avatar src={other.photoURL} alt={other.displayName} size="md" className="w-10 h-10 rounded-full shadow-sm transition-transform group-hover:scale-105" />
+                        <Avatar src={other.photoURL} alt={other.displayName} size="md" className="size-10 rounded-full shadow-sm transition-transform group-hover:scale-105" />
                         {isOnline && (
-                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
+                            <div className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-background" />
                         )}
                     </div>
       

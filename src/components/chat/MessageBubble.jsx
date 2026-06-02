@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { Smile, Reply, MoreHorizontal, Check, CheckCheck, Copy, Trash2, Edit2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Avatar } from '@/components/ui';
+import { Avatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import ReactionTray from './ReactionTray';
 import toast from 'react-hot-toast';
@@ -151,20 +150,14 @@ const MessageBubble = memo(({
         : "";
 
     return (
-        <motion.div 
+        <div 
             id={`msg-${msg._id}`}
-            layout
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ 
-                opacity: 1, 
-                y: 0, 
-                scale: 1,
-            }}
             className={cn(
-                "flex items-end gap-2 w-full group/bubble relative",
+                "flex items-end gap-2 w-full group/bubble relative transition-all duration-300",
                 isMe ? "justify-end" : "justify-start",
                 !isConsecutiveNext ? "mb-4" : "mb-1",
-                isDeleted && "opacity-80"
+                isDeleted && "opacity-80",
+                isHighlighted && "scale-[1.02]"
             )}
         >
             
@@ -173,80 +166,71 @@ const MessageBubble = memo(({
                     {showAvatar ? (
                         <Avatar 
                             src={otherParticipant?.photoURL} 
+                            alt={otherParticipant?.displayName || "User"}
                             size="sm" 
-                            className={cn("w-8 h-8 shadow-sm rounded-full ring-1 ring-black/5", isDeleted && "grayscale")}
+                            className={cn("size-8 shadow-sm ring-1 ring-black/5", isDeleted && "grayscale")}
                         />
                     ) : (
-                        <div className="w-8 h-8" />
+                        <div className="size-8" />
                     )}
                 </div>
             )}
 
             <div className={cn("flex flex-col relative", isMe ? "items-end" : "items-start")} style={{ maxWidth: 'min(75%, 650px)' }}>
                 
-                <AnimatePresence>
-                    {showReactionTray && !isDeleted && (
-                        <ReactionTray 
-                            anchorRect={anchorRect}
-                            onReact={(emoji) => handleReact(msg._id, emoji)}
-                            onClose={() => setShowReactionTray(false)}
-                            isMe={isMe}
-                        />
-                    )}
-                </AnimatePresence>
+                {showReactionTray && !isDeleted && (
+                    <ReactionTray 
+                        anchorRect={anchorRect}
+                        onReact={(emoji) => handleReact(msg._id, emoji)}
+                        onClose={() => setShowReactionTray(false)}
+                        isMe={isMe}
+                    />
+                )}
 
                 <div className="relative flex items-center gap-2 group/actions">
                     {/* Hover Actions - Left for Me */}
                     {isMe && !isDeleted && (
-                        <motion.div 
-                            initial={{ opacity: 0, x: 10 }}
-                            whileHover={{ opacity: 1, x: 0 }}
-                            className="opacity-0 group-hover/bubble:opacity-100 transition-all duration-200 flex items-center gap-0.5 mr-1"
-                        >
+                        <div className="opacity-0 group-hover/bubble:opacity-100 transition-all duration-200 flex items-center gap-0.5 mr-1 translate-x-2 group-hover/bubble:translate-x-0">
                             <button 
+                                type="button"
                                 ref={moreBtnRef}
                                 onClick={openMoreMenu}
-                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
+                                className="size-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
                                 title="More"
                                 aria-label="More message options"
                             >
                                 <MoreHorizontal size={16} />
                             </button>
                             <button 
+                                type="button"
                                 onClick={() => onReply?.(msg)}
-                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
+                                className="size-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
                                 title="Reply"
                                 aria-label="Reply to message"
                             >
                                 <Reply size={16} />
                             </button>
                             <button 
+                                type="button"
                                 ref={reactionBtnRef}
                                 onClick={openReactionTray}
-                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
+                                className="size-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
                                 title="React"
                                 aria-label="Add reaction"
                             >
                                 <Smile size={16} />
                             </button>
-                        </motion.div>
+                        </div>
                     )}
 
-                    <motion.div 
-                        animate={isHighlighted ? { 
-                            scale: [1, 1.05, 1],
-                            boxShadow: isMe 
-                                ? ["0 0 0 rgba(37,99,235,0)", "0 0 20px rgba(37,99,235,0.4)", "0 0 0 rgba(37,99,235,0)"]
-                                : ["0 0 0 rgba(0,0,0,0)", "0 0 20px rgba(0,0,0,0.1)", "0 0 0 rgba(0,0,0,0)"]
-                        } : {}}
-                        transition={{ duration: 0.8, repeat: isHighlighted ? 1 : 0 }}
+                    <div 
                         className={cn(
                             "bubble-content px-4 py-2.5 text-[15px] shadow-sm relative leading-relaxed w-fit font-body transition-all duration-300 z-10",
                             roundedClass,
                             isMe 
                                 ? (isDeleted ? "bg-muted text-muted-foreground border border-border/50" : "bg-primary text-primary-foreground ml-auto")
                                 : (isDeleted ? "bg-muted/50 text-muted-foreground italic border border-border/30" : "bg-muted text-foreground mr-auto"),
-                            isHighlighted && "ring-2 ring-primary ring-offset-2 ring-offset-background",
+                            isHighlighted && "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg shadow-primary/20 scale-[1.05]",
                             isDeleted && "py-1.5 px-3 text-[13px]"
                         )}
                     >
@@ -274,69 +258,62 @@ const MessageBubble = memo(({
                         </p>
                         
                         {reactionCount > 0 && !isDeleted && (
-                            <motion.div 
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
+                            <div 
                                 onClick={handleBadgeClick}
                                 className={cn(
-                                    "absolute -bottom-4 bg-background shadow-md border rounded-full px-1.5 py-0.5 text-[12px] flex gap-0.5 items-center z-20 select-none cursor-pointer transition-all duration-200 ring-1 ring-black/5",
+                                    "absolute -bottom-4 bg-background shadow-md border rounded-full px-1.5 py-0.5 text-[12px] flex gap-0.5 items-center z-20 select-none cursor-pointer transition-all duration-200 ring-1 ring-black/5 hover:scale-110 active:scale-90",
                                     hasReacted ? "border-primary/30 bg-primary/[0.03]" : "border-border/50",
                                     isMe ? "right-2" : "left-2"
                                 )}
                             >
                                 {uniqueReactions.slice(0, 3).map((emoji, i) => (
-                                    <motion.span 
+                                    <span 
                                         key={i} 
-                                        initial={{ scale: 0 }} 
-                                        animate={{ scale: 1 }} 
                                         className="text-[13px] leading-none drop-shadow-sm"
                                     >
                                         {emoji}
-                                    </motion.span>
+                                    </span>
                                 ))}
                                 {reactionCount > 1 && (
                                     <span className="text-[11px] text-foreground font-bold font-body pl-1 pr-0.5">{reactionCount}</span>
                                 )}
-                            </motion.div>
+                            </div>
                         )}
-                    </motion.div>
+                    </div>
 
                     {/* Hover Actions - Right for Them */}
                     {!isMe && !isDeleted && (
-                        <motion.div 
-                            initial={{ opacity: 0, x: -10 }}
-                            whileHover={{ opacity: 1, x: 0 }}
-                            className="opacity-0 group-hover/bubble:opacity-100 transition-all duration-200 flex items-center gap-0.5 ml-1"
-                        >
+                        <div className="opacity-0 group-hover/bubble:opacity-100 transition-all duration-200 flex items-center gap-0.5 ml-1 -translate-x-2 group-hover/bubble:translate-x-0">
                             <button 
+                                type="button"
                                 ref={reactionBtnRef}
                                 onClick={openReactionTray}
-                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
+                                className="size-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
                                 title="React"
                                 aria-label="Add reaction"
                             >
                                 <Smile size={16} />
                             </button>
                             <button 
+                                type="button"
                                 onClick={() => onReply?.(msg)}
-                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
+                                className="size-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
                                 title="Reply"
                                 aria-label="Reply to message"
                             >
                                 <Reply size={16} />
                             </button>
                             <button 
+                                type="button"
                                 ref={moreBtnRef}
                                 onClick={openMoreMenu}
-                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
+                                className="size-8 flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-all active:scale-90" 
                                 title="More"
                                 aria-label="More message options"
                             >
                                 <MoreHorizontal size={16} />
                             </button>
-                        </motion.div>
+                        </div>
                     )}
                 </div>
                 
@@ -349,6 +326,7 @@ const MessageBubble = memo(({
                         <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-semibold tracking-tight uppercase">
                             {isEdited && !isDeleted && (
                                 <button 
+                                    type="button"
                                     onClick={handleOpenHistory}
                                     className="hover:text-primary transition-colors italic lowercase opacity-80 cursor-help flex items-center gap-0.5 group/edited"
                                 >
@@ -367,59 +345,58 @@ const MessageBubble = memo(({
                 )}
             </div>
 
-            {/* Fixed Positioning "More" Menu with Framer Motion */}
-            <AnimatePresence>
-                {showMoreMenu && (
-                    <motion.div 
-                        ref={moreMenuRef}
-                        initial={{ opacity: 0, scale: 0.9, y: isMe ? 10 : -10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        style={{ top: `${menuPosition.top}px`, left: `${menuPosition.left}px`, position: 'fixed' }}
-                        className="z-[1200] bg-background border border-border/60 shadow-2xl rounded-2xl py-2 min-w-[180px] ring-1 ring-black/5 overflow-hidden"
+            {/* Fixed Positioning "More" Menu */}
+            {showMoreMenu && (
+                <div 
+                    ref={moreMenuRef}
+                    style={{ top: `${menuPosition.top}px`, left: `${menuPosition.left}px`, position: 'fixed' }}
+                    className="z-[1200] bg-background border border-border/60 shadow-2xl rounded-2xl py-2 min-w-[180px] ring-1 ring-black/5 overflow-hidden transition-all animate-in fade-in zoom-in duration-200"
+                >
+                    <button
+                        type="button"
+                        onClick={handleCopy}
+                        className="w-full text-left px-4 py-2.5 hover:bg-muted text-[14px] text-foreground transition-colors flex items-center gap-3 active:bg-muted/80"
                     >
-                        <button
-                            onClick={handleCopy}
-                            className="w-full text-left px-4 py-2.5 hover:bg-muted text-[14px] text-foreground transition-colors flex items-center gap-3 active:bg-muted/80"
-                        >
-                            <Copy size={16} className="text-muted-foreground" /> Copy Text
-                        </button>
-                        <button
-                            onClick={() => {
-                                onReply?.(msg);
-                                setShowMoreMenu(false);
-                            }}
-                            className="w-full text-left px-4 py-2.5 hover:bg-muted text-[14px] text-foreground transition-colors flex items-center gap-3 active:bg-muted/80"
-                        >
-                            <Reply size={16} className="text-muted-foreground" /> Reply
-                        </button>
-                        {isMe && (
-                            <>
-                                <button
-                                    onClick={() => {
-                                        onEdit?.(msg);
-                                        setShowMoreMenu(false);
-                                    }}
-                                    className="w-full text-left px-4 py-2.5 hover:bg-muted text-[14px] text-foreground transition-colors flex items-center gap-3 active:bg-muted/80"
-                                >
-                                    <Edit2 size={16} className="text-muted-foreground" /> Edit
-                                </button>
-                                <div className="h-px bg-border/40 my-1 mx-2" />
-                                <button
-                                    onClick={() => {
-                                        onDelete?.(msg._id);
-                                        setShowMoreMenu(false);
-                                    }}
-                                    className="w-full text-left px-4 py-2.5 hover:bg-destructive/10 text-[14px] text-destructive transition-colors flex items-center gap-3 font-medium active:bg-destructive/20"
-                                >
-                                    <Trash2 size={16} /> Delete
-                                </button>
-                            </>
-                        )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.div>
+                        <Copy size={16} className="text-muted-foreground" /> Copy Text
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            onReply?.(msg);
+                            setShowMoreMenu(false);
+                        }}
+                        className="w-full text-left px-4 py-2.5 hover:bg-muted text-[14px] text-foreground transition-colors flex items-center gap-3 active:bg-muted/80"
+                    >
+                        <Reply size={16} className="text-muted-foreground" /> Reply
+                    </button>
+                    {isMe && (
+                        <>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onEdit?.(msg);
+                                    setShowMoreMenu(false);
+                                }}
+                                className="w-full text-left px-4 py-2.5 hover:bg-muted text-[14px] text-foreground transition-colors flex items-center gap-3 active:bg-muted/80"
+                            >
+                                <Edit2 size={16} className="text-muted-foreground" /> Edit
+                            </button>
+                            <div className="h-px bg-border/40 my-1 mx-2" />
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onDelete?.(msg._id);
+                                    setShowMoreMenu(false);
+                                }}
+                                className="w-full text-left px-4 py-2.5 hover:bg-destructive/10 text-[14px] text-destructive transition-colors flex items-center gap-3 font-medium active:bg-destructive/20"
+                            >
+                                <Trash2 size={16} /> Delete
+                            </button>
+                        </>
+                    )}
+                </div>
+            )}
+        </div>
     );
 });
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
@@ -51,47 +50,34 @@ const ReactionTray = ({ onReact, onClose, anchorRect, isMe }) => {
     if (!anchorRect) return null;
 
     return (
-        <motion.div 
+        <div 
             ref={trayRef}
-            initial={{ opacity: 0, scale: 0.5, y: 10, x: isMe ? 20 : -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: 10 }}
-            transition={{ 
-                type: "spring", 
-                stiffness: 400, 
-                damping: 25,
-                mass: 0.8
-            }}
             style={{ 
                 top: `${position.top}px`, 
                 left: `${position.left}px`,
                 position: 'fixed'
             }}
             className={cn(
-                "z-[1100] flex items-center gap-1.5 bg-background/90 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-full px-2.5 py-1.5 ring-1 ring-black/5"
+                "z-[1100] flex items-center gap-1.5 bg-background/90 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-full px-2.5 py-1.5 ring-1 ring-black/5 animate-in zoom-in-50 fade-in duration-200"
             )}
         >
             {EMOJIS.map((emoji, index) => (
-                <motion.button 
+                <button 
                     key={emoji}
-                    whileHover={{ scale: 1.3, y: -5 }}
-                    whileTap={{ scale: 0.9 }}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
+                    type="button"
                     onClick={() => {
                         onReact(emoji);
                         onClose();
                     }}
-                    className="w-10 h-10 rounded-full hover:bg-muted/50 transition-colors text-2xl leading-none flex items-center justify-center relative group"
+                    className="size-10 rounded-full hover:bg-muted/50 transition-all text-2xl leading-none flex items-center justify-center relative group hover:scale-125 hover:-translate-y-1 active:scale-90"
                 >
                     <span className="drop-shadow-sm select-none">{emoji}</span>
                     <span className="absolute -top-8 bg-foreground text-background text-[10px] font-bold px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none capitalize">
                         {emoji === '👍' ? 'Like' : emoji === '❤️' ? 'Love' : emoji === '😂' ? 'Haha' : emoji === '😮' ? 'Wow' : emoji === '😢' ? 'Sad' : 'Pray'}
                     </span>
-                </motion.button>
+                </button>
             ))}
-        </motion.div>
+        </div>
     );
 };
 
