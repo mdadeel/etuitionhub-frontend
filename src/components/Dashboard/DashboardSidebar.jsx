@@ -12,6 +12,10 @@ import {
   Edit3,
   Bookmark,
   Bell,
+  Wallet,
+  ArrowDownToLine,
+  Settings,
+  History,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,6 +48,21 @@ const DashboardSidebar = ({ role }) => {
       label: "User Directory",
       icon: Users,
     });
+    menuItems.push({
+      path: "/dashboard/admin/withdrawals",
+      label: "Withdrawals",
+      icon: ArrowDownToLine,
+    });
+    menuItems.push({
+      path: "/dashboard/admin/settings",
+      label: "Settings",
+      icon: Settings,
+    });
+    menuItems.push({
+      path: "/dashboard/admin/audit-logs",
+      label: "Audit Logs",
+      icon: History,
+    });
   } else if (role?.toLowerCase() === "tutor") {
     menuItems.push({
       path: "/dashboard/my-profile",
@@ -55,11 +74,31 @@ const DashboardSidebar = ({ role }) => {
       label: "Applications",
       icon: FileText,
     });
+    menuItems.push({
+      path: "/dashboard/wallet",
+      label: "Wallet",
+      icon: Wallet,
+    });
+    menuItems.push({
+      path: "/dashboard/withdraw",
+      label: "Withdraw",
+      icon: ArrowDownToLine,
+    });
+    menuItems.push({
+      path: "/dashboard/receipts",
+      label: "Receipts",
+      icon: FileText,
+    });
   } else {
     menuItems.push({
       path: "/dashboard/payments",
       label: "Payments",
       icon: Banknote,
+    });
+    menuItems.push({
+      path: "/dashboard/receipts",
+      label: "Receipts",
+      icon: FileText,
     });
     menuItems.push({
       path: "/dashboard/saved-tutors",
@@ -90,13 +129,13 @@ const DashboardSidebar = ({ role }) => {
         <div className="mb-10 px-2 relative">
           <div className="flex items-center gap-4 p-4 rounded-none bg-background border border-border transition-all hover:bg-muted">
             <div className="relative">
-              <Avatar className="h-12 w-12 rounded-none border-2 border-white shadow-none">
+              <Avatar className="size-12 rounded-none border-2 border-white shadow-none">
                 <AvatarImage src={user?.photoURL} alt={dbUser?.displayName || user?.displayName} gender={dbUser?.gender} className="object-cover rounded-none" />
                 <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
               </Avatar>
               {role?.toLowerCase() !== "student" &&
                 dbUser?._id !== "tutor_001" && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#2563EB] rounded-none border-2 border-white flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 size-4 bg-[#2563EB] rounded-none border-2 border-white flex items-center justify-center">
                     <ShieldCheck size={10} className="text-white" />
                   </div>
                 )}
