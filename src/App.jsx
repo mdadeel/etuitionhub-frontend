@@ -7,6 +7,8 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
 import Navbar from "./components/shared/Navbar";
 import MobileBottomNav from "./components/shared/MobileBottomNav";
 import toast, { Toaster } from "react-hot-toast";
@@ -19,6 +21,8 @@ import Tutors from "./pages/Tutors";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChatProvider } from "./contexts/ChatContext";
+import useSocketEvents from "./hooks/useSocketEvents";
+import ToastViewport from "./components/shared/ToastViewport";
 import Blog from "./pages/Blog";
 import TutorDetails from "./pages/TutorDetails";
 import TuitionDetails from "./pages/TuitionDetails";
@@ -111,11 +115,18 @@ const SessionExpiryCheck = () => {
   return null;
 };
 
+const RealtimeBridge = () => {
+  useSocketEvents();
+  return null;
+};
+
 let App = () => {
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <AuthProvider>
         <ChatProvider>
+          <RealtimeBridge />
           <BrowserRouter>
             <SessionExpiryCheck />
           <ScrollToTop />
@@ -215,11 +226,13 @@ let App = () => {
               <ConditionalFloatingChat />
               <OnboardingTour />
               <Toaster position="top-right" />
+              <ToastViewport />
             </div>
           </BrowserRouter>
         </ChatProvider>
       </AuthProvider>
     </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 
