@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>e-tuitionBD | Premium Private Education & Verified Tutors</title>
   <meta name="description" content="Find the best verified private tutors in Bangladesh. Premium education, direct contact, and no middleman fees for students and parents." />
@@ -12,11 +13,24 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://e-tuitionbd.com" />
   <meta property="og:image" content="https://e-tuitionbd.com/og-image.png" />
+  <script>
+    (function() {
+      try {
+        var storedTheme = localStorage.getItem('theme');
+        if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 
 <body>
   <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
+  <script type="module" src="/src/index.jsx"></script>
 </body>
 
 </html>

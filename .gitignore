@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+coverage
+.nyc_output
 
 # Environment variables - PROTECT FIREBASE KEYS
 .env
@@ -34,3 +36,8 @@ stitch/*
 agent/*
 claude-skills
 clean-code
+.agent
+.claude
+.codestudio
+.openhands
+.agents
