@@ -31,7 +31,7 @@ const AdminDashboard = () => {
                 badge={<AppleBadge variant="primary">System Command</AppleBadge>}
                 action={
                     <div className="flex items-center gap-2.5 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-none shadow-none">
-                        <span className="w-2 h-2 bg-emerald-500 animate-pulse rounded-none"></span>
+                        <span className="size-2 bg-emerald-500 animate-pulse rounded-none"></span>
                         <span className="text-[10px] font-heading font-black uppercase tracking-widest text-emerald-600">Protocol Active</span>
                     </div>
                 }
