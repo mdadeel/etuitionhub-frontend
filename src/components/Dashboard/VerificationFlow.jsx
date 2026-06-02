@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { CheckCircle, Clock, AlertCircle, FileText, Image as ImageIcon, ShieldCheck } from 'lucide-react';
-import { Card, Button } from '../ui';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -77,7 +78,7 @@ const VerificationFlow = () => {
     if (status === 'pending_review') {
         return (
             <Card className="p-10 text-center max-w-xl mx-auto mt-10">
-                <div className="w-20 h-20 bg-yellow-100 rounded-none flex items-center justify-center mx-auto mb-6">
+                <div className="size-20 bg-yellow-100 rounded-none flex items-center justify-center mx-auto mb-6">
                     <Clock size={40} className="text-yellow-600" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground mb-3">Verification Pending</h2>
@@ -92,7 +93,7 @@ const VerificationFlow = () => {
     if (status === 'verified_basic' || status === 'verified_premium') {
         return (
             <Card className="p-10 text-center max-w-xl mx-auto mt-10 border-emerald-200">
-                <div className="w-20 h-20 bg-emerald-100 rounded-none flex items-center justify-center mx-auto mb-6">
+                <div className="size-20 bg-emerald-100 rounded-none flex items-center justify-center mx-auto mb-6">
                     <CheckCircle size={40} className="text-emerald-600" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground mb-3">You are Verified!</h2>
@@ -132,7 +133,7 @@ const VerificationFlow = () => {
                                 type="file" 
                                 accept="image/*,.pdf"
                                 onChange={(e) => handleFileChange(e, 'nid')}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                                className="absolute inset-0 size-full opacity-0 cursor-pointer" 
                             />
                             <ImageIcon size={32} className="mx-auto text-muted-foreground mb-3 opacity-50" />
                             {nidFile ? (
@@ -154,7 +155,7 @@ const VerificationFlow = () => {
                                 type="file" 
                                 accept="image/*,.pdf"
                                 onChange={(e) => handleFileChange(e, 'cert')}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                                className="absolute inset-0 size-full opacity-0 cursor-pointer" 
                             />
                             <FileText size={32} className="mx-auto text-muted-foreground mb-3 opacity-50" />
                             {certFile ? (
