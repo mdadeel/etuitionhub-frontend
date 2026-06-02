@@ -132,7 +132,7 @@ const TutorDashboard = () => {
                 <div className="space-y-10">
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                         <AppleCard className="p-6 md:p-10 group" hover={false}>
-                            <div className="w-12 h-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
+                            <div className="size-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
                                 <FileText size={24} />
                             </div>
                             <p className="text-xs font-semibold text-muted-foreground mb-2">Total Applications</p>
@@ -143,7 +143,7 @@ const TutorDashboard = () => {
                         </AppleCard>
 
                         <AppleCard className="p-6 md:p-10 group" hover={false}>
-                            <div className="w-12 h-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
+                            <div className="size-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                                 <UserCheck size={24} />
                             </div>
                             <p className="text-xs font-semibold text-muted-foreground mb-2">Active Engagements</p>
@@ -154,7 +154,7 @@ const TutorDashboard = () => {
                         </AppleCard>
 
                         <AppleCard className="p-6 md:p-10 group col-span-2 lg:col-span-1" hover={false}>
-                            <div className="w-12 h-12 rounded-none bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
+                            <div className="size-12 rounded-none bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
                                 <TrendingUp size={24} />
                             </div>
                             <p className="text-xs font-semibold text-muted-foreground mb-2">Total Earnings</p>
@@ -166,7 +166,7 @@ const TutorDashboard = () => {
                     </div>
 
                     <AppleCard className="p-8 overflow-hidden relative">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                        <div className="absolute top-0 right-0 size-64 bg-[#2563EB]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         <div className="relative z-10">
                             <h3 className="text-lg font-bold text-foreground tracking-tight mb-6">Recent Activity</h3>
                             {apps.length === 0 ? (
@@ -176,7 +176,7 @@ const TutorDashboard = () => {
                                     {apps.slice(0, 3).map((app) => (
                                         <div key={app._id} className="flex items-center justify-between p-4 rounded-none bg-background border border-border">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-8 h-8 rounded-none bg-background border border-border flex items-center justify-center">
+                                                <div className="size-8 rounded-none bg-background border border-border flex items-center justify-center">
                                                     <FileText size={14} className="text-[#2563EB]/60" />
                                                 </div>
                                                 <div>
@@ -258,10 +258,10 @@ const TutorDashboard = () => {
                     ) : (
                         apps.filter(a => a.status === 'approved').map(app => (
                             <AppleCard key={app._id} className="p-4 md:p-8 group relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#2563EB]/5 rounded-none -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
+                                <div className="absolute top-0 right-0 size-32 bg-[#2563EB]/5 rounded-none -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
                                 <div className="relative z-10">
                                     <div className="flex items-center gap-2 mb-6">
-                                        <div className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse"></div>
+                                        <div className="size-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                                         <span className="text-xs font-bold text-[#2563EB]">Active Connection</span>
                                     </div>
                                     <h3 className="text-xl font-bold text-foreground mb-8 tracking-tight">{app.tuitionId?.subject}</h3>
@@ -295,7 +295,7 @@ const TutorDashboard = () => {
                     <div className="p-8 border-b border-border bg-background/50 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div>
                              <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-[#2563EB]"></div>
+                                <div className="size-2 rounded-full bg-[#2563EB]"></div>
                                 Earnings Report
                             </h2>
                             <p className="text-xs font-medium text-muted-foreground mt-1">Audit trail for all completed tutor payments.</p>
