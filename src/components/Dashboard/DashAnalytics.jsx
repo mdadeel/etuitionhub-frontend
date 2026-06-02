@@ -6,6 +6,8 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, BarChart, Ca
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import { Users, Zap, Layers, Banknote, Database } from 'lucide-react';
+import { useAnalyticsQuery } from '../../hooks/queries/useAnalyticsQuery';
+import { useAllPaymentsQuery } from '../../hooks/queries/usePaymentsQuery';
 
 const EMERALD_PRIMARY = '#10b981';
 const COLORS = [EMERALD_PRIMARY, '#3b82f6', '#6366f1', '#f43f5e'];
@@ -22,59 +24,65 @@ const DashAnalytics = () => {
         totalUsers: 0, totalTutors: 0, totalStudents: 0, totalAdmins: 0,
         totalTuitions: 0, pendingTuitions: 0, approvedTuitions: 0, totalRevenue: 0
     });
-    const [isLoading, setIsLoading] = useState(true);
     const [transactions, setTransactions] = useState([]);
 
+    const { data: statsData, isLoading: statsLoading, isError: statsError } = useAnalyticsQuery();
+    const { data: paymentsData } = useAllPaymentsQuery({ limit: 50 });
+
+    // Core: prefer /analytics/stats (cached + invalidated by socket).
+    // Fallback: aggregate from raw endpoints only if stats endpoint is down.
     useEffect(() => {
-        const loadData = async () => {
-            try {
-                const statsRes = await api.get('/api/analytics/stats');
-                setStats(statsRes.data);
+        if (statsData && !statsError) {
+            setStats({
+                totalUsers: statsData.totalUsers ?? 0,
+                totalTutors: statsData.totalTutors ?? 0,
+                totalStudents: statsData.totalStudents ?? 0,
+                totalAdmins: statsData.totalAdmins ?? 0,
+                totalTuitions: statsData.totalTuitions ?? 0,
+                pendingTuitions: statsData.pendingTuitions ?? 0,
+                approvedTuitions: statsData.approvedTuitions ?? 0,
+                totalRevenue: statsData.totalRevenue ?? 0,
+            });
+        } else if (statsError) {
+            loadFallback();
+        }
+    }, [statsData, statsError]);
 
-                const paymentsRes = await api.get('/api/payments/all');
-                setTransactions(paymentsRes.data);
-            } catch {
-                console.error('Core analytics load failed');
-                await loadFallback();
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    useEffect(() => {
+        if (Array.isArray(paymentsData)) setTransactions(paymentsData);
+    }, [paymentsData]);
 
-        const loadFallback = async () => {
-            try {
-                const [usersRes, tuitionsRes, paymentsRes] = await Promise.all([
-                    api.get('/api/users'),
-                    api.get('/api/tuitions'),
-                    api.get('/api/payments/all').catch(() => ({ data: [] }))
-                ]);
+    const loadFallback = async () => {
+        try {
+            const [usersRes, tuitionsRes, paymentsRes] = await Promise.all([
+                api.get('/api/users'),
+                api.get('/api/tuitions'),
+                api.get('/api/payments/all').catch(() => ({ data: [] }))
+            ]);
 
-                const users = usersRes.data?.data || usersRes.data || [];
-                const tuitions = tuitionsRes.data?.data || tuitionsRes.data || [];
-                const payments = paymentsRes.data?.data || paymentsRes.data || [];
+            const users = usersRes.data?.data || usersRes.data || [];
+            const tuitions = tuitionsRes.data?.data || tuitionsRes.data || [];
+            const payments = paymentsRes.data?.data || paymentsRes.data || [];
 
-                const tutors = users.filter(u => u.role === 'tutor').length;
-                const students = users.filter(u => u.role === 'student').length;
-                const admins = users.filter(u => u.role === 'admin').length;
-                const pending = tuitions.filter(t => t.status === 'pending').length;
-                const approved = tuitions.filter(t => t.status === 'approved').length;
-                const completed = payments.filter(p => p.status === 'verified');
-                const revenue = completed.reduce((sum, p) => sum + (p.amount || 0), 0);
+            const tutors = users.filter(u => u.role === 'tutor').length;
+            const students = users.filter(u => u.role === 'student').length;
+            const admins = users.filter(u => u.role === 'admin').length;
+            const pending = tuitions.filter(t => t.status === 'pending').length;
+            const approved = tuitions.filter(t => t.status === 'approved').length;
+            const completed = payments.filter(p => p.status === 'verified');
+            const revenue = completed.reduce((sum, p) => sum + (p.amount || 0), 0);
 
-                setTransactions(payments);
-                setStats({
-                    totalUsers: users.length, totalTutors: tutors,
-                    totalStudents: students, totalAdmins: admins,
-                    totalTuitions: tuitions.length, pendingTuitions: pending,
-                    approvedTuitions: approved, totalRevenue: revenue
-                });
-            } catch {
-                console.error('Fallback systems failure');
-            }
-        };
-
-        loadData();
-    }, []);
+            setTransactions(payments);
+            setStats({
+                totalUsers: users.length, totalTutors: tutors,
+                totalStudents: students, totalAdmins: admins,
+                totalTuitions: tuitions.length, pendingTuitions: pending,
+                approvedTuitions: approved, totalRevenue: revenue
+            });
+        } catch {
+            console.error('Fallback systems failure');
+        }
+    };
 
     const userDist = [
         { name: 'Students', value: stats.totalStudents },
@@ -87,7 +95,7 @@ const DashAnalytics = () => {
         { name: 'Approved', count: stats.approvedTuitions, fill: EMERALD_PRIMARY }
     ];
 
-    if (isLoading) return <LoadingSpinner />;
+    if (statsLoading) return <LoadingSpinner />;
 
     return (
         <div className="space-y-10 animate-in fade-in duration-500">
@@ -239,7 +247,7 @@ const DashAnalytics = () => {
                         <p className="text-[9px] font-heading font-bold text-muted-foreground mt-0.5 uppercase tracking-widest">Latest BDT Payment Operations</p>
                     </div>
                     <span className="rounded-none bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20 px-3 py-1 text-[9px] font-heading font-black uppercase tracking-widest flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 bg-[#2563EB] rounded-none animate-pulse"></span>
+                        <span className="size-1.5 bg-[#2563EB] rounded-none animate-pulse"></span>
                         Live Sync
                     </span>
                 </div>
@@ -306,7 +314,7 @@ const StatCard = ({ title, value, icon, isPrimary = false }) => {
             <div className="relative z-10">
                 <div className="flex items-start justify-between mb-4">
                     <div className={cn(
-                        "w-9 h-9 flex items-center justify-center rounded-none border",
+                        "size-9 flex items-center justify-center rounded-none border",
                         isPrimary ? "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20" : "bg-background text-muted-foreground border-border"
                     )}>
                         <IconComponent size={16} strokeWidth={2.5} />
