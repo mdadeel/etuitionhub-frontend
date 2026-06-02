@@ -135,12 +135,12 @@ const TutorProfile = () => {
           <div className="p-6 md:p-8 flex flex-col md:flex-row gap-8">
             {/* Left: Profile Image */}
             <div className="relative shrink-0 mx-auto md:mx-0">
-              <div className="w-48 h-48 md:w-56 md:h-56 rounded-none overflow-hidden border border-border">
+              <div className="size-48 md:w-56 md:h-56 rounded-none overflow-hidden border border-border">
                 <img
                   src={
                     photoInput || "https://i.ibb.co/4pDNDk1/default-avatar.png"
                   }
-                  className="w-full h-full object-cover"
+                  className="size-full object-cover"
                   alt="Profile"
                 />
               </div>
@@ -179,7 +179,7 @@ const TutorProfile = () => {
           {/* Bottom Stats Strip */}
           <div className="bg-background border-t border-border px-6 md:px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
+              <div className="size-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
                 <Wallet size={16} />
               </div>
               <div>
@@ -193,7 +193,7 @@ const TutorProfile = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
+              <div className="size-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
                 <Briefcase size={16} />
               </div>
               <div>
@@ -207,7 +207,7 @@ const TutorProfile = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
+              <div className="size-10 rounded-none bg-muted border border-border flex items-center justify-center text-foreground">
                 <Star size={16} className="fill-blue-600 text-blue-600" />
               </div>
               <div>
@@ -435,12 +435,12 @@ const TutorProfile = () => {
           >
             {loading ? (
               <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
+                <RefreshCw className="size-4 animate-spin" />
                 Saving...
               </>
             ) : (
               <>
-                <Save className="w-4 h-4" />
+                <Save className="size-4" />
                 Save Changes
               </>
             )}
