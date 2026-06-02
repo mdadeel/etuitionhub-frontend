@@ -39,7 +39,7 @@ const SavedTutors = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <div className="w-6 h-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
+                <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
                 <span className="ml-3 text-sm text-muted-foreground">Loading saved tutors...</span>
             </div>
         );
@@ -74,11 +74,11 @@ const SavedTutors = () => {
                             className="bg-card border border-border rounded-xl p-4 hover:shadow-lg hover:border-[#2563EB]/20 transition-all"
                         >
                             <div className="flex items-start gap-3 mb-3">
-                                <div className="w-12 h-12 rounded-lg overflow-hidden bg-background flex-shrink-0">
+                                <div className="size-12 rounded-lg overflow-hidden bg-background flex-shrink-0">
                                     {tutor.photoURL ? (
-                                        <img src={tutor.photoURL} alt={tutor.displayName} className="w-full h-full object-cover" />
+                                        <img src={tutor.photoURL} alt={tutor.displayName} className="size-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-lg font-bold">
+                                        <div className="size-full flex items-center justify-center text-muted-foreground text-lg font-bold">
                                             {tutor.displayName?.charAt(0)}
                                         </div>
                                     )}

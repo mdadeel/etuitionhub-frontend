@@ -38,7 +38,7 @@ const SavedTuitions = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-6 h-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
+        <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
         <span className="ml-3 text-sm text-muted-foreground">
           Loading saved tuitions...
         </span>
@@ -84,7 +84,7 @@ const SavedTuitions = () => {
               className="bg-card border border-border rounded-xl p-4 hover:shadow-lg hover:border-[#2563EB]/20 transition-all"
             >
               <div className="flex items-start gap-3 mb-3">
-                <div className="w-12 h-12 rounded-lg bg-[#2563EB]/10 flex items-center justify-center flex-shrink-0">
+                <div className="size-12 rounded-lg bg-[#2563EB]/10 flex items-center justify-center flex-shrink-0">
                   <Bookmark size={20} className="text-[#2563EB]" />
                 </div>
                 <div className="flex-1 min-w-0">
