@@ -124,9 +124,22 @@ const DashSettings = () => {
                                     </div>
                                     
                                     <input
-                                        type="text"
+                                        type={setting.key === 'commission_percentage' ? 'number' : 'text'}
+                                        min={setting.key === 'commission_percentage' ? '0' : undefined}
+                                        max={setting.key === 'commission_percentage' ? '100' : undefined}
+                                        step={setting.key === 'commission_percentage' ? '0.1' : undefined}
                                         value={setting.value}
-                                        onChange={(e) => handleInputChange(setting.key, e.target.value)}
+                                        onChange={(e) => {
+                                            const v = e.target.value;
+                                            if (setting.key === 'commission_percentage') {
+                                                const n = Number(v);
+                                                if (v === '' || (!Number.isNaN(n) && n >= 0 && n <= 100)) {
+                                                    handleInputChange(setting.key, v === '' ? '' : n);
+                                                }
+                                            } else {
+                                                handleInputChange(setting.key, v);
+                                            }
+                                        }}
                                         className={`w-full px-4 py-3 text-xs bg-card border rounded-none focus:outline-none focus:border-[#2563EB] transition-all font-heading font-bold placeholder:text-muted-foreground/40 ${
                                             modifiedKeys.has(setting.key) 
                                                 ? 'border-[#2563EB] bg-[#2563EB]/5' 
