@@ -94,7 +94,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                                             }}
                                             className="w-full justify-start text-xs font-normal"
                                         >
-                                            <Calendar className="w-4 h-4 mr-2 text-blue-500" />
+                                            <Calendar className="size-4 mr-2 text-blue-500" />
                                             {slot.startTime} - {slot.endTime}
                                         </Button>
                                     ))
@@ -124,8 +124,8 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
                 {step === 3 && (
                     <div className="py-4 text-center">
-                        <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Check className="w-6 h-6" />
+                        <div className="size-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Check className="size-6" />
                         </div>
                         <h3 className="text-lg font-medium text-foreground">Booking Confirmed!</h3>
                         <p className="text-sm text-muted-foreground mt-2">Your session has been successfully scheduled.</p>

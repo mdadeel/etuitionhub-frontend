@@ -25,7 +25,7 @@ const FilterBar = ({
             <div className="relative z-10 flex flex-col md:flex-row gap-6">
                 {/* Search Input Container */}
                 <div className="flex-1 relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                         type="text"
                         placeholder="SEARCH_BY_SUBJECT_OR_COORDINATES..."

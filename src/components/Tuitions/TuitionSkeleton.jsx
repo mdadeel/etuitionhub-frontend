@@ -4,7 +4,7 @@ const TuitionSkeleton = () => {
             <div className="p-6 flex-grow space-y-6">
                 <div className="flex justify-between items-center">
                     <div className="h-4 w-20 bg-muted rounded-lg"></div>
-                    <div className="h-4 w-4 bg-muted rounded-full"></div>
+                    <div className="size-4 bg-muted rounded-full"></div>
                 </div>
                 <div className="h-7 w-3/4 bg-muted rounded-lg"></div>
                 <div className="space-y-3">
