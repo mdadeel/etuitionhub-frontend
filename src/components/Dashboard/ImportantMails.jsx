@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Trash2, RotateCcw, Mail, MailOpen, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
-import { Card, Button } from '../ui';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 
@@ -76,7 +77,7 @@ const ImportantMails = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-48">
-                <div className="w-6 h-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
+                <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -88,7 +89,7 @@ const ImportantMails = () => {
                     <h2 className="text-xl font-bold text-foreground">Important Inbox</h2>
                     <p className="text-sm text-muted-foreground mt-1">Admin notices, booking confirmations, and critical alerts.</p>
                 </div>
-                <div className="w-12 h-12 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center text-[#2563EB]">
+                <div className="size-12 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center text-[#2563EB]">
                     <Mail size={24} />
                 </div>
             </div>
@@ -154,7 +155,7 @@ const ImportantMails = () => {
                                         e.stopPropagation();
                                         handleDeleteIntent(mail._id);
                                     }}
-                                    className="absolute right-4 top-4 w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                                    className="absolute right-4 top-4 size-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
                                 >
                                     <Trash2 size={16} />
                                 </button>
