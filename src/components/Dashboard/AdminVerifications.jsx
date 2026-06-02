@@ -56,7 +56,7 @@ const AdminVerifications = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-48">
-                <div className="w-6 h-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-none animate-spin"></div>
+                <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-none animate-spin"></div>
             </div>
         );
     }
@@ -90,7 +90,7 @@ const AdminVerifications = () => {
                         <div key={user._id} className="border border-border rounded-none bg-card p-6 shadow-none flex flex-col justify-between">
                             <div>
                                 <div className="flex items-center gap-4 mb-6">
-                                    <Avatar className="h-10 w-10 rounded-none border border-border shadow-none">
+                                    <Avatar className="size-10 rounded-none border border-border shadow-none">
                                         <AvatarImage src={user.photoURL} alt={user.displayName} gender={user.gender} className="object-cover rounded-none" />
                                         <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
                                     </Avatar>
