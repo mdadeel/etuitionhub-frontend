@@ -2,11 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 
 export function usePagination(items, perPage = 6) {
     const [page, setPage] = useState(1);
+    const [prevItemsLength, setPrevItemsLength] = useState(items.length);
 
     // reset page when items change
-    useEffect(() => { 
-        setPage(1); 
-    }, [items.length]);
+    if (items.length !== prevItemsLength) {
+        setPrevItemsLength(items.length);
+        setPage(1);
+    }
 
     const totalPages = Math.ceil(items.length / perPage);
     const start = (page - 1) * perPage;

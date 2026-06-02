@@ -1,36 +1,32 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import { useRealtimeStore } from '../store/realtimeStore';
 
 const useNotifications = ({ userId, pageSize = 20 } = {}) => {
     const [notifications, setNotifications] = useState([]);
-    const [unreadCount, setUnreadCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
-    const intervalRef = useRef(null);
+    const unreadCount = useRealtimeStore((s) => s.unreadCount);
+    const setUnreadCount = useRealtimeStore((s) => s.setUnreadCount);
+    const decrementUnread = useRealtimeStore((s) => s.decrementUnread);
+    const resetUnread = useRealtimeStore((s) => s.resetUnread);
 
     const refetch = useCallback(async (page = 1) => {
         try {
             setIsLoading(true);
-            const [notifsRes, countRes] = await Promise.all([
-                api.get(`/api/notifications?page=${page}&limit=${pageSize}`),
-                api.get('/api/notifications/unread-count'),
-            ]);
-            const response = notifsRes.data;
-            
-            // The backend returns { data: notifications, pagination: ... }
+            const res = await api.get(`/api/notifications?page=${page}&limit=${pageSize}`);
+            const response = res.data;
+
             if (response && response.data && Array.isArray(response.data)) {
                 setNotifications(response.data);
                 setPagination(response.pagination || { page, totalPages: 1, total: 0 });
             } else if (Array.isArray(response)) {
-                // Fallback for array-only response
                 setNotifications(response);
                 setPagination({ page: 1, totalPages: 1, total: response.length });
             } else {
-                // Fallback to empty array if response is unexpected
                 setNotifications([]);
-                setPagination({ page: 1, totalPages: 1, total: 0 });
+                setPagination({ page, totalPages: 1, total: 0 });
             }
-            setUnreadCount(countRes.data.count);
         } catch (err) {
             console.error('Error fetching notifications:', err);
             setNotifications([]);
@@ -38,6 +34,17 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
             setIsLoading(false);
         }
     }, [pageSize]);
+
+    // Initial fetch + count. The 10s poll is gone — unread count is driven by
+    // socket 'notification:new' events (incremented on arrival, decremented on
+    // markAsRead, reset on markAllAsRead). On Vercel (no socket) the badge
+    // simply doesn't update — same as the pre-3.1 behavior for new events.
+    useEffect(() => {
+        refetch(1);
+        api.get('/api/notifications/unread-count')
+            .then((res) => setUnreadCount(res.data.count || 0))
+            .catch(() => {});
+    }, [refetch, setUnreadCount]);
 
     const goToPage = useCallback((page) => refetch(page), [refetch]);
 
@@ -47,21 +54,21 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
             setNotifications(prev => prev.map(n =>
                 n._id === id ? { ...n, isRead: true } : n
             ));
-            setUnreadCount(prev => Math.max(0, prev - 1));
+            decrementUnread();
         } catch (err) {
             console.error('Error marking as read:', err);
         }
-    }, []);
+    }, [decrementUnread]);
 
     const markAllAsRead = useCallback(async () => {
         try {
             await api.put('/api/notifications/read-all');
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-            setUnreadCount(0);
+            resetUnread();
         } catch (err) {
             console.error('Error marking all as read:', err);
         }
-    }, []);
+    }, [resetUnread]);
 
     const deleteNotification = useCallback(async (id) => {
         try {
@@ -74,7 +81,7 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
 
     const deleteBatch = useCallback(async (ids) => {
         try {
-            await api.post('/api/notifications/batch-delete', { ids });
+            await api.delete('/api/notifications/batch', { data: { ids } });
             setNotifications(prev => prev.filter(n => !ids.includes(n._id)));
         } catch (err) {
             console.error('Error batch deleting:', err);
@@ -91,19 +98,6 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
             console.error('Error handling action:', err);
         }
     }, []);
-
-    // Poll notifications every 10s (works on Vercel, no WebSocket needed)
-    useEffect(() => {
-        refetch(1);
-        intervalRef.current = setInterval(() => {
-            api.get('/api/notifications/unread-count').then(res => {
-                setUnreadCount(res.data.count);
-            }).catch(() => {});
-        }, 10000);
-        return () => {
-            if (intervalRef.current) clearInterval(intervalRef.current);
-        };
-    }, [refetch]);
 
     return {
         notifications,

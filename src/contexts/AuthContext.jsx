@@ -14,6 +14,7 @@ import { auth } from '../utils/firebase';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
+import { AUTH_COOKIE_OPTIONS } from '../utils/cookieOptions';
 
 // Export auth context for app-wide access
 export const AuthContext = createContext(null);
@@ -111,13 +112,20 @@ export const AuthProvider = ({ children }) => {
 
 
     // JWT generation helper
-    const setJWT = async (email) => {
+    // The backend now requires a Firebase ID token to prove email ownership.
+    // The client SDK mints one when getIdToken() is called; it auto-refreshes.
+    const setJWT = async (email, firebaseUser) => {
         if (!email) return;
         try {
             console.log('Generating JWT for:', email);
-            let res = await api.post('/api/auth/jwt', { email });
+            // getIdToken() returns a fresh JWT signed by Google. Pass it
+            // through; the backend verifies signature, issuer, and that
+            // the email claim matches the body. forceRefresh=false — the
+            // SDK already caches and rotates this for us.
+            const idToken = firebaseUser ? await firebaseUser.getIdToken() : null;
+            let res = await api.post('/api/auth/jwt', { email, idToken });
             if (res.data.token) {
-                Cookies.set('token', res.data.token, { expires: 7 }); // expires in 7 days
+                Cookies.set('token', res.data.token, AUTH_COOKIE_OPTIONS);
                 console.log('JWT Token set in cookies');
                 return res.data.token;
             }
@@ -135,7 +143,7 @@ export const AuthProvider = ({ children }) => {
 
             // Generate token if user exists
             if (currentUser?.email) {
-                await setJWT(currentUser.email);
+                await setJWT(currentUser.email, currentUser);
 
                 // Also fetch dbUser
                 try {
@@ -194,7 +202,7 @@ export const AuthProvider = ({ children }) => {
             console.log('Saved user role form DB:', savedUser?.role);
 
             // Generate JWT immediately
-            await setJWT(result.user.email);
+            await setJWT(result.user.email, result.user);
 
             // Refresh to make sure state is updated
             await refreshUserFromDB(email);
@@ -216,7 +224,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const result = await signInWithEmailAndPassword(auth, email, password);
             // Generate JWT immediately
-            await setJWT(result.user.email);
+            await setJWT(result.user.email, result.user);
             return result;
         } catch (error) {
             setLoading(false);
@@ -241,7 +249,7 @@ export const AuthProvider = ({ children }) => {
             setUserRole(dbRecord.role);
 
             // Generate JWT immediately
-            await setJWT(email);
+            await setJWT(email, result.user);
 
             return result;
         } catch (error) {
@@ -277,7 +285,7 @@ export const AuthProvider = ({ children }) => {
             setUserRole(dbRecord.role);
 
             // Generate JWT immediately
-            await setJWT(email);
+            await setJWT(email, result.user);
 
             return result;
         } catch (error) {
@@ -287,11 +295,24 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // Logout - token clear korbo
-    const logout = () => {
+    // Logout - notify backend, then clear local state.
+    // Best-effort: if the API call fails (e.g., offline), still clear locally
+    // so the user isn't trapped. The 7-day token expiry remains the worst case.
+    const logout = async () => {
         setLoading(true);
-        Cookies.set('token', '')
-        return signOut(auth);
+        try {
+            await api.post('/api/auth/logout');
+        } catch (err) {
+            // Non-fatal — log and continue with local cleanup
+            console.warn('Backend logout failed (proceeding with local cleanup):', err?.message);
+        }
+        Cookies.remove('token', { path: '/' });
+        Cookies.remove('refreshToken', { path: '/' });
+        try { await signOut(auth); } catch (_) { /* ignore */ }
+        setDbUser(null);
+        setUserRole(null);
+        setUser(null);
+        setLoading(false);
     };
 
     // password reset - fully test hoinai

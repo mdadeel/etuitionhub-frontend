@@ -44,9 +44,14 @@ export const ChatProvider = ({ children }) => {
         }
     }, [user]);
 
-    // Poll online status every 30s (works on Vercel, no WebSocket needed)
+    // Poll online status every 30s — Vercel-only fallback. On hosts that
+    // support persistent sockets (Railway, Render, localhost), the socket
+    // already pushes online status, so the poll is skipped to avoid duplicate
+    // work.
     useEffect(() => {
         if (!user) return;
+        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        if (!backendUrl.includes('vercel')) return;
         const fetchOnline = async () => {
             try {
                 const res = await api.get('/api/users/online');
@@ -84,16 +89,18 @@ export const ChatProvider = ({ children }) => {
             timeout: 5000,
         });
 
-        socketRef.current.on('connect', () => {
+        const s = socketRef.current;
+
+        s.on('connect', () => {
             console.log('Global Socket connected for chat');
         });
 
         // --- Typing Indicators ---
-        socketRef.current.on('typing', (data) => {
+        s.on('typing', (data) => {
             const key = `${data.room}_${data.senderId}`;
             setTypingUsers(prev => new Set([...prev, key]));
         });
-        socketRef.current.on('stop-typing', (data) => {
+        s.on('stop-typing', (data) => {
             const key = `${data.room}_${data.senderId}`;
             setTypingUsers(prev => {
                 const next = new Set(prev);
@@ -103,7 +110,7 @@ export const ChatProvider = ({ children }) => {
         });
 
         // --- Message Events ---
-        socketRef.current.on('chat-message', (data) => {
+        s.on('chat-message', (data) => {
             setConversations(prev => {
                 const existingIndex = prev.findIndex(c => c._id === data.conversationId);
                 if (existingIndex >= 0) {
@@ -121,15 +128,20 @@ export const ChatProvider = ({ children }) => {
             });
         });
 
-        socketRef.current.on('messages-read', () => {
+        s.on('messages-read', () => {
             fetchConversations();
         });
 
-        setSocket(socketRef.current);
+        setSocket(s);
 
         return () => {
-            if (socketRef.current) {
-                socketRef.current.disconnect();
+            if (s) {
+                s.off('connect');
+                s.off('typing');
+                s.off('stop-typing');
+                s.off('chat-message');
+                s.off('messages-read');
+                s.disconnect();
                 setSocket(null);
             }
         };

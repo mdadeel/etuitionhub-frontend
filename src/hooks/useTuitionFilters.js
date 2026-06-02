@@ -7,18 +7,15 @@ const FILTER_PARAMS = [
   "sortBy",
   "subjects",
   "search",
-  "maxPrice",
 ];
 
 const deserializeFilters = (searchParams) => {
   const filters = {};
   for (const key of FILTER_PARAMS) {
-    const val = searchParams.get(key);
+    const val = key === "search" ? searchParams.get("q") : searchParams.get(key);
     if (val === null) continue;
     if (key === "subjects") {
       filters[key] = val ? val.split(",") : [];
-    } else if (key === "maxPrice") {
-      filters[key] = val ? Number(val) : 20000;
     } else {
       filters[key] = val;
     }
@@ -37,7 +34,6 @@ export const useTuitionFilters = () => {
       locationFilter: fromUrl.locationFilter ?? "",
       subjects: fromUrl.subjects ?? [],
       sortBy: fromUrl.sortBy ?? "newest",
-      maxPrice: fromUrl.maxPrice ?? 20000,
     };
   });
 
@@ -51,8 +47,6 @@ export const useTuitionFilters = () => {
       params.subjects = filters.subjects.join(",");
     if (filters.sortBy && filters.sortBy !== "newest")
       params.sortBy = filters.sortBy;
-    if (filters.maxPrice && filters.maxPrice < 20000)
-      params.maxPrice = String(filters.maxPrice);
     setSearchParams(params, { replace: true });
   }, [filters, setSearchParams]);
 
@@ -67,7 +61,6 @@ export const useTuitionFilters = () => {
       locationFilter: "",
       subjects: [],
       sortBy: "newest",
-      maxPrice: 20000,
     });
   }, []);
 
@@ -76,8 +69,7 @@ export const useTuitionFilters = () => {
     filters.classFilter ||
     filters.locationFilter ||
     filters.subjects.length > 0 ||
-    filters.sortBy !== "newest" ||
-    filters.maxPrice < 20000,
+    filters.sortBy !== "newest"
   );
 
   return {
