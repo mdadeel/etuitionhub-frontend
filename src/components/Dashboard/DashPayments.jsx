@@ -44,28 +44,29 @@ const DashPayments = () => {
     }, [loadPayments]);
 
     const handleVerify = async (id) => {
-        if (!confirm('Verify this payment?')) return;
+        if (!confirm('Verify and approve this payment?')) return;
         setProcessingId(id);
         try {
-            await api.patch(`/api/payments/${id}`, { status: 'verified' });
-            toast.success('Payment verified');
+            await api.post(`/api/payments/${id}/approve`);
+            toast.success('Payment approved — wallet credited, notifications sent');
             await loadPayments();
-        } catch {
-            toast.error('Verification failed');
+        } catch (err) {
+            toast.error(err.response?.data?.error || 'Approval failed');
         } finally {
             setProcessingId(null);
         }
     };
 
     const handleReject = async (id) => {
-        if (!confirm('Reject this payment?')) return;
+        const reason = window.prompt('Reason for rejection (shown to student):', 'Invalid transaction ID');
+        if (!reason || !reason.trim()) return;
         setProcessingId(id);
         try {
-            await api.patch(`/api/payments/${id}`, { status: 'rejected' });
-            toast.success('Payment rejected');
+            await api.post(`/api/payments/${id}/reject`, { reason: reason.trim() });
+            toast.success('Payment rejected — student notified');
             await loadPayments();
-        } catch {
-            toast.error('Rejection failed');
+        } catch (err) {
+            toast.error(err.response?.data?.error || 'Rejection failed');
         } finally {
             setProcessingId(null);
         }
@@ -94,9 +95,9 @@ const DashPayments = () => {
                 
                 {pendingCount > 0 && (
                     <div className="flex items-center gap-4 px-6 py-4 bg-amber-500/10 border border-amber-500/20 rounded-none shadow-none">
-                        <div className="relative flex h-2.5 w-2.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-amber-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-none h-2.5 w-2.5 bg-amber-500"></span>
+                        <div className="relative flex size-2.5">
+                            <span className="animate-ping absolute inline-flex size-full rounded-none bg-amber-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-none size-2.5 bg-amber-500"></span>
                         </div>
                         <span className="text-[10px] font-heading font-black uppercase tracking-widest text-amber-700">
                             {pendingCount} Critical Action{pendingCount > 1 ? 's' : ''} Required
@@ -109,7 +110,7 @@ const DashPayments = () => {
             <div className="flex flex-wrap bg-background p-1.5 rounded-none gap-2 border border-border w-fit backdrop-blur-md">
                 {[
                     { id: 'pending_verification', label: 'Verify' },
-                    { id: 'verified', label: 'Verified' },
+                    { id: 'confirmed', label: 'Verified' },
                     { id: 'rejected', label: 'Rejected' },
                     { id: 'all', label: 'Universal' }
                 ].map(tab => (
@@ -168,7 +169,7 @@ const DashPayments = () => {
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={`w-2 h-2 rounded-none ${method.color}`}></div>
+                                                    <div className={`size-2 rounded-none ${method.color}`}></div>
                                                     <span className="text-[9px] md:text-[10px] font-heading font-black text-foreground uppercase tracking-widest">{(method.name || '').split(' ')[0]}</span>
                                                 </div>
                                             </td>
@@ -182,11 +183,13 @@ const DashPayments = () => {
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
                                                 <span className={`px-2.5 py-1 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${
-                                                    payment.status === 'verified' ? 'text-emerald-700 border-emerald-500/20 bg-emerald-500/10' :
+                                                    payment.status === 'confirmed' || payment.status === 'available_for_withdrawal' || payment.status === 'withdrawn' ? 'text-emerald-700 border-emerald-500/20 bg-emerald-500/10' :
                                                     payment.status === 'rejected' ? 'text-red-700 border-red-500/20 bg-red-500/10' :
                                                     'text-amber-700 border-amber-500/20 bg-amber-500/10'
                                                 }`}>
-                                                    {payment.status === 'pending_verification' ? 'Verify' : payment.status.toUpperCase().replace('_', ' ')}
+                                                    {payment.status === 'pending_verification' ? 'Verify' :
+                                                     payment.status === 'commission_applied' ? 'Commission' :
+                                                     payment.status.toUpperCase().replace('_', ' ')}
                                                 </span>
                                             </td>
                                             <td className="px-4 md:px-8 py-6 text-right">
