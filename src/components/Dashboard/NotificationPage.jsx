@@ -117,7 +117,7 @@ const NotificationPage = () => {
 
             {isLoading ? (
                 <div className="flex items-center justify-center py-20">
-                    <div className="w-5 h-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
+                    <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
                 </div>
             ) : !Array.isArray(notifications) || notifications.length === 0 ? (
                 <div className="text-center py-20">
