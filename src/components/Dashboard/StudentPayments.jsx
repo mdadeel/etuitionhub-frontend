@@ -2,16 +2,20 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
+import { useRealtimeStore } from '../../store/realtimeStore';
 import toast from 'react-hot-toast';
-import { 
-    Banknote, 
-    Clock, 
-    CheckCircle2, 
+import {
+    Banknote,
+    Clock,
+    CheckCircle2,
     AlertCircle,
     Database,
-    TrendingUp
+    TrendingUp,
+    Receipt
 } from "lucide-react";
 import { AppleCard, AppleHeader } from '../shared/AppleUI';
+import ReceiptModal from '../shared/ReceiptModal';
+import ProgressTracker from '../shared/ProgressTracker';
 import { cn } from '@/lib/utils';
 
 const PAYMENT_METHOD_LABELS = {
@@ -26,6 +30,7 @@ const StudentPayments = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const [receiptFor, setReceiptFor] = useState(null);
 
     const fetchPayments = useCallback(async () => {
         if (!user?.email) return;
@@ -42,6 +47,11 @@ const StudentPayments = () => {
     useEffect(() => {
         fetchPayments();
     }, [fetchPayments]);
+
+    const lastPayment = useRealtimeStore((s) => s.lastPayment);
+    useEffect(() => {
+        if (lastPayment) fetchPayments();
+    }, [lastPayment]);
 
     const stats = useMemo(() => {
         const total = payments.length;
@@ -68,6 +78,10 @@ const StudentPayments = () => {
     const getStatusBadge = (status) => {
         const variants = {
             pending_verification: { variant: 'warning', label: 'Pending' },
+            confirmed: { variant: 'success', label: 'Confirmed' },
+            commission_applied: { variant: 'success', label: 'Commission Set' },
+            available_for_withdrawal: { variant: 'success', label: 'Available' },
+            withdrawn: { variant: 'primary', label: 'Withdrawn' },
             verified: { variant: 'primary', label: 'Verified' },
             rejected: { variant: 'error', label: 'Rejected' }
         };
@@ -83,7 +97,7 @@ const StudentPayments = () => {
                 badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-none bg-secondary/10 text-secondary">Financial Records</span>}
                 action={
                     <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-none border border-green-500/20">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <div className="size-2 rounded-full bg-green-500 animate-pulse"></div>
                         <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Live Sync</span>
                     </div>
                 }
@@ -92,7 +106,7 @@ const StudentPayments = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 <AppleCard className="p-6 group">
-                    <div className="w-10 h-10 rounded-none bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <div className="size-10 rounded-none bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <Banknote size={20} />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Total Transactions</p>
@@ -103,7 +117,7 @@ const StudentPayments = () => {
                 </AppleCard>
 
                 <AppleCard className="p-6 group">
-                    <div className="w-10 h-10 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <div className="size-10 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <TrendingUp size={20} />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Total Spent</p>
@@ -114,7 +128,7 @@ const StudentPayments = () => {
                 </AppleCard>
 
                 <AppleCard className="p-6 group">
-                    <div className="w-10 h-10 rounded-none bg-orange-500/10 text-orange-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <div className="size-10 rounded-none bg-orange-500/10 text-orange-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <AlertCircle size={20} />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Pending</p>
@@ -125,7 +139,7 @@ const StudentPayments = () => {
                 </AppleCard>
 
                 <AppleCard className="p-6 group">
-                    <div className="w-10 h-10 rounded-none bg-green-500/10 text-green-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <div className="size-10 rounded-none bg-green-500/10 text-green-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <CheckCircle2 size={20} />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Completed</p>
@@ -210,7 +224,7 @@ const StudentPayments = () => {
                                             </td>
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={cn("w-2 h-2 rounded-full", method.color)}></div>
+                                                    <div className={cn("size-2 rounded-full", method.color)}></div>
                                                     <span className="text-xs font-semibold text-muted-foreground">{method.name}</span>
                                                 </div>
                                             </td>
@@ -223,7 +237,21 @@ const StudentPayments = () => {
                                                 </span>
                                             </td>
                                             <td className="px-8 py-6 text-right">
-                                                {getStatusBadge(payment.status)}
+                                                <div className="flex flex-col items-end gap-2">
+                                                    <div className="flex items-center justify-end gap-3">
+                                                        {payment.status === 'confirmed' && (
+                                                            <button
+                                                                onClick={() => setReceiptFor(payment._id)}
+                                                                className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
+                                                                title="View receipt"
+                                                            >
+                                                                <Receipt size={14} />
+                                                            </button>
+                                                        )}
+                                                        {getStatusBadge(payment.status)}
+                                                    </div>
+                                                    <ProgressTracker status={payment.status} />
+                                                </div>
                                             </td>
                                         </tr>
                                     );
@@ -233,6 +261,8 @@ const StudentPayments = () => {
                     </div>
                 </AppleCard>
             )}
+
+            {receiptFor && <ReceiptModal paymentId={receiptFor} onClose={() => setReceiptFor(null)} />}
         </div>
     );
 };
