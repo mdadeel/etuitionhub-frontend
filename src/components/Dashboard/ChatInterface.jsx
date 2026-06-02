@@ -313,12 +313,12 @@ const ChatInterface = () => {
                 <div className="p-5 pb-3">
                     <div className="flex justify-between items-center mb-5 px-1">
                         <h2 className="text-2xl font-bold tracking-tight text-foreground">Messages</h2>
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                             <MessageSquare size={16} />
                         </div>
                     </div>
                     <div className="relative px-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50" />
                         <input
                             type="text"
                             placeholder="Search chats..."
@@ -333,7 +333,7 @@ const ChatInterface = () => {
                 <div className="flex-1 overflow-y-auto py-2 custom-scrollbar space-y-0.5">
                     {filteredConversations.length === 0 ? (
                         <div className="p-10 text-center mt-10">
-                            <div className="w-16 h-16 bg-muted/50 rounded-3xl flex items-center justify-center mx-auto mb-4 animate-in fade-in zoom-in duration-500">
+                            <div className="size-16 bg-muted/50 rounded-3xl flex items-center justify-center mx-auto mb-4 animate-in fade-in zoom-in duration-500">
                                 <Search size={24} className="text-muted-foreground/30" />
                             </div>
                             {searchQuery ? (
@@ -385,15 +385,15 @@ const ChatInterface = () => {
                             {loading ? (
                                 <div className="h-full flex items-center justify-center">
                                     <div className="flex flex-col items-center gap-3">
-                                        <div className="w-10 h-10 border-3 border-primary/10 border-t-primary rounded-full animate-spin" />
+                                        <div className="size-10 border-3 border-primary/10 border-t-primary rounded-full animate-spin" />
                                         <span className="text-xs font-medium text-muted-foreground animate-pulse">Loading history...</span>
                                     </div>
                                 </div>
                             ) : messages.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center py-12 animate-in fade-in zoom-in duration-700">
-                                    <div className="w-28 h-28 rounded-[40px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mb-6 shadow-sm ring-1 ring-primary/10 overflow-hidden">
+                                    <div className="size-28 rounded-[40px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mb-6 shadow-sm ring-1 ring-primary/10 overflow-hidden">
                                         {otherParticipant?.photoURL
-                                            ? <img src={otherParticipant.photoURL} className="w-full h-full object-cover" alt="" />
+                                            ? <img src={otherParticipant.photoURL} className="size-full object-cover" alt="" />
                                             : <MessageSquare size={36} className="text-primary/40" />
                                         }
                                     </div>
@@ -463,16 +463,16 @@ const ChatInterface = () => {
                             {/* Typing Indicator */}
                             {otherIsTyping && (
                                 <div className="flex items-end gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500 mt-2 ml-1">
-                                    <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 shadow-sm mb-1 border-2 border-background ring-1 ring-black/5">
+                                    <div className="size-8 rounded-full overflow-hidden shrink-0 shadow-sm mb-1 border-2 border-background ring-1 ring-black/5">
                                         {otherParticipant?.photoURL
-                                            ? <img src={otherParticipant.photoURL} className="w-full h-full object-cover" alt="" />
-                                            : <div className="w-full h-full bg-muted" />
+                                            ? <img src={otherParticipant.photoURL} className="size-full object-cover" alt="" />
+                                            : <div className="size-full bg-muted" />
                                         }
                                     </div>
                                     <div className="bg-muted/80 backdrop-blur-sm px-5 py-3.5 rounded-[22px] rounded-bl-sm flex items-center gap-2 w-fit shadow-sm border border-border/50">
-                                        <span className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                        <span className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '200ms' }} />
-                                        <span className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '400ms' }} />
+                                        <span className="size-1.5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                        <span className="size-1.5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '200ms' }} />
+                                        <span className="size-1.5 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '400ms' }} />
                                     </div>
                                 </div>
                             )}
@@ -509,7 +509,7 @@ const ChatInterface = () => {
                     <div className="h-full flex flex-col items-center justify-center text-center p-12 bg-muted/[0.03]">
                         <div className="relative mb-8 group">
                             <div className="absolute inset-0 bg-primary/20 rounded-[40px] blur-3xl group-hover:bg-primary/30 transition-all duration-700"></div>
-                            <div className="relative w-32 h-32 bg-background shadow-2xl rounded-[40px] flex items-center justify-center border border-border/50 transition-transform duration-500 group-hover:scale-110">
+                            <div className="relative size-32 bg-background shadow-2xl rounded-[40px] flex items-center justify-center border border-border/50 transition-transform duration-500 group-hover:scale-110">
                                 <MessageSquare size={48} className="text-primary/80" />
                             </div>
                         </div>
