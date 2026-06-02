@@ -182,7 +182,7 @@ const DashTuitions = () => {
                                         <div className="flex justify-end gap-2 md:gap-3 items-center">
                                             <button
                                                 onClick={() => handleEditClick(t)}
-                                                className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-none border border-transparent hover:border-primary/20 flex items-center justify-center transition-colors"
+                                                className="size-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-none border border-transparent hover:border-primary/20 flex items-center justify-center transition-colors"
                                             >
                                                 <Edit2 size={12} />
                                             </button>
