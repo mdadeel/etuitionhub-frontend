@@ -22,17 +22,21 @@ const EditModal = ({
     isLoading = false
 }) => {
     const [formData, setFormData] = useState({});
+    const [prevData, setPrevData] = useState(null);
 
-    // Initialize form data when data or fields change
-    useEffect(() => {
+    // Sync state to props during render if data changes
+    if (data !== prevData) {
+        setPrevData(data);
         if (data) {
             const initialData = {};
             fields.forEach(field => {
                 initialData[field.name] = data[field.name] || '';
             });
             setFormData(initialData);
+        } else {
+            setFormData({});
         }
-    }, [data, fields, isOpen]);
+    }
 
     const handleChange = (name, value) => {
         setFormData(prev => ({ ...prev, [name]: value }));
