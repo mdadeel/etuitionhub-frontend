@@ -9,7 +9,8 @@ import {
     Phone
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, Button } from '../ui';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import ImportantMails from './ImportantMails';
 
 const Profile = () => {
@@ -80,7 +81,7 @@ const Profile = () => {
                 <div className="lg:col-span-4">
                     <Card className="p-8 md:p-10 flex flex-col items-center text-center space-y-6 md:space-y-8" hover={false}>
                         <div className="relative group">
-                            <Avatar className="h-32 w-32 md:h-44 md:w-44 rounded-none border border-border shadow-none overflow-hidden bg-slate-950 transition-all duration-500 group-hover:scale-105">
+                            <Avatar className="size-32 md:h-44 md:w-44 rounded-none border border-border shadow-none overflow-hidden bg-slate-950 transition-all duration-500 group-hover:scale-105">
                                 <AvatarImage 
                                     src={photoInput} 
                                     alt={nameInput || user?.displayName}
@@ -109,7 +110,7 @@ const Profile = () => {
                                 }}
                             />
                             <div
-                                className="absolute bottom-1 right-1 w-12 h-12 bg-card rounded-none flex items-center justify-center shadow-lg border border-border cursor-pointer hover:scale-110 transition-transform text-muted-foreground hover:text-[#2563EB]"
+                                className="absolute bottom-1 right-1 size-12 bg-card rounded-none flex items-center justify-center shadow-lg border border-border cursor-pointer hover:scale-110 transition-transform text-muted-foreground hover:text-[#2563EB]"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 <Camera size={20} />
@@ -146,7 +147,7 @@ const Profile = () => {
                                             value={user?.email || ''}
                                             readOnly
                                         />
-                                        <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2563EB] opacity-30" />
+                                        <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-[#2563EB] opacity-30" />
                                     </div>
                                     <p className="text-xs text-muted-foreground/50 ml-1">Email cannot be changed.</p>
                                 </div>
@@ -173,7 +174,7 @@ const Profile = () => {
                                             onChange={(e) => setPhotoInput(e.target.value)}
                                             placeholder="https://example.com/photo.jpg"
                                         />
-                                        <Camera className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-[#2563EB] transition-colors" />
+                                        <Camera className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/40 group-focus-within:text-[#2563EB] transition-colors" />
                                     </div>
                                     <p className="text-xs text-muted-foreground/50 ml-1">Enter a direct image URL.</p>
                                 </div>
@@ -181,7 +182,7 @@ const Profile = () => {
 
                             <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                                    <div className="size-2 bg-emerald-500 rounded-full"></div>
                                     <span className="text-xs text-muted-foreground">Changes sync automatically</span>
                                 </div>
                                 <Button
@@ -191,7 +192,7 @@ const Profile = () => {
                                 >
                                     {loading ? (
                                         <>
-                                            <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                                            <RefreshCw className="size-4 animate-spin mr-2" />
                                             Saving...
                                         </>
                                     ) : (
@@ -206,7 +207,7 @@ const Profile = () => {
                     <div className="mt-8">
                         <Card className="p-6 bg-[#2563EB]/5 border border-[#2563EB]/10" hover={false}>
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-none bg-card flex items-center justify-center shrink-0 shadow-sm border border-border">
+                                <div className="size-10 rounded-none bg-card flex items-center justify-center shrink-0 shadow-sm border border-border">
                                     <ShieldCheck className="text-[#2563EB]" size={20} />
                                 </div>
                                 <div>
