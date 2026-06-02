@@ -25,7 +25,7 @@ export const FormBuilderHero = ({
         <Button asChild size="lg" onClick={onButtonClick}>
           <a href={buttonHref}>
             {buttonText}
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 size-4" />
           </a>
         </Button>
       </div>

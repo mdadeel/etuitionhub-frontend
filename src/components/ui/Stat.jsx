@@ -1,6 +1,11 @@
 import { cn } from '@/lib/utils';
 import CountUp from 'react-countup';
 
+const variants = {
+  default: 'text-center',
+  horizontal: 'flex items-center gap-4',
+};
+
 const Stat = ({ 
   value, 
   label, 
@@ -11,16 +16,11 @@ const Stat = ({
   className,
   ...props 
 }) => {
-  const variants = {
-    default: 'text-center',
-    horizontal: 'flex items-center gap-4',
-  };
-
   return (
     <div className={cn(variants[variant], className)} {...props}>
       {Icon && variant === 'horizontal' && (
-        <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center border border-border">
-          <Icon className="w-6 h-6 text-[#2563EB]" />
+        <div className="size-12 bg-muted rounded-xl flex items-center justify-center border border-border">
+          <Icon className="size-6 text-[#2563EB]" />
         </div>
       )}
       

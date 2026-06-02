@@ -2,22 +2,76 @@ import * as React from "react"
 import { Avatar as AvatarPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import API_URL from "@/config/api"
+
+const sizes = {
+  xs: 'size-8',
+  sm: 'size-10',
+  md: 'size-12',
+  lg: 'size-14',
+  xl: 'size-16',
+  default: 'size-8',
+};
+
+const badgeSizes = {
+  xs: 'size-4',
+  sm: 'size-5',
+  md: 'size-5',
+  lg: 'size-6',
+  xl: 'size-6',
+  default: 'size-5',
+};
+
+const getFullUrl = (url) => {
+  if (!url || typeof url !== 'string') return url;
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+  if (url.startsWith('/')) return `${API_URL}${url}`;
+  return url;
+};
 
 function Avatar({
   className,
-  size = "default",
+  size = "md",
   gender,
+  src,
+  alt,
+  verified = false,
+  children,
   ...props
 }) {
+  const hasImage = typeof src === 'string' && src !== 'null' && src !== 'undefined' && src.trim() !== '';
+  const renderImage = hasImage || !children;
+
   return (
     <AvatarPrimitive.Root
       data-slot="avatar"
       data-size={size}
       className={cn(
-        "group/avatar relative flex size-8 shrink-0 rounded-none select-none after:absolute after:inset-0 after:rounded-none after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        "group/avatar relative flex shrink-0 overflow-hidden rounded-full select-none",
+        sizes[size] || sizes.default,
         className
       )}
-      {...props} />
+      {...props}
+    >
+      {renderImage && (
+        <AvatarImage src={src} alt={alt} gender={gender} />
+      )}
+      <AvatarFallback className="bg-slate-900 text-slate-400">
+        {children || (alt ? alt.slice(0, 2).toUpperCase() : 'U')}
+      </AvatarFallback>
+      {verified && (
+        <span
+          className={cn(
+            "absolute -bottom-1 -right-1 z-10 bg-primary rounded-full flex items-center justify-center border border-white text-white select-none",
+            badgeSizes[size] || badgeSizes.default
+          )}
+        >
+          <svg className="size-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </span>
+      )}
+    </AvatarPrimitive.Root>
   );
 }
 
@@ -28,8 +82,10 @@ function AvatarImage({
   gender,
   ...props
 }) {
-  const avatarSrc = src && src !== 'null' && src !== 'undefined' && src.trim() !== ''
-    ? src
+  const processedSrc = getFullUrl(src);
+
+  const avatarSrc = typeof processedSrc === 'string' && processedSrc !== 'null' && processedSrc !== 'undefined' && processedSrc.trim() !== ''
+    ? processedSrc
     : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(alt || 'user')}${gender ? `&gender=${gender.toLowerCase()}` : ''}`;
 
   return (
@@ -56,7 +112,7 @@ function AvatarFallback({
       {...props}
     >
       {children || (
-        <svg className="w-1/2 h-1/2 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="size-1/2 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
           <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
         </svg>
       )}
@@ -120,3 +176,4 @@ export {
   AvatarGroupCount,
   AvatarBadge,
 }
+

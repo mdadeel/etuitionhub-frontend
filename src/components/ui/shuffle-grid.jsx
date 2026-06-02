@@ -1,6 +1,3 @@
-"use client"
-
-import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import PropTypes from 'prop-types';
@@ -19,6 +16,7 @@ export const ShuffleHero = ({ badge, title, description, buttonText, onButtonCli
           {description || "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nam nobis in error repellat voluptatibus ad."}
         </p>
         <button 
+          type="button"
           onClick={onButtonClick}
           className={cn(
             "bg-primary text-primary-foreground font-semibold py-4 px-8 rounded-full text-lg",
@@ -42,7 +40,7 @@ ShuffleHero.propTypes = {
   onButtonClick: PropTypes.func
 };
 
-const shuffle = (array) => {
+const shuffleArray = (array) => {
   let currentIndex = array.length,
     randomIndex;
 
@@ -127,18 +125,16 @@ const squareData = [
 ];
 
 const generateSquares = () => {
-  return shuffle([...squareData]).map((sq) => (
-    <motion.div
+  return shuffleArray([...squareData]).map((sq) => (
+    <div
       key={sq.id}
-      layout
-      transition={{ duration: 1.5, type: "spring" }}
-      className="w-full h-full rounded-2xl overflow-hidden bg-muted border border-border/50"
+      className="size-full rounded-2xl overflow-hidden bg-muted border border-border/50 transition-all duration-500"
       style={{
         backgroundImage: `url(${sq.src})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-    ></motion.div>
+    ></div>
   ));
 };
 
@@ -147,6 +143,11 @@ const ShuffleGrid = () => {
   const [squares, setSquares] = useState(generateSquares());
 
   useEffect(() => {
+    const shuffleSquares = () => {
+      setSquares(generateSquares());
+      timeoutRef.current = setTimeout(shuffleSquares, 3000);
+    };
+
     shuffleSquares();
 
     return () => {
@@ -156,14 +157,10 @@ const ShuffleGrid = () => {
     };
   }, []);
 
-  const shuffleSquares = () => {
-    setSquares(generateSquares());
-    timeoutRef.current = setTimeout(shuffleSquares, 3000);
-  };
-
   return (
     <div className="grid grid-cols-4 grid-rows-4 h-[450px] md:h-[600px] gap-2">
-      {squares.map((sq) => sq)}
+      {squares}
     </div>
   );
 };
+

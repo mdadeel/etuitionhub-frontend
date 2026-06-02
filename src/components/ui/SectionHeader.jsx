@@ -1,5 +1,11 @@
 import { cn } from '@/lib/utils';
 
+const alignments = {
+  left: 'text-left',
+  center: 'text-center mx-auto',
+  right: 'text-right ml-auto',
+};
+
 const SectionHeader = ({ 
   title,
   subtitle,
@@ -8,12 +14,6 @@ const SectionHeader = ({
   className,
   ...props 
 }) => {
-  const alignments = {
-    left: 'text-left',
-    center: 'text-center mx-auto',
-    right: 'text-right ml-auto',
-  };
-
   return (
     <div className={cn('max-w-3xl mb-12', alignments[align], className)} {...props}>
       {badge && (

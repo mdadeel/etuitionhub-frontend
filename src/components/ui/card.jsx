@@ -5,14 +5,30 @@ import { cn } from "@/lib/utils"
 function Card({
   className,
   size = "default",
+  variant = "default",
+  hover = false,
   ...props
 }) {
+  const variants = {
+    default: 'bg-card border border-border',
+    elevated: 'bg-card border border-border shadow-md ring-1 ring-foreground/5 dark:ring-foreground/10',
+    subtle: 'bg-background border border-border',
+    dark: 'bg-card border border-[rgba(255,255,255,0.08)]',
+  };
+
+  const hoverStyles = hover 
+    ? 'hover:border-primary/20 hover:shadow-xl transition-all duration-300'
+    : '';
+
   return (
     <div
       data-slot="card"
       data-size={size}
+      data-variant={variant}
       className={cn(
-        "group/card flex flex-col gap-6 overflow-hidden rounded-none bg-card py-6 text-sm text-card-foreground shadow-md ring-1 ring-foreground/5 has-[>img:first-child]:pt-0 data-[size=sm]:gap-4 data-[size=sm]:py-4 dark:ring-foreground/10 *:[img:first-child]:rounded-none *:[img:last-child]:rounded-none",
+        "group/card flex flex-col overflow-hidden rounded-xl text-sm text-card-foreground data-[size=sm]:gap-4",
+        variants[variant],
+        hoverStyles,
         className
       )}
       {...props} />
