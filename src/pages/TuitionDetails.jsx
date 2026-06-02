@@ -280,7 +280,7 @@ const TuitionDetails = () => {
                         {/* Trust Section */}
                         <div className="bg-[#2563EB]/5 p-4 rounded-lg border border-[#2563EB]/20">
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 bg-[#2563EB]/15 flex items-center justify-center text-[#2563EB] rounded-lg shrink-0">
+                                <div className="size-10 bg-[#2563EB]/15 flex items-center justify-center text-[#2563EB] rounded-lg shrink-0">
                                     <ShieldCheck size={20} />
                                 </div>
                                 <div className="space-y-2">
@@ -409,15 +409,15 @@ const TuitionDetails = () => {
                             </h4>
                             <ul className="space-y-2">
                                 <li className="text-xs text-muted-foreground flex gap-2">
-                                    <span className="w-1 h-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
+                                    <span className="size-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
                                     No advance registration fees
                                 </li>
                                 <li className="text-xs text-muted-foreground flex gap-2">
-                                    <span className="w-1 h-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
+                                    <span className="size-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
                                     Verify student credentials
                                 </li>
                                 <li className="text-xs text-muted-foreground flex gap-2">
-                                    <span className="w-1 h-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
+                                    <span className="size-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
                                     Keep communications on platform
                                 </li>
                             </ul>

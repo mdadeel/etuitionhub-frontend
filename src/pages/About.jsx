@@ -29,7 +29,7 @@ const About = () => {
                         { value: '10+', label: 'Cities', icon: MapPin }
                     ].map((stat, i) => (
                         <div key={i} className="bg-card border border-border rounded-xl p-5 text-center">
-                            <stat.icon className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                            <stat.icon className="size-6 text-blue-600 mx-auto mb-2" />
                             <span className="text-2xl font-bold text-foreground">{stat.value}</span>
                             <span className="text-sm text-muted-foreground block">{stat.label}</span>
                         </div>
@@ -47,7 +47,7 @@ const About = () => {
                             'Wide range of subjects and levels'
                         ].map((item, i) => (
                             <div key={i} className="flex items-start gap-3">
-                                <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                                <CheckCircle className="size-5 text-green-600 shrink-0 mt-0.5" />
                                 <span className="text-muted-foreground">{item}</span>
                             </div>
                         ))}
@@ -57,8 +57,8 @@ const About = () => {
                 {/* Coverage */}
                 <section className="bg-card border border-border rounded-xl p-8">
                     <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
-                            <Globe className="w-6 h-6 text-blue-600" />
+                        <div className="size-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
+                            <Globe className="size-6 text-blue-600" />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold text-foreground mb-2">Nationwide Coverage</h2>

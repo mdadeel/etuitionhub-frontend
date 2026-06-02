@@ -1,11 +1,12 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTuitions } from "../hooks/useTuitions";
 import { useTuitionFilters } from "../hooks/useTuitionFilters";
 import useDebouncedValue from "../hooks/useDebouncedValue";
-import useInfiniteScroll from "../hooks/useInfiniteScroll";
 import TuitionCard from "../components/shared/TuitionCard";
 import SearchEmptyState from "../components/shared/SearchEmptyState";
+import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 import {
   SlidersHorizontal,
   Filter,
@@ -16,7 +17,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 import FilterSelect from "../components/shared/FilterSelect";
+import Pagination from "../components/shared/Pagination";
 import { cn } from "@/lib/utils";
+import SEO from '../components/shared/SEO';
 
 const Tuitions = () => {
   const [, setSearchParams] = useSearchParams();
@@ -28,6 +31,13 @@ const Tuitions = () => {
   const searchQuery = filters.search;
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [savedTuitionIds, setSavedTuitionIds] = useState(new Set());
+  const { user } = useAuth();
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
 
   useEffect(() => {
     setPage(1);
@@ -45,6 +55,24 @@ const Tuitions = () => {
     status: "approved",
   });
 
+  useEffect(() => {
+    if (!user || tuitions.length === 0) return;
+    const realIds = tuitions
+      .map((t) => t._id)
+      .filter((id) => /^[a-f\d]{24}$/i.test(id));
+    if (realIds.length === 0) return;
+    api
+      .post('/api/bookmarks/tuitions/check-many', { tuitionIds: realIds })
+      .then((res) => {
+        const savedSet = new Set();
+        for (const [id, isSaved] of Object.entries(res.data.saved || {})) {
+          if (isSaved) savedSet.add(id);
+        }
+        setSavedTuitionIds(savedSet);
+      })
+      .catch(() => {});
+  }, [user, tuitions]);
+
   const processedSubjects = useMemo(() => {
     if (!filterOptions?.subjects) return [];
     const subjectsSet = new Set();
@@ -58,24 +86,7 @@ const Tuitions = () => {
     return Array.from(subjectsSet);
   }, [filterOptions?.subjects]);
 
-  const currentPage = pagination?.currentPage || 1;
   const totalPages = pagination?.totalPages || 1;
-  const hasNextPage = pagination?.hasNextPage || false;
-  const hasPrevPage = pagination?.hasPrevPage || false;
-
-  const goToPage = (p) => setPage(p);
-  const nextPage = () => setPage((p) => Math.min(totalPages, p + 1));
-  const prevPage = () => setPage((p) => Math.max(1, p - 1));
-
-  const loadMore = useCallback(() => {
-    if (hasNextPage && !loading) {
-      setPage((prev) => prev + 1);
-    }
-  }, [hasNextPage, loading]);
-
-  const sentinelRef = useInfiniteScroll(loadMore, {
-    enabled: hasNextPage && !loading,
-  });
 
   const handleClearAll = () => {
     setSearchParams({});
@@ -85,6 +96,11 @@ const Tuitions = () => {
 
   return (
     <div className="bg-background min-h-screen">
+      <SEO 
+        title="Tuition Jobs - Find Teaching Opportunities" 
+        description="Browse available tuition jobs and teaching opportunities across Bangladesh. Filter by class, subject, and location to find the perfect match."
+        keywords="tuition jobs, teaching jobs, tutor wanted, bangladesh tuitions, home tutor jobs"
+      />
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -115,7 +131,7 @@ const Tuitions = () => {
         {/* Mobile Search Bar */}
         <div className="lg:hidden mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search tuitions..."
@@ -137,7 +153,7 @@ const Tuitions = () => {
             {(filters.subjects.length > 0 ||
               filters.classFilter ||
               filters.locationFilter) && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-card text-[#2563EB] text-[10px] flex items-center justify-center rounded-full border-2 border-white">
+              <span className="absolute -top-1 -right-1 size-5 bg-card text-[#2563EB] text-[10px] flex items-center justify-center rounded-full border-2 border-white">
                 {(filters.subjects.length > 0 ? 1 : 0) +
                   (filters.classFilter ? 1 : 0) +
                   (filters.locationFilter ? 1 : 0)}
@@ -157,7 +173,7 @@ const Tuitions = () => {
           >
             <div
               className={cn(
-                "bg-card w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-xl lg:border lg:border-border lg:sticky lg:top-20 lg:w-full lg:h-auto lg:shadow-sm transition-transform duration-300",
+                "bg-card w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-2xl lg:border lg:border-border lg:sticky lg:top-20 lg:w-full lg:h-auto lg:shadow-sm transition-transform duration-300",
                 isMobileFiltersOpen
                   ? "translate-x-0"
                   : "-translate-x-full lg:translate-x-0",
@@ -240,7 +256,7 @@ const Tuitions = () => {
                             : [...current, subject];
                           updateFilter("subjects", updated);
                         }}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
                           filters.subjects.includes(subject)
                             ? "bg-[#2563EB] text-white"
                             : "bg-background text-muted-foreground hover:bg-muted border border-border"
@@ -249,28 +265,6 @@ const Tuitions = () => {
                         {subject}
                       </button>
                     ))}
-                  </div>
-                </div>
-
-                {/* Max Fee */}
-                <div>
-                  <label className="block text-xs font-heading font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">
-                    Max Fee: ৳{filters.maxPrice || 20000}
-                  </label>
-                  <input
-                    type="range"
-                    min="500"
-                    max="50000"
-                    step="500"
-                    value={filters.maxPrice || 20000}
-                    onChange={(e) =>
-                      updateFilter("maxPrice", Number(e.target.value))
-                    }
-                    className="w-full h-1.5 bg-[#E2E8F0] rounded-full appearance-none cursor-pointer accent-[#2563EB]"
-                  />
-                  <div className="flex justify-between text-[10px] text-[#94A3B8] mt-1">
-                    <span>৳500</span>
-                    <span>৳50,000</span>
                   </div>
                 </div>
               </div>
@@ -356,21 +350,25 @@ const Tuitions = () => {
                       key={tuition._id}
                       tuition={tuition}
                       searchQuery={filters.search}
+                      initialIsSaved={savedTuitionIds.has(tuition._id)}
                     />
                   ))}
                 </div>
 
-                {/* Infinite scroll sentinel */}
-                <div ref={sentinelRef} className="h-4" />
+                {pagination && pagination.totalPages > 1 && (
+                  <Pagination
+                    currentPage={page}
+                    totalPages={pagination.totalPages}
+                    onPageChange={setPage}
+                    hasNext={page < pagination.totalPages}
+                    hasPrev={page > 1}
+                  />
+                )}
+
                 {loading && tuitions.length > 0 && (
                   <div className="py-8 text-center">
-                    <div className="w-5 h-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin mx-auto" />
+                    <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin mx-auto" />
                   </div>
-                )}
-                {!hasNextPage && tuitions.length > 0 && (
-                  <p className="py-8 text-center text-xs text-[#94A3B8]">
-                    All tuitions loaded
-                  </p>
                 )}
               </div>
             )}

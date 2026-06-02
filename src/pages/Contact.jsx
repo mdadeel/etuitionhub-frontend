@@ -92,7 +92,7 @@ const Contact = () => {
                                 <span className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground">System Status</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-primary animate-pulse"></div>
+                                <div className="size-2 bg-primary animate-pulse"></div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Channels Active</span>
                             </div>
                         </section>

@@ -84,7 +84,7 @@ const PostTuition = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
+          <div className="size-8 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
           <span className="text-sm text-muted-foreground">Loading...</span>
         </div>
       </div>
@@ -112,7 +112,7 @@ const PostTuition = () => {
 
         {!user ? (
           <div className="bg-card border border-border p-8 rounded-xl text-center shadow-sm">
-            <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="size-16 bg-muted rounded-xl flex items-center justify-center mx-auto mb-4">
               <GraduationCap size={28} className="text-muted-foreground" />
             </div>
             <h2 className="text-lg font-heading text-foreground mb-2">

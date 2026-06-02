@@ -7,6 +7,7 @@ import TutorCard from '../components/shared/TutorCard';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import { isValidObjectId } from '../utils/validators';
+import { Avatar } from '@/components/ui/avatar';
 import {
     ArrowLeft,
     ArrowRight,
@@ -40,27 +41,61 @@ const TutorDetails = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchTutorDetails = async () => {
+        const fetchTutorData = async () => {
             setLoading(true);
 
             if (!isValidObjectId(id)) {
                 const found = demoTutors.find(t => t._id === id);
                 if (found) {
                     setTutor(found);
+                    setReviews([]);
                     setLoading(false);
                     return;
                 }
             }
 
             try {
-                const response = await api.get(`/api/tutors/${id}`);
-                if (response.data) {
-                    setTutor(response.data);
+                // Concurrently fetch tutor profile, reviews, bookmark status, and booking eligibility (eliminating waterfalls)
+                const promises = [
+                    api.get(`/api/tutors/${id}`),
+                    api.get(`/api/tutors/${id}/reviews`)
+                ];
+
+                if (user) {
+                    promises.push(api.get(`/api/bookmarks/check/${id}`));
+                    promises.push(api.get(`/api/bookings/student/${user.email}`));
+                }
+
+                const results = await Promise.all(promises);
+                const tutorRes = results[0];
+                const reviewsRes = results[1];
+                const bookmarkRes = results[2];
+                const bookingsRes = results[3];
+
+                if (tutorRes.data) {
+                    setTutor(tutorRes.data);
+                    
+                    // Check booking eligibility once tutor data is available
+                    if (bookingsRes?.data) {
+                        const completed = bookingsRes.data.some(b => 
+                            b.tutorEmail.toLowerCase() === tutorRes.data.email.toLowerCase() && 
+                            b.status === 'completed'
+                        );
+                        setCanReview(completed);
+                    }
                 } else {
                     throw new Error("No data received");
                 }
+
+                if (reviewsRes.data) {
+                    setReviews(reviewsRes.data);
+                }
+
+                if (bookmarkRes?.data) {
+                    setIsSaved(bookmarkRes.data.isSaved);
+                }
             } catch (error) {
-                console.warn("API fetch failed:", error.message);
+                console.warn("API fetch failed, falling back to demo:", error.message);
                 const found = demoTutors.find(t => t._id === id);
                 if (found) {
                     setTutor(found);
@@ -73,43 +108,9 @@ const TutorDetails = () => {
         };
 
         if (id) {
-            fetchTutorDetails();
+            fetchTutorData();
         }
-    }, [id]);
-
-    useEffect(() => {
-        if (tutor?._id) {
-            api.get(`/api/tutors/${tutor._id}/reviews`)
-                .then(res => setReviews(res.data))
-                .catch(err => console.error(err));
-        }
-    }, [tutor]);
-
-    useEffect(() => {
-        const checkBookingStatus = async () => {
-            if (user?.email && tutor?.email) {
-                try {
-                    const res = await api.get(`/api/bookings/student/${user.email}`);
-                    const completed = res.data.some(b => 
-                        b.tutorEmail.toLowerCase() === tutor.email.toLowerCase() && 
-                        b.status === 'completed'
-                    );
-                    setCanReview(completed);
-                } catch (error) {
-                    console.error('Failed to check booking eligibility', error);
-                }
-            }
-        };
-        checkBookingStatus();
-    }, [user, tutor]);
-
-    useEffect(() => {
-        if (tutor && user && isValidObjectId(tutor._id)) {
-            api.get(`/api/bookmarks/check/${tutor._id}`)
-                .then(res => setIsSaved(res.data.isSaved))
-                .catch(() => {});
-        }
-    }, [tutor, user]);
+    }, [id, user]);
 
     const handleContact = () => {
         // Check if conversation already exists
@@ -204,7 +205,7 @@ const TutorDetails = () => {
                     <div className="lg:col-span-2 space-y-4">
                         <div className="bg-card p-6 rounded-lg border border-border">
                             <div className="flex flex-col md:flex-row gap-6">
-                                <div className="w-28 h-28 rounded-lg bg-muted animate-pulse"></div>
+                                <div className="size-28 rounded-lg bg-muted animate-pulse"></div>
                                 <div className="flex-grow space-y-3">
                                     <div className="w-48 h-6 bg-muted rounded animate-pulse"></div>
                                     <div className="w-64 h-4 bg-muted rounded animate-pulse"></div>
@@ -284,11 +285,12 @@ const TutorDetails = () => {
                         <div className="bg-card p-6 rounded-lg border border-border">
                             <div className="flex flex-col md:flex-row gap-6">
                                 <div className="relative shrink-0">
-                                    <div className="w-28 h-28 rounded-lg overflow-hidden border border-border">
-                                        <img
-                                            src={tutor.photoURL || 'https://i.ibb.co/4pDNDk1/default-avatar.png'}
+                                    <div className="size-28 rounded-lg overflow-hidden border border-border">
+                                        <Avatar
+                                            src={tutor.photoURL}
                                             alt={tutor.displayName || 'Tutor'}
-                                            className="w-full h-full object-cover"
+                                            gender={tutor.gender}
+                                            className="size-full rounded-none"
                                         />
                                     </div>
                                 </div>
@@ -484,7 +486,7 @@ const TutorDetails = () => {
                         <div className="bg-card p-4 rounded-lg border border-border">
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-muted flex items-center justify-center text-muted-foreground rounded-lg">
+                                    <div className="size-8 bg-muted flex items-center justify-center text-muted-foreground rounded-lg">
                                         <Briefcase size={14} />
                                     </div>
                                     <div>
@@ -493,7 +495,7 @@ const TutorDetails = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-muted flex items-center justify-center text-muted-foreground rounded-lg">
+                                    <div className="size-8 bg-muted flex items-center justify-center text-muted-foreground rounded-lg">
                                         <Clock size={14} />
                                     </div>
                                     <div>

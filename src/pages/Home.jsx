@@ -11,8 +11,11 @@ import FAQ from '../components/Home/FAQ';
 import MissionStatement from '../components/Home/MissionStatement';
 import FeatureSpotlight from '../components/Home/FeatureSpotlight';
 import SEO from '../components/shared/SEO';
+import { useAuth } from '../contexts/AuthContext';
 
 const Home = () => {
+    const { user } = useAuth();
+
     return (
         <div className="bg-background">
             <SEO 
@@ -27,7 +30,7 @@ const Home = () => {
             <WhyChooseUs />
             <FeatureSpotlight />
             <HowItWorks />
-            <CallToAction />
+            {!user && <CallToAction />}
             <Testimonials />
             <FAQ />
             <Newsletter />

@@ -107,7 +107,7 @@ const SearchPage = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="relative mb-8">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94A3B8]" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#94A3B8]" />
           <input
             ref={inputRef}
             type="text"
@@ -133,7 +133,7 @@ const SearchPage = () => {
 
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <div className="w-6 h-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
+            <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
           </div>
         )}
 

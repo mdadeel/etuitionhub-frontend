@@ -4,13 +4,12 @@ import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
 import api from '../services/api';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
-import { 
-    Banknote, 
-    ArrowLeft, 
-    ShieldCheck, 
-    CreditCard, 
-    Zap, 
-    Database, 
+import {
+    Banknote,
+    ArrowLeft,
+    ShieldCheck,
+    Zap,
+    Database,
     Send,
     AlertCircle
 } from "lucide-react";
@@ -21,11 +20,10 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
 const PAYMENT_METHODS = [
-    { id: 'stripe', name: 'Credit Card (Stripe)', color: 'bg-[#635BFF]', badge: 'Real' },
-    { id: 'bkash', name: 'bKash', color: 'bg-[#D12053]', badge: 'Demo' },
-    { id: 'nagad', name: 'Nagad', color: 'bg-[#F7941D]', badge: 'Demo' },
-    { id: 'rocket', name: 'Rocket', color: 'bg-[#8C3494]', badge: 'Demo' },
-    { id: 'bank', name: 'Bank Transfer', color: 'bg-primary' }
+    { id: 'bkash', name: 'bKash', color: 'bg-[#D12053]', badge: 'Manual' },
+    { id: 'nagad', name: 'Nagad', color: 'bg-[#F7941D]', badge: 'Manual' },
+    { id: 'rocket', name: 'Rocket', color: 'bg-[#8C3494]', badge: 'Manual' },
+    { id: 'bank', name: 'Bank Transfer', color: 'bg-primary', badge: 'Manual' }
 ];
 
 const isDemoMethod = (methodId) => ['bkash', 'nagad', 'rocket'].includes(methodId);
@@ -79,32 +77,8 @@ const Checkout = () => {
         }));
     };
 
-    const handleStripeCheckout = async () => {
-        try {
-            setSubmitting(true);
-            const res = await api.post('/api/payments/stripe/create', {
-                amount: application?.budget || 500,
-                bookingId: id,
-                tutorName: application?.tutorName
-            });
-            
-            if (res.data.url) {
-                window.location.href = res.data.url;
-            }
-        } catch (error) {
-            console.error('Stripe error:', error);
-            toast.error('Failed to initiate Stripe checkout');
-            setSubmitting(false);
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (formData.paymentMethod === 'stripe') {
-            await handleStripeCheckout();
-            return;
-        }
 
         if (!formData.transactionId.trim()) {
             toast.error('Transaction ID required');
@@ -134,7 +108,8 @@ const Checkout = () => {
 
             if (response.status === 201) {
                 toast.success('Payment submitted for verification');
-                navigate('/payment-success');
+                const paymentId = response.data?._id || response.data?.id;
+                navigate(paymentId ? `/payment-success?payment_id=${paymentId}` : '/payment-success');
             }
         } catch (error) {
             const errorMessage = error.response?.data?.error || 'Payment submission failed';
@@ -204,7 +179,7 @@ const Checkout = () => {
                                                 }`}
                                         >
                                             <div className="relative z-10 flex items-center gap-4">
-                                                <div className={`w-2 h-2 rounded-none ${method.color}`}></div>
+                                                <div className={`size-2 rounded-none ${method.color}`}></div>
                                                 <span className={`text-[11px] font-black uppercase tracking-[0.15em] ${formData.paymentMethod === method.id ? 'text-primary' : 'text-foreground'}`}>
                                                     {method.name}
                                                 </span>
@@ -225,7 +200,7 @@ const Checkout = () => {
                                 {isDemoMethod(formData.paymentMethod) && (
                                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                                         <div className="flex items-center gap-2 text-yellow-800">
-                                            <AlertCircle className="w-5 h-5" />
+                                            <AlertCircle className="size-5" />
                                             <span className="font-medium">Demo Mode</span>
                                         </div>
                                         <p className="text-sm text-yellow-700 mt-1">
@@ -235,35 +210,33 @@ const Checkout = () => {
                                 )}
                             </div>
 
-                            {formData.paymentMethod !== 'stripe' && (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-                                    <div className="space-y-4">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Transaction Hash (ID)</Label>
-                                        <Input
-                                            type="text"
-                                            name="transactionId"
-                                            value={formData.transactionId}
-                                            onChange={handleChange}
-                                            className="h-14 rounded-none border-border bg-muted/20 font-mono text-xs font-bold text-primary focus-visible:ring-primary uppercase tracking-widest"
-                                            placeholder="E.G. TXN_99882211"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Origin Phone Node</Label>
-                                        <Input
-                                            type="text"
-                                            name="senderNumber"
-                                            value={formData.senderNumber}
-                                            onChange={handleChange}
-                                            className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary tabular-nums"
-                                            placeholder="01XXXXXXXXX"
-                                            required
-                                        />
-                                    </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                                <div className="space-y-4">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Transaction Hash (ID)</Label>
+                                    <Input
+                                        type="text"
+                                        name="transactionId"
+                                        value={formData.transactionId}
+                                        onChange={handleChange}
+                                        className="h-14 rounded-none border-border bg-muted/20 font-mono text-xs font-bold text-primary focus-visible:ring-primary uppercase tracking-widest"
+                                        placeholder="E.G. TXN_99882211"
+                                        required
+                                    />
                                 </div>
-                            )}
+
+                                <div className="space-y-4">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Origin Phone Node</Label>
+                                    <Input
+                                        type="text"
+                                        name="senderNumber"
+                                        value={formData.senderNumber}
+                                        onChange={handleChange}
+                                        className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary tabular-nums"
+                                        placeholder="01XXXXXXXXX"
+                                        required
+                                    />
+                                </div>
+                            </div>
 
                             <div className="space-y-4">
                                 <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Additional Parameters (Optional)</Label>
@@ -283,7 +256,7 @@ const Checkout = () => {
                                     disabled={submitting}
                                 >
                                     {submitting ? (
-                                        <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
+                                        <div className="size-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
                                     ) : (
                                         <>
                                             Synchronize Payment <Send size={18} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
@@ -297,7 +270,7 @@ const Checkout = () => {
                     {/* Summary Sidebar */}
                     <div className="lg:col-span-5">
                         <div className="bg-background border border-border rounded-none shadow-2xl sticky top-24 overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-none -mr-16 -mt-16 rotate-45 transition-transform duration-700 group-hover:scale-110"></div>
+                            <div className="absolute top-0 right-0 size-32 bg-primary/5 rounded-none -mr-16 -mt-16 rotate-45 transition-transform duration-700 group-hover:scale-110"></div>
                             
                             <div className="p-10 border-b border-border bg-muted/10 relative z-10">
                                 <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-foreground flex items-center gap-3">
@@ -326,7 +299,7 @@ const Checkout = () => {
                             </div>
                             
                             <div className="p-8 bg-primary/5 border-t border-primary/20 flex items-center gap-4 relative z-10">
-                                <div className="w-10 h-10 rounded-none bg-primary/10 flex items-center justify-center text-primary">
+                                <div className="size-10 rounded-none bg-primary/10 flex items-center justify-center text-primary">
                                     <ShieldCheck size={20} />
                                 </div>
                                 <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] leading-relaxed">

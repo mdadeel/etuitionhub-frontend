@@ -15,6 +15,12 @@ import SavedTuitions from "../components/Dashboard/SavedTuitions";
 import NotificationPage from "../components/Dashboard/NotificationPage";
 import ChatInterface from "../components/Dashboard/ChatInterface";
 import VerificationFlow from "../components/Dashboard/VerificationFlow";
+import TutorWallet from "../components/Dashboard/TutorWallet";
+import TutorWithdraw from "../components/Dashboard/TutorWithdraw";
+import AdminWithdrawals from "./AdminWithdrawals";
+import AdminAuditLogs from "./AdminAuditLogs";
+import DashSettings from "../components/Dashboard/DashSettings";
+import MyReceipts from "../components/Dashboard/MyReceipts";
 import { Menu, X, Home } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
 import { cn } from "@/lib/utils";
@@ -56,7 +62,7 @@ const Dashboard = () => {
         <div className="w-72 bg-card border-r border-border hidden lg:flex" />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
+            <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
             <span className="text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">Loading dashboard...</span>
           </div>
         </div>
@@ -122,15 +128,15 @@ const Dashboard = () => {
                   </p>
                   <p className="text-[9px] font-heading font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{role}</p>
                 </div>
-                <div className="w-9 h-9 bg-muted rounded-none overflow-hidden border border-border">
+                <div className="size-9 bg-muted rounded-none overflow-hidden border border-border">
                   {user?.photoURL ? (
                     <img
                       src={user.photoURL}
                       alt={user.displayName}
-                      className="w-full h-full object-cover rounded-none"
+                      className="size-full object-cover rounded-none"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-heading font-black uppercase">
+                    <div className="size-full flex items-center justify-center text-muted-foreground text-xs font-heading font-black uppercase">
                       {user?.displayName?.charAt(0)}
                     </div>
                   )}
@@ -198,6 +204,7 @@ const Dashboard = () => {
               />
 
               <Route path="payments" element={<StudentPayments />} />
+              <Route path="receipts" element={<MyReceipts />} />
 
               <Route path="saved-tutors" element={<SavedTutors />} />
               <Route path="saved-tuitions" element={<SavedTuitions />} />
@@ -213,6 +220,55 @@ const Dashboard = () => {
                   ) : (
                     <Navigate to="/dashboard" replace />
                   )
+                }
+              />
+
+              <Route
+                path="wallet"
+                element={
+                  role === "tutor" ? (
+                    <TutorWallet />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )
+                }
+              />
+
+              <Route
+                path="withdraw"
+                element={
+                  role === "tutor" ? (
+                    <TutorWithdraw />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )
+                }
+              />
+
+              <Route
+                path="admin/withdrawals"
+                element={
+                  <AdminRoute role={role}>
+                    <AdminWithdrawals />
+                  </AdminRoute>
+                }
+              />
+
+              <Route
+                path="admin/settings"
+                element={
+                  <AdminRoute role={role}>
+                    <DashSettings />
+                  </AdminRoute>
+                }
+              />
+
+              <Route
+                path="admin/audit-logs"
+                element={
+                  <AdminRoute role={role}>
+                    <AdminAuditLogs />
+                  </AdminRoute>
                 }
               />
 

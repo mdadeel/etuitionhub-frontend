@@ -126,7 +126,7 @@ const BecomeTutor = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+          <div className="size-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
           <span className="text-sm text-muted-foreground">Loading...</span>
         </div>
       </div>
@@ -149,7 +149,7 @@ const BecomeTutor = () => {
 
         {!user ? (
           <div className="bg-card border border-border rounded-2xl p-10 md:p-14 text-center shadow-sm">
-            <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-primary/[0.02]">
+            <div className="size-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-primary/[0.02]">
               <Briefcase size={28} className="text-primary/60" />
             </div>
             <h2 className="text-xl font-heading text-foreground mb-3">
@@ -175,7 +175,7 @@ const BecomeTutor = () => {
           </div>
         ) : isAlreadyTutor ? (
           <div className="bg-card border border-border rounded-2xl p-10 md:p-14 text-center shadow-sm">
-            <div className="w-16 h-16 bg-success/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-success/[0.02]">
+            <div className="size-16 bg-success/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-success/[0.02]">
               <ShieldCheck size={28} className="text-success" />
             </div>
             <h2 className="text-xl font-heading text-foreground mb-3">
@@ -201,7 +201,7 @@ const BecomeTutor = () => {
                   className="relative flex flex-col items-center gap-2"
                 >
                   <div
-                    className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-semibold transition-all duration-300 ${
+                    className={`size-8 flex items-center justify-center rounded-full text-xs font-semibold transition-all duration-300 ${
                       step >= s
                         ? "bg-primary text-white shadow-md ring-4 ring-primary/10"
                         : "bg-muted text-slate-400"
@@ -251,7 +251,7 @@ const BecomeTutor = () => {
                       Phone Number
                     </Label>
                     <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                       <Input
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
@@ -425,7 +425,7 @@ const BecomeTutor = () => {
                         Preferred Division
                       </Label>
                       <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
                         <select
                           value={location}
                           onChange={(e) => setLocation(e.target.value)}

@@ -73,6 +73,7 @@ export default function SessionRoom() {
             timeout: 5000,
         });
 
+        const s = socket.current;
         const userId = user?.email || dbUser?.email || "anonymous";
 
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((currentStream) => {
@@ -81,14 +82,14 @@ export default function SessionRoom() {
                 myVideo.current.srcObject = currentStream;
             }
 
-            socket.current.emit('join-room', bookingId, userId);
+            s.emit('join-room', bookingId, userId);
 
-            socket.current.on('user-connected', (newUserId) => {
+            s.on('user-connected', (newUserId) => {
                 // Another user joined, we can initiate a call to them
                 callUser(newUserId, currentStream);
             });
 
-            socket.current.on('signal', (data) => {
+            s.on('signal', (data) => {
                 // If we receive a signal from another user
                 if (!callAccepted) {
                     setReceivingCall(true);
@@ -96,15 +97,25 @@ export default function SessionRoom() {
                 }
             });
 
-            socket.current.on('chat-message', (msg) => {
+            s.on('chat-message', (msg) => {
                 setMessages(prev => [...prev, msg]);
             });
         });
 
         return () => {
-            if (socket.current) socket.current.disconnect();
+            if (s) {
+                s.off('user-connected');
+                s.off('signal');
+                s.off('chat-message');
+                s.disconnect();
+            }
             if (connectionRef.current) connectionRef.current.destroy();
-            if (stream) stream.getTracks().forEach(track => track.stop());
+            if (stream) {
+                stream.getTracks().forEach(track => {
+                    track.stop();
+                    track.enabled = false;
+                });
+            }
         };
     }, [bookingId, user, dbUser]);
 
@@ -198,9 +209,9 @@ export default function SessionRoom() {
             {/* Main Video Area */}
             <div className="flex-1 flex flex-col items-center justify-center p-4 relative">
                 {callAccepted && !callEnded ? (
-                    <video playsInline ref={userVideo} autoPlay className="w-full h-full max-h-[80vh] object-cover rounded-xl bg-black" />
+                    <video playsInline ref={userVideo} autoPlay className="size-full max-h-[80vh] object-cover rounded-xl bg-black" />
                 ) : (
-                    <div className="w-full h-full max-h-[80vh] flex items-center justify-center bg-gray-800 rounded-xl">
+                    <div className="size-full max-h-[80vh] flex items-center justify-center bg-gray-800 rounded-xl">
                         {receivingCall && !callAccepted ? (
                             <div className="text-center">
                                 <h3 className="text-xl mb-4">Someone is joining the session...</h3>
@@ -215,20 +226,20 @@ export default function SessionRoom() {
                 {/* My Video (PiP) */}
                 {stream && (
                     <div className="absolute bottom-24 right-8 w-48 h-32 bg-black rounded-lg overflow-hidden border-2 border-gray-700 shadow-xl">
-                        <video playsInline muted ref={myVideo} autoPlay className="w-full h-full object-cover" />
+                        <video playsInline muted ref={myVideo} autoPlay className="size-full object-cover" />
                     </div>
                 )}
 
                 {/* Controls */}
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-gray-800/80 backdrop-blur-md px-6 py-3 rounded-full">
                     <Button variant="outline" size="icon" className={`rounded-full ${!micOn && 'bg-red-500 text-white border-red-500 hover:bg-red-600'}`} onClick={toggleMic}>
-                        {micOn ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                        {micOn ? <Mic className="size-5" /> : <MicOff className="size-5" />}
                     </Button>
                     <Button variant="outline" size="icon" className={`rounded-full ${!videoOn && 'bg-red-500 text-white border-red-500 hover:bg-red-600'}`} onClick={toggleVideo}>
-                        {videoOn ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+                        {videoOn ? <Video className="size-5" /> : <VideoOff className="size-5" />}
                     </Button>
-                    <Button variant="destructive" size="icon" className="rounded-full w-12 h-12" onClick={leaveCall}>
-                        <PhoneOff className="w-6 h-6" />
+                    <Button variant="destructive" size="icon" className="rounded-full size-12" onClick={leaveCall}>
+                        <PhoneOff className="size-6" />
                     </Button>
                 </div>
             </div>
@@ -236,7 +247,7 @@ export default function SessionRoom() {
             {/* Chat Sidebar */}
             <div className="w-full md:w-80 bg-gray-800 border-l border-gray-700 flex flex-col h-screen max-h-screen">
                 <div className="p-4 border-b border-gray-700 flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5" />
+                    <MessageSquare className="size-5" />
                     <h3 className="font-medium">Session Chat</h3>
                 </div>
 

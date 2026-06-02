@@ -88,7 +88,7 @@ const PaymentHistory = () => {
                                             </td>
                                             <td className="px-10 py-8">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-1.5 h-1.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                    <div className="size-1.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                                     <p className="text-sm font-black text-foreground uppercase tracking-tight italic transition-colors group-hover:text-primary">
                                                         {payment.tutorName}
                                                     </p>

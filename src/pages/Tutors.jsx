@@ -1,13 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import useDebouncedValue from "../hooks/useDebouncedValue";
 import { useSearchParams } from "react-router-dom";
 import TutorCard from "../components/shared/TutorCard";
+import { useAuth } from "../contexts/AuthContext";
 import {
   SlidersHorizontal,
   ShieldCheck,
   Filter,
   X,
-  LayoutGrid,
   Search,
   RefreshCw,
 } from "lucide-react";
@@ -16,22 +16,25 @@ import SearchEmptyState from "../components/shared/SearchEmptyState";
 import SaveSearchButton from "../components/shared/SaveSearchButton";
 import api from "../services/api";
 import { cn } from "@/lib/utils";
+import SEO from '../components/shared/SEO';
+import Pagination from "../components/shared/Pagination";
 
 const Tutors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tutors, setTutors] = useState([]);
+  const [savedTutorIds, setSavedTutorIds] = useState(new Set());
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState("name-az");
+  const [sortBy, setSortBy] = useState("ratings");
   const [selectedSubjects, setSelectedSubjects] = useState([]);
-  const [selectedClass, setSelectedClass] = useState("All");
   const [selectedArea, setSelectedArea] = useState("All");
   const [allSubjects, setAllSubjects] = useState([]);
-  const [allClasses, setAllClasses] = useState(["All"]);
   const [allAreas, setAllAreas] = useState(["All"]);
-  const [maxPrice, setMaxPrice] = useState(20000);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const searchQuery = searchParams.get("q") || "";
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
@@ -46,26 +49,33 @@ const Tutors = () => {
     };
   }, [isMobileFiltersOpen]);
 
+  // Reset page when search or filters change
+  useEffect(() => {
+    setPage(1);
+  }, [
+    debouncedSearch,
+    selectedSubjects,
+    selectedArea,
+    selectedLanguage,
+    sortBy,
+  ]);
+
   // Sync filters to URL
   useEffect(() => {
     const params = {};
     if (searchQuery) params.q = searchQuery;
     if (selectedSubjects.length > 0)
       params.subjects = selectedSubjects.join(",");
-    if (selectedClass && selectedClass !== "All") params.class = selectedClass;
     if (selectedArea && selectedArea !== "All") params.area = selectedArea;
     if (selectedLanguage && selectedLanguage !== "all")
       params.lang = selectedLanguage;
-    if (maxPrice < 20000) params.price = String(maxPrice);
-    if (sortBy && sortBy !== "name-az") params.sort = sortBy;
+    if (sortBy && sortBy !== "ratings") params.sort = sortBy;
     setSearchParams(params, { replace: true });
   }, [
     searchQuery,
     selectedSubjects,
-    selectedClass,
     selectedArea,
     selectedLanguage,
-    maxPrice,
     sortBy,
     setSearchParams,
   ]);
@@ -73,18 +83,13 @@ const Tutors = () => {
   // Restore filters from URL on mount
   useEffect(() => {
     const subjects = searchParams.get("subjects");
-    const classParam = searchParams.get("class");
     const area = searchParams.get("area");
     const lang = searchParams.get("lang");
-    const price = searchParams.get("price");
     const sort = searchParams.get("sort");
     if (subjects) setSelectedSubjects(subjects.split(","));
-    if (classParam) setSelectedClass(classParam);
     if (area) setSelectedArea(area);
     if (lang) setSelectedLanguage(lang);
-    if (price) setMaxPrice(Number(price));
     if (sort) setSortBy(sort);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -96,50 +101,51 @@ const Tutors = () => {
 
         selectedSubjects.forEach((sub) => params.append("subject", sub));
 
-        if (selectedClass !== "All") params.append("class_name", selectedClass);
         if (selectedArea !== "All") params.append("location", selectedArea);
         if (selectedLanguage !== "all" && selectedLanguage !== "All")
           params.append("language", selectedLanguage);
-        if (maxPrice < 20000) params.append("maxPrice", maxPrice);
 
-        if (sortBy === "ratings" || sortBy === "salary-low") {
+        params.append("page", page);
+        params.append("limit", 9);
+
+        if (sortBy) {
           params.append("sort", sortBy);
         }
 
         const response = await api.get(
           `/api/tutors?${params.toString()}`,
         );
-        const tutorsData = response.data.data || response.data;
+        const responseData = response.data;
+        const tutorsData = responseData.data || responseData;
+        const paginationData = responseData.pagination || null;
+        const filterOptions = responseData.filterOptions || null;
+
         setTutors(Array.isArray(tutorsData) ? tutorsData : []);
+        setPagination(paginationData);
 
-        const subjectsSet = new Set();
-        const classesSet = new Set(["All"]);
-        const areasSet = new Set(["All"]);
-
-        tutorsData.forEach((t) => {
-          if (t.subjects) {
-            t.subjects.forEach((s) => {
-              if (typeof s === "string") {
+        if (filterOptions) {
+          if (filterOptions.subjects) {
+            const subjectsSet = new Set();
+            filterOptions.subjects.forEach((s) => {
+              if (typeof s === "string" && s.includes(",")) {
                 s.split(",").forEach((sub) => subjectsSet.add(sub.trim()));
               } else {
                 subjectsSet.add(s);
               }
             });
+            setAllSubjects(Array.from(subjectsSet));
           }
-          if (t.class_name) classesSet.add(t.class_name);
-          if (t.location) {
-            const area = t.location.split(",").pop().trim();
-            if (area) areasSet.add(area);
+          if (filterOptions.locations) {
+            const areasSet = new Set(["All"]);
+            filterOptions.locations.forEach((loc) => {
+              if (typeof loc === "string") {
+                const area = loc.split(",").pop().trim();
+                if (area) areasSet.add(area);
+              }
+            });
+            setAllAreas(Array.from(areasSet));
           }
-        });
-
-        setAllSubjects((prev) =>
-          prev.length === 0 ? Array.from(subjectsSet) : prev,
-        );
-        setAllClasses((prev) =>
-          prev.length <= 1 ? Array.from(classesSet) : prev,
-        );
-        setAllAreas((prev) => (prev.length <= 1 ? Array.from(areasSet) : prev));
+        }
       } catch (error) {
         console.error("Error fetching tutors", error);
       } finally {
@@ -150,37 +156,40 @@ const Tutors = () => {
   }, [
     debouncedSearch,
     selectedSubjects,
-    selectedClass,
     selectedArea,
     sortBy,
-    maxPrice,
     selectedLanguage,
+    page,
   ]);
+
+  useEffect(() => {
+    if (!user || tutors.length === 0) return;
+    const realIds = tutors
+      .map((t) => t._id)
+      .filter((id) => /^[a-f\d]{24}$/i.test(id));
+    if (realIds.length === 0) return;
+    api
+      .post('/api/bookmarks/check-many', { tutorIds: realIds })
+      .then((res) => {
+        const savedSet = new Set();
+        for (const [id, isSaved] of Object.entries(res.data.saved || {})) {
+          if (isSaved) savedSet.add(id);
+        }
+        setSavedTutorIds(savedSet);
+      })
+      .catch(() => {});
+  }, [user, tutors]);
 
   const filteredAndSortedTutors = useMemo(() => {
     if (!Array.isArray(tutors)) return [];
     let result = [...tutors];
 
-    switch (sortBy) {
-      case "name-az":
-        result.sort((a, b) =>
-          (a.displayName || "").localeCompare(b.displayName || ""),
-        );
-        break;
-      case "name-za":
-        result.sort((a, b) =>
-          (b.displayName || "").localeCompare(a.displayName || ""),
-        );
-        break;
-      case "exp-high":
-        result.sort((a, b) => {
-          const aExp = parseInt(a.experience) || 0;
-          const bExp = parseInt(b.experience) || 0;
-          return bExp - aExp;
-        });
-        break;
-      default:
-        break;
+    if (sortBy === "exp-high") {
+      result.sort((a, b) => {
+        const aExp = parseInt(a.experience) || 0;
+        const bExp = parseInt(b.experience) || 0;
+        return bExp - aExp;
+      });
     }
 
     return result;
@@ -188,12 +197,11 @@ const Tutors = () => {
 
   const handleClear = () => {
     setSearchParams({});
-    setSortBy("name-az");
+    setSortBy("ratings");
     setSelectedSubjects([]);
-    setSelectedClass("All");
     setSelectedArea("All");
-    setMaxPrice(20000);
     setSelectedLanguage("all");
+    setPage(1);
   };
 
   const toggleSubject = (sub) => {
@@ -204,6 +212,11 @@ const Tutors = () => {
 
   return (
     <div className="bg-background text-foreground min-h-screen">
+      <SEO 
+        title="Find the Best Verified Tutors" 
+        description="Browse and connect with highly qualified, verified home and online tutors across Bangladesh. Select by class, subject, location, and monthly budget."
+        keywords="tutor, find tutors, verified tutors, bangladesh tutor, home tuition, online study"
+      />
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
@@ -237,7 +250,7 @@ const Tutors = () => {
         {/* Mobile Search Bar */}
         <div className="lg:hidden mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search tutors..."
@@ -262,11 +275,9 @@ const Tutors = () => {
             <Filter size={20} />
             <span className="font-medium text-base tracking-wide">Filters</span>
             {(selectedSubjects.length > 0 ||
-              selectedClass !== "All" ||
               selectedArea !== "All") && (
-              <span className="absolute top-1/2 -translate-y-1/2 right-4 w-6 h-6 bg-card text-[#2563EB] text-xs font-bold flex items-center justify-center rounded-full">
+              <span className="absolute top-1/2 -translate-y-1/2 right-4 size-6 bg-card text-[#2563EB] text-xs font-bold flex items-center justify-center rounded-full">
                 {(selectedSubjects.length > 0 ? 1 : 0) +
-                  (selectedClass !== "All" ? 1 : 0) +
                   (selectedArea !== "All" ? 1 : 0)}
               </span>
             )}
@@ -284,7 +295,7 @@ const Tutors = () => {
           >
             <div
               className={cn(
-                "bg-card w-full max-w-none h-[85vh] absolute bottom-0 lg:h-auto p-6 lg:p-4 lg:rounded-xl lg:border lg:border-border lg:sticky lg:top-20 lg:w-full lg:shadow-sm transition-transform duration-300 rounded-t-2xl lg:rounded-none overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]",
+                "bg-card w-full max-w-none h-[85vh] absolute bottom-0 lg:h-auto p-6 lg:p-4 lg:rounded-2xl lg:border lg:border-border lg:sticky lg:top-20 lg:w-full lg:h-auto lg:shadow-sm transition-transform duration-300 rounded-t-3xl lg:rounded-2xl overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]",
                 isMobileFiltersOpen
                   ? "translate-y-0"
                   : "translate-y-full lg:translate-y-0",
@@ -311,20 +322,12 @@ const Tutors = () => {
                   onValueChange={setSortBy}
                   icon={SlidersHorizontal}
                   options={[
+                    { value: "ratings", label: "Top Rated" },
                     { value: "name-az", label: "Alphabetical: A-Z" },
                     { value: "name-za", label: "Alphabetical: Z-A" },
-                    { value: "exp-high", label: "Experience: High" },
+                    { value: "salary-high", label: "Fee: High to Low" },
                     { value: "salary-low", label: "Fee: Low to High" },
                   ]}
-                />
-
-                <FilterSelect
-                  label="Class"
-                  value={selectedClass}
-                  onValueChange={setSelectedClass}
-                  icon={LayoutGrid}
-                  placeholder="Select Class"
-                  options={allClasses}
                 />
 
                 <FilterSelect
@@ -348,27 +351,6 @@ const Tutors = () => {
                 />
 
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block">
-                      Max Monthly Fee (৳{maxPrice})
-                    </label>
-                  </div>
-                  <input
-                    type="range"
-                    min="500"
-                    max="20000"
-                    step="500"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                    className="w-full accent-[#2563EB]"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                    <span>৳500</span>
-                    <span>৳20k+</span>
-                  </div>
-                </div>
-
-                <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block">
                       Subjects
@@ -387,7 +369,7 @@ const Tutors = () => {
                       <button
                         key={subject}
                         onClick={() => toggleSubject(subject)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors min-h-[36px] border ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors min-h-[36px] border ${
                           selectedSubjects.includes(subject)
                             ? "bg-[#2563EB] text-white border-[#2563EB]"
                             : "bg-background text-muted-foreground border-border hover:bg-muted"
@@ -401,11 +383,9 @@ const Tutors = () => {
               </div>
 
               {(searchQuery ||
-                sortBy !== "name-az" ||
+                sortBy !== "ratings" ||
                 selectedSubjects.length > 0 ||
-                selectedClass !== "All" ||
                 selectedArea !== "All" ||
-                maxPrice < 20000 ||
                 selectedLanguage !== "all") && (
                 <button
                   onClick={handleClear}
@@ -440,11 +420,11 @@ const Tutors = () => {
                 <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-sm font-medium">
                   "{searchQuery}"
                 </span>
-                <SaveSearchButton query={searchQuery} filters={{ subjects: selectedSubjects, class: selectedClass, area: selectedArea, language: selectedLanguage, maxPrice }} />
+                <SaveSearchButton query={searchQuery} filters={{ subjects: selectedSubjects, area: selectedArea, language: selectedLanguage }} />
               </div>
             )}
 
-            {filteredAndSortedTutors.length === 0 && !loading ? (
+            {tutors.length === 0 && !loading ? (
               <div className="bg-card border border-border rounded-xl">
                 <SearchEmptyState
                   query={searchQuery}
@@ -463,9 +443,7 @@ const Tutors = () => {
                 />
                 {(searchQuery ||
                   selectedSubjects.length > 0 ||
-                  selectedClass !== "All" ||
                   selectedArea !== "All" ||
-                  maxPrice < 20000 ||
                   selectedLanguage !== "all") && (
                   <div className="px-4 pb-6 flex justify-center">
                     <button
@@ -479,14 +457,33 @@ const Tutors = () => {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
-                {filteredAndSortedTutors.map((tutor) => (
-                  <TutorCard
-                    key={tutor._id}
-                    tutor={tutor}
-                    searchQuery={searchQuery}
+              <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
+                  {filteredAndSortedTutors.map((tutor) => (
+                    <TutorCard
+                      key={tutor._id}
+                      tutor={tutor}
+                      searchQuery={searchQuery}
+                      initialIsSaved={savedTutorIds.has(tutor._id)}
+                    />
+                  ))}
+                </div>
+
+                {pagination && pagination.pages > 1 && (
+                  <Pagination
+                    currentPage={page}
+                    totalPages={pagination.pages}
+                    onPageChange={setPage}
+                    hasNext={page < pagination.pages}
+                    hasPrev={page > 1}
                   />
-                ))}
+                )}
+
+                {loading && tutors.length > 0 && (
+                  <div className="py-8 text-center">
+                    <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin mx-auto" />
+                  </div>
+                )}
               </div>
             )}
           </main>

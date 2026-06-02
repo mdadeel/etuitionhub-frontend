@@ -64,7 +64,7 @@ const Blog = () => {
                                 <img
                                     src={post.image}
                                     alt={post.title}
-                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                                    className="size-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
                                 />
                                 <div className="absolute top-4 left-4">
                                     <Badge className="rounded-none bg-background/90 backdrop-blur-md text-foreground border-border text-[9px] font-black uppercase tracking-widest px-3 py-1">
@@ -89,7 +89,7 @@ const Blog = () => {
                                 
                                 <div className="pt-6 border-t border-border flex items-center justify-between group/link">
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground">Open Dossier</span>
-                                    <div className="w-10 h-10 border border-border flex items-center justify-center group-hover/link:bg-primary group-hover/link:border-primary group-hover/link:text-primary-foreground transition-all duration-300">
+                                    <div className="size-10 border border-border flex items-center justify-center group-hover/link:bg-primary group-hover/link:border-primary group-hover/link:text-primary-foreground transition-all duration-300">
                                         <ArrowUpRight size={16} />
                                     </div>
                                 </div>

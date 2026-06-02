@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Mail, Shield } from 'lucide-react';
+import Logo from '../components/shared/Logo';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -46,8 +47,8 @@ const PasswordReset = () => {
                 
                 <div className="w-full max-w-md z-10">
                     <div className="bg-card border-2 border-border rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.05)] overflow-hidden p-6 sm:p-8 text-center">
-                        <div className="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-none flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="size-12 bg-emerald-500/10 text-emerald-500 rounded-none flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
+                            <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
@@ -77,11 +78,8 @@ const PasswordReset = () => {
                     
                     {/* Header */}
                     <div className="text-center mb-6">
-                        <div className="inline-flex items-center gap-2 mb-3">
-                            <div className="bg-primary p-1.5 text-primary-foreground rounded-none">
-                                <Shield size={18} className="stroke-[2.5]" />
-                            </div>
-                            <span className="font-heading text-lg font-bold tracking-tight uppercase text-foreground">e-TuitionBD</span>
+                        <div className="flex justify-center mb-4">
+                            <Logo textSize="text-xl" boxSize="size-12" iconSize="size-8" />
                         </div>
                         <h1 className="text-2xl font-heading font-bold text-foreground">
                             Reset Password
