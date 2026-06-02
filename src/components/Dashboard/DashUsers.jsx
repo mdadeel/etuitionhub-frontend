@@ -152,7 +152,7 @@ const DashUsers = () => {
 
                 {/* Search Input */}
                 <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 group-focus-within:text-[#2563EB] transition-colors" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 group-focus-within:text-[#2563EB] transition-colors" />
                     <input
                         type="text"
                         placeholder="Search by name, email..."
@@ -196,14 +196,14 @@ const DashUsers = () => {
                             <tr key={user._id} className="hover:bg-background transition-colors">
                                 <td className="px-4 md:px-6 py-4">
                                     <div className="flex items-center gap-3 md:gap-4">
-                                        <Avatar className="h-9 w-9 rounded-none border border-border shadow-none">
+                                        <Avatar className="size-9 rounded-none border border-border shadow-none">
                                             <AvatarImage src={user.photoURL} alt={user.displayName} gender={user.gender} className="object-cover rounded-none" />
                                             <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
                                         </Avatar>
                                         <div>
                                             <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{user.displayName}</p>
                                             <div className="flex items-center gap-1.5 mt-1">
-                                                <div className={cn("w-1.5 h-1.5 rounded-none", user.isVerified ? "bg-[#2563EB] animate-pulse" : "bg-[#5B6475]/30")}></div>
+                                                <div className={cn("size-1.5 rounded-none", user.isVerified ? "bg-[#2563EB] animate-pulse" : "bg-[#5B6475]/30")}></div>
                                                 <span className="text-[8px] md:text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60 mt-0.5">
                                                     {user.role}
                                                 </span>
@@ -262,7 +262,7 @@ const DashUsers = () => {
                                         <AppleButton
                                             variant="ghost"
                                             size="sm"
-                                            className="h-8 w-8 p-0 text-muted-foreground/60 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-none border border-transparent hover:border-[#2563EB]/20"
+                                            className="size-8 p-0 text-muted-foreground/60 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-none border border-transparent hover:border-[#2563EB]/20"
                                             onClick={() => handleEditClick(user)}
                                         >
                                             <Edit2 size={12} />
@@ -270,7 +270,7 @@ const DashUsers = () => {
                                         <AppleButton
                                             variant="ghost"
                                             size="sm"
-                                            className="h-8 w-8 p-0 text-muted-foreground/60 hover:text-red-600 hover:bg-red-600/10 rounded-none border border-transparent hover:border-red-200"
+                                            className="size-8 p-0 text-muted-foreground/60 hover:text-red-600 hover:bg-red-600/10 rounded-none border border-transparent hover:border-red-200"
                                             onClick={() => handleDelete(user._id)}
                                         >
                                             <UserX size={14} />
