@@ -1,20 +1,62 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from "react";
-import { Search, ShieldCheck, CheckCircle, MessageCircle, Users, GraduationCap, Star, Clock, Heart } from "lucide-react";
-import { Badge, Button, Card, Avatar, SectionHeader } from '@/components/ui';
+import { useState, useEffect } from "react";
+import { 
+  Search, 
+  ShieldCheck, 
+  CheckCircle, 
+  MessageCircle, 
+  Users, 
+  GraduationCap, 
+  Heart, 
+  BookOpen, 
+  MapPin,
+  Star
+} from "lucide-react";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import FilterSelect from '@/components/shared/FilterSelect';
+import TutorCard from '@/components/shared/TutorCard';
+import { cn } from "@/lib/utils";
 
-const tutorPreview = {
-    name: "Rahim Ahmed",
-    subjects: "Mathematics, Physics",
-    rating: 4.9,
-    reviews: 128,
-    fee: "৳5,000",
-    location: "Dhaka, Mirpur",
-    verified: true,
-    responseTime: "Usually replies in 15 min",
-    completedSessions: "12+ Students taught",
-    style: "Explains concepts visually",
-};
+const sampleTutors = [
+  {
+    _id: "hero-tutor-1",
+    displayName: "Arifur Rahman",
+    photoURL: "https://api.dicebear.com/9.x/avataaars/svg?seed=Arif",
+    qualification: "M.Sc. in Physics, BUET",
+    location: "Dhaka, Uttara",
+    subjects: ["Physics", "Mathematics", "Further Maths"],
+    isVerified: true,
+    ratings: 4.9,
+    expectedSalary: 8000,
+    experience: "5+ years",
+  },
+  {
+    _id: "hero-tutor-2",
+    displayName: "Sultana Kamal",
+    photoURL: "https://api.dicebear.com/9.x/avataaars/svg?seed=Kamal",
+    qualification: "B.Sc. in CSE, DU",
+    location: "Dhaka, Dhanmondi",
+    subjects: ["ICT", "Programming", "Mathematics"],
+    isVerified: true,
+    ratings: 4.8,
+    expectedSalary: 7000,
+    experience: "3+ years",
+  },
+  {
+    _id: "hero-tutor-3",
+    displayName: "Tanvir Ahmed",
+    photoURL: "https://api.dicebear.com/9.x/avataaars/svg?seed=Tanvir",
+    qualification: "MBBS, Dhaka Medical College",
+    location: "Dhaka, Farmgate",
+    subjects: ["Biology", "Chemistry"],
+    isVerified: true,
+    ratings: 4.9,
+    expectedSalary: 9000,
+    experience: "4+ years",
+  }
+];
 
 const HomeBanner = () => {
     const navigate = useNavigate();
@@ -23,201 +65,197 @@ const HomeBanner = () => {
         classLevel: '',
         location: ''
     });
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % sampleTutors.length);
+        }, 5000); 
+        return () => clearInterval(interval);
+    }, []);
+
+    const subjects = [
+        "Mathematics", "English", "Physics", "Chemistry", "Biology", "ICT", "Accounting"
+    ];
+
+    const classes = [
+        "Class 1", "Class 2", "Class 3", "Class 4", "Class 5", 
+        "Class 6", "Class 7", "Class 8", "Class 9", "Class 10", 
+        "SSC", "HSC", "Admission", "English Medium"
+    ];
 
     const handleSearch = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         const params = new URLSearchParams();
-        if (searchData.subject) params.set('subject', searchData.subject);
+        if (searchData.subject) params.set('subjects', searchData.subject);
         if (searchData.classLevel) params.set('class', searchData.classLevel);
-        if (searchData.location) params.set('location', searchData.location);
+        if (searchData.location) params.set('area', searchData.location);
         navigate(`/tutors?${params.toString()}`);
     };
 
     return (
-        <section className="bg-background bg-pattern-academic relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6 pt-24 pb-16">
-                <div className="grid lg:grid-cols-12 gap-12 items-start">
+        <section className="relative min-h-[85vh] flex items-center bg-background overflow-hidden">
+            {/* Minimal Background Atmosphere */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute top-[-10%] left-[-5%] size-[35%] rounded-full bg-primary/5 blur-[120px]" />
+                <div className="absolute bottom-[5%] right-[-5%] size-[40%] rounded-full bg-primary/5 blur-[120px]" />
+            </div>
 
-                    {/* LEFT - Emotional Content & Search */}
-                    <div className="lg:col-span-7 space-y-8">
-                        {/* Trust Badge */}
-                        <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-                            <Badge variant="primary">
-                                <ShieldCheck className="w-4 h-4" />
-                                2,500+ verified tutors across Bangladesh
-                            </Badge>
+            <div className="max-w-7xl mx-auto px-6 relative z-10 py-20">
+                <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+
+                    {/* LEFT - Content & Search */}
+                    <div className="lg:col-span-7 space-y-10">
+                        <div className="space-y-6">
+                            <div>
+                                <Badge variant="secondary" className="px-4 py-1.5 rounded-full bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary-foreground/90 font-bold tracking-tight">
+                                    🇧🇩 Bangladesh's #1 Tutor Marketplace
+                                </Badge>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h1 className="text-5xl lg:text-7xl font-display font-bold text-foreground leading-[1.1] tracking-tight">
+                                    Master Your Future: <br/>
+                                    Your child is in <span className="text-primary relative inline-block">
+                                        safe hands
+                                        <svg className="absolute -bottom-2 left-0 w-full text-primary" viewBox="0 0 358 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3 9C118.957 4.46788 239.113 1.10912 355 9" stroke="currentColor" strokeWidth="5" strokeLinecap="round"/>
+                                        </svg>
+                                    </span>
+                                </h1>
+                                <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl font-body font-medium">
+                                    Connect with 2,500+ verified expert tutors for personalized home and online lessons. Academic excellence, built on trust.
+                                </p>
+                            </div>
                         </div>
 
-                        {/* Editorial Headline */}
-                        <div className="space-y-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
-                            <h1 className="text-5xl lg:text-6xl font-heading text-foreground tracking-tight leading-[0.95]">
-                                Your child is in
-                                <span className="block text-primary">safe hands.</span>
-                            </h1>
-                            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed font-body">
-                                Real tutors. Verified credentials. Direct connection. We help you find teachers who genuinely care about your child's academic journey.
-                            </p>
-                        </div>
-
-                        {/* Search Interface */}
-                        <Card variant="elevated" className="p-5 opacity-0 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-                            <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-stretch gap-3 mb-4">
-                                <div className="flex-1 min-w-[130px]">
-                                    <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1 block">Subject</label>
-                                    <div className="relative">
-                                        <select
-                                            className="w-full h-11 pl-3 pr-8 border border-border rounded bg-card text-foreground appearance-none focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all text-sm font-medium"
+                        {/* Search Block */}
+                        <div>
+                            <Card className="p-6 bg-card/90 backdrop-blur-md border-border shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-3xl overflow-visible">
+                                <div className="flex flex-col md:flex-row items-end gap-6 mb-4">
+                                    <div className="flex-1 w-full">
+                                        <FilterSelect 
+                                            label="Subject"
+                                            placeholder="Select subject"
+                                            icon={BookOpen}
+                                            options={subjects}
                                             value={searchData.subject}
-                                            onChange={(e) => setSearchData({ ...searchData, subject: e.target.value })}
-                                        >
-                                            <option value="">Select subject</option>
-                                            <option value="math">Mathematics</option>
-                                            <option value="english">English</option>
-                                            <option value="physics">Physics</option>
-                                        </select>
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <Search className="w-3.5 h-3.5 text-muted-foreground" />
+                                            onValueChange={(val) => setSearchData({ ...searchData, subject: val })}
+                                        />
+                                    </div>
+                                    <div className="flex-1 w-full">
+                                        <FilterSelect 
+                                            label="Class Level"
+                                            placeholder="Select class"
+                                            icon={GraduationCap}
+                                            options={classes}
+                                            value={searchData.classLevel}
+                                            onValueChange={(val) => setSearchData({ ...searchData, classLevel: val })}
+                                        />
+                                    </div>
+                                    <div className="flex-1 w-full">
+                                        <label className="block text-xs font-heading font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">
+                                            Location
+                                        </label>
+                                        <div className="relative">
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-primary opacity-55" />
+                                            <input
+                                                type="text"
+                                                placeholder="Enter area or city"
+                                                className="w-full h-10 pl-9 pr-3 bg-card border border-border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 font-bold text-foreground"
+                                                value={searchData.location}
+                                                onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                                            />
                                         </div>
                                     </div>
+                                    <div className="w-full md:w-auto">
+                                        <Button 
+                                            type="button"
+                                            onClick={handleSearch}
+                                            className="bg-primary hover:bg-primary/90 h-10 w-full md:w-auto px-10 font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 rounded-xl"
+                                        >
+                                            <Search className="size-4 mr-2" />
+                                            <span>Search</span>
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="w-px bg-border hidden md:block self-stretch my-2" />
-                                <div className="flex-1 min-w-[130px]">
-                                    <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1 block">Class Level</label>
-                                    <select
-                                        className="w-full h-11 px-3 border border-border rounded bg-card text-foreground appearance-none focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all text-sm font-medium"
-                                        value={searchData.classLevel}
-                                        onChange={(e) => setSearchData({ ...searchData, classLevel: e.target.value })}
-                                    >
-                                        <option value="">Select class</option>
-                                        <option value="ssc">SSC</option>
-                                        <option value="hsc">HSC</option>
-                                        <option value="university">University</option>
-                                    </select>
-                                </div>
-                                <div className="w-px bg-border hidden md:block self-stretch my-2" />
-                                <div className="flex-1 min-w-[150px]">
-                                    <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1 block">Location</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter area or city"
-                                        className="w-full h-11 px-3 border border-border rounded bg-card text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-sm font-medium placeholder:text-muted-foreground/50"
-                                        value={searchData.location}
-                                        onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
-                                    />
-                                </div>
-                                <div className="flex items-end">
-                                    <Button type="submit" className="h-11 w-full md:w-auto px-6">
-                                        <Search className="w-4 h-4 mr-2" />
-                                        <span>Search</span>
-                                    </Button>
-                                </div>
-                            </form>
 
-                            {/* Trust Signals */}
-                            <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-border">
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <CheckCircle className="w-4 h-4 text-primary" />
-                                    <span>Verified credentials</span>
+                                <div className="flex flex-wrap items-center gap-8 pt-4 border-t border-border/60">
+                                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                                        <CheckCircle className="size-4 text-primary" />
+                                        <span>Verified Credentials</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                                        <MessageCircle className="size-4 text-primary" />
+                                        <span>Direct Messaging</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                                        <Users className="size-4 text-primary" />
+                                        <span>No Platform Fees</span>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <MessageCircle className="w-4 h-4 text-primary" />
-                                    <span>Direct messaging</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <Users className="w-4 h-4 text-primary" />
-                                    <span>No platform fees</span>
-                                </div>
-                            </div>
-                        </Card>
+                            </Card>
+                        </div>
                     </div>
 
-                    {/* RIGHT - Tutor Preview & Trust Signals */}
-                    <div className="lg:col-span-5 space-y-6 lg:translate-y-4 opacity-0 animate-scale-in" style={{ animationDelay: '550ms' }}>
-                        {/* Featured Tutor Card */}
-                        <Card variant="elevated" hover className="p-6 relative">
-                            <Badge variant="primary" className="absolute -top-2 -right-2">
-                                <CheckCircle className="w-3 h-3" />
-                                Verified
-                            </Badge>
-
-                            <div className="flex items-start gap-4">
-                                <Avatar size="lg" verified={tutorPreview.verified} alt={tutorPreview.name} />
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg font-heading text-foreground tracking-tight mb-1">{tutorPreview.name}</h3>
-                                    <p className="text-sm font-medium text-muted-foreground">{tutorPreview.subjects}</p>
-                                    <p className="text-sm text-muted-foreground mt-1">{tutorPreview.location}</p>
-                                </div>
-                            </div>
-
-                            <p className="text-sm italic text-muted-foreground mt-4 px-1">"{tutorPreview.style}"</p>
-
-                            <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-border">
-                                <div className="text-center">
-                                    <div className="flex items-center justify-center gap-1.5 text-primary mb-1">
-                                        <Star size={14} className="fill-current" />
-                                        <span className="font-heading text-lg text-foreground">{tutorPreview.rating}</span>
+                    {/* RIGHT - Layered tutor card stack */}
+                    <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
+                        <div className="relative w-full max-w-[380px] h-[310px] sm:h-[330px] select-none">
+                            {/* Decorative Background Elements for Depth */}
+                            <div className="absolute -top-10 -right-10 size-48 bg-primary/10 rounded-full blur-[100px] -z-10" />
+                            <div className="absolute -bottom-10 -left-10 size-64 bg-primary/5 rounded-full blur-[100px] -z-10" />
+                            
+                            {sampleTutors.map((tutor, idx) => {
+                                const relativeIndex = (idx - currentIndex + sampleTutors.length) % sampleTutors.length;
+                                
+                                // Only show the top cards
+                                if (relativeIndex > 2) return null;
+                                
+                                const zIndex = 30 - relativeIndex;
+                                const scale = 1 - relativeIndex * 0.05;
+                                const translateY = relativeIndex * 24; 
+                                const translateX = relativeIndex * 24; 
+                                const opacity = 1 - relativeIndex * 0.35;
+                                
+                                return (
+                                    <div
+                                        key={tutor._id}
+                                        className={cn(
+                                            "absolute inset-0 rounded-2xl overflow-hidden bg-card shadow-[0_20px_40px_rgba(0,0,0,0.06)] border border-border/80 transition-all duration-500",
+                                            relativeIndex === 0 ? "opacity-100" : "opacity-0 md:opacity-100"
+                                        )}
+                                        style={{
+                                            zIndex,
+                                            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+                                            opacity: opacity
+                                        }}
+                                    >
+                                        <TutorCard tutor={tutor} isBannerPreview={true} />
                                     </div>
-                                    <p className="text-xs text-muted-foreground">({tutorPreview.reviews})</p>
-                                </div>
-                                <div className="text-center border-x border-border">
-                                    <div className="font-heading text-lg text-foreground mb-1">{tutorPreview.fee}</div>
-                                    <p className="text-xs text-muted-foreground">per month</p>
-                                </div>
-                                <div className="text-center">
-                                    <div className="font-heading text-lg text-foreground mb-1">12+</div>
-                                    <p className="text-xs text-muted-foreground">students taught</p>
-                                </div>
-                            </div>
-
-                            <Button variant="outline" className="w-full mt-6">
-                                View Full Profile
-                            </Button>
-                        </Card>
-
-                        {/* Platform Stats */}
-                        <Card variant="subtle" className="p-6">
-                            <div className="grid grid-cols-3 gap-6">
-                                <div className="text-center">
-                                    <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
-                                        <Users className="w-5 h-5 text-primary" />
-                                    </div>
-                                    <div className="text-xl font-heading text-foreground leading-none mb-1">47</div>
-                                    <p className="text-xs text-muted-foreground">matched today</p>
-                                </div>
-                                <div className="text-center border-x border-border">
-                                    <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
-                                        <GraduationCap className="w-5 h-5 text-primary" />
-                                    </div>
-                                    <div className="text-xl font-heading text-foreground leading-none mb-1">23</div>
-                                    <p className="text-xs text-muted-foreground">new this week</p>
-                                </div>
-                                <div className="text-center">
-                                    <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mx-auto mb-3 border border-border shadow-sm">
-                                        <Clock className="w-5 h-5 text-primary" />
-                                    </div>
-                                    <div className="text-xl font-heading text-foreground leading-none mb-1">18m</div>
-                                    <p className="text-xs text-muted-foreground">response time</p>
-                                </div>
-                            </div>
-                        </Card>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
 
-                {/* Bottom Trust Features */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-10 border-t border-border opacity-0 animate-fade-in-up" style={{ animationDelay: '700ms' }}>
+                {/* Bottom Stats Banner */}
+                <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-border/60">
                     {[
-                        { icon: CheckCircle, title: "Verified", desc: "Credential-checked tutors you can trust." },
-                        { icon: MessageCircle, title: "Direct", desc: "Message and connect directly." },
-                        { icon: Users, title: "No Fees", desc: "Direct payment to tutors." },
-                        { icon: Heart, title: "Proven", desc: "Delivering real academic results." }
-                    ].map((feature, idx) => (
-                        <div key={idx} className="flex items-start gap-3">
-                            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center shrink-0 mt-0.5 border border-border">
-                                <feature.icon className="w-4 h-4 text-primary" />
-                            </div>
-                            <div>
-                                <h4 className="font-heading text-sm text-foreground mb-1">{feature.title}</h4>
-                                <p className="text-xs text-muted-foreground leading-relaxed">{feature.desc}</p>
+                        { label: "Active Tutors", value: "2,500+", icon: Users },
+                        { label: "Lessons Taught", value: "45k+", icon: BookOpen },
+                        { label: "Happy Parents", value: "15k+", icon: Heart },
+                        { label: "Cities Covered", value: "64", icon: MapPin }
+                    ].map((stat, idx) => (
+                        <div key={idx} className="flex flex-col items-center md:items-start space-y-2">
+                            <div className="flex items-center gap-3">
+                                <div className="size-10 rounded-2xl bg-card border border-border shadow-sm flex items-center justify-center">
+                                    <stat.icon size={18} className="text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold text-foreground leading-none">{stat.value}</p>
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</p>
+                                </div>
                             </div>
                         </div>
                     ))}

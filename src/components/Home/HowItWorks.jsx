@@ -2,16 +2,19 @@ import { Search, Star, Users } from 'lucide-react';
 
 const steps = [
     {
+        id: "step1",
         icon: Search,
         title: "Find",
         description: "Search tutors by subject, class, and location with our simple search filters."
     },
     {
+        id: "step2",
         icon: Star,
         title: "Compare",
         description: "Review profiles, ratings, and teaching experience to find the perfect teacher."
     },
     {
+        id: "step3",
         icon: Users,
         title: "Connect",
         description: "Contact tutors directly through our platform and start learning immediately."
@@ -20,36 +23,49 @@ const steps = [
 
 const HowItWorks = () => {
     return (
-        <section className="py-20 bg-background relative overflow-hidden border-b border-border">
+        <section className="py-24 bg-background relative overflow-hidden border-b border-border/50">
             <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="text-center mb-16 space-y-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-                    <h2 className="text-3xl md:text-4xl font-heading text-foreground tracking-tight leading-tight">
+                <div className="text-center mb-16 md:mb-24 space-y-4 animate-in fade-in zoom-in-95 duration-700 ease-out">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 border border-primary/10 rounded-full">
+                        <div className="size-2 rounded-full bg-primary animate-pulse"></div>
+                        <span className="text-xs font-bold text-primary tracking-widest uppercase">How It Works</span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-display font-black text-foreground tracking-tight mb-4">
                         How It <span className="text-primary">Works</span>
                     </h2>
-                    <p className="text-muted-foreground text-base font-body">Three simple steps to find your tutor.</p>
+                    <p className="text-muted-foreground text-lg max-w-xl mx-auto font-body leading-relaxed">
+                        Three simple steps to find your perfect tutor. No paperwork, no middlemen, just learning.
+                    </p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-3 gap-6 md:gap-8">
                     {steps.map((step, idx) => (
-                        <div 
-                            key={idx} 
-                            className="relative flex flex-col items-center text-center p-8 bg-card border border-border/60 rounded hover:shadow-premium hover:border-primary/20 transition-all duration-300 opacity-0 animate-scale-in"
-                            style={{ animationDelay: `${150 + idx * 100}ms` }}
+                        <div
+                            key={step.id}
+                            className="relative group animate-in fade-in zoom-in-95 duration-700 ease-out"
+                            style={{ animationDelay: `${150 + idx * 150}ms` }}
                         >
-                            {/* Step Number Badge */}
-                            <div className="absolute top-4 left-4 w-8 h-8 bg-primary/10 border border-primary/20 text-primary rounded flex items-center justify-center font-heading text-xs">
-                                0{idx + 1}
-                            </div>
+                            {/* Card */}
+                            <div className="relative bg-card border border-border/60 rounded-3xl p-8 transition-all duration-300 hover:border-primary/30 hover:shadow-xl active:scale-[0.98]">
+                                {/* Step Number Badge */}
+                                <div className="absolute top-6 right-6 size-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center font-display font-black text-xl z-10">
+                                    {idx + 1}
+                                </div>
 
-                            <div className="w-12 h-12 rounded bg-muted border border-border text-primary flex items-center justify-center mb-6 mt-4">
-                                <step.icon size={22} />
-                            </div>
+                                {/* Icon */}
+                                <div className="relative z-10 size-16 rounded-2xl bg-muted border border-border text-foreground flex items-center justify-center mb-8">
+                                    <step.icon size={28} />
+                                </div>
 
-                            <div className="space-y-2">
-                                <h3 className="text-lg font-semibold text-foreground tracking-tight">{step.title}</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto font-body">
-                                    {step.description}
-                                </p>
+                                {/* Content */}
+                                <div className="space-y-3 relative z-10">
+                                    <h3 className="text-2xl font-heading font-black text-foreground tracking-tight">
+                                        {step.title}
+                                    </h3>
+                                    <p className="text-base text-muted-foreground leading-relaxed font-body">
+                                        {step.description}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     ))}

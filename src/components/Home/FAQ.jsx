@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Plus } from "lucide-react";
-import { SectionHeader } from '@/components/ui';
+import { Plus, Minus } from "lucide-react";
+import SectionHeader from '@/components/ui/SectionHeader';
 import { cn } from '@/lib/utils';
 
 const faqs = [
@@ -15,48 +15,49 @@ const FAQ = () => {
     const [activeIndex, setActiveIndex] = useState(null);
 
     return (
-        <section className="py-20 bg-card border-b border-border relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <section className="py-12 md:py-16 bg-card relative overflow-hidden border-b border-border/50">
+            {/* Background decorative elements */}
+            <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="max-w-4xl mx-auto px-6 relative z-10 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                 <SectionHeader
                     badge="Questions & Answers"
                     title={<>Frequently Asked <span className="text-primary font-semibold">Questions</span></>}
                     subtitle="Got questions? We've got answers."
                     align="center"
-                    className="opacity-0 animate-fade-in-up"
-                    style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}
                 />
 
-                <div className="max-w-3xl mx-auto divide-y divide-border/60 border-t border-b border-border/60 mt-12 opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms', animationFillMode: 'forwards' }}>
+                <div className="mt-10 md:mt-12 space-y-3">
                     {faqs.map((faq, idx) => {
                         const isOpen = activeIndex === idx;
                         return (
-                            <div key={idx} className="py-2 transition-colors">
+                            <div key={idx} className="bg-background rounded-xl border border-border/60 overflow-hidden transition-colors">
                                 <button
-                                    className="w-full flex items-center justify-between py-5 text-left outline-none group"
+                                    className="w-full flex items-center justify-between p-4 md:p-5 text-left outline-none hover:bg-muted/30 transition-colors"
                                     onClick={() => setActiveIndex(isOpen ? null : idx)}
                                 >
                                     <span className={cn(
-                                        "text-[15px] sm:text-base font-heading font-medium tracking-tight transition-colors duration-250",
-                                        isOpen ? 'text-primary' : 'text-foreground group-hover:text-primary/90'
+                                        "text-sm md:text-base font-heading font-medium tracking-tight transition-colors",
+                                        isOpen ? 'text-primary' : 'text-foreground'
                                     )}>
                                         {faq.question}
                                     </span>
                                     <div className={cn(
-                                        "w-8 h-8 flex items-center justify-center rounded-full border transition-all duration-300 shrink-0",
-                                        isOpen 
-                                            ? 'bg-primary/10 border-primary/20 text-primary rotate-45' 
-                                            : 'bg-muted/50 border-border/60 text-muted-foreground group-hover:bg-muted group-hover:text-foreground'
+                                        "size-8 flex items-center justify-center rounded-lg transition-all duration-300 shrink-0",
+                                        isOpen
+                                            ? 'bg-primary/10 text-primary'
+                                            : 'bg-muted/50 text-muted-foreground'
                                     )}>
-                                        <Plus size={16} />
+                                        {isOpen ? <Minus size={18} /> : <Plus size={18} />}
                                     </div>
                                 </button>
 
                                 <div className={cn(
-                                    "grid transition-all duration-300 ease-in-out",
-                                    isOpen ? "grid-rows-[1fr] opacity-100 mb-5" : "grid-rows-[0fr] opacity-0"
+                                    "grid transition-all duration-500 ease-in-out overflow-hidden",
+                                    isOpen ? "grid-rows-[1fr] max-h-96" : "grid-rows-[0fr] max-h-0"
                                 )}>
-                                    <div className="overflow-hidden">
-                                        <p className="text-sm text-muted-foreground font-body leading-relaxed max-w-2xl">
+                                    <div className="min-w-0">
+                                        <p className="px-4 pb-4 text-sm text-muted-foreground font-body leading-relaxed">
                                             {faq.answer}
                                         </p>
                                     </div>
