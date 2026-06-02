@@ -7,19 +7,28 @@ import {
   Clock,
   Bookmark,
 } from "lucide-react";
-import { Avatar, Badge, Button, Card } from "@/components/ui";
+import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { memo, useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "../../services/api";
 import { toast } from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
-const TutorCard = memo(({ tutor, searchQuery = "" }) => {
+const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, initialIsSaved = null }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(initialIsSaved === true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    // If parent passed the saved state (grid fetched via /check-many), trust it.
+    if (initialIsSaved !== null) {
+      setIsSaved(initialIsSaved === true);
+      return;
+    }
     // Only check bookmark status for real MongoDB ObjectIDs (24 hex chars)
     const isRealId = /^[a-f\d]{24}$/i.test(tutor._id);
     if (user && isRealId) {
@@ -28,7 +37,7 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
         .then((res) => setIsSaved(res.data.isSaved))
         .catch(() => {});
     }
-  }, [user, tutor._id]);
+  }, [user, tutor._id, initialIsSaved]);
 
   const handleBookmark = async (e) => {
     e.stopPropagation();
@@ -69,22 +78,21 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
   const salary = tutor.expectedSalary || 5000;
   const experience = tutor.experience || "1-2 years";
 
-  const teachingStyles = [
-    "Explains concepts visually",
-    "Concept-based teaching",
-    "Problem-solving approach",
-    "Exam-oriented strategy",
-    "Patient & step-by-step",
-    "Focused on core fundamentals",
-  ];
-  const randomStyle =
-    teachingStyles[Math.floor(Math.random() * teachingStyles.length)];
-
   return (
     <Card
-      hover
-      className="group cursor-pointer h-full flex flex-col border-border rounded overflow-hidden hover:shadow-premium hover:border-primary/20 transition-all duration-300"
-      onClick={() => navigate(`/tutor/${_id}`)}
+      hover={!isBannerPreview}
+      className={cn(
+        "group h-full flex flex-col border border-border/80 bg-card rounded-2xl overflow-hidden hover:shadow-premium hover:border-primary/30 transition-all duration-300",
+        isBannerPreview ? "" : "cursor-pointer"
+      )}
+      onClick={isBannerPreview ? undefined : () => navigate(`/tutor/${_id}`)}
+      onKeyDown={isBannerPreview ? undefined : (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          navigate(`/tutor/${_id}`);
+        }
+      }}
+      role={isBannerPreview ? undefined : "button"}
+      tabIndex={isBannerPreview ? -1 : 0}
     >
       <div className="p-5 flex-grow">
         <div className="flex items-start gap-4">
@@ -94,7 +102,7 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
             size="md"
             gender={tutor.gender}
             verified={isVerified}
-            className="ring-2 ring-border group-hover:ring-primary/30 transition-all"
+            className="ring-2 ring-border group-hover:ring-primary/30 transition-all rounded-xl overflow-hidden"
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
@@ -107,6 +115,7 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
                 </p>
               </div>
               <button
+                type="button"
                 onClick={handleBookmark}
                 disabled={saving}
                 className="shrink-0 p-2 -mr-2 -mt-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
@@ -127,11 +136,11 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
 
         <div className="flex items-center gap-1.5 mt-4 pt-4 border-t border-border overflow-hidden w-full">
           <div className="flex items-center gap-1.5 overflow-hidden flex-1">
-            {subjects.slice(0, 3).map((sub, i) => (
+            {subjects.slice(0, 3).map((sub) => (
               <Badge
-                key={i}
+                key={`sub-${sub}`}
                 variant="subtle"
-                className="shrink-0 bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full text-[9px] font-medium border border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors truncate max-w-[85px]"
+                className="shrink-0 text-[9px] font-semibold px-2 py-0.5 rounded-md hover:bg-primary/10 hover:text-primary transition-colors max-w-[85px] truncate"
                 title={sub}
               >
                 <Highlight text={sub} query={searchQuery} />
@@ -148,49 +157,57 @@ const TutorCard = memo(({ tutor, searchQuery = "" }) => {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-y-1.5 gap-x-2 mt-4 pt-3 border-t border-border text-[9px] text-muted-foreground">
-          <span className="flex items-center gap-1.5">
+        <div className="grid grid-cols-2 gap-y-2.5 gap-x-3 mt-4 pt-4 border-t border-border text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-2">
             <BookOpen
-              size={10}
-              className="text-muted-foreground/60"
+              size={12}
+              className="text-primary/70"
             />
             <span className="truncate">{experience}</span>
           </span>
-          <span className="flex items-center gap-1.5">
-            <Star size={10} className="fill-amber-400 text-amber-400" />
+          <span className="flex items-center gap-2">
+            <Star size={12} className="fill-amber-400 text-amber-400" />
             <span className="font-semibold text-foreground">
               {rating.toFixed(1)}
             </span>
           </span>
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-2">
             <MapPin
-              size={10}
-              className="text-muted-foreground/60"
+              size={12}
+              className="text-primary/70"
             />
             <span className="truncate">
               {(location || "N/A").split(",")[0]}
             </span>
           </span>
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-2">
             <Clock
-              size={10}
-              className="text-muted-foreground/60"
+              size={12}
+              className="text-primary/70"
             />
             <span className="truncate">Fast Response</span>
           </span>
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-5 py-3 border-t border-border">
+      <div className="flex items-center justify-between px-5 py-4 border-t border-border bg-muted/10">
         <div className="flex items-baseline gap-1">
-          <span className="text-lg font-bold text-foreground tracking-tight">
+          <span className="text-xl font-bold text-foreground tracking-tight">
             ৳{salary.toLocaleString()}
           </span>
           <span className="text-xs text-muted-foreground font-medium">/mo</span>
         </div>
         <Button
+          type="button"
           size="sm"
-          className="font-semibold text-xs uppercase tracking-wider rounded"
+          variant="primary"
+          className="font-semibold text-xs tracking-wider pointer-events-auto"
+          onClick={(e) => {
+            if (isBannerPreview) {
+              e.stopPropagation();
+              navigate(`/tutor/${_id}`);
+            }
+          }}
         >
           View Profile
         </Button>

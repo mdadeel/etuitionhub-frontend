@@ -6,11 +6,15 @@ import toast from "react-hot-toast";
 import { formatRelativeTime } from "@/utils/dateUtils";
 import { useNavigate } from "react-router-dom";
 
-const TuitionCard = ({ tuition, className, searchQuery = "" }) => {
+const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = null }) => {
   const navigate = useNavigate();
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(initialIsSaved === true);
 
   useEffect(() => {
+    if (initialIsSaved !== null) {
+      setIsSaved(initialIsSaved === true);
+      return;
+    }
     const checkSaved = async () => {
       try {
         const res = await api.get(
@@ -22,7 +26,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "" }) => {
       }
     };
     if (tuition?._id) checkSaved();
-  }, [tuition._id]);
+  }, [tuition._id, initialIsSaved]);
 
   const handleBookmark = async (e) => {
     e.stopPropagation();
@@ -52,6 +56,13 @@ const TuitionCard = ({ tuition, className, searchQuery = "" }) => {
     <div
       className={`group flex flex-col p-5 bg-card border border-border rounded hover:shadow-premium hover:border-primary/20 transition-all duration-300 cursor-pointer ${className}`}
       onClick={handleViewDetails}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleViewDetails(e);
+        }
+      }}
+      role="button"
+      tabIndex={0}
     >
       <div className="flex justify-between items-start gap-4 mb-3">
         <div className="flex-1 min-w-0">
@@ -63,6 +74,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "" }) => {
           </span>
         </div>
         <button
+          type="button"
           onClick={handleBookmark}
           className="shrink-0 p-2 -mr-2 -mt-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
           title={isSaved ? "Unsave" : "Save"}
@@ -82,13 +94,13 @@ const TuitionCard = ({ tuition, className, searchQuery = "" }) => {
 
       <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-muted-foreground mb-5">
         <div className="flex items-center gap-1.5">
-          <GraduationCap className="w-4 h-4 text-muted-foreground/60" />
+          <GraduationCap className="size-4 text-muted-foreground/60" />
           <span className="truncate max-w-[140px]">
             {tuition.qualification || tuition.class_name || "N/A"}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <MapPin className="w-4 h-4 text-muted-foreground/60" />
+          <MapPin className="size-4 text-muted-foreground/60" />
           <span className="truncate max-w-[140px]">
             <Highlight
               text={(tuition.location || "N/A").split(",")[0]}
@@ -106,11 +118,12 @@ const TuitionCard = ({ tuition, className, searchQuery = "" }) => {
           <span className="text-xs text-muted-foreground font-medium">/mo</span>
         </div>
         <button
-          className="flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded transition-colors group/btn"
+          type="button"
+          className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-all active:scale-95 group/btn"
           onClick={handleViewDetails}
         >
           View Details
-          <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+          <ArrowRight className="size-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
         </button>
       </div>
     </div>

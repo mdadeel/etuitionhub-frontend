@@ -3,15 +3,23 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_URL from '../../config/api';
 
-const SearchEmptyState = ({ query, type = 'results', suggestions = [] }) => {
+const emptySuggestions = [];
+
+const SearchEmptyState = ({ query, type = 'results', suggestions = emptySuggestions }) => {
     const navigate = useNavigate();
     const [spellingSuggestions, setSpellingSuggestions] = useState([]);
+    const [prevQuery, setPrevQuery] = useState(null);
 
-    useEffect(() => {
+    // Sync state during render if query changes to avoid extra render cycle
+    if (query !== prevQuery) {
+        setPrevQuery(query);
         if (!query || query.length < 2) {
             setSpellingSuggestions([]);
-            return;
         }
+    }
+
+    useEffect(() => {
+        if (!query || query.length < 2) return;
         const controller = new AbortController();
         fetch(`${API_URL}/api/search/suggestions?q=${encodeURIComponent(query)}`, {
             signal: controller.signal,
@@ -24,7 +32,7 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = [] }) => {
 
     return (
         <div className="flex flex-col items-center justify-center py-16 px-4">
-            <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mb-4">
+            <div className="size-16 bg-background rounded-full flex items-center justify-center mb-4">
                 <SearchX size={28} className="text-[#94A3B8]" />
             </div>
             <h3 className="font-heading font-black text-lg text-foreground mb-1">

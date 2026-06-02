@@ -30,21 +30,21 @@ const Pagination = ({
                 for (let i = 1; i <= 4; i++) {
                     pages.push(i);
                 }
-                pages.push('...');
+                pages.push('...-end');
                 pages.push(totalPages);
             } else if (currentPage >= totalPages - 2) {
                 pages.push(1);
-                pages.push('...');
+                pages.push('...-start');
                 for (let i = totalPages - 3; i <= totalPages; i++) {
                     pages.push(i);
                 }
             } else {
                 pages.push(1);
-                pages.push('...');
+                pages.push('...-start');
                 pages.push(currentPage - 1);
                 pages.push(currentPage);
                 pages.push(currentPage + 1);
-                pages.push('...');
+                pages.push('...-end');
                 pages.push(totalPages);
             }
         }
@@ -59,31 +59,33 @@ const Pagination = ({
     return (
         <div className={cn("flex items-center justify-center gap-2 mt-8", className)}>
             <button
+                type="button"
                 onClick={_onPrev}
                 disabled={!_hasPrev}
                 className={cn(
-                    "p-2 rounded-md border border-border transition-colors",
+                    "p-2 rounded-xl border border-border transition-all duration-300",
                     _hasPrev
-                        ? "hover:bg-background text-muted-foreground"
-                        : "text-slate-300 cursor-not-allowed bg-background"
+                        ? "hover:bg-muted text-foreground hover:border-primary/30 active:scale-90 shadow-sm"
+                        : "text-muted-foreground/30 cursor-not-allowed bg-background border-border/40"
                 )}
             >
                 <ChevronLeft size={16} />
             </button>
 
             <div className="flex items-center gap-1">
-                {pageNumbers.map((page, index) => (
-                    <React.Fragment key={index}>
-                        {page === '...' ? (
-                            <span className="px-2 text-sm text-slate-400">...</span>
+                {pageNumbers.map((page) => (
+                    <React.Fragment key={`page-${page}`}>
+                        {String(page).startsWith('...') ? (
+                            <span className="px-2 text-sm font-bold text-muted-foreground/50 tracking-widest">...</span>
                         ) : (
                             <button
+                                type="button"
                                 onClick={() => onPageChange(page)}
                                 className={cn(
-                                    "min-w-[32px] h-8 px-2 rounded-md text-sm font-medium transition-colors",
+                                    "min-w-[36px] h-9 px-3 rounded-xl text-sm font-bold transition-all duration-300 active:scale-90",
                                     currentPage === page
-                                        ? "bg-blue-600 text-white"
-                                        : "text-muted-foreground hover:bg-muted"
+                                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent hover:border-border"
                                 )}
                             >
                                 {page}
@@ -94,13 +96,14 @@ const Pagination = ({
             </div>
 
             <button
+                type="button"
                 onClick={_onNext}
                 disabled={!_hasNext}
                 className={cn(
-                    "p-2 rounded-md border border-border transition-colors",
+                    "p-2 rounded-xl border border-border transition-all duration-300",
                     _hasNext
-                        ? "hover:bg-background text-muted-foreground"
-                        : "text-slate-300 cursor-not-allowed bg-background"
+                        ? "hover:bg-muted text-foreground hover:border-primary/30 active:scale-90 shadow-sm"
+                        : "text-muted-foreground/30 cursor-not-allowed bg-background border-border/40"
                 )}
             >
                 <ChevronRight size={16} />

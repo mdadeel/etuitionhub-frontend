@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { User, LogOut, Menu, X, Search, Bell, Sun, Moon } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
 import NotificationBell from "./NotificationBell";
+import Logo from "./Logo";
 import { toast } from "react-hot-toast";
 import Cookies from "js-cookie";
 import { cn } from "@/lib/utils";
@@ -150,25 +151,19 @@ const Navbar = () => {
       <div className="container-premium flex items-center justify-between h-full">
         {/* Left Section: Calm Academic Branding */}
         <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-sm">
-              <svg
-                className="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-            </div>
-            <span className="text-foreground font-heading text-lg tracking-tight hidden sm:block">
-              e-tuition<span className="text-[#2563EB]">BD</span>
-            </span>
+          <Link to="/" className="shrink-0">
+            <Logo 
+              boxSize="size-10" 
+              iconSize="size-6" 
+              textSize="text-xl" 
+              className="hidden sm:flex" 
+            />
+            <Logo 
+              boxSize="size-10" 
+              iconSize="size-6" 
+              showText={false} 
+              className="sm:hidden" 
+            />
           </Link>
 
           {/* Editorial Navigation - calm, intentional spacing */}
@@ -200,7 +195,7 @@ const Navbar = () => {
             className="w-full relative"
             data-tour="search-bar"
           >
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
               ref={searchInputRef}
               type="text"
@@ -270,7 +265,7 @@ const Navbar = () => {
                           onClick={() => setShowDropdown(false)}
                           className="flex items-center gap-3 px-4 py-2 hover:bg-background transition-colors"
                         >
-                          <div className="w-8 h-8 bg-background rounded-full flex items-center justify-center text-xs font-heading font-bold text-muted-foreground">
+                          <div className="size-8 bg-background rounded-full flex items-center justify-center text-xs font-heading font-bold text-muted-foreground">
                             {tutor.displayName?.charAt(0)}
                           </div>
                           <div>
@@ -301,7 +296,7 @@ const Navbar = () => {
                           onClick={() => setShowDropdown(false)}
                           className="flex items-center gap-3 px-4 py-2 hover:bg-background transition-colors"
                         >
-                          <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
+                          <div className="size-8 bg-muted rounded-lg flex items-center justify-center">
                             <span className="text-xs font-bold text-muted-foreground">
                               T
                             </span>
@@ -352,15 +347,15 @@ const Navbar = () => {
 
               {/* User Avatar with Dropdown */}
               <div className="relative group">
-                <div className="w-9 h-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300">
+                <div className="size-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300">
                   {user.photoURL ? (
                     <img
                       src={user.photoURL}
                       alt={user.displayName}
-                      className="h-full w-full object-cover"
+                      className="size-full object-cover"
                     />
                   ) : (
-                    <div className="h-full w-full flex items-center justify-center bg-background text-muted-foreground text-xs font-heading">
+                    <div className="size-full flex items-center justify-center bg-background text-muted-foreground text-xs font-heading">
                       {user.displayName?.charAt(0)}
                     </div>
                   )}
@@ -426,7 +421,7 @@ const Navbar = () => {
         <div className="lg:hidden absolute top-[100%] left-0 right-0 bg-background border-b border-border shadow-xl z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="container-premium py-5">
             <form onSubmit={handleSearch} className="mb-5 relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search tutors..."

@@ -47,9 +47,10 @@ const NotificationBell = () => {
         if (!notif.actions || notif.actions.length === 0) return null;
         return (
             <div className="flex gap-1.5 mt-1.5">
-                {notif.actions.map((action, idx) => (
+                {notif.actions.map((action) => (
                     <button
-                        key={idx}
+                        key={action.label}
+                        type="button"
                         onClick={() => handleAction(notif._id, action.action, action.link)}
                         className="flex items-center gap-1 text-[10px] font-heading font-bold uppercase tracking-wider text-[#2563EB] hover:text-[#1d4ed8] hover:underline transition-colors"
                     >
@@ -64,12 +65,13 @@ const NotificationBell = () => {
     return (
         <div className="relative" ref={dropdownRef}>
             <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className="p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition-colors relative"
             >
                 <Bell size={20} />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-bold bg-red-500 text-white rounded-full">
+                    <span className="absolute -top-1 -right-1 size-5 flex items-center justify-center text-[10px] font-bold bg-red-500 text-white rounded-full">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}

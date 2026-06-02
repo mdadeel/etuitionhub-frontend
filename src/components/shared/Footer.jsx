@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
+import Logo from './Logo';
 import { ShieldCheck, GraduationCap, Mail, Phone, MapPin, Heart } from 'lucide-react';
+import { FiGithub as Github, FiInstagram as Instagram, FiLinkedin as Linkedin } from 'react-icons/fi';
 
 const Footer = () => {
     return (
@@ -9,20 +11,48 @@ const Footer = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
                     {/* Brand Section - Warm, institutional */}
                     <div className="lg:col-span-4 space-y-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center">
-                                <GraduationCap className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-xl font-heading text-white tracking-tight">e-tuitionBD</span>
-                        </div>
+                        <Logo variant="dark-box" />
                         <p className="text-sm leading-relaxed text-[#9CA3AF] max-w-sm">
                             Connecting students with verified tutors across Bangladesh. Real educators, genuine results, and a platform built on trust.
                         </p>
                         
-                        {/* Trust Badge */}
-                        <div className="flex items-center gap-2.5 px-3 py-2 bg-[#1E293B] border border-[rgba(255,255,255,0.08)] rounded-lg">
-                            <ShieldCheck className="w-4 h-4 text-[#2563EB]" />
-                            <span className="text-xs font-medium text-[#9CA3AF]">Verified educational platform</span>
+                        <div className="flex flex-col gap-4">
+                            {/* Trust Badge */}
+                            <div className="flex items-center gap-2.5 px-3 py-2 bg-[#1E293B] border border-[rgba(255,255,255,0.08)] rounded-lg w-fit">
+                                <ShieldCheck className="size-4 text-[#2563EB]" />
+                                <span className="text-xs font-medium text-[#9CA3AF]">Verified educational platform</span>
+                            </div>
+
+                            {/* Social Links */}
+                            <div className="flex items-center gap-3">
+                                <a 
+                                    href="https://github.com/mdadeel" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="size-9 rounded-lg bg-[#1E293B] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#9CA3AF] hover:bg-[#2563EB] hover:text-white hover:border-[#2563EB] transition-all duration-300"
+                                    aria-label="GitHub"
+                                >
+                                    <Github className="size-4" />
+                                </a>
+                                <a 
+                                    href="https://linkedin.com/in/shahnawasadee1" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="size-9 rounded-lg bg-[#1E293B] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#9CA3AF] hover:bg-[#2563EB] hover:text-white hover:border-[#2563EB] transition-all duration-300"
+                                    aria-label="LinkedIn"
+                                >
+                                    <Linkedin className="size-4" />
+                                </a>
+                                <a 
+                                    href="https://instagram.com/shahnawas.adeel" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="size-9 rounded-lg bg-[#1E293B] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#9CA3AF] hover:bg-[#2563EB] hover:text-white hover:border-[#2563EB] transition-all duration-300"
+                                    aria-label="Instagram"
+                                >
+                                    <Instagram className="size-4" />
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -52,24 +82,24 @@ const Footer = () => {
                         <h4 className="text-sm font-heading text-white mb-5">Get in Touch</h4>
                         <div className="space-y-4">
                             <div className="flex items-start gap-3">
-                                <Mail className="w-5 h-5 text-[#2563EB] mt-0.5" />
+                                <Mail className="size-5 text-[#2563EB] mt-0.5" />
                                 <div>
                                     <p className="text-sm text-white mb-0.5">Email</p>
-                                    <p className="text-sm text-[#9CA3AF]">support@etuitionbd.com</p>
+                                    <p className="text-sm text-[#9CA3AF]">mdadeel125@etuitionbd.com</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Phone className="w-5 h-5 text-[#2563EB] mt-0.5" />
+                                <Phone className="size-5 text-[#2563EB] mt-0.5" />
                                 <div>
                                     <p className="text-sm text-white mb-0.5">Phone</p>
-                                    <p className="text-sm text-[#9CA3AF]">+880 1234-567890</p>
+                                    <p className="text-sm text-[#9CA3AF]">+880 15339-70377</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <MapPin className="w-5 h-5 text-[#2563EB] mt-0.5" />
+                                <MapPin className="size-5 text-[#2563EB] mt-0.5" />
                                 <div>
                                     <p className="text-sm text-white mb-0.5">Location</p>
-                                    <p className="text-sm text-[#9CA3AF]">Dhaka, Bangladesh</p>
+                                    <p className="text-sm text-[#9CA3AF]">Chittagong, Bangladesh</p>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +116,7 @@ const Footer = () => {
                     </p>
                     <div className="flex items-center gap-6">
                         <span className="text-sm text-[#6B7280]">Built with</span>
-                        <Heart className="w-4 h-4 text-[#2563EB]" />
+                        <Heart className="size-4 text-[#2563EB]" />
                         <span className="text-sm text-[#6B7280]">for education</span>
                     </div>
                 </div>

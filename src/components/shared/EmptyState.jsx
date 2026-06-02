@@ -37,7 +37,7 @@ const EmptyState = ({
             <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10"></div>
             
             <div className="relative z-10 flex flex-col items-center">
-                <div className="w-20 h-20 bg-background border border-border shadow-apple-sm rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                <div className="size-20 bg-background border border-border shadow-apple-sm rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
                     <SearchX size={32} className="text-muted-foreground group-hover:text-primary transition-colors duration-500" strokeWidth={1.5} />
                 </div>
                 

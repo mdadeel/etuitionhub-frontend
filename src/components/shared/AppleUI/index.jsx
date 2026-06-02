@@ -1,25 +1,24 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 /**
  * AppleCard: A sharp-edged card with strong borders and visual depth.
  */
 export const AppleCard = ({ children, className, hover = true, moveOnHover = false, glass = false, tonal = false, onClick, ...props }) => (
-    <motion.div 
-        whileHover={hover ? { y: moveOnHover ? -2 : 0, transition: { duration: 0.3, ease: 'easeOut' } } : {}}
+    <div 
         className={cn(
             "relative transition-all duration-300 rounded-none",
             tonal ? "bg-background border border-border/40" : "bg-card border border-border",
             glass && !tonal && "bg-card/90 backdrop-blur-md",
             hover && (tonal ? "hover:bg-muted" : "hover:border-[#2563EB]/40 hover:shadow-sm"),
+            hover && moveOnHover && "hover:-translate-y-0.5",
             className
         )}
         onClick={onClick}
         {...props}
     >
         {children}
-    </motion.div>
+    </div>
 );
 
 
@@ -32,6 +31,7 @@ export const AppleButton = ({
     variant = 'primary', 
     size = 'md',
     asChild = false,
+    type = 'button',
     ...props 
 }) => {
     const variants = {
@@ -65,6 +65,7 @@ export const AppleButton = ({
 
     return (
         <button 
+            type={type}
             className={combinedClassName}
             {...props}
         >

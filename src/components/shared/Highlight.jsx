@@ -10,13 +10,13 @@ const Highlight = ({ text = "", query = "" }) => {
       {parts.map((part, i) =>
         regex.test(part) ? (
           <mark
-            key={i}
+            key={`${i}-${part}`}
             className="bg-[#2563EB]/20 text-[#2563EB] rounded px-0.5"
           >
             {part}
           </mark>
         ) : (
-          <span key={i}>{part}</span>
+          <span key={`${i}-${part}`}>{part}</span>
         ),
       )}
     </>

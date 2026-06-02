@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useChat } from '../../contexts/ChatContext';
 import api from '../../services/api';
 import { MessageCircle, X, ArrowLeft, Edit, MessageSquare } from 'lucide-react';
-import { Avatar } from '@/components/ui';
+import { Avatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import ChatSidebarItem from '../chat/ChatSidebarItem';
@@ -273,9 +273,9 @@ const FloatingChat = () => {
                                 <ArrowLeft size={17} />
                             </button>
                             <div className="relative">
-                                <Avatar src={otherParticipant?.photoURL} alt={otherParticipant?.displayName} size="xs" className="w-8 h-8" />
+                                <Avatar src={otherParticipant?.photoURL} alt={otherParticipant?.displayName} size="xs" className="size-8" />
                                 {isOtherOnline && (
-                                    <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-card" />
+                                    <div className="absolute -bottom-0.5 -right-0.5 size-2.5 bg-green-500 rounded-full border-2 border-card" />
                                 )}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -343,14 +343,14 @@ const FloatingChat = () => {
                                 <div className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5 bg-background/40">
                                     {loading ? (
                                         <div className="h-full flex items-center justify-center">
-                                            <div className="w-6 h-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
+                                            <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
                                         </div>
                                     ) : messages.length === 0 ? (
                                         <div className="h-full flex flex-col items-center justify-center text-center py-8">
-                                            <div className="w-12 h-12 rounded-full overflow-hidden mb-3 border border-border">
+                                            <div className="size-12 rounded-full overflow-hidden mb-3 border border-border">
                                                 {otherParticipant?.photoURL
-                                                    ? <img src={otherParticipant.photoURL} className="w-full h-full object-cover" alt="" />
-                                                    : <div className="w-full h-full bg-muted" />
+                                                    ? <img src={otherParticipant.photoURL} className="size-full object-cover" alt="" />
+                                                    : <div className="size-full bg-muted" />
                                                 }
                                             </div>
                                             <p className="font-semibold text-sm text-foreground">{otherParticipant?.displayName}</p>
@@ -407,16 +407,16 @@ const FloatingChat = () => {
                                     {/* Typing Indicator */}
                                     {otherIsTyping && (
                                         <div className="flex items-end gap-1.5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                            <div className="w-5 h-5 rounded-full overflow-hidden shrink-0 border border-border/50 mb-0.5">
+                                            <div className="size-5 rounded-full overflow-hidden shrink-0 border border-border/50 mb-0.5">
                                                 {otherParticipant?.photoURL
-                                                    ? <img src={otherParticipant.photoURL} className="w-full h-full object-cover" alt="" />
-                                                    : <div className="w-full h-full bg-muted" />
+                                                    ? <img src={otherParticipant.photoURL} className="size-full object-cover" alt="" />
+                                                    : <div className="size-full bg-muted" />
                                                 }
                                             </div>
                                             <div className="bg-muted/80 border border-border/50 rounded-2xl rounded-bl-md px-3 py-2 flex items-center gap-1">
-                                                <span className="w-1.5 h-1.5 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                                <span className="w-1.5 h-1.5 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                                <span className="w-1.5 h-1.5 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                <span className="size-1.5 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                <span className="size-1.5 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                <span className="size-1.5 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                             </div>
                                         </div>
                                     )}
@@ -448,7 +448,7 @@ const FloatingChat = () => {
             {/* ── Floating Trigger Button ── */}
             <button
                 onClick={() => setIsFloatingOpen(!isFloatingOpen)}
-                className="w-14 h-14 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 relative"
+                className="size-14 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 relative"
                 title={isFloatingOpen ? "Close messages" : "Open messages"}
             >
                 <span className={cn(
@@ -466,7 +466,7 @@ const FloatingChat = () => {
 
                 {/* Unread Badge */}
                 {!isFloatingOpen && unreadTotal > 0 && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold shadow-sm animate-in zoom-in">
+                    <div className="absolute -top-1 -right-1 size-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold shadow-sm animate-in zoom-in">
                         {unreadTotal > 99 ? '99+' : unreadTotal}
                     </div>
                 )}
