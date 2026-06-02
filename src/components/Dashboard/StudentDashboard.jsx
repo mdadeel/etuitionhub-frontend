@@ -26,6 +26,15 @@ import FilterSelect from "../shared/FilterSelect";
 import { cn } from "@/lib/utils";
 import { BANGLADESH_DIVISIONS, MEDIUM_OPTIONS } from "../../utils/constants";
 
+const tabs = [
+  { id: "overview", label: "Overview", icon: Activity },
+  { id: "post-job", label: "Post Job", icon: Plus },
+  { id: "my-jobs", label: "My Requests", icon: Database },
+  { id: "applications", label: "Applications", icon: FileText },
+  { id: "booked", label: "Engagements", icon: UserCheck },
+  { id: "payments", label: "Payments", icon: Banknote },
+];
+
 /**
  * StudentDashboard Component — Refined Apple Aesthetic
  */
@@ -163,15 +172,6 @@ const StudentDashboard = () => {
     }
   };
 
-  const tabs = [
-    { id: "overview", label: "Overview", icon: Activity },
-    { id: "post-job", label: "Post Job", icon: Plus },
-    { id: "my-jobs", label: "My Requests", icon: Database },
-    { id: "applications", label: "Applications", icon: FileText },
-    { id: "booked", label: "Engagements", icon: UserCheck },
-    { id: "payments", label: "Payments", icon: Banknote },
-  ];
-
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
       <AppleHeader
@@ -189,6 +189,7 @@ const StudentDashboard = () => {
         <div className="flex items-center gap-1 bg-muted p-1 rounded-none border border-border w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
           {tabs.map((tab) => (
             <button
+              type="button"
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
@@ -219,7 +220,7 @@ const StudentDashboard = () => {
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             <AppleCard className="p-6 md:p-10 group" hover={false}>
-              <div className="w-12 h-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
+              <div className="size-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
                 <Database size={24} />
               </div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">
@@ -236,7 +237,7 @@ const StudentDashboard = () => {
             </AppleCard>
 
             <AppleCard className="p-6 md:p-10 group" hover={false}>
-              <div className="w-12 h-12 rounded-none bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
+              <div className="size-12 rounded-none bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
                 <FileText size={24} />
               </div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">
@@ -256,7 +257,7 @@ const StudentDashboard = () => {
               className="p-6 md:p-10 group col-span-2 lg:col-span-1"
               hover={false}
             >
-              <div className="w-12 h-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
+              <div className="size-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                 <UserCheck size={24} />
               </div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">
@@ -277,10 +278,10 @@ const StudentDashboard = () => {
       {/* Post Job Tab */}
       {activeTab === "post-job" && (
         <AppleCard className="p-8 md:p-12 max-w-4xl mx-auto relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-none -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
+          <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-none -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-10">
-              <div className="w-12 h-12 rounded-none bg-[#2563EB] text-white flex items-center justify-center shadow-lg shadow-[#2563EB]/20">
+              <div className="size-12 rounded-none bg-[#2563EB] text-white flex items-center justify-center shadow-lg shadow-[#2563EB]/20">
                 <Plus size={24} />
               </div>
               <div>
@@ -417,7 +418,7 @@ const StudentDashboard = () => {
               >
                 {submitting ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                    <RefreshCw className="size-4 animate-spin mr-2" />
                     Publishing...
                   </>
                 ) : (
@@ -529,7 +530,7 @@ const StudentDashboard = () => {
                 key={app._id}
                 className="p-4 md:p-8 group relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#2563EB]/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
+                <div className="absolute top-0 right-0 size-32 bg-[#2563EB]/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
                 <div className="relative z-10">
                   <div className="flex justify-between items-start mb-6">
                     <div>
