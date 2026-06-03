@@ -35,6 +35,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import LoginRequiredModal from '../components/shared/LoginRequiredModal';
 
 const TuitionDetails = () => {
     const { id } = useParams();
@@ -44,6 +45,7 @@ const TuitionDetails = () => {
     const [tuition, setTuition] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     const [similarTuitions, setSimilarTuitions] = useState([]);
 
     const [formData, setFormData] = useState({
@@ -89,8 +91,7 @@ const TuitionDetails = () => {
         e.preventDefault();
 
         if (!user || !dbUser) {
-            toast.error('Please login first.');
-            navigate('/login');
+            setShowLoginModal(true);
             return;
         }
 
@@ -199,6 +200,7 @@ const TuitionDetails = () => {
     }
 
     return (
+        <>
         <div className="bg-background min-h-screen py-8">
             <div className="max-w-6xl mx-auto px-4">
                 {/* Back Link */}
@@ -444,6 +446,8 @@ const TuitionDetails = () => {
                 </div>
             </div>
         </div>
+        <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="apply for this tuition" />
+        </>
     );
 };
 

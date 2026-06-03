@@ -23,6 +23,7 @@ import {
     GraduationCap
 } from 'lucide-react';
 import SEO from '../components/shared/SEO';
+import LoginRequiredModal from '../components/shared/LoginRequiredModal';
 
 const TutorDetails = () => {
     const { id } = useParams();
@@ -38,6 +39,7 @@ const TutorDetails = () => {
     const [messageText, setMessageText] = useState('');
     const [sendingMessage, setSendingMessage] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -156,6 +158,10 @@ const TutorDetails = () => {
     };
 
     const handleSave = async () => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
         if (!tutor) return;
         try {
             if (isSaved) {
@@ -264,6 +270,7 @@ const TutorDetails = () => {
     const firstName = tutor.displayName ? tutor.displayName.split(' ')[0] : 'Tutor';
 
     return (
+        <>
         <div className="bg-background min-h-screen py-8">
             <SEO 
                 title={`Book ${tutor.displayName} - Expert Tutor`}
@@ -568,6 +575,8 @@ const TutorDetails = () => {
                 </div>
             )}
         </div>
+        <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="save this tutor" />
+        </>
     );
 };
 

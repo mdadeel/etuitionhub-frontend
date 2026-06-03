@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import LoginRequiredModal from "../components/shared/LoginRequiredModal";
 import {
   BANGLADESH_DIVISIONS,
   SUBJECT_OPTIONS,
@@ -40,6 +41,7 @@ const BecomeTutor = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [name, setName] = useState(
     dbUser?.displayName || user?.displayName || "",
   );
@@ -79,7 +81,7 @@ const BecomeTutor = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      navigate("/register");
+      setShowLoginModal(true);
       return;
     }
 
@@ -476,6 +478,7 @@ const BecomeTutor = () => {
           </div>
         )}
       </div>
+      <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="become a tutor" />
     </div>
   );
 };

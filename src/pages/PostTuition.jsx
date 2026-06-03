@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Send, ArrowLeft, GraduationCap } from "lucide-react";
+import LoginRequiredModal from "../components/shared/LoginRequiredModal";
 
 const PostTuition = () => {
   const { user, loading: authLoading } = useAuth();
@@ -28,6 +29,7 @@ const PostTuition = () => {
   const [daysPerWeek, setDaysPerWeek] = useState("");
   const [availableDays, setAvailableDays] = useState([]);
   const [description, setDescription] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const toggleDay = (day) => {
     setAvailableDays((prev) =>
@@ -38,8 +40,7 @@ const PostTuition = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      toast.error("Please login to post a tuition");
-      navigate("/login");
+      setShowLoginModal(true);
       return;
     }
 
@@ -338,6 +339,7 @@ const PostTuition = () => {
           </form>
         )}
       </div>
+      <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="post a tuition" />
     </div>
   );
 };

@@ -5,10 +5,14 @@ import api from "../../services/api";
 import toast from "react-hot-toast";
 import { formatRelativeTime } from "@/utils/dateUtils";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import LoginRequiredModal from "./LoginRequiredModal";
 
 const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = null }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(initialIsSaved === true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     if (initialIsSaved !== null) {
@@ -30,6 +34,10 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
 
   const handleBookmark = async (e) => {
     e.stopPropagation();
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
     try {
       if (isSaved) {
         await api.delete(`/api/bookmarks/tuitions/${tuition._id}`);
@@ -53,6 +61,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
   };
 
   return (
+    <>
     <div
       className={`group flex flex-col p-5 bg-card border border-border rounded hover:shadow-premium hover:border-primary/20 transition-all duration-300 cursor-pointer ${className}`}
       onClick={handleViewDetails}
@@ -127,6 +136,8 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
         </button>
       </div>
     </div>
+    <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="save tuitions" />
+    </>
   );
 };
 

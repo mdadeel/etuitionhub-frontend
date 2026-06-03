@@ -16,12 +16,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import api from "../../services/api";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import LoginRequiredModal from "./LoginRequiredModal";
 
 const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, initialIsSaved = null }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(initialIsSaved === true);
   const [saving, setSaving] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     // If parent passed the saved state (grid fetched via /check-many), trust it.
@@ -42,7 +44,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
   const handleBookmark = async (e) => {
     e.stopPropagation();
     if (!user) {
-      toast.error("Please login to save tutors");
+      setShowLoginModal(true);
       return;
     }
     setSaving(true);
@@ -79,6 +81,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
   const experience = tutor.experience || "1-2 years";
 
   return (
+    <>
     <Card
       hover={!isBannerPreview}
       className={cn(
@@ -213,6 +216,8 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
         </Button>
       </div>
     </Card>
+    <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="save tutors" />
+    </>
   );
 });
 

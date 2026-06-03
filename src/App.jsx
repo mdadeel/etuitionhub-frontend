@@ -41,7 +41,6 @@ import PaymentHistory from "./pages/PaymentHistory";
 import AdminLogin from "./pages/AdminLogin";
 import PasswordReset from "./pages/PasswordReset";
 import SearchPage from "./pages/SearchPage";
-import OnboardingTour from "./components/shared/OnboardingTour";
 import FloatingChat from "./components/shared/FloatingChat";
 import VercelAlert from "./components/shared/VercelAlert";
 import { cn } from "@/lib/utils";
@@ -224,7 +223,6 @@ let App = () => {
               <ConditionalFooter />
               <ConditionalMobileBottomNav />
               <ConditionalFloatingChat />
-              <OnboardingTour />
               <Toaster position="top-right" />
               <ToastViewport />
             </div>
