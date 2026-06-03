@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5174',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
@@ -17,14 +17,8 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'cd ../etuitionhub--backend && npm run dev',
-      url: 'http://localhost:5000/api/auth',
-      reuseExistingServer: true,
-      timeout: 60_000,
-    },
-    {
-      command: 'npm run dev',
-      url: 'http://localhost:5173',
+      command: 'npx vite --port 5174 --host',
+      url: 'http://localhost:5174',
       reuseExistingServer: true,
       timeout: 60_000,
     },
