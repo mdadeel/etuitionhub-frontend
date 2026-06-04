@@ -17,6 +17,10 @@ import api from "../../services/api";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import LoginRequiredModal from "./LoginRequiredModal";
+import TrustBadges from './TrustBadges';
+import ResponseTimeIndicator from './ResponseTimeIndicator';
+import WhatsAppShareButton from './WhatsAppShareButton';
+import PriceBadge from './PriceBadge';
 
 const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, initialIsSaved = null }) => {
   const navigate = useNavigate();
@@ -191,6 +195,18 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             <span className="truncate">Fast Response</span>
           </span>
         </div>
+
+        <div className="mt-3 space-y-1.5">
+          <TrustBadges tutor={tutor} />
+          <ResponseTimeIndicator tutor={tutor} />
+          {tutor.expectedSalary && (
+            <PriceBadge
+              pricePerSession={tutor.expectedSalary}
+              pricePerMonth={tutor.expectedSalary * 8}
+              showBoth
+            />
+          )}
+        </div>
       </div>
 
       <div className="flex items-center justify-between px-5 py-4 border-t border-border bg-muted/10">
@@ -214,6 +230,9 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
         >
           View Profile
         </Button>
+        <div className="mt-3 pt-3 border-t border-border/50 flex justify-end">
+          <WhatsAppShareButton tutor={tutor} />
+        </div>
       </div>
     </Card>
     <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="save tutors" />
