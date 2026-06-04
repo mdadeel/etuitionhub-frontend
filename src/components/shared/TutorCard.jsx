@@ -201,35 +201,36 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           <ResponseTimeIndicator tutor={tutor} />
           {tutor.expectedSalary && (
             <PriceBadge
-              pricePerSession={tutor.expectedSalary}
-              pricePerMonth={tutor.expectedSalary * 8}
-              showBoth
+              pricePerMonth={tutor.expectedSalary}
+              showBoth={false}
             />
           )}
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-5 py-4 border-t border-border bg-muted/10">
-        <div className="flex items-baseline gap-1">
-          <span className="text-xl font-bold text-foreground tracking-tight">
-            ৳{salary.toLocaleString()}
-          </span>
-          <span className="text-xs text-muted-foreground font-medium">/mo</span>
+      <div className="px-5 py-4 border-t border-border bg-muted/10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-1">
+            <span className="text-xl font-bold text-foreground tracking-tight">
+              ৳{salary.toLocaleString()}
+            </span>
+            <span className="text-xs text-muted-foreground font-medium">/mo</span>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="primary"
+            className="font-semibold text-xs tracking-wider pointer-events-auto"
+            onClick={(e) => {
+              if (isBannerPreview) {
+                e.stopPropagation();
+                navigate(`/tutor/${_id}`);
+              }
+            }}
+          >
+            View Profile
+          </Button>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="primary"
-          className="font-semibold text-xs tracking-wider pointer-events-auto"
-          onClick={(e) => {
-            if (isBannerPreview) {
-              e.stopPropagation();
-              navigate(`/tutor/${_id}`);
-            }
-          }}
-        >
-          View Profile
-        </Button>
         <div className="mt-3 pt-3 border-t border-border/50 flex justify-end">
           <WhatsAppShareButton tutor={tutor} />
         </div>
