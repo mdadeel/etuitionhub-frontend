@@ -5,7 +5,6 @@
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-4-010101?style=flat-square&logo=socket.io)](https://socket.io/)
 [![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?style=flat-square&logo=firebase)](https://firebase.google.com/)
-[![Stripe](https://img.shields.io/badge/Stripe-22-008CDD?style=flat-square&logo=stripe)](https://stripe.com/)
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-0055FF?style=flat-square&logo=framer)](https://www.framer.com/motion/)
 [![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](LICENSE)
 
@@ -50,7 +49,7 @@ Tuition marketplace for Bangladesh. Connects students with verified tutors acros
 | `/dashboard/tuitions` | **Tuitions** | Approve/reject/manage posts (admin) |
 | `/dashboard/verifications` | **Verifications** | Review tutor documents (admin) |
 | `/dashboard/settings` | **Settings** | Platform settings (admin) |
-| `/checkout/:id` | **Checkout** | Multi-method payment (Stripe, bKash, Nagad, Rocket, Bank) |
+| `/checkout/:id` | **Checkout** | Multi-method payment (bKash, Nagad, Rocket, Bank) — see payment.md |
 | `/session/:id` | **Session Room** | WebRTC video/audio calls with simple-peer, text chat |
 | `/payment-success` | **Payment Success** | Payment confirmation |
 
@@ -84,10 +83,10 @@ Socket.IO-powered messaging system:
 
 ### Payment
 
-- **Stripe**: Instant card payments
 - **bKash / Nagad / Rocket**: Manual transaction ID entry with admin verification
 - **Bank Transfer**: Manual verification flow
 - **Admin verification queue**: Review, approve, or reject payments
+- See `payment.md` for the full manual-payment flow
 
 ### Avatars
 
@@ -141,7 +140,7 @@ i18n foundation with English and Bengali translations (expandable via JSON local
 | **Icons** | lucide-react, react-icons |
 | **Auth** | Firebase 12 (Auth + Storage), js-cookie |
 | **Real-time** | socket.io-client |
-| **Payments** | @stripe/stripe-js |
+| **Payments** | Manual bKash/Nagad (see payment.md) |
 | **Video** | simple-peer (WebRTC) |
 | **Animations** | framer-motion, GSAP, AOS, react-countup |
 | **Forms** | react-hook-form |
@@ -176,4 +175,3 @@ npm run lint   # Lint check
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase |
 | `VITE_FIREBASE_APP_ID` | Firebase |
 | `VITE_API_URL` | Backend URL (default `http://localhost:5000`) |
-| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe payments |
