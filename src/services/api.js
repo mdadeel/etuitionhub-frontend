@@ -3,6 +3,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import API_URL from '../config/api';
+import { AUTH_COOKIE_OPTIONS } from '../utils/cookieOptions';
 
 const api = axios.create({
     baseURL: API_URL,
@@ -54,14 +55,14 @@ api.interceptors.response.use(
             try {
                 const response = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
                 const { token: newToken } = response.data;
-                Cookies.set('token', newToken);
+                Cookies.set('token', newToken, AUTH_COOKIE_OPTIONS);
                 processQueue(null, newToken);
                 originalRequest.headers.Authorization = `Bearer ${newToken}`;
                 return api(originalRequest);
             } catch (refreshError) {
                 processQueue(refreshError, null);
-                Cookies.remove('token');
-                Cookies.remove('refreshToken');
+                Cookies.remove('token', { path: '/' });
+                Cookies.remove('refreshToken', { path: '/' });
                 if (!window.location.pathname.includes('/login')) {
                     window.location.href = '/login?expired=true';
                 }
@@ -73,8 +74,8 @@ api.interceptors.response.use(
 
         // Handle other errors
         if (status === 401) {
-            Cookies.remove('token');
-            Cookies.remove('refreshToken');
+            Cookies.remove('token', { path: '/' });
+            Cookies.remove('refreshToken', { path: '/' });
             if (!window.location.pathname.includes('/login')) {
                 window.location.href = '/login?expired=true';
             }

@@ -1,20 +1,48 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Search, LayoutDashboard, User } from 'lucide-react';
+import { Home, Search, LayoutDashboard, User, Compass } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '../../contexts/AuthContext';
 
-const navItems = [
+const ANON_ITEMS = [
+    { icon: Home, label: 'Home', path: '/' },
+    { icon: Search, label: 'Search', path: '/tuitions' },
+    { icon: LayoutDashboard, label: 'Login', path: '/login' },
+    { icon: User, label: 'Sign Up', path: '/register' },
+];
+
+const STUDENT_ITEMS = [
     { icon: Home, label: 'Home', path: '/' },
     { icon: Search, label: 'Search', path: '/tuitions' },
     { icon: LayoutDashboard, label: 'Dash', path: '/dashboard' },
     { icon: User, label: 'Profile', path: '/dashboard/profile' },
 ];
 
+const TUTOR_ITEMS = [
+    { icon: Home, label: 'Home', path: '/' },
+    { icon: Compass, label: 'Browse', path: '/tutors' },
+    { icon: LayoutDashboard, label: 'Dash', path: '/dashboard' },
+    { icon: User, label: 'Profile', path: '/dashboard/profile' },
+];
+
 /**
  * MobileBottomNav Component - Provides a fixed bottom navigation for mobile users.
+ * Adapts items based on the user's role (anonymous, student, tutor, admin).
  * Adheres to thumb-zone design principles.
  */
 const MobileBottomNav = () => {
+    const { user, dbUser, loading } = useAuth();
+
+    let navItems = ANON_ITEMS;
+    if (!loading && user) {
+        const role = dbUser?.role?.toLowerCase();
+        if (role === 'tutor') {
+            navItems = TUTOR_ITEMS;
+        } else {
+            navItems = STUDENT_ITEMS;
+        }
+    }
+
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-card/80 backdrop-blur-2xl border-t border-border pb-[env(safe-area-inset-bottom)] md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
             <div className="flex items-center justify-around h-16">
@@ -24,8 +52,8 @@ const MobileBottomNav = () => {
                         to={item.path}
                         className={({ isActive }) => cn(
                             "flex flex-col items-center justify-center size-full gap-1 transition-all duration-300",
-                            isActive 
-                                ? "text-blue-600 scale-105" 
+                            isActive
+                                ? "text-blue-600 scale-105"
                                 : "text-slate-400 hover:text-muted-foreground"
                         )}
                     >

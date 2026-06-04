@@ -85,6 +85,15 @@ const BecomeTutor = () => {
       return;
     }
 
+    if (userRole === "tutor") {
+      toast(
+        "You are already a tutor. Update your profile from the dashboard instead.",
+        { icon: "ℹ️" },
+      );
+      navigate("/dashboard/my-profile");
+      return;
+    }
+
     if (
       !name ||
       !phone ||
@@ -188,8 +197,8 @@ const BecomeTutor = () => {
               applications from your dashboard.
             </p>
             <Button asChild size="lg" className="px-8">
-              <Link to="/dashboard" className="gap-2">
-                Go to Dashboard <ArrowRight size={18} />
+              <Link to="/dashboard/my-profile" className="gap-2">
+                Update Profile <ArrowRight size={18} />
               </Link>
             </Button>
           </div>

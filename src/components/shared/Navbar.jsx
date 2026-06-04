@@ -15,7 +15,7 @@ import API_URL from "../../config/api";
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, userRole, setLoading } = useAuth();
+  const { user, logout, userRole } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,12 +123,10 @@ const Navbar = () => {
       Cookies.set("token", "");
       toast.dismiss(toastId);
       toast.success("Session ended.");
-      setLoading(false);
       setTimeout(() => navigate("/login"), 500);
     } catch (error) {
       toast.error(`Error: ${error.message}`);
       toast.dismiss(toastId);
-      setLoading(false);
     }
   };
 

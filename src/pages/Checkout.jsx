@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, Navigate } from "react-router-dom"
 import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
 import api from '../services/api';
@@ -34,8 +34,9 @@ const isDemoMethod = (methodId) => ['bkash', 'nagad', 'rocket'].includes(methodI
  */
 const Checkout = () => {
     const { id } = useParams();
-    const { user } = useAuth();
+    const { user, dbUser, loading: authLoading } = useAuth();
     const navigate = useNavigate();
+    const role = dbUser?.role?.toLowerCase();
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
@@ -118,6 +119,10 @@ const Checkout = () => {
             setSubmitting(false);
         }
     };
+
+    if (authLoading) return <LoadingSpinner />;
+    if (!user) return <Navigate to="/login" replace />;
+    if (role === "tutor") return <Navigate to="/dashboard" replace />;
 
     if (loading && !application) return <LoadingSpinner />;
 

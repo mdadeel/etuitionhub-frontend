@@ -203,11 +203,31 @@ const Dashboard = () => {
                 }
               />
 
-              <Route path="payments" element={<StudentPayments />} />
-              <Route path="receipts" element={<MyReceipts />} />
+              <Route
+                path="payments"
+                element={
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <StudentPayments />
+                }
+              />
+              <Route
+                path="receipts"
+                element={
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <MyReceipts />
+                }
+              />
 
-              <Route path="saved-tutors" element={<SavedTutors />} />
-              <Route path="saved-tuitions" element={<SavedTuitions />} />
+              <Route
+                path="saved-tutors"
+                element={
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <SavedTutors />
+                }
+              />
+              <Route
+                path="saved-tuitions"
+                element={
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <SavedTuitions />
+                }
+              />
               <Route path="notifications" element={<NotificationPage />} />
 
               <Route path="messages" element={<ChatInterface />} />

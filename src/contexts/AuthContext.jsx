@@ -340,12 +340,9 @@ export const AuthProvider = ({ children }) => {
     let authInfo = {
         user,
         userData,
-        setUser,
         dbUser,
         userRole,
-        setUserRole,
         loading,
-        setLoading,
         register,
         updateUserProfile,
         refreshUserFromDB,

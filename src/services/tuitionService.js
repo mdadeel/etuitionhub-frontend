@@ -57,10 +57,12 @@ export const tuitionService = {
     },
 
     /**
-     * Update tuition status (admin only)
+     * Update tuition status (admin only).
+     * Uses the dedicated admin-only PATCH /:id/status route (enforces adminMiddleware)
+     * rather than the generic PATCH /:id which would bypass the admin gate.
      */
     updateStatus: async (id, status) => {
-        const response = await api.patch(`/api/tuitions/${id}`, { status });
+        const response = await api.patch(`/api/tuitions/${id}/status`, { status });
         return response.data;
     }
 };

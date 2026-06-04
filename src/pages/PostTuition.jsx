@@ -17,7 +17,8 @@ import { Send, ArrowLeft, GraduationCap } from "lucide-react";
 import LoginRequiredModal from "../components/shared/LoginRequiredModal";
 
 const PostTuition = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, dbUser, loading: authLoading } = useAuth();
+  const role = dbUser?.role?.toLowerCase();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [subject, setSubject] = useState("");
@@ -41,6 +42,13 @@ const PostTuition = () => {
     e.preventDefault();
     if (!user) {
       setShowLoginModal(true);
+      return;
+    }
+
+    if (role === "tutor") {
+      toast.error(
+        "Tutors cannot post tuitions. Switch to student mode or use a student account.",
+      );
       return;
     }
 

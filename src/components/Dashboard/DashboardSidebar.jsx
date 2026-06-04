@@ -16,6 +16,7 @@ import {
   ArrowDownToLine,
   Settings,
   History,
+  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -40,6 +41,7 @@ const DashboardSidebar = ({ role }) => {
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { path: "/dashboard/profile", label: "My Profile", icon: User },
     { path: "/dashboard/notifications", label: "Notifications", icon: Bell },
+    { path: "/dashboard/messages", label: "Messages", icon: MessageSquare },
   ];
 
   if (role?.toLowerCase() === "admin") {
@@ -83,11 +85,6 @@ const DashboardSidebar = ({ role }) => {
       path: "/dashboard/withdraw",
       label: "Withdraw",
       icon: ArrowDownToLine,
-    });
-    menuItems.push({
-      path: "/dashboard/receipts",
-      label: "Receipts",
-      icon: FileText,
     });
   } else {
     menuItems.push({
