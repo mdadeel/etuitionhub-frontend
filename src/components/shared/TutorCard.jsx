@@ -18,9 +18,6 @@ import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import LoginRequiredModal from "./LoginRequiredModal";
 import TrustBadges from './TrustBadges';
-import ResponseTimeIndicator from './ResponseTimeIndicator';
-import WhatsAppShareButton from './WhatsAppShareButton';
-import PriceBadge from './PriceBadge';
 
 const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, initialIsSaved = null }) => {
   const navigate = useNavigate();
@@ -198,42 +195,30 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
 
         <div className="mt-3 space-y-1.5">
           <TrustBadges tutor={tutor} />
-          <ResponseTimeIndicator tutor={tutor} />
-          {tutor.expectedSalary && (
-            <PriceBadge
-              pricePerMonth={tutor.expectedSalary}
-              showBoth={false}
-            />
-          )}
         </div>
       </div>
 
-      <div className="px-5 py-4 border-t border-border bg-muted/10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-baseline gap-1">
-            <span className="text-xl font-bold text-foreground tracking-tight">
-              ৳{salary.toLocaleString()}
-            </span>
-            <span className="text-xs text-muted-foreground font-medium">/mo</span>
-          </div>
-          <Button
-            type="button"
-            size="sm"
-            variant="primary"
-            className="font-semibold text-xs tracking-wider pointer-events-auto"
-            onClick={(e) => {
-              if (isBannerPreview) {
-                e.stopPropagation();
-                navigate(`/tutor/${_id}`);
-              }
-            }}
-          >
-            View Profile
-          </Button>
+      <div className="flex items-center justify-between px-5 py-4 border-t border-border bg-muted/10">
+        <div className="flex items-baseline gap-1">
+          <span className="text-xl font-bold text-foreground tracking-tight">
+            ৳{salary.toLocaleString()}
+          </span>
+          <span className="text-xs text-muted-foreground font-medium">/mo</span>
         </div>
-        <div className="mt-3 pt-3 border-t border-border/50 flex justify-end">
-          <WhatsAppShareButton tutor={tutor} />
-        </div>
+        <Button
+          type="button"
+          size="sm"
+          variant="primary"
+          className="font-semibold text-xs tracking-wider pointer-events-auto"
+          onClick={(e) => {
+            if (isBannerPreview) {
+              e.stopPropagation();
+              navigate(`/tutor/${_id}`);
+            }
+          }}
+        >
+          View Profile
+        </Button>
       </div>
     </Card>
     <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="save tutors" />

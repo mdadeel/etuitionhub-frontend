@@ -65,7 +65,9 @@ const ConditionalFooter = () => {
   const { pathname } = useLocation();
   const isDashboard = pathname.startsWith("/dashboard");
   const isSession = pathname.startsWith("/session");
-  if (isDashboard || isSession) return null;
+  const isTutors = pathname.startsWith("/tutors");
+  const isTuitions = pathname.startsWith("/tuitions");
+  if (isDashboard || isSession || isTutors || isTuitions) return null;
   return <Footer />;
 };
 

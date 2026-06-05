@@ -18,12 +18,12 @@ import {
     Award,
     Send,
     Heart,
-    Briefcase,
-    Clock,
     GraduationCap
 } from 'lucide-react';
 import SEO from '../components/shared/SEO';
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
+import ResponseTimeIndicator from '../components/shared/ResponseTimeIndicator';
+import WhatsAppShareButton from '../components/shared/WhatsAppShareButton';
 
 const TutorDetails = () => {
     const { id } = useParams();
@@ -483,34 +483,17 @@ const TutorDetails = () => {
                                         <Heart size={16} className={isSaved ? 'fill-primary' : ''} />
                                         {isSaved ? 'Saved' : 'Save Profile'}
                                     </button>
+
+                                    <WhatsAppShareButton tutor={tutor} className="w-full justify-center py-2.5 text-sm" />
                                 </div>
 
                                 {/* Verified Profile section removed as per request */}
                             </div>
                         </div>
 
-                        {/* Quick Info */}
+                        {/* Activity */}
                         <div className="bg-card p-4 rounded-lg border border-border">
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="size-8 bg-muted flex items-center justify-center text-muted-foreground rounded-lg">
-                                        <Briefcase size={14} />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-muted-foreground">Response Time</p>
-                                        <p className="text-sm font-medium text-foreground">Under 2 hours</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="size-8 bg-muted flex items-center justify-center text-muted-foreground rounded-lg">
-                                        <Clock size={14} />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-muted-foreground">Active Status</p>
-                                        <p className="text-sm font-medium text-foreground">Recently Active</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <ResponseTimeIndicator tutor={tutor} />
                         </div>
                     </div>
                 </div>

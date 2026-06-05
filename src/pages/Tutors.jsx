@@ -17,7 +17,6 @@ import SaveSearchButton from "../components/shared/SaveSearchButton";
 import api from "../services/api";
 import { cn } from "@/lib/utils";
 import SEO from '../components/shared/SEO';
-import Pagination from "../components/shared/Pagination";
 
 const Tutors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -92,6 +91,17 @@ const Tutors = () => {
     if (sort) setSortBy(sort);
   }, []);
 
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useCallback(node => {
+    if (loading || !hasMore) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prev => prev + 1);
+      }
+    }, { threshold: 1.0 });
+    if (node) observer.observe(node);
+  }, [loading, hasMore]);
+
   useEffect(() => {
     const fetchTutors = async () => {
       setLoading(true);
@@ -120,8 +130,9 @@ const Tutors = () => {
         const paginationData = responseData.pagination || null;
         const filterOptions = responseData.filterOptions || null;
 
-        setTutors(Array.isArray(tutorsData) ? tutorsData : []);
+        setTutors(prev => page === 1 ? (Array.isArray(tutorsData) ? tutorsData : []) : [...prev, ...(Array.isArray(tutorsData) ? tutorsData : [])]);
         setPagination(paginationData);
+        setHasMore(paginationData ? page < paginationData.pages : false);
 
         if (filterOptions) {
           if (filterOptions.subjects) {
@@ -211,15 +222,15 @@ const Tutors = () => {
   };
 
   return (
-    <div className="bg-background text-foreground min-h-screen">
+    <div className="bg-background text-foreground lg:h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
       <SEO 
         title="Find the Best Verified Tutors" 
         description="Browse and connect with highly qualified, verified home and online tutors across Bangladesh. Select by class, subject, location, and monthly budget."
         keywords="tutor, find tutors, verified tutors, bangladesh tutor, home tuition, online study"
       />
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col flex-1 min-h-0 w-full">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 shrink-0">
           <div>
             <h1 className="text-2xl font-heading text-foreground tracking-tight leading-none mb-2">
               Verified <span className="text-[#2563EB]">Tutors.</span>
@@ -248,7 +259,7 @@ const Tutors = () => {
         </div>
 
         {/* Mobile Search Bar */}
-        <div className="lg:hidden mb-6">
+        <div className="lg:hidden mb-6 shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
@@ -261,7 +272,7 @@ const Tutors = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div className="grid lg:grid-cols-4 gap-6 flex-1 min-h-0 overflow-hidden">
           {/* Mobile Filters Trigger */}
           <button
             onClick={() => setIsMobileFiltersOpen(true)}
@@ -286,7 +297,7 @@ const Tutors = () => {
           {/* Sidebar Filters */}
           <aside
             className={cn(
-              "lg:col-span-1",
+              "lg:col-span-1 h-full",
               "fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
               isMobileFiltersOpen
                 ? "opacity-100"
@@ -295,7 +306,7 @@ const Tutors = () => {
           >
             <div
               className={cn(
-                "bg-card w-full max-w-none h-[85vh] absolute bottom-0 lg:h-auto p-6 lg:p-4 lg:rounded-2xl lg:border lg:border-border lg:sticky lg:top-20 lg:w-full lg:h-auto lg:shadow-sm transition-transform duration-300 rounded-t-3xl lg:rounded-2xl overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]",
+                "bg-card w-full max-w-none h-[85vh] absolute bottom-0 lg:h-full p-6 lg:p-4 lg:rounded-2xl lg:border lg:border-border lg:w-full lg:shadow-sm transition-transform duration-300 rounded-t-3xl lg:rounded-2xl overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)] custom-scrollbar",
                 isMobileFiltersOpen
                   ? "translate-y-0"
                   : "translate-y-full lg:translate-y-0",
@@ -405,7 +416,7 @@ const Tutors = () => {
           </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-3 relative pb-24 md:pb-0">
+          <main className="lg:col-span-3 relative pb-24 md:pb-0 overflow-y-auto custom-scrollbar pr-1">
             {loading && tutors.length === 0 && (
               <div className="py-12 text-center">
                 <p className="text-sm text-muted-foreground">Loading tutors...</p>
@@ -469,21 +480,12 @@ const Tutors = () => {
                   ))}
                 </div>
 
-                {pagination && pagination.pages > 1 && (
-                  <Pagination
-                    currentPage={page}
-                    totalPages={pagination.pages}
-                    onPageChange={setPage}
-                    hasNext={page < pagination.pages}
-                    hasPrev={page > 1}
-                  />
-                )}
-
                 {loading && tutors.length > 0 && (
                   <div className="py-8 text-center">
                     <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin mx-auto" />
                   </div>
                 )}
+                <div ref={observerTarget} className="h-4" />
               </div>
             )}
           </main>

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Send, Smile, X, Loader2 } from 'lucide-react';
+import { Send, Smile, X, Loader2, List, Code, Check, CircleHelp, SendHorizontal, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const POPULAR_EMOJIS = ['😀', '😂', '🔥', '👍', '❤️', '👏', '🎉', '💡', '✨', '🙏', '🌟', '👀', '💯', '🤔', '💀', '🎈'];
@@ -16,7 +16,8 @@ const ChatInputBar = ({
     onCancelEdit,
     placeholder = "Message...", 
     compact = false,
-    sending = false
+    sending = false,
+
 }) => {
     const textareaRef = useRef(null);
     const typingTimeoutRef = useRef(null);
@@ -44,6 +45,8 @@ const ChatInputBar = ({
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey && !sending) {
@@ -102,9 +105,11 @@ const ChatInputBar = ({
         setShowEmojiPicker(false);
     }, [value, onChange]);
 
+
+
     return (
         <div className={cn(
-            "bg-background/95 backdrop-blur-xl relative z-40 border-t border-border/50",
+            "bg-background relative z-40",
             compact ? "p-3" : "p-4 pb-6"
         )}>
             {/* Replying To Quote Preview Banner */}
@@ -145,6 +150,8 @@ const ChatInputBar = ({
                 </div>
             )}
 
+
+
             {/* Emoji Selection Popover */}
             {showEmojiPicker && (
                 <div 
@@ -167,9 +174,11 @@ const ChatInputBar = ({
                 </div>
             )}
 
+
+
             <div className="flex items-end gap-3 max-w-5xl mx-auto">
                 <div className={cn(
-                    "flex-1 flex items-end gap-2 bg-muted/40 hover:bg-muted/60 border border-transparent focus-within:border-primary/20 focus-within:bg-background focus-within:shadow-sm rounded-[24px] transition-all duration-300 px-3",
+                    "flex-1 flex items-end gap-2 bg-[#F0F2F5] dark:bg-[#3A3B3C] border border-transparent rounded-full transition-all duration-300 px-3",
                     compact ? "py-1.5" : "py-2"
                 )}>
                     <button
@@ -179,7 +188,7 @@ const ChatInputBar = ({
                     >
                         <Smile size={22} strokeWidth={2.2} />
                     </button>
-     
+             
                     <textarea
                         ref={textareaRef}
                         value={value}
@@ -200,10 +209,10 @@ const ChatInputBar = ({
                     disabled={!value.trim() || sending}
                     aria-label="Send message"
                     className={cn(
-                        "shrink-0 flex items-center justify-center transition-all duration-300 mb-0.5 rounded-full shadow-sm active:scale-95",
+                        "shrink-0 flex items-center justify-center transition-all duration-300 mb-0.5 rounded-full active:scale-95",
                         value.trim() && !sending
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105"
-                            : "bg-muted text-muted-foreground/40 cursor-not-allowed",
+                            ? "text-[#0A7CFF] hover:scale-105"
+                            : "text-muted-foreground/40 cursor-not-allowed",
                         compact ? "size-10" : "size-11"
                     )}
                 >

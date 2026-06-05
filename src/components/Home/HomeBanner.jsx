@@ -115,13 +115,14 @@ const HomeBanner = () => {
 
                             <div className="space-y-4">
                                 <h1 className="text-5xl lg:text-7xl font-display font-bold text-foreground leading-[1.1] tracking-tight">
-                                    Master Your Future: <br/>
-                                    Your child is in <span className="text-primary relative inline-block">
-                                        safe hands
+                                    Find Verified <br/>
+                                    <span className="text-primary relative inline-block">
+                                        Private Tutors
                                         <svg className="absolute -bottom-2 left-0 w-full text-primary" viewBox="0 0 358 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M3 9C118.957 4.46788 239.113 1.10912 355 9" stroke="currentColor" strokeWidth="5" strokeLinecap="round"/>
                                         </svg>
-                                    </span>
+                                    </span> <br/>
+                                    Across Bangladesh.
                                 </h1>
                                 <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl font-body font-medium">
                                     Connect with 2,500+ verified expert tutors for personalized home and online lessons. Academic excellence, built on trust.

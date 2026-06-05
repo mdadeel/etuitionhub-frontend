@@ -41,3 +41,6 @@ clean-code
 .codestudio
 .openhands
 .agents
+src/components/Dashboard/ChatInterface.jsx.backup
+src/components/chat/MessageBubble.jsx.backup
+src/components/chat/ChatInputBar.jsx.backup

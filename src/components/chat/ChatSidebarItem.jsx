@@ -23,14 +23,14 @@ const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
             onClick={() => onClick(conv)}
             aria-label={`Chat with ${other.displayName || other.email || 'Unknown User'}`}
             className={cn(
-                "w-full px-3 py-3 mx-2 my-1 max-w-[calc(100%-16px)] flex items-center gap-3 text-left transition-all duration-200 relative group rounded-xl",
+                "w-full px-4 py-3 flex items-center gap-3 text-left transition-all duration-200 relative group",
                 isActive 
-                    ? "bg-primary/10 dark:bg-primary/20" 
+                    ? "bg-accent/50 dark:bg-accent/20" 
                     : "hover:bg-muted/60"
             )}
         >
             <div className="relative shrink-0">
-                <Avatar src={other.photoURL} alt={other.displayName} size="md" className="size-12 rounded-full shadow-sm" />
+                <Avatar src={other.photoURL} alt={other.displayName} size="md" className="size-[52px] rounded-full shadow-sm" />
                 
                 {/* Online Indicator */}
                 {isOnline && (

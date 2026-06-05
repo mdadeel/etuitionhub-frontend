@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTuitions } from "../hooks/useTuitions";
 import { useTuitionFilters } from "../hooks/useTuitionFilters";
@@ -17,7 +17,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 import FilterSelect from "../components/shared/FilterSelect";
-import Pagination from "../components/shared/Pagination";
 import { cn } from "@/lib/utils";
 import SEO from '../components/shared/SEO';
 
@@ -87,6 +86,17 @@ const Tuitions = () => {
   }, [filterOptions?.subjects]);
 
   const totalPages = pagination?.totalPages || 1;
+  const hasMore = page < totalPages;
+
+  const observerTarget = useCallback(node => {
+    if (loading || !hasMore) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prev => prev + 1);
+      }
+    }, { threshold: 1.0 });
+    if (node) observer.observe(node);
+  }, [loading, hasMore]);
 
   const handleClearAll = () => {
     setSearchParams({});
@@ -95,15 +105,15 @@ const Tuitions = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background lg:h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
       <SEO 
         title="Tuition Jobs - Find Teaching Opportunities" 
         description="Browse available tuition jobs and teaching opportunities across Bangladesh. Filter by class, subject, and location to find the perfect match."
         keywords="tuition jobs, teaching jobs, tutor wanted, bangladesh tuitions, home tutor jobs"
       />
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col flex-1 min-h-0 w-full">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 shrink-0">
           <div className="md:block hidden">
             <h1 className="text-xl font-heading text-foreground">
               Available Tuition Jobs
@@ -117,19 +127,13 @@ const Tuitions = () => {
               <span className="text-lg font-heading text-foreground">
                 {pagination?.totalItems || 0}
               </span>
-              <span className="text-xs text-muted-foreground">Jobs</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-card rounded-xl border border-border">
-              <span className="text-lg font-heading text-foreground">
-                {totalPages}
-              </span>
-              <span className="text-xs text-muted-foreground">Pages</span>
+              <span className="text-xs text-muted-foreground">Jobs Available</span>
             </div>
           </div>
         </div>
 
         {/* Mobile Search Bar */}
-        <div className="lg:hidden mb-6">
+        <div className="lg:hidden mb-6 shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
@@ -142,7 +146,7 @@ const Tuitions = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div className="grid lg:grid-cols-4 gap-6 flex-1 min-h-0 overflow-hidden">
           {/* Mobile Filters Trigger */}
           <button
             onClick={() => setIsMobileFiltersOpen(true)}
@@ -164,7 +168,7 @@ const Tuitions = () => {
           {/* Sidebar Filters */}
           <aside
             className={cn(
-              "lg:col-span-1",
+              "lg:col-span-1 h-full",
               "fixed inset-0 z-[60] bg-black/50 lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
               isMobileFiltersOpen
                 ? "opacity-100"
@@ -173,7 +177,7 @@ const Tuitions = () => {
           >
             <div
               className={cn(
-                "bg-card w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-2xl lg:border lg:border-border lg:sticky lg:top-20 lg:w-full lg:h-auto lg:shadow-sm transition-transform duration-300",
+                "bg-card w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-2xl lg:border lg:border-border lg:w-full lg:shadow-sm transition-transform duration-300 overflow-y-auto custom-scrollbar",
                 isMobileFiltersOpen
                   ? "translate-x-0"
                   : "-translate-x-full lg:translate-x-0",
@@ -245,7 +249,7 @@ const Tuitions = () => {
                       </button>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                  <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
                     {processedSubjects.map((subject) => (
                       <button
                         key={subject}
@@ -288,7 +292,7 @@ const Tuitions = () => {
           </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-3">
+          <main className="lg:col-span-3 overflow-y-auto custom-scrollbar pr-1">
             {loading && tuitions.length === 0 && (
               <div className="py-12 text-center">
                 <p className="text-sm text-muted-foreground">Loading tuitions...</p>
@@ -355,21 +359,12 @@ const Tuitions = () => {
                   ))}
                 </div>
 
-                {pagination && pagination.totalPages > 1 && (
-                  <Pagination
-                    currentPage={page}
-                    totalPages={pagination.totalPages}
-                    onPageChange={setPage}
-                    hasNext={page < pagination.totalPages}
-                    hasPrev={page > 1}
-                  />
-                )}
-
                 {loading && tuitions.length > 0 && (
                   <div className="py-8 text-center">
                     <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin mx-auto" />
                   </div>
                 )}
+                <div ref={observerTarget} className="h-4" />
               </div>
             )}
           </main>

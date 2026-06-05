@@ -6,8 +6,10 @@ import { User, Briefcase, ArrowLeft, Shield, Mail, Lock, Phone } from 'lucide-re
 import Logo from '../components/shared/Logo'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "react-i18next"
 
 const Register = () => {
+    const { t } = useTranslation()
     const { register: registerUser, googleRegister } = useAuth()
     const navigate = useNavigate()
 
@@ -92,10 +94,10 @@ const Register = () => {
                                     <Logo textSize="text-xl" boxSize="size-12" iconSize="size-8" />
                                 </div>
                                 <h1 className="text-2xl font-heading font-bold text-foreground">
-                                    Create Account
+                                    {t('register.create_account', 'Create Account')}
                                 </h1>
                                 <p className="text-xs text-muted-foreground font-body mt-1">
-                                    Select your account type to proceed with registration.
+                                    {t('register.select_account_type', 'Select your account type to proceed with registration.')}
                                 </p>
                             </div>
 
@@ -110,10 +112,10 @@ const Register = () => {
                                     </div>
                                     <div>
                                         <h3 className="text-sm font-heading font-bold text-foreground mb-1 uppercase tracking-wider group-hover:text-primary transition-smooth">
-                                            Student Portal
+                                            {t('register.student_portal', 'Student Portal')}
                                         </h3>
                                         <p className="text-xs text-muted-foreground font-body leading-normal">
-                                            Find tutors, post tuition requests, and track your sessions.
+                                            {t('register.student_desc', 'Find tutors, post tuition requests, and track your sessions.')}
                                         </p>
                                     </div>
                                 </div>
@@ -127,19 +129,19 @@ const Register = () => {
                                     </div>
                                     <div>
                                         <h3 className="text-sm font-heading font-bold text-foreground mb-1 uppercase tracking-wider group-hover:text-primary transition-smooth">
-                                            Tutor Portal
+                                            {t('register.tutor_portal', 'Tutor Portal')}
                                         </h3>
                                         <p className="text-xs text-muted-foreground font-body leading-normal">
-                                            Apply to active tuition posts and manage tutoring jobs.
+                                            {t('register.tutor_desc', 'Apply to active tuition posts and manage tutoring jobs.')}
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
                             <p className="text-center text-xs font-body text-muted-foreground mt-6 pt-5 border-t border-border">
-                                Already have an account?{' '}
+                                {t('register.already_have_account', 'Already have an account?')}{' '}
                                 <Link to="/login" className="font-heading font-bold text-primary hover:underline">
-                                    Sign In
+                                    {t('register.sign_in', 'Sign In')}
                                 </Link>
                             </p>
                         </>
@@ -151,19 +153,19 @@ const Register = () => {
                                     onClick={goBack}
                                     className="flex items-center gap-1 text-[10px] font-heading font-bold text-muted-foreground hover:text-foreground uppercase tracking-wider transition-smooth"
                                 >
-                                    <ArrowLeft size={12} /> Change Role
+                                    <ArrowLeft size={12} /> {t('register.change_role', 'Change Role')}
                                 </button>
                                 <span className="text-[10px] font-heading font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-none">
-                                    Role: {role}
+                                    {t('register.role', 'Role:')} {role}
                                 </span>
                             </div>
 
                             <div className="mb-5 border-l-2 border-primary pl-3">
                                 <h2 className="text-lg font-heading font-bold text-foreground">
-                                    Profile Details
+                                    {t('register.profile_details', 'Profile Details')}
                                 </h2>
                                 <p className="text-[10px] text-muted-foreground font-body">
-                                    Please enter your real information.
+                                    {t('register.real_info', 'Please enter your real information.')}
                                 </p>
                             </div>
 
@@ -171,7 +173,7 @@ const Register = () => {
                                 <div className="space-y-3">
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
-                                            Full Name
+                                            {t('register.full_name', 'Full Name')}
                                         </label>
                                         <div className="relative">
                                             <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -188,7 +190,7 @@ const Register = () => {
 
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
-                                            Phone Number
+                                            {t('register.phone_number', 'Phone Number')}
                                         </label>
                                         <div className="relative">
                                             <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -204,7 +206,7 @@ const Register = () => {
 
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
-                                            Email Address
+                                            {t('register.email_address', 'Email Address')}
                                         </label>
                                         <div className="relative">
                                             <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -221,7 +223,7 @@ const Register = () => {
 
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
-                                            Password
+                                            {t('register.password', 'Password')}
                                         </label>
                                         <div className="relative">
                                             <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -242,14 +244,14 @@ const Register = () => {
                                     disabled={loading}
                                     className="w-full h-11 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-heading font-bold uppercase tracking-wider transition-smooth active:scale-[0.99] text-xs"
                                 >
-                                    {loading ? 'Registering...' : 'Create Account'}
+                                    {loading ? t('register.registering', 'Registering...') : t('register.create_account', 'Create Account')}
                                 </Button>
                             </form>
 
                             <div className="relative my-5 flex items-center justify-center">
                                 <span className="absolute inset-x-0 h-px bg-border"></span>
                                 <span className="relative bg-card px-3 text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-widest">
-                                    Or Connect With
+                                    {t('register.or_connect_with', 'Or Connect With')}
                                 </span>
                             </div>
 
@@ -265,13 +267,13 @@ const Register = () => {
                                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                                 </svg>
-                                Sign Up with Google
+                                {t('register.signup_google', 'Sign Up with Google')}
                             </Button>
 
                             <p className="text-center text-xs font-body text-muted-foreground mt-5">
-                                Already have an account?{' '}
+                                {t('register.already_have_account', 'Already have an account?')}{' '}
                                 <Link to="/login" className="font-heading font-bold text-primary hover:underline">
-                                    Sign In
+                                    {t('register.sign_in', 'Sign In')}
                                 </Link>
                             </p>
                         </>

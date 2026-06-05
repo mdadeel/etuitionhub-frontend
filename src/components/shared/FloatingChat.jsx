@@ -4,7 +4,6 @@ import { useChat } from '../../contexts/ChatContext';
 import api from '../../services/api';
 import { MessageCircle, X, ArrowLeft, Edit, MessageSquare } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import ChatSidebarItem from '../chat/ChatSidebarItem';
 import MessageBubble from '../chat/MessageBubble';
@@ -135,7 +134,11 @@ const FloatingChat = () => {
         setSending(true);
 
         try {
-            const res = await api.post('/api/messages', { receiverId: otherParticipant._id, text, replyToId });
+            const res = await api.post('/api/messages', {
+                receiverId: otherParticipant._id,
+                text,
+                ...(replyToId && { replyToId })
+            });
             const sentMsg = res.data;
 
             setMessages(prev => [...prev, sentMsg]);
@@ -260,7 +263,7 @@ const FloatingChat = () => {
             
             {/* ── Chat Window ── */}
             {isFloatingOpen && (
-                <div className="mb-3 w-[360px] max-w-[calc(100vw-24px)] h-[520px] max-h-[calc(100vh-100px)] bg-card border border-border/70 shadow-2xl rounded-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-250">
+                <div className="mb-3 w-[360px] max-w-[calc(100vw-24px)] h-[520px] max-h-[calc(100vh-100px)] bg-card border border-border/70 shadow-2xl rounded-2xl flex flex-col overflow-hidden">
 
                     {/* Header */}
                     {floatingActiveConv ? (
@@ -389,6 +392,7 @@ const FloatingChat = () => {
                                                     <MessageBubble
                                                         msg={msg}
                                                         isMe={isMe}
+                                                        myParticipantId={myParticipantId}
                                                         isConsecutivePrev={isPrevSameSender}
                                                         isConsecutiveNext={isNextSameSender}
                                                         showAvatar={showAvatar}
@@ -448,25 +452,14 @@ const FloatingChat = () => {
             {/* ── Floating Trigger Button ── */}
             <button
                 onClick={() => setIsFloatingOpen(!isFloatingOpen)}
-                className="size-14 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 relative"
+                className="size-14 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-full shadow-xl flex items-center justify-center relative active:bg-[#1D4ED8]/95"
                 title={isFloatingOpen ? "Close messages" : "Open messages"}
             >
-                <span className={cn(
-                    "absolute inset-0 flex items-center justify-center transition-all duration-300",
-                    isFloatingOpen ? "opacity-100 rotate-0" : "opacity-0 rotate-90"
-                )}>
-                    <X size={22} />
-                </span>
-                <span className={cn(
-                    "absolute inset-0 flex items-center justify-center transition-all duration-300",
-                    !isFloatingOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"
-                )}>
-                    <MessageCircle size={24} />
-                </span>
+                {isFloatingOpen ? <X size={22} /> : <MessageCircle size={24} />}
 
                 {/* Unread Badge */}
                 {!isFloatingOpen && unreadTotal > 0 && (
-                    <div className="absolute -top-1 -right-1 size-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold shadow-sm animate-in zoom-in">
+                    <div className="absolute -top-1 -right-1 size-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold shadow-sm">
                         {unreadTotal > 99 ? '99+' : unreadTotal}
                     </div>
                 )}

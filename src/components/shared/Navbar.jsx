@@ -1,10 +1,11 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useRef } from "react";
-import { User, LogOut, Menu, X, Search, Bell, Sun, Moon } from "lucide-react";
+import { User, LogOut, Menu, X, Search, Bell, Sun, Moon, Plus } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
 import NotificationBell from "./NotificationBell";
 import Logo from "./Logo";
+import { Button } from "../ui/button";
 import { toast } from "react-hot-toast";
 import Cookies from "js-cookie";
 import { cn } from "@/lib/utils";
@@ -130,11 +131,13 @@ const Navbar = () => {
     }
   };
 
-  // Calm, editorial navigation - fewer links, more intention
+  // Dynamic navigation links
   const navLinks = [
     { path: "/tutors", label: t("nav.find_tutors", "Find Tutors") },
     { path: "/tuitions", label: t("nav.tuitions", "Subjects") },
-    { path: "/become-tutor", label: t("nav.become_tutor", "Become Tutor") },
+    ...(userRole !== "tutor" 
+      ? [{ path: "/become-tutor", label: t("nav.become_tutor", "Become Tutor") }] 
+      : []),
     { path: "/about", label: t("nav.about", "About") },
   ];
 
@@ -329,6 +332,20 @@ const Navbar = () => {
 
         {/* Right Section: Calm Authentication */}
         <div className="flex items-center justify-end gap-6">
+          {/* Post Tuition Action Button */}
+          <div className="hidden sm:flex items-center">
+            <Button
+              asChild
+              size="sm"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-heading text-[11px] uppercase tracking-[0.08em] gap-1.5 px-4 h-9 shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/30 active:scale-95"
+            >
+              <Link to="/post-tuition">
+                <Plus size={14} strokeWidth={2.5} />
+                <span>{t("nav.post_tuition_btn", "Post Tuition")}</span>
+              </Link>
+            </Button>
+          </div>
+
           {user ? (
             <div className="flex items-center gap-5">
               {/* Theme Toggle - icon only */}

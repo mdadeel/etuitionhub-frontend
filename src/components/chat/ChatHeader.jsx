@@ -14,7 +14,7 @@ const ChatHeader = ({ conversation, user, onBack }) => {
     const isOnline = onlineUsers.has(other._id) || onlineUsers.has(other.uid);
 
     return (
-        <div className="sticky top-0 z-20 px-4 py-3 bg-background/80 backdrop-blur-xl border-b border-border/50 flex items-center justify-between shadow-sm">
+        <div className="sticky top-0 z-20 px-4 py-3 bg-background flex items-center justify-between">
             <div className="flex items-center gap-3">
                 {onBack && (
                     <button 
