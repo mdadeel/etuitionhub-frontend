@@ -1,0 +1,39 @@
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import api from '../services/api';
+import TutorCard from '../components/shared/TutorCard';
+import SEO from '../components/shared/SEO';
+import LoadingSpinner from '../components/shared/LoadingSpinner';
+
+const formatCity = (slug) => slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+const TutorsByCity = () => {
+  const { city } = useParams();
+  const [tutors, setTutors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    api.get(`/api/tutors?location=${encodeURIComponent(formatCity(city))}`)
+      .then((r) => setTutors(r.data || []))
+      .catch(() => setTutors([]))
+      .finally(() => setLoading(false));
+  }, [city]);
+
+  const cityName = formatCity(city);
+
+  return (
+    <div className="min-h-screen bg-background py-12 px-4">
+      <SEO title={`Private tutors in ${cityName} | eTuitionBD`} description={`Find verified private tutors in ${cityName} for SSC, HSC, O-Level, A-Level, IELTS and admission prep.`} />
+      <header className="max-w-6xl mx-auto mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground">Private tutors in {cityName}</h1>
+        <p className="text-muted-foreground mt-2">{loading ? 'Loading…' : `${tutors.length} tutor${tutors.length === 1 ? '' : 's'} available`}</p>
+      </header>
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {loading ? <LoadingSpinner /> : tutors.length === 0 ? <p>No tutors in {cityName} yet — check back soon.</p> : tutors.map((t) => <TutorCard key={t._id} tutor={t} />)}
+      </div>
+    </div>
+  );
+};
+
+export default TutorsByCity;
