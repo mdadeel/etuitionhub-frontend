@@ -13,6 +13,32 @@
       "subtitle": "Connect with top-rated educators across Bangladesh. Personalized learning tailored to your goals, pace, and schedule.",
       "search_placeholder": "What do you want to learn?",
       "search_btn": "Find Tutors"
+    },
+    "trust": {
+      "nid_verified": "NID verified",
+      "verified_reviews": "{{count}} verified review",
+      "verified_reviews_plural": "{{count}} verified reviews",
+      "degree_verified": "Degree verified",
+      "active_recently": "Active recently",
+      "replies_within_min": "Usually replies within {{min}} min",
+      "replies_within_hour": "Usually replies within {{hour}} hour",
+      "replies_within_hours": "Usually replies within {{hour}} hours"
+    },
+    "filters": {
+      "curriculum": "Curriculum",
+      "all": "All",
+      "tutor_gender": "Tutor gender",
+      "thana": "Area / Thana",
+      "sort_by": "Sort by",
+      "sort_highest_rated": "Highest rated",
+      "sort_most_reviewed": "Most reviewed",
+      "sort_newest": "Newest",
+      "sort_price_low": "Price: low to high",
+      "sort_price_high": "Price: high to low"
+    },
+    "price": {
+      "per_session": "/session",
+      "per_month": "/mo"
     }
   }
 }

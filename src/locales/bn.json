@@ -8,11 +8,37 @@
       "get_started": "শুরু করুন"
     },
     "hero": {
-      "title_1": "আপনার ভবিষ্যৎ গড়ুন",
+      "title_1": "আপনার ভবিষ্যৎ গড়ুন",
       "title_2": "সেরা টিউটরদের সাথে",
       "subtitle": "বাংলাদেশের সেরা টিউটরদের সাথে যুক্ত হোন। আপনার লক্ষ্য, গতি এবং সময়সূচী অনুযায়ী ব্যক্তিগতকৃত শিক্ষা।",
       "search_placeholder": "আপনি কী শিখতে চান?",
       "search_btn": "টিউটর খুঁজুন"
+    },
+    "trust": {
+      "nid_verified": "এনআইডি যাচাইকৃত",
+      "verified_reviews": "{{count}}টি যাচাইকৃত রিভিউ",
+      "verified_reviews_plural": "{{count}}টি যাচাইকৃত রিভিউ",
+      "degree_verified": "ডিগ্রি যাচাইকৃত",
+      "active_recently": "সম্প্রতি সক্রিয়",
+      "replies_within_min": "সাধারণত {{min}} মিনিটের মধ্যে উত্তর দেয়",
+      "replies_within_hour": "সাধারণত {{hour}} ঘণ্টার মধ্যে উত্তর দেয়",
+      "replies_within_hours": "সাধারণত {{hour}} ঘণ্টার মধ্যে উত্তর দেয়"
+    },
+    "filters": {
+      "curriculum": "পাঠ্যক্রম",
+      "all": "সব",
+      "tutor_gender": "টিউটরের লিঙ্গ",
+      "thana": "এলাকা / থানা",
+      "sort_by": "সাজান",
+      "sort_highest_rated": "সর্বোচ্চ রেটিং",
+      "sort_most_reviewed": "সবচেয়ে বেশি রিভিউ",
+      "sort_newest": "নতুন",
+      "sort_price_low": "মূল্য: কম → বেশি",
+      "sort_price_high": "মূল্য: বেশি → কম"
+    },
+    "price": {
+      "per_session": "/সেশন",
+      "per_month": "/মাস"
     }
   }
 }
