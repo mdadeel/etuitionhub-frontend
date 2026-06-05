@@ -3,11 +3,13 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, Clock, ArrowRight, Receipt, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import api from '../services/api';
+import PaymentReceiptCard from '../components/shared/PaymentReceiptCard';
 
 const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [payment, setPayment] = useState(null);
+    const [receipt, setReceipt] = useState(null);
 
     useEffect(() => {
         const paymentId = searchParams.get('payment_id');
@@ -17,11 +19,25 @@ const PaymentSuccess = () => {
             .catch(() => {});
     }, [searchParams]);
 
+    useEffect(() => {
+        const paymentId = searchParams.get('payment_id');
+        if (!paymentId) return;
+        api.get(`/api/payments/${paymentId}/receipt`)
+            .then((res) => setReceipt(res.data))
+            .catch(() => {});
+    }, [searchParams]);
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-6 selection:bg-primary/30 selection:text-primary">
             <div className="max-w-2xl w-full">
                 <div className="border border-border bg-card p-10 md:p-14 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+
+                    {receipt && (
+                        <div className="mb-8">
+                            <PaymentReceiptCard receipt={receipt} />
+                        </div>
+                    )}
 
                     <div className="flex items-center gap-3 mb-8">
                         <div className="w-10 h-1 bg-emerald-500"></div>
