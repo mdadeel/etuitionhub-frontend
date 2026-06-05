@@ -59,6 +59,15 @@ body {
     /* Success/Warning */
     --success: 142 71% 45%;
     --warning: 38 92% 50%;
+
+    /* 2026 Messaging Redesign Variables */
+    --chat-sent: 221 83% 53%;
+    --chat-sent-foreground: 210 40% 98%;
+    --chat-received: 222 47% 8%; /* Dark mode deep navy card background */
+    --chat-received-foreground: 210 40% 98%;
+    --chat-hover: 215 25% 14%;
+    --chat-border: 215 25% 18%;
+    --chat-muted: 215 20% 60%;
   }
 
   /* Light mode - warm, calm, institutional trust */
@@ -97,6 +106,15 @@ body {
     --border: 215 32% 88%;
     --input: 215 32% 88%;
     --ring: 221 83% 53%;
+
+    /* 2026 Messaging Redesign Variables */
+    --chat-sent: 221 83% 53%;
+    --chat-sent-foreground: 0 0% 100%;
+    --chat-received: 210 20% 94%; /* Light gray surface */
+    --chat-received-foreground: 215 25% 10%;
+    --chat-hover: 210 20% 90%;
+    --chat-border: 215 32% 88%;
+    --chat-muted: 215 20% 40%;
     }
     }
 

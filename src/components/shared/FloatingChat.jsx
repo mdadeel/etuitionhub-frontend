@@ -360,52 +360,62 @@ const FloatingChat = () => {
                                             <p className="text-xs text-muted-foreground mt-1">Say hello! 👋</p>
                                         </div>
                                     ) : (
-                                        messages.map((msg, idx) => {
-                                            if (!msg || !msg.text) return null;
+                                        (() => {
+                                            const lastOutgoing = [...messages].reverse().find(msg => {
+                                                if (!msg) return false;
+                                                const senderIdStr = String(msg.senderId);
+                                                return senderIdStr === myParticipantId || senderIdStr === String(user.uid);
+                                            });
+                                            const latestOutgoingMsgId = lastOutgoing?._id;
 
-                                            const senderIdStr = String(msg.senderId);
-                                            const isMe = senderIdStr === myParticipantId || senderIdStr === String(user.uid);
+                                            return messages.map((msg, idx) => {
+                                                if (!msg || !msg.text) return null;
 
-                                            const prevMsg = messages[idx - 1];
-                                            const nextMsg = messages[idx + 1];
+                                                const senderIdStr = String(msg.senderId);
+                                                const isMe = senderIdStr === myParticipantId || senderIdStr === String(user.uid);
 
-                                            const prevDateGroup = prevMsg ? formatDateGroup(prevMsg.createdAt) : null;
-                                            const dateGroup = formatDateGroup(msg.createdAt);
-                                            const showDateGroup = dateGroup !== prevDateGroup;
+                                                const prevMsg = messages[idx - 1];
+                                                const nextMsg = messages[idx + 1];
 
-                                            const isPrevSameSender = prevMsg && String(prevMsg.senderId) === senderIdStr && !showDateGroup;
-                                            const nextDateGroup = nextMsg ? formatDateGroup(nextMsg.createdAt) : null;
-                                            const isNextSameSender = nextMsg && String(nextMsg.senderId) === senderIdStr && nextDateGroup === dateGroup;
+                                                const prevDateGroup = prevMsg ? formatDateGroup(prevMsg.createdAt) : null;
+                                                const dateGroup = formatDateGroup(msg.createdAt);
+                                                const showDateGroup = dateGroup !== prevDateGroup;
 
-                                            const isLastInBlock = !isNextSameSender;
-                                            const showAvatar = !isMe && isLastInBlock;
+                                                const isPrevSameSender = prevMsg && String(prevMsg.senderId) === senderIdStr && !showDateGroup;
+                                                const nextDateGroup = nextMsg ? formatDateGroup(nextMsg.createdAt) : null;
+                                                const isNextSameSender = nextMsg && String(nextMsg.senderId) === senderIdStr && nextDateGroup === dateGroup;
 
-                                            return (
-                                                <React.Fragment key={msg._id || idx}>
-                                                    {showDateGroup && (
-                                                        <div className="flex justify-center my-3">
-                                                            <span className="text-[10px] font-semibold text-muted-foreground bg-muted/60 border border-border/40 px-2.5 py-0.5 rounded-full">
-                                                                {dateGroup}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                    <MessageBubble
-                                                        msg={msg}
-                                                        isMe={isMe}
-                                                        myParticipantId={myParticipantId}
-                                                        isConsecutivePrev={isPrevSameSender}
-                                                        isConsecutiveNext={isNextSameSender}
-                                                        showAvatar={showAvatar}
-                                                        otherParticipant={otherParticipant}
-                                                        handleReact={handleReact}
-                                                        isLastInBlock={isLastInBlock}
-                                                        onReply={setReplyingToMessage}
-                                                        onEdit={handleEdit}
-                                                        onDelete={handleDelete}
-                                                    />
-                                                </React.Fragment>
-                                            );
-                                        })
+                                                const isLastInBlock = !isNextSameSender;
+                                                const showAvatar = !isMe && isLastInBlock;
+
+                                                return (
+                                                    <React.Fragment key={msg._id || idx}>
+                                                        {showDateGroup && (
+                                                            <div className="flex justify-center my-3">
+                                                                <span className="text-[10px] font-semibold text-muted-foreground bg-muted/60 border border-border/40 px-2.5 py-0.5 rounded-full">
+                                                                    {dateGroup}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                        <MessageBubble
+                                                            msg={msg}
+                                                            isMe={isMe}
+                                                            myParticipantId={myParticipantId}
+                                                            isConsecutivePrev={isPrevSameSender}
+                                                            isConsecutiveNext={isNextSameSender}
+                                                            showAvatar={showAvatar}
+                                                            otherParticipant={otherParticipant}
+                                                            handleReact={handleReact}
+                                                            isLastInBlock={isLastInBlock}
+                                                            isLatestOutgoing={msg._id === latestOutgoingMsgId}
+                                                            onReply={setReplyingToMessage}
+                                                            onEdit={handleEdit}
+                                                            onDelete={handleDelete}
+                                                        />
+                                                    </React.Fragment>
+                                                );
+                                            });
+                                        })()
                                     )}
 
                                     {/* Typing Indicator */}

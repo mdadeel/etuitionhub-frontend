@@ -23,36 +23,54 @@ const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
             onClick={() => onClick(conv)}
             aria-label={`Chat with ${other.displayName || other.email || 'Unknown User'}`}
             className={cn(
-                "w-full px-4 py-3 flex items-center gap-3 text-left transition-all duration-200 relative group",
+                "w-[calc(100%-16px)] mx-2 my-1 px-3.5 py-3 flex items-center gap-3.5 text-left transition-all duration-200 rounded-2xl relative group",
                 isActive 
-                    ? "bg-accent/50 dark:bg-accent/20" 
-                    : "hover:bg-muted/60"
+                    ? "bg-primary/10 dark:bg-primary/20 text-foreground shadow-sm" 
+                    : "hover:bg-[color:hsl(var(--chat-hover))] hover:scale-[1.01]"
             )}
         >
             <div className="relative shrink-0">
-                <Avatar src={other.photoURL} alt={other.displayName} size="md" className="size-[52px] rounded-full shadow-sm" />
+                <Avatar 
+                    src={other.photoURL} 
+                    alt={other.displayName} 
+                    size="md" 
+                    className="size-12 rounded-full shadow-sm border border-border/20 group-hover:scale-105 transition-transform" 
+                />
                 
                 {/* Online Indicator */}
                 {isOnline && (
-                    <div className="absolute bottom-0 right-0 size-3.5 bg-green-500 rounded-full border-2 border-background ring-1 ring-black/5" />
+                    <span 
+                        className={cn(
+                            "absolute bottom-0 right-0 size-3.5 bg-green-500 rounded-full border-2 transition-colors duration-200",
+                            isActive ? "border-[#EAF2FE] dark:border-[#1A2E4C]" : "border-background"
+                        )} 
+                        title="Online"
+                    />
                 )}
             </div>
             
             <div className="flex-1 min-w-0 flex flex-col justify-center">
                 {/* Row 1: Name + Timestamp */}
-                <div className="flex justify-between items-center mb-0.5">
+                <div className="flex justify-between items-baseline mb-1">
                     <h4 className={cn(
-                        "text-[15px] truncate transition-colors", 
-                        conv.unreadCount > 0 && !isActive ? "font-bold text-foreground" : "font-medium text-foreground/90 group-hover:text-foreground"
+                        "text-[14px] truncate tracking-tight transition-colors", 
+                        conv.unreadCount > 0 && !isActive 
+                            ? "font-bold text-foreground" 
+                            : "font-semibold text-foreground/90 group-hover:text-foreground"
                     )}>
                         {other.displayName || other.email || 'Unknown User'}
                     </h4>
                     {conv.lastMessage && (
                         <span className={cn(
-                            "text-xs shrink-0 ml-2 transition-colors",
-                            conv.unreadCount > 0 && !isActive ? "text-primary font-semibold" : "text-muted-foreground"
+                            "text-[10px] font-medium shrink-0 ml-2 transition-colors tracking-wide",
+                            conv.unreadCount > 0 && !isActive ? "text-primary font-bold" : "text-muted-foreground/70"
                         )}>
-                            {new Date(conv.lastMessage.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                            {new Date(conv.lastMessage.createdAt).toLocaleDateString(undefined, { 
+                                month: 'short', 
+                                day: 'numeric',
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                            }).replace(/,.*$/, '')}
                         </span>
                     )}
                 </div>
@@ -60,34 +78,38 @@ const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
                 {/* Row 2: Message preview (left) + Unread badge (right) */}
                 <div className="flex items-center justify-between gap-2">
                     {isTyping ? (
-                        <p className="text-[13px] text-primary font-medium animate-pulse">typing...</p>
+                        <p className="text-[12.5px] text-primary font-bold animate-pulse flex items-center gap-1">
+                            <span className="inline-block size-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="inline-block size-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="inline-block size-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            <span className="ml-1 text-xs">typing...</span>
+                        </p>
                     ) : (
                         <p className={cn(
-                            "text-[13px] truncate flex-1 min-w-0 transition-colors",
-                            conv.unreadCount > 0 && !isActive ? "font-semibold text-foreground" : "text-muted-foreground"
+                            "text-[13px] truncate flex-1 min-w-0 leading-tight transition-colors font-medium",
+                            conv.unreadCount > 0 && !isActive 
+                                ? "font-bold text-foreground" 
+                                : "text-muted-foreground/80 group-hover:text-muted-foreground"
                         )}>
-                            {isLastMessageMine && <span className="text-muted-foreground/70">You: </span>}
+                            {isLastMessageMine && <span className="opacity-70 text-[12px] font-bold">You: </span>}
                             <span>
-                                {(() => {
-                                    const text = conv.lastMessage?.text || "Started a conversation";
-                                    return text;
-                                })()}
+                                {conv.lastMessage?.text || "Started a conversation"}
                             </span>
                         </p>
                     )}
                     
                     {/* Unread Badge OR Sent/Seen Indicator */}
                     {conv.unreadCount > 0 && !isActive ? (
-                        <div className="shrink-0 min-w-[20px] h-5 px-1.5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold shadow-sm">
+                        <div className="shrink-0 size-5 bg-[#0A7CFF] text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-md animate-pulse">
                             {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
                         </div>
                     ) : (
                         isLastMessageMine && conv.lastMessage && (
                             <span className={cn(
-                                "shrink-0 text-[11px] font-medium px-1.5 py-0.5 rounded-full",
+                                "shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider scale-90",
                                 conv.lastMessage.isRead
-                                    ? "text-primary bg-primary/10"
-                                    : "text-muted-foreground/60"
+                                    ? "text-primary/95 bg-primary/10"
+                                    : "text-muted-foreground/50 bg-muted/40"
                             )}>
                                 {conv.lastMessage.isRead ? 'Seen' : 'Sent'}
                             </span>

@@ -14,6 +14,7 @@ import PollDisplay from '../chat/PollDisplay';
 import AssignmentCard from '../chat/AssignmentCard';
 
 import MilestoneTimeline from '../chat/MilestoneTimeline';
+import { cn } from '@/lib/utils';
 
 const formatDateGroup = (dateString) => {
     const d = new Date(dateString);
@@ -50,10 +51,23 @@ const ChatInterface = () => {
     const [activeFilter, setActiveFilter] = useState('all'); // all, unread, milestone, tagged
     const [selectedTags, setSelectedTags] = useState([]);
 
+    // 2026 Redesign UI States
+    const [activeSidebarTab, setActiveSidebarTab] = useState('all');
+    const [activeCallModal, setActiveCallModal] = useState(null);
+    const [showInfoModal, setShowInfoModal] = useState(false);
+
     // Derived values
+    const { onlineUsers } = useChat(); // Retrieve online users set
+
     const filteredConversations = conversations.filter(c => {
         const other = c.participants.find(p => p.email !== user?.email);
-        return other?.displayName?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = other?.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              other?.email?.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        if (!matchesSearch) return false;
+        if (activeSidebarTab === 'unread') return c.unreadCount > 0;
+        if (activeSidebarTab === 'archived') return c.isArchived;
+        return !c.isArchived;
     });
 
     const myParticipantId = activeConversation
@@ -462,26 +476,86 @@ const ChatInterface = () => {
     }, [conversations, activeConversation, handleSelectConversation]);
 
     return (
-        <div className="flex h-[calc(100vh_-_4rem)] w-full">
+        <div className="flex h-[calc(100vh_-_4rem)] w-full overflow-hidden bg-background">
             {/* Sidebar */}
-            <div className="w-64 border-r border-border/50">
+            <div className={cn(
+                "w-80 border-r border-border/40 shrink-0 md:flex flex-col bg-card/25 backdrop-blur-md transition-all duration-300",
+                activeConversation ? "hidden md:flex" : "flex w-full"
+            )}>
                 <div className="flex h-full flex-col">
+                    {/* Sidebar Header */}
+                    <div className="p-4 pb-2 flex items-center justify-between">
+                        <h3 className="text-xl font-bold text-foreground font-heading">Messages</h3>
+                        <button 
+                            className="p-2 hover:bg-[color:hsl(var(--chat-hover))] rounded-full text-foreground/80 hover:text-foreground transition-all active:scale-95"
+                            title="New Message"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"/></svg>
+                        </button>
+                    </div>
+
                     {/* Search Conversations */}
-                    <div className="p-4 border-b border-border/50">
-                        <div className="flex items-center gap-2">
-                            <Search size={20} className="text-muted-foreground" />
+                    <div className="px-4 pb-3 flex items-center gap-2">
+                        <div className="flex-1 flex items-center gap-2 bg-muted/50 dark:bg-muted/30 px-3.5 py-2 rounded-2xl border border-transparent focus-within:border-primary/20 focus-within:bg-background transition-all">
+                            <Search size={16} className="text-muted-foreground/60" />
                             <input
                                 type="text"
                                 placeholder="Search conversations..."
-                                className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground/60"
+                                className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground/50 font-medium"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
+                        <button 
+                            className="p-2.5 bg-muted/50 dark:bg-muted/30 hover:bg-muted rounded-2xl text-muted-foreground hover:text-foreground transition-colors"
+                            title="Filter Settings"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sliders-horizontal"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="12" x2="12" y1="18" y2="22"/></svg>
+                        </button>
+                    </div>
+
+                    {/* Sidebar Tabs */}
+                    <div className="px-4 pb-2.5 flex gap-1.5 border-b border-border/30">
+                        <button
+                            onClick={() => setActiveSidebarTab('all')}
+                            className={cn(
+                                "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all",
+                                activeSidebarTab === 'all'
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-muted-foreground hover:bg-muted/60"
+                            )}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => setActiveSidebarTab('unread')}
+                            className={cn(
+                                "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1",
+                                activeSidebarTab === 'unread'
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-muted-foreground hover:bg-muted/60"
+                            )}
+                        >
+                            Unread
+                            {conversations.filter(c => c.unreadCount > 0).length > 0 && (
+                                <span className="size-1.5 bg-[#0A7CFF] rounded-full animate-pulse" />
+                            )}
+                        </button>
+                        <button
+                            onClick={() => setActiveSidebarTab('archived')}
+                            className={cn(
+                                "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all",
+                                activeSidebarTab === 'archived'
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-muted-foreground hover:bg-muted/60"
+                            )}
+                        >
+                            Archived
+                        </button>
                     </div>
                     
                     {/* Conversations List */}
-                    <div className="flex-1 overflow-y-auto p-2">
+                    <div className="flex-1 overflow-y-auto p-1.5 custom-scrollbar">
                         {filteredConversations.map((conversation) => (
                             <ChatSidebarItem
                                 key={conversation._id}
@@ -492,8 +566,8 @@ const ChatInterface = () => {
                             />
                         ))}
                         {filteredConversations.length === 0 && (
-                            <div className="text-center py-8 text-xs text-muted-foreground">
-                                {searchQuery ? 'No chats found matching search.' : 'No conversations yet. Start a new chat to begin learning together.'}
+                            <div className="text-center py-12 px-4 text-xs text-muted-foreground">
+                                {searchQuery ? 'No chats found matching search.' : 'No conversations yet.'}
                             </div>
                         )}
                     </div>
@@ -501,72 +575,115 @@ const ChatInterface = () => {
             </div>
             
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col relative">
-                {/* Session Context Header (shown when there's an active conversation) */}
+            <div className={cn(
+                "flex-1 flex flex-col relative bg-background",
+                activeConversation ? "flex" : "hidden md:flex"
+            )}>
+                {/* 2026 Redesigned Sticky Header */}
                 {activeConversation && (
-                    <div className="px-4 py-3 bg-background/80 backdrop-blur-xl border-b border-border/50">
-                        <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center gap-3">
-                                {/* Session Info */}
-                                <div className="flex items-center gap-2">
-                                    <Calendar size={20} className="text-primary" />
-                                    <div className="text-sm font-medium text-foreground">
-                                        {activeConversation.sessionTitle || 'Learning Session'}
-                                    </div>
-                                </div>
+                    <div className="px-4 py-3 bg-background/80 backdrop-blur-xl border-b border-border/40 sticky top-0 z-40">
+                        <div className="flex items-center justify-between w-full gap-4">
+                            {/* Left: User Avatar & Info */}
+                            <div className="flex items-center gap-3 min-w-0">
+                                <button 
+                                    onClick={() => setActiveConversation(null)} 
+                                    className="md:hidden p-2 hover:bg-muted rounded-full transition-colors text-foreground active:scale-95"
+                                    aria-label="Back to conversations"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                                </button>
                                 
-                                {/* Subject/Topic */}
+                                <div className="relative cursor-pointer group shrink-0">
+                                    <Avatar src={otherParticipant?.photoURL} alt={otherParticipant?.displayName} size="md" className="size-11 rounded-full shadow-sm ring-1 ring-black/5 group-hover:scale-105 transition-transform duration-200" />
+                                    {onlineUsers.has(otherParticipant?._id) && (
+                                        <div className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-background ring-1 ring-black/5" />
+                                    )}
+                                </div>
+                  
+                                <div className="flex flex-col justify-center min-w-0">
+                                    <h3 className="font-bold text-[15px] text-foreground leading-tight truncate">
+                                        {otherParticipant?.displayName || otherParticipant?.email || 'Unknown User'}
+                                    </h3>
+                                    <span className="text-[11px] text-muted-foreground mt-0.5 font-medium leading-none">
+                                        {onlineUsers.has(otherParticipant?._id) ? (
+                                            <span className="text-green-600 dark:text-green-500 font-bold flex items-center gap-1">
+                                                <span className="size-1.5 bg-green-500 rounded-full animate-pulse" />
+                                                Active now
+                                            </span>
+                                        ) : (
+                                            <span>Offline</span>
+                                        )}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Center: Session / Academic Information Capsule */}
+                            <div className="hidden lg:flex items-center gap-2.5 max-w-[320px] xl:max-w-md bg-muted/40 dark:bg-muted/20 px-3.5 py-1.5 rounded-full border border-border/20 text-xs truncate">
+                                <Calendar size={13} className="text-primary shrink-0" />
+                                <span className="font-bold text-foreground/90 max-w-[120px] truncate leading-none">
+                                    {activeConversation.sessionTitle || 'Learning Session'}
+                                </span>
                                 {activeConversation.sessionSubject && (
-                                    <div className="flex items-center gap-2">
-                                        <Bookmark size={20} className="text-muted-foreground" />
-                                        <span className="text-xs text-muted-foreground">
+                                    <>
+                                        <span className="text-border/60 font-light">|</span>
+                                        <span className="text-muted-foreground font-semibold truncate leading-none">
                                             {activeConversation.sessionSubject}
                                         </span>
-                                    </div>
+                                    </>
                                 )}
-                                
-                                {/* Educational Focus Badge */}
                                 {activeConversation.sessionType && (
-                                    <div className="flex items-center gap-1">
-                                        <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                            activeConversation.sessionType === 'tutoring' 
-                                                ? 'bg-primary/10 text-primary' 
-                                                : activeConversation.sessionType === 'homework_help'
-                                                ? 'bg-success/10 text-success'
-                                                : activeConversation.sessionType === 'exam_prep'
-                                                ? 'bg-warning/10 text-warning'
-                                                : 'bg-muted/10 text-muted-foreground'
-                                        }`}
-                                        >
-                                            {activeConversation.sessionType.replace('_', ' ').toUpperCase()}
-                                        </div>
-                                    </div>
+                                    <span className="px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-extrabold rounded-full uppercase tracking-wider scale-95 shrink-0">
+                                        {activeConversation.sessionType.replace('_', ' ')}
+                                    </span>
                                 )}
                             </div>
                             
-                            {/* Action Buttons */}
-                            <div className="flex items-center gap-2">
+                            {/* Right: Actions (Call, Video, Info + Educational Actions) */}
+                            <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                    onClick={() => setActiveCallModal('audio')}
+                                    className="p-2 rounded-full hover:bg-[color:hsl(var(--chat-hover))] transition-all active:scale-95 text-muted-foreground hover:text-foreground"
+                                    title="Voice Call"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                </button>
+                                <button
+                                    onClick={() => setActiveCallModal('video')}
+                                    className="p-2 rounded-full hover:bg-[color:hsl(var(--chat-hover))] transition-all active:scale-95 text-muted-foreground hover:text-foreground"
+                                    title="Video Call"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+                                </button>
+                                <button
+                                    onClick={() => setShowInfoModal(true)}
+                                    className="p-2 rounded-full hover:bg-[color:hsl(var(--chat-hover))] transition-all active:scale-95 text-muted-foreground hover:text-foreground"
+                                    title="View Info"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                </button>
+
+                                <div className="w-px h-5 bg-border/40 mx-1.5" />
 
                                 <button
                                     onClick={() => setShowPoll(true)}
-                                    className="p-2 rounded-full hover:bg-muted/50 transition-colors"
+                                    className="p-2 rounded-full hover:bg-[color:hsl(var(--chat-hover))] transition-all active:scale-95 text-muted-foreground hover:text-foreground"
                                     title="Create Poll"
                                 >
-                                    <CircleHelp size={20} className="text-muted-foreground" />
+                                    <CircleHelp size={18} strokeWidth={2.2} />
                                 </button>
                                 <button
                                     onClick={() => setShowAssignment(true)}
-                                    className="p-2 rounded-full hover:bg-muted/50 transition-colors"
+                                    className="p-2 rounded-full hover:bg-[color:hsl(var(--chat-hover))] transition-all active:scale-95 text-muted-foreground hover:text-foreground"
                                     title="Create Assignment"
                                 >
-                                    <List size={20} className="text-muted-foreground" />
+                                    <List size={18} strokeWidth={2.2} />
                                 </button>
                                 <button
                                     onClick={() => setShowMilestoneTimeline(true)}
-                                    className="p-2 rounded-full hover:bg-muted/50 transition-colors"
+                                    className="p-2 rounded-full hover:bg-[color:hsl(var(--chat-hover))] transition-all active:scale-95 text-muted-foreground hover:text-foreground"
                                     title="View Milestones"
                                 >
-                                    <Trophy size={20} className="text-muted-foreground" />
+                                    <Trophy size={18} strokeWidth={2.2} />
                                 </button>
                             </div>
                         </div>
@@ -677,65 +794,74 @@ const ChatInterface = () => {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {/* Date Group Separators and Messages */}
-                            {filteredMessages.map((msg, idx) => {
-                                if (!msg || !msg.text) return null;
+                            {(() => {
+                                // Find the ID of the last message sent by me
+                                const lastOutgoing = [...filteredMessages].reverse().find(msg => {
+                                    if (!msg) return false;
+                                    const senderIdStr = String(msg.senderId);
+                                    return senderIdStr === myParticipantId || senderIdStr === String(user.uid);
+                                });
+                                const latestOutgoingMsgId = lastOutgoing?._id;
 
-                                const senderIdStr = String(msg.senderId);
-                                const isMe = senderIdStr === myParticipantId || senderIdStr === String(user.uid);
+                                return filteredMessages.map((msg, idx) => {
+                                    if (!msg || !msg.text) return null;
 
-                                const prevMsg = filteredMessages[idx - 1];
-                                const nextMsg = filteredMessages[idx + 1];
+                                    const senderIdStr = String(msg.senderId);
+                                    const isMe = senderIdStr === myParticipantId || senderIdStr === String(user.uid);
 
-                                const prevDateGroup = prevMsg ? formatDateGroup(prevMsg.createdAt) : null;
-                                const dateGroup = formatDateGroup(msg.createdAt);
-                                const showDateGroup = dateGroup !== prevDateGroup;
+                                    const prevMsg = filteredMessages[idx - 1];
+                                    const nextMsg = filteredMessages[idx + 1];
 
-                                const isPrevSameSender = prevMsg && String(prevMsg.senderId) === senderIdStr && !showDateGroup;
-                                const nextDateGroup = nextMsg ? formatDateGroup(nextMsg.createdAt) : null;
-                                const isNextSameSender = nextMsg && String(nextMsg.senderId) === senderIdStr && nextDateGroup === dateGroup;
+                                    const prevDateGroup = prevMsg ? formatDateGroup(prevMsg.createdAt) : null;
+                                    const dateGroup = formatDateGroup(msg.createdAt);
+                                    const showDateGroup = dateGroup !== prevDateGroup;
 
-                                const isLastInBlock = !isNextSameSender;
-                                const showAvatar = !isMe && isLastInBlock;
+                                    const isPrevSameSender = prevMsg && String(prevMsg.senderId) === senderIdStr && !showDateGroup;
+                                    const nextDateGroup = nextMsg ? formatDateGroup(nextMsg.createdAt) : null;
+                                    const isNextSameSender = nextMsg && String(nextMsg.senderId) === senderIdStr && nextDateGroup === dateGroup;
 
-                                return (
-                                    <React.Fragment key={msg._id || idx}>
-                                        {showDateGroup && (
-                                            <div className="flex justify-center my-8 relative z-0">
-                                                <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                                    <div className="w-full border-t border-border/30"></div>
+                                    const isLastInBlock = !isNextSameSender;
+                                    const showAvatar = !isMe && isLastInBlock;
+
+                                    return (
+                                        <React.Fragment key={msg._id || idx}>
+                                            {showDateGroup && (
+                                                <div className="flex justify-center my-8 relative z-0">
+                                                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                                        <div className="w-full border-t border-border/30"></div>
+                                                    </div>
+                                                    <span className="relative text-[11px] font-bold text-muted-foreground/60 bg-background px-4 py-1 rounded-full border border-border/40 shadow-sm uppercase tracking-widest">
+                                                        {dateGroup}
+                                                    </span>
                                                 </div>
-                                                <span className="relative text-[11px] font-bold text-muted-foreground/60 bg-background px-4 py-1 rounded-full border border-border/40 shadow-sm uppercase tracking-widest">
-                                                    {dateGroup}
-                                                </span>
-                                            </div>
-                                        )}
-                                        <MessageBubble
-                                            key={msg._id}
-                                            msg={msg}
-                                            isMe={isMe}
-                                            myParticipantId={myParticipantId}
-                                            isConsecutivePrev={isPrevSameSender}
-                                            isConsecutiveNext={isNextSameSender}
-                                            showAvatar={showAvatar}
-                                            otherParticipant={otherParticipant}
-                                            handleReact={handleReact}
-                                            isLastInBlock={isLastInBlock}
-                                            onReply={setReplyingToMessage}
-                                            onEdit={(m) => {
-                                                setEditingMessage(m);
-                                                setNewMessage(m.text);
-                                                setReplyingToMessage(null);
-                                            }}
-                                            onDelete={handleDeleteMessage}
-                                            onViewPoll={(pollId) => setShowPoll(pollId)}
-                                            onViewAssignment={(assignmentId) => setShowAssignment(assignmentId)}
-                                             onCopyCode={() => {/* TODO: implement code copy functionality */}}
-                                            onViewMilestoneTimeline={() => setShowMilestoneTimeline(true)}
-                                        />
-                                    </React.Fragment>
-                                );
-                            })}
+                                            )}
+                                            <MessageBubble
+                                                msg={msg}
+                                                isMe={isMe}
+                                                myParticipantId={myParticipantId}
+                                                isConsecutivePrev={isPrevSameSender}
+                                                isConsecutiveNext={isNextSameSender}
+                                                showAvatar={showAvatar}
+                                                otherParticipant={otherParticipant}
+                                                handleReact={handleReact}
+                                                isLastInBlock={isLastInBlock}
+                                                isLatestOutgoing={msg._id === latestOutgoingMsgId}
+                                                onReply={setReplyingToMessage}
+                                                onEdit={(m) => {
+                                                    setEditingMessage(m);
+                                                    setNewMessage(m.text);
+                                                    setReplyingToMessage(null);
+                                                }}
+                                                onDelete={handleDeleteMessage}
+                                                onViewPoll={(pollId) => setShowPoll(pollId)}
+                                                onViewAssignment={(assignmentId) => setShowAssignment(assignmentId)}
+                                                 onCopyCode={() => {/* TODO: implement code copy functionality */}}
+                                                onViewMilestoneTimeline={() => setShowMilestoneTimeline(true)}
+                                            />
+                                        </React.Fragment>
+                                    );
+                                });
+                            })()}
                             
                             {/* Typing Indicator */}
                             {otherIsTyping && (
@@ -820,6 +946,105 @@ const ChatInterface = () => {
                     onClose={() => setHistoryMessage(null)}
                     message={historyMessage}
                 />
+
+                {/* 2026 Redesign Call and Info Modals */}
+                {activeCallModal && (
+                    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
+                        <div className="bg-card/85 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[32px] w-[360px] max-w-[90%] p-6 text-center flex flex-col items-center justify-between h-[450px] animate-scale-in text-foreground">
+                            <div className="w-full flex justify-end">
+                                <span className="text-[10px] bg-primary/10 text-primary px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                                    Secure peer call
+                                </span>
+                            </div>
+                            
+                            <div className="flex flex-col items-center gap-4 my-auto">
+                                <div className="relative">
+                                    <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" style={{ animationDuration: '3s' }} />
+                                    <Avatar 
+                                        src={otherParticipant?.photoURL} 
+                                        alt={otherParticipant?.displayName} 
+                                        className="size-24 rounded-full ring-4 ring-primary/30 relative z-10 shadow-lg" 
+                                    />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-foreground">{otherParticipant?.displayName}</h3>
+                                    <p className="text-xs text-muted-foreground/80 mt-1">
+                                        {activeCallModal === 'video' ? 'Establishing video bridge...' : 'Calling securely...'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Controls */}
+                            <div className="flex items-center gap-6 mt-auto">
+                                <button className="size-12 rounded-full bg-muted/65 hover:bg-muted flex items-center justify-center text-foreground hover:scale-105 active:scale-95 transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.23A8.38 8.38 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 8 6.9"/><path d="M9.39 9.39a3 3 0 0 1 4.22 4.22"/><path d="M10.3 4.6a3 3 0 0 1 3.7 3.7"/><path d="M12 18.5h.01"/></svg>
+                                </button>
+                                <button 
+                                    onClick={() => setActiveCallModal(null)}
+                                    className="size-16 rounded-full bg-destructive hover:bg-destructive/90 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all shadow-lg shadow-destructive/20"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/></svg>
+                                </button>
+                                <button className="size-12 rounded-full bg-muted/65 hover:bg-muted flex items-center justify-center text-foreground hover:scale-105 active:scale-95 transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.66 6H14a2 2 0 0 1 2 2v3.34"/><path d="m22 8-6 4 6 4v-4Z"/><path d="M20 12a8 8 0 0 0-8-8"/><path d="M2 2l20 20"/><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showInfoModal && (
+                    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in animate-duration-150">
+                        <div className="bg-card border border-border/50 shadow-2xl rounded-3xl w-[380px] max-w-[90%] p-6 flex flex-col gap-5 animate-scale-in text-foreground">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-base font-bold font-heading">Conversation Details</h3>
+                                <button 
+                                    onClick={() => setShowInfoModal(false)}
+                                    className="p-1.5 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                            
+                            <div className="flex flex-col items-center gap-3 py-4 border-b border-border/30">
+                                <Avatar src={otherParticipant?.photoURL} alt={otherParticipant?.displayName} className="size-20 rounded-full" />
+                                <div className="text-center">
+                                    <h4 className="font-bold text-base">{otherParticipant?.displayName}</h4>
+                                    <p className="text-xs text-muted-foreground">{otherParticipant?.email}</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <h5 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Academic Session</h5>
+                                    <div className="bg-muted/30 dark:bg-muted/15 p-3.5 rounded-2xl border border-border/20 text-xs leading-normal">
+                                        <p className="font-bold text-foreground">{activeConversation.sessionTitle || 'Learning Session'}</p>
+                                        {activeConversation.sessionSubject && (
+                                            <p className="text-muted-foreground mt-1 font-medium">Subject: <span className="font-semibold text-foreground">{activeConversation.sessionSubject}</span></p>
+                                        )}
+                                        {activeConversation.sessionType && (
+                                            <p className="text-muted-foreground mt-0.5 font-medium">Focus: <span className="font-semibold text-foreground uppercase text-[10px] tracking-wide">{activeConversation.sessionType.replace('_', ' ')}</span></p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center py-2.5 border-b border-border/10 text-xs">
+                                    <span className="text-muted-foreground font-semibold">User Status</span>
+                                    <span className="font-bold text-green-500 flex items-center gap-1">
+                                        {onlineUsers.has(otherParticipant?._id) ? 'Online' : 'Offline'}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <button 
+                                onClick={() => setShowInfoModal(false)}
+                                className="w-full py-2.5 bg-primary text-primary-foreground font-bold rounded-2xl hover:bg-primary/95 transition-all text-xs mt-2 active:scale-98"
+                            >
+                                Close Info
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

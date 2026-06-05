@@ -174,21 +174,22 @@ const ChatInputBar = ({
                 </div>
             )}
 
-
-
-            <div className="flex items-end gap-3 max-w-5xl mx-auto">
-                <div className={cn(
-                    "flex-1 flex items-end gap-2 bg-[#F0F2F5] dark:bg-[#3A3B3C] border border-transparent rounded-full transition-all duration-300 px-3",
-                    compact ? "py-1.5" : "py-2"
-                )}>
+            {/* Input Composer */}
+            <div className="flex items-end gap-2.5 max-w-5xl mx-auto w-full px-2">
+                {/* Emoji Action (Left side) */}
+                <div className="flex items-center shrink-0 mb-[2px]">
                     <button
                         type="button"
                         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                        className="shrink-0 size-9 flex items-center justify-center text-muted-foreground hover:text-primary transition-all active:scale-90 mb-[2px]"
+                        className="size-9 rounded-full hover:bg-[color:hsl(var(--chat-hover))] text-muted-foreground/80 hover:text-foreground flex items-center justify-center transition-all active:scale-95"
+                        title="Add Emoji"
                     >
-                        <Smile size={22} strokeWidth={2.2} />
+                        <Smile size={20} strokeWidth={2.2} />
                     </button>
-             
+                </div>
+
+                {/* Text Area & Mic Container */}
+                <div className="flex-1 flex items-end gap-2 bg-muted/60 dark:bg-[#202124] border border-transparent rounded-[24px] focus-within:border-primary/20 focus-within:bg-background transition-all duration-300 px-3.5 py-1">
                     <textarea
                         ref={textareaRef}
                         value={value}
@@ -197,29 +198,39 @@ const ChatInputBar = ({
                         placeholder={placeholder}
                         rows={1}
                         className={cn(
-                            "flex-1 bg-transparent outline-none resize-none text-[15px] text-foreground placeholder:text-muted-foreground/60 leading-relaxed overflow-hidden py-[7px] min-h-[40px]",
+                            "flex-1 bg-transparent outline-none resize-none text-[14.5px] text-foreground placeholder:text-muted-foreground/50 leading-relaxed overflow-hidden py-1.5 min-h-[36px]",
                             compact ? "max-h-[80px]" : "max-h-[150px]"
                         )}
                     />
+                    
+                    {/* Voice Message Icon */}
+                    <button
+                        type="button"
+                        className="shrink-0 size-8 flex items-center justify-center text-muted-foreground/80 hover:text-foreground hover:bg-muted/80 rounded-full transition-all active:scale-90 mb-[2px]"
+                        title="Voice Message"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-mic"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    </button>
                 </div>
 
+                {/* Send Button */}
                 <button
                     type="button"
                     onClick={handleSend}
                     disabled={!value.trim() || sending}
                     aria-label="Send message"
                     className={cn(
-                        "shrink-0 flex items-center justify-center transition-all duration-300 mb-0.5 rounded-full active:scale-95",
+                        "shrink-0 flex items-center justify-center transition-all duration-300 mb-[2px] rounded-full active:scale-95",
                         value.trim() && !sending
-                            ? "text-[#0A7CFF] hover:scale-105"
-                            : "text-muted-foreground/40 cursor-not-allowed",
-                        compact ? "size-10" : "size-11"
+                            ? "bg-[#0A7CFF] hover:bg-[#0070e3] text-white shadow-sm hover:scale-105"
+                            : "bg-muted/50 text-muted-foreground/30 cursor-not-allowed",
+                        "size-9"
                     )}
                 >
                     {sending ? (
-                        <Loader2 size={18} className="animate-spin" />
+                        <Loader2 size={16} className="animate-spin" />
                     ) : (
-                        <Send size={18} className="translate-x-[1px] -translate-y-[1px]" strokeWidth={2.5} />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-send-horizontal translate-x-[0.5px]"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
                     )}
                 </button>
             </div>

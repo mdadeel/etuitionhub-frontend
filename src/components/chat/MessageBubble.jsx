@@ -8,7 +8,6 @@ import toast from 'react-hot-toast';
 const MessageBubble = memo(({ 
     msg, 
     isMe, 
-    myParticipantId,
     isConsecutivePrev, 
     isConsecutiveNext, 
     showAvatar, 
@@ -19,7 +18,8 @@ const MessageBubble = memo(({
     onDelete,
     onViewPoll,
     onViewAssignment,
-    onCopyCode
+    onCopyCode,
+    isLatestOutgoing = false // Pass if this is the last sent message by me
 }) => {
     const [showReactionTray, setShowReactionTray] = useState(false);
     const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -35,16 +35,16 @@ const MessageBubble = memo(({
     const isEdited = msg.isEdited || (msg.updatedAt && (new Date(msg.updatedAt) - new Date(msg.createdAt) > 5000));
     const isDeleted = msg.isDeleted;
 
-    // Calculate dynamic border radii
-    let roundedClass = "rounded-[22px]";
+    // Calculate dynamic border radii (Messenger/2026 UX grouping styling)
+    let roundedClass = "rounded-[24px]";
     if (isMe) {
-        if (isConsecutivePrev && isConsecutiveNext) roundedClass = "rounded-[22px] rounded-r-[6px]";
-        else if (isConsecutivePrev) roundedClass = "rounded-[22px] rounded-tr-[6px]";
-        else if (isConsecutiveNext) roundedClass = "rounded-[22px] rounded-br-[6px]";
+        if (isConsecutivePrev && isConsecutiveNext) roundedClass = "rounded-[24px] rounded-r-[8px]";
+        else if (isConsecutivePrev) roundedClass = "rounded-[24px] rounded-tr-[8px]";
+        else if (isConsecutiveNext) roundedClass = "rounded-[24px] rounded-br-[8px]";
     } else {
-        if (isConsecutivePrev && isConsecutiveNext) roundedClass = "rounded-[22px] rounded-l-[6px]";
-        else if (isConsecutivePrev) roundedClass = "rounded-[22px] rounded-tl-[6px]";
-        else if (isConsecutiveNext) roundedClass = "rounded-[22px] rounded-bl-[6px]";
+        if (isConsecutivePrev && isConsecutiveNext) roundedClass = "rounded-[24px] rounded-l-[8px]";
+        else if (isConsecutivePrev) roundedClass = "rounded-[24px] rounded-tl-[8px]";
+        else if (isConsecutiveNext) roundedClass = "rounded-[24px] rounded-bl-[8px]";
     }
 
     const openMoreMenu = () => {
@@ -120,15 +120,20 @@ const MessageBubble = memo(({
     }, [msg._id]);
 
     const activeReactions = msg.reactions ? Object.values(msg.reactions) : [];
-    const uniqueReactions = Array.from(new Set(activeReactions));
     const reactionCount = activeReactions.length;
-    const myReaction = msg.reactions && myParticipantId ? msg.reactions[myParticipantId] : null;
-    const hasReacted = !!myReaction;
 
-    const handleBadgeClick = (e) => {
+    // Group reactions by emoji
+    const reactionGroups = msg.reactions 
+        ? Object.values(msg.reactions).reduce((acc, emoji) => {
+            acc[emoji] = (acc[emoji] || 0) + 1;
+            return acc;
+          }, {})
+        : {};
+    const groupedReactions = Object.entries(reactionGroups).map(([emoji, count]) => ({ emoji, count }));
+
+    const handlePillClick = (e, emoji) => {
         e.stopPropagation();
-        if (myReaction) handleReact(msg._id, myReaction);
-        else handleReact(msg._id, activeReactions[0] || '👍');
+        handleReact(msg._id, emoji);
     };
 
     const handleCopy = () => {
@@ -210,7 +215,7 @@ const MessageBubble = memo(({
         
         // Default plain text
         return (
-            <p className="text-[14.5px] text-foreground whitespace-pre-wrap">{text}</p>
+            <p className="text-[14.5px] text-inherit whitespace-pre-wrap">{text}</p>
         );
     };
 
@@ -310,7 +315,7 @@ const MessageBubble = memo(({
             className={cn(
                 "flex items-end gap-2 w-full group/bubble relative",
                 isMe ? "justify-end" : "justify-start",
-                reactionCount > 0 ? "mb-3" : (!isConsecutiveNext ? "mb-3" : "mb-0.5"),
+                reactionCount > 0 ? "mb-6" : (!isConsecutiveNext ? "mb-3" : "mb-0.5"),
                 isDeleted && "opacity-80",
                 (showReactionTray || showMoreMenu) ? "z-[60]" : "hover:z-50"
             )}
@@ -340,18 +345,41 @@ const MessageBubble = memo(({
                     />
                 )}
 
+                {/* Replied Message Preview (Outside and above the bubble) */}
+                {msg.replyTo && !isDeleted && (
+                    <div 
+                        onClick={() => scrollToMessage(msg.replyTo._id || msg.replyTo)}
+                        className={cn(
+                            "mb-1 px-3.5 py-1.5 text-xs rounded-[16px] max-w-sm truncate cursor-pointer transition-all duration-150 border shadow-sm",
+                            isMe 
+                                ? "bg-muted/45 hover:bg-muted/65 text-muted-foreground mr-2 border-border/20" 
+                                : "bg-muted/45 hover:bg-muted/65 text-muted-foreground ml-2 border-border/20"
+                        )}
+                        style={{ alignSelf: isMe ? 'flex-end' : 'flex-start' }}
+                    >
+                        <span className="font-bold block text-[9px] mb-0.5 uppercase tracking-wider opacity-70">
+                            {msg.replyTo.isDeleted ? "Deleted Message" : (isMe ? `You replied to ${replySender === 'You' ? 'yourself' : replySender}` : `${replySender} replied`)}
+                        </span>
+                        <span className="line-clamp-1 leading-normal text-foreground/85">
+                            {msg.replyTo.isDeleted ? "This message was deleted" : msg.replyTo.text}
+                        </span>
+                    </div>
+                )}
+
                 <div className="relative flex items-center gap-2 group/actions">
-                    {/* Hover Actions - Left for Me */}
+                    {/* Hover Actions - Left for Me (Glass Pill Aesthetic) */}
                     {isMe && !isDeleted && (
                         <div className={cn(
-                            "flex items-center gap-0.5 mr-1 transition-opacity duration-150",
-                            (showReactionTray || showMoreMenu) ? "opacity-100" : "opacity-0 group-hover/bubble:opacity-100"
+                            "flex items-center gap-1.5 mr-2 px-2.5 py-1 bg-background/80 dark:bg-muted/40 backdrop-blur-md border border-border/30 rounded-full shadow-sm transition-all duration-150 shrink-0",
+                            (showReactionTray || showMoreMenu) 
+                                ? "opacity-100 scale-100 pointer-events-auto" 
+                                : "opacity-0 scale-95 pointer-events-none group-hover/bubble:opacity-100 group-hover/bubble:scale-100 group-hover/bubble:pointer-events-auto"
                         )}>
                             <button 
                                 type="button"
                                 ref={moreBtnRef}
                                 onClick={openMoreMenu}
-                                className="size-7 flex items-center justify-center text-muted-foreground/60 hover:bg-muted hover:text-foreground rounded-full active:bg-muted/80" 
+                                className="size-6 flex items-center justify-center text-muted-foreground/60 hover:text-foreground rounded-full transition-colors active:scale-90" 
                                 title="More"
                                 aria-label="More message options"
                             >
@@ -360,7 +388,7 @@ const MessageBubble = memo(({
                             <button 
                                 type="button"
                                 onClick={() => onReply?.(msg)}
-                                className="size-7 flex items-center justify-center text-muted-foreground/60 hover:bg-muted hover:text-foreground rounded-full active:bg-muted/80" 
+                                className="size-6 flex items-center justify-center text-muted-foreground/60 hover:text-foreground rounded-full transition-colors active:scale-90" 
                                 title="Reply"
                                 aria-label="Reply to message"
                             >
@@ -370,7 +398,7 @@ const MessageBubble = memo(({
                                 type="button"
                                 ref={reactionBtnRef}
                                 onClick={openReactionTray}
-                                className="size-7 flex items-center justify-center text-muted-foreground/60 hover:bg-muted hover:text-foreground rounded-full active:bg-muted/80" 
+                                className="size-6 flex items-center justify-center text-muted-foreground/60 hover:text-foreground rounded-full transition-colors active:scale-90" 
                                 title="React"
                                 aria-label="Add reaction"
                             >
@@ -381,34 +409,15 @@ const MessageBubble = memo(({
 
                     <div 
                         className={cn(
-                            "bubble-content px-4 py-2.5 text-[15px] relative leading-relaxed w-fit font-body z-10 flex flex-col gap-1.5",
+                            "bubble-content px-4 py-2.5 text-[15px] relative leading-relaxed w-fit font-body z-10 flex flex-col gap-1.5 transition-all duration-200",
                             roundedClass,
                             isMe 
-                                ? (isDeleted ? "bg-muted text-muted-foreground border border-border/50" : "bg-[#0A7CFF] text-white ml-auto")
-                                : (isDeleted ? "bg-muted/50 text-muted-foreground italic border border-border/30" : "bg-[#E4E6EB] dark:bg-[#303030] text-black dark:text-white mr-auto"),
+                                ? (isDeleted ? "bg-muted text-muted-foreground border border-border/50" : "bg-[color:hsl(var(--chat-sent))] text-[color:hsl(var(--chat-sent-foreground))] ml-auto")
+                                : (isDeleted ? "bg-muted/50 text-muted-foreground italic border border-border/30" : "bg-[color:hsl(var(--chat-received))] text-[color:hsl(var(--chat-received-foreground))] mr-auto border border-border/20 dark:border-border/10"),
                             isHighlighted && "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg shadow-primary/20",
                             isDeleted && "py-1.5 px-3 text-[13px]"
                         )}
                     >
-                        {msg.replyTo && !isDeleted && (
-                            <div 
-                                onClick={() => scrollToMessage(msg.replyTo._id || msg.replyTo)}
-                                className={cn(
-                                    "mb-1 px-3 py-1.5 border-l-4 text-xs rounded-lg max-w-full truncate font-body cursor-pointer",
-                                    isMe 
-                                        ? "border-primary-foreground/40 bg-black/10 hover:bg-black/20 text-primary-foreground/90" 
-                                        : "border-primary bg-background/50 hover:bg-background/80 text-muted-foreground"
-                                )}
-                            >
-                                <span className="font-bold block text-[10px] mb-0.5 uppercase tracking-wider opacity-70">
-                                    {msg.replyTo.isDeleted ? "Deleted Message" : replySender}
-                                </span>
-                                <span className="line-clamp-2 leading-tight">
-                                    {msg.replyTo.isDeleted ? "This message was deleted" : msg.replyTo.text}
-                                </span>
-                            </div>
-                        )}
-
                         {!isDeleted && renderMilestoneIndicator()}
 
                         <div className={cn("break-words select-text", isDeleted && "italic text-muted-foreground/60")} style={{ overflowWrap: 'anywhere' }}>
@@ -418,64 +427,21 @@ const MessageBubble = memo(({
                         {!isDeleted && renderPollPreview()}
                         {!isDeleted && renderAssignmentPreview()}
                         {!isDeleted && renderTags()}
-                        
-                        {/* Time & Read Checks */}
-                        <div className={cn(
-                            "flex items-center justify-end gap-1 mt-0.5 self-end text-[10px] select-none font-semibold tracking-tight",
-                            isMe ? "text-primary-foreground/85" : "text-muted-foreground/80"
-                        )}>
-                            {isEdited && !isDeleted && (
-                                <button 
-                                    type="button"
-                                    onClick={handleOpenHistory}
-                                    className="hover:underline italic lowercase opacity-80 cursor-help"
-                                >
-                                    (edited)
-                                </button>
-                            )}
-                            <span>{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                            {isMe && !isDeleted && (
-                                <span className="shrink-0">
-                                    {msg.isRead ? <CheckCheck size={13} strokeWidth={3} /> : <Check size={13} strokeWidth={3} />}
-                                </span>
-                            )}
-                        </div>
-
-                        {reactionCount > 0 && !isDeleted && (
-                            <div 
-                                onClick={handleBadgeClick}
-                                className={cn(
-                                    "absolute -bottom-2.5 bg-card border border-border/50 shadow-md rounded-full px-1.5 py-0.5 text-[11px] flex gap-0.5 items-center z-20 select-none cursor-pointer hover:scale-105 active:scale-95",
-                                    hasReacted ? "border-primary/40 bg-primary/5 text-primary" : "border-border/60 text-foreground",
-                                    isMe ? "right-3" : "left-3"
-                                )}
-                            >
-                                {uniqueReactions.slice(0, 3).map((emoji, i) => (
-                                    <span 
-                                        key={i} 
-                                        className="text-[12px] leading-none drop-shadow-sm select-none"
-                                    >
-                                        {emoji}
-                                    </span>
-                                ))}
-                                {reactionCount > 1 && (
-                                    <span className="text-[10px] text-muted-foreground font-semibold font-body pl-0.5 pr-0.5">{reactionCount}</span>
-                                )}
-                            </div>
-                        )}
                     </div>
 
-                    {/* Hover Actions - Right for Them */}
+                    {/* Hover Actions - Right for Them (Glass Pill Aesthetic) */}
                     {!isMe && !isDeleted && (
                         <div className={cn(
-                            "flex items-center gap-0.5 ml-1 transition-opacity duration-150",
-                            (showReactionTray || showMoreMenu) ? "opacity-100" : "opacity-0 group-hover/bubble:opacity-100"
+                            "flex items-center gap-1.5 ml-2 px-2.5 py-1 bg-background/80 dark:bg-muted/40 backdrop-blur-md border border-border/30 rounded-full shadow-sm transition-all duration-150 shrink-0",
+                            (showReactionTray || showMoreMenu) 
+                                ? "opacity-100 scale-100 pointer-events-auto" 
+                                : "opacity-0 scale-95 pointer-events-none group-hover/bubble:opacity-100 group-hover/bubble:scale-100 group-hover/bubble:pointer-events-auto"
                         )}>
                             <button 
                                 type="button"
                                 ref={reactionBtnRef}
                                 onClick={openReactionTray}
-                                className="size-7 flex items-center justify-center text-muted-foreground/60 hover:bg-muted hover:text-foreground rounded-full active:bg-muted/80" 
+                                className="size-6 flex items-center justify-center text-muted-foreground/60 hover:text-foreground rounded-full transition-colors active:scale-90" 
                                 title="React"
                                 aria-label="Add reaction"
                             >
@@ -484,7 +450,7 @@ const MessageBubble = memo(({
                             <button 
                                 type="button"
                                 onClick={() => onReply?.(msg)}
-                                className="size-7 flex items-center justify-center text-muted-foreground/60 hover:bg-muted hover:text-foreground rounded-full active:bg-muted/80" 
+                                className="size-6 flex items-center justify-center text-muted-foreground/60 hover:text-foreground rounded-full transition-colors active:scale-90" 
                                 title="Reply"
                                 aria-label="Reply to message"
                             >
@@ -494,13 +460,88 @@ const MessageBubble = memo(({
                                 type="button"
                                 ref={moreBtnRef}
                                 onClick={openMoreMenu}
-                                className="size-7 flex items-center justify-center text-muted-foreground/60 hover:bg-muted hover:text-foreground rounded-full active:bg-muted/80" 
+                                className="size-6 flex items-center justify-center text-muted-foreground/60 hover:text-foreground rounded-full transition-colors active:scale-90" 
                                 title="More"
                                 aria-label="More message options"
                             >
                                 <MoreHorizontal size={14} />
                             </button>
                         </div>
+                    )}
+                </div>
+
+                {/* Reaction Container (Reserves layout height, visually connected, non-overlapping) */}
+                {reactionCount > 0 && !isDeleted && (
+                    <div 
+                        className={cn(
+                            "flex flex-wrap gap-1 items-center max-w-full mt-[-6px] mb-1 z-20 select-none",
+                            isMe ? "justify-end mr-4" : "justify-start ml-4"
+                        )}
+                    >
+                        {groupedReactions.map(({ emoji, count }) => (
+                            <div 
+                                key={emoji}
+                                onClick={(e) => handlePillClick(e, emoji)}
+                                className={cn(
+                                    "h-7 min-w-[28px] px-2.5 py-0.5 rounded-full text-[12px] flex gap-1.5 items-center justify-center select-none cursor-pointer hover:scale-105 active:scale-95 transition-all duration-150 border shadow-sm",
+                                    "bg-white text-black border-gray-200/80",
+                                    "dark:bg-zinc-800 dark:text-white dark:border-zinc-700/80",
+                                    "animate-in fade-in zoom-in-90 duration-200 ease-out"
+                                )}
+                            >
+                                <span className="text-[13px] leading-none select-none">{emoji}</span>
+                                {count > 1 && (
+                                    <span className="text-[10px] font-bold text-muted-foreground/95 pl-0.5 pr-0.5">{count}</span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* 2026 Redesign Metadata row under the bubble */}
+                <div className={cn(
+                    "flex items-center gap-1 text-[10px] font-bold tracking-tight text-muted-foreground/50 select-none transition-all duration-300",
+                    isMe ? "justify-end mr-2" : "justify-start ml-2",
+                    // Hide consecutive timestamps by default, show on hover (using group-hover/bubble helper)
+                    (isConsecutivePrev && !isLatestOutgoing)
+                        ? "h-0 opacity-0 overflow-hidden group-hover/bubble:h-auto group-hover/bubble:opacity-100 group-hover/bubble:mt-1 group-hover/bubble:mb-0.5"
+                        : "mt-1 mb-0.5 opacity-100"
+                )}>
+                    {isEdited && !isDeleted && (
+                        <button 
+                            type="button"
+                            onClick={handleOpenHistory}
+                            className="hover:underline italic lowercase cursor-help"
+                        >
+                            (edited)
+                        </button>
+                    )}
+                    <span>
+                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+
+                    {/* Delivery Status & Read Receipts (Only on latest outgoing message) */}
+                    {isMe && isLatestOutgoing && !isDeleted && (
+                        <span className="shrink-0 flex items-center ml-0.5">
+                            {msg.isRead ? (
+                                otherParticipant?.photoURL ? (
+                                    <img 
+                                        src={otherParticipant.photoURL} 
+                                        alt="Seen" 
+                                        className="size-3.5 rounded-full object-cover ring-1 ring-black/5" 
+                                        title="Seen"
+                                    />
+                                ) : (
+                                    <span className="text-[#0A7CFF]" title="Seen">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                    </span>
+                                )
+                            ) : (
+                                <span className="text-muted-foreground/30" title="Sent">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                                </span>
+                            )}
+                        </span>
                     )}
                 </div>
             </div>
