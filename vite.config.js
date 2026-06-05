@@ -56,6 +56,16 @@ export default defineConfig({
               cacheName: 'google-fonts-cache',
               expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 }
             }
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/tutors'),
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'api-tutors', expiration: { maxEntries: 50, maxAgeSeconds: 60 * 30 } }
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/tuitions'),
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'api-tuitions', expiration: { maxEntries: 50, maxAgeSeconds: 60 * 30 } }
           }
         ]
       }
