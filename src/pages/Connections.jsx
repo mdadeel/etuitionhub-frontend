@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import toast from 'react-hot-toast';
 import ConnectionsList from '../components/Connections/ConnectionsList';
 import ConnectionRequestCard from '../components/Connections/ConnectionRequestCard';
 import OnboardingWizard from '../components/Connections/OnboardingWizard';
@@ -13,7 +12,7 @@ const ConnectionsPage = () => {
   const [activeTab, setActiveTab] = useState('requests'); // requests, connections
   const [pendingRequests, setPendingRequests] = useState([]);
   const [acceptedConnections, setAcceptedConnections] = useState([]);
-  const [viewerRole, setViewerRole] = useState('student');  // could be 'tutor' or 'student'
+  const [viewerRole] = useState('student');  // could be 'tutor' or 'student' (placeholder)
   const navigate = useNavigate();
 
   const loadPendingRequests = async () => {
