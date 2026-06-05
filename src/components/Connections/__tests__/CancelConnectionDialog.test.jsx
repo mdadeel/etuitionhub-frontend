@@ -21,7 +21,7 @@ describe('CancelConnectionDialog', () => {
 
   it('renders the dialog when open is true', () => {
     render(<CancelConnectionDialog open onClose={() => {}} connectionId="abc" />);
-    expect(screen.getByText('Cancel connection')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Cancel connection' })).toBeInTheDocument();
   });
 
   it('submits PUT /api/connections/:id/cancel with the selected reason', async () => {
@@ -30,7 +30,7 @@ describe('CancelConnectionDialog', () => {
     const onClose = vi.fn();
     render(<CancelConnectionDialog open onClose={onClose} connectionId="c123" />);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'mutual' } });
-    fireEvent.click(screen.getByText('Cancel connection'));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel connection' }));
     await waitFor(() => {
       expect(api.put).toHaveBeenCalledWith('/api/connections/c123/cancel', { reason: 'mutual', note: '' });
     });
