@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Circle } from 'lucide-react';
 
 const fmt = (mins) => {
@@ -8,8 +9,16 @@ const fmt = (mins) => {
 };
 
 const ResponseTimeIndicator = ({ tutor }) => {
-  const lastActive = tutor?.lastActive ? new Date(tutor.lastActive) : null;
-  const activeRecently = lastActive && (Date.now() - lastActive.getTime()) < 24 * 3600 * 1000;
+  const [activeRecently, setActiveRecently] = useState(false);
+
+  useEffect(() => {
+    if (!tutor?.lastActive) {
+      setActiveRecently(false);
+      return;
+    }
+    setActiveRecently(Date.now() - new Date(tutor.lastActive).getTime() < 24 * 3600 * 1000);
+  }, [tutor?.lastActive]);
+
   const replyText = fmt(tutor?.responseTimeMinutes);
 
   if (!activeRecently && !replyText) return null;
