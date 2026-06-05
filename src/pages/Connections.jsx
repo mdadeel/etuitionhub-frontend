@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import ConnectionsList from '../components/Connections/ConnectionsList';
 import ConnectionRequestCard from '../components/Connections/ConnectionRequestCard';
+import OnboardingWizard from '../components/Connections/OnboardingWizard';
+import ConnectionStatusBadge from '../components/Connections/ConnectionStatusBadge';
 import { Mail, UserPlus } from 'lucide-react';
 import { AppleHeader } from '../shared/AppleUI';
 
 const ConnectionsPage = () => {
   const [activeTab, setActiveTab] = useState('requests'); // requests, connections
   const [pendingRequests, setPendingRequests] = useState([]);
+  const [acceptedConnections, setAcceptedConnections] = useState([]);
+  const [viewerRole, setViewerRole] = useState('student');  // could be 'tutor' or 'student'
   const navigate = useNavigate();
 
   const loadPendingRequests = async () => {
@@ -22,9 +26,19 @@ const ConnectionsPage = () => {
     }
   };
 
-  // Load pending requests on mount
-  // Note: We'll load this in a useEffect in the actual implementation
-  // For now, we'll just show a placeholder
+  const loadAcceptedConnections = async () => {
+    try {
+      const res = await api.get('/api/connections?status=accepted');
+      setAcceptedConnections(res.data || []);
+    } catch (err) {
+      console.error('Failed to load accepted connections:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadPendingRequests();
+    loadAcceptedConnections();
+  }, []);
 
   return (
     <div className="bg-background min-h-screen">
@@ -95,7 +109,24 @@ const ConnectionsPage = () => {
       )}
 
       {activeTab === 'connections' && (
-        <ConnectionsList />
+        <div className="p-6 space-y-6">
+          <ConnectionsList />
+          {acceptedConnections.length > 0 && (
+            <section>
+              <h2 className="text-lg font-semibold mb-3">Manage your tutoring</h2>
+              <div className="space-y-4">
+                {acceptedConnections.map(c => (
+                  <OnboardingWizard
+                    key={c._id}
+                    connection={c}
+                    viewerRole={viewerRole}
+                    onChange={() => { loadAcceptedConnections(); }}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
       )}
     </div>
   );
