@@ -53,7 +53,12 @@ api.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const response = await axios.post('/auth/refresh', {}, { withCredentials: true });
+                // Use the api instance so the configured baseURL (API_URL) is
+                // prepended. Raw axios.post with a relative URL would hit the
+                // current origin, which on a separate-frontend/backend
+                // deployment is the frontend host — and /auth/refresh isn't
+                // served there.
+                const response = await api.post('/api/auth/refresh', {}, { withCredentials: true });
                 const { token: newToken } = response.data;
                 Cookies.set('token', newToken, AUTH_COOKIE_OPTIONS);
                 processQueue(null, newToken);
