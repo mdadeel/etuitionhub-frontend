@@ -281,7 +281,7 @@ const DashAnalytics = () => {
                                             </div>
                                         </td>
                                         <td className="px-4 md:px-6 py-4 text-center">
-                                            <span className="text-xs md:text-sm font-heading font-black text-[#2563EB] tabular-nums">৳{tx.amount.toLocaleString()}</span>
+                                            <span className="text-xs md:text-sm font-heading font-black text-[#2563EB] tabular-nums">৳{tx.amount?.toLocaleString()}</span>
                                         </td>
                                         <td className="px-4 md:px-6 py-4 text-right">
                                             <span className={`px-2.5 py-1 text-[9px] font-heading font-black uppercase tracking-wider rounded-none border ${tx.status === 'verified'
