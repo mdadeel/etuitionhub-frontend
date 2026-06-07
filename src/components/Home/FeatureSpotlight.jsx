@@ -32,7 +32,7 @@ const FeatureSpotlight = () => {
                     <div className="relative order-2 lg:order-1 lg:col-span-7 opacity-0 animate-fade-in-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
                         <div className="relative bg-card rounded-2xl border border-border/60 shadow-premium-lg overflow-hidden transition-all duration-500 hover:border-primary/30">
                             {/* Decorative header with gradient */}
-                            <div className="h-1 bg-gradient-to-r from-primary via-purple-500 to-accent w-full"></div>
+                            <div className="h-1 bg-gradient-to-r from-primary via-cyan-500 to-accent w-full"></div>
 
                             {/* Browser/Window Header */}
                             <div className="h-12 bg-muted/50 border-b border-border/60 flex items-center px-6 gap-3">

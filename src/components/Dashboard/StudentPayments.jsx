@@ -25,7 +25,7 @@ const PAYMENT_METHOD_LABELS = {
     bank: { name: 'Bank Transfer', color: 'bg-primary' }
 };
 
-const StudentPayments = () => {
+const StudentPayments = ({ hideHeader }) => {
     const { user } = useAuth();
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -91,17 +91,19 @@ const StudentPayments = () => {
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
-            <AppleHeader 
-                title="Payment History" 
-                subtitle="Track all your transactions and payment activities."
-                badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-none bg-secondary/10 text-secondary">Financial Records</span>}
-                action={
-                    <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-none border border-green-500/20">
-                        <div className="size-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Live Sync</span>
-                    </div>
-                }
-            />
+            {!hideHeader && (
+                <AppleHeader 
+                    title="Payment History" 
+                    subtitle="Track all your transactions and payment activities."
+                    badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-none bg-secondary/10 text-secondary">Financial Records</span>}
+                    action={
+                        <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-none border border-green-500/20">
+                            <div className="size-2 rounded-full bg-green-500 animate-pulse"></div>
+                            <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Live Sync</span>
+                        </div>
+                    }
+                />
+            )}
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">

@@ -63,7 +63,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
   return (
     <>
     <div
-      className={`group flex flex-col p-5 bg-card border border-border rounded hover:shadow-premium hover:border-primary/20 transition-all duration-300 cursor-pointer ${className}`}
+      className={`group flex flex-col p-5 bg-card border border-border/80 rounded-2xl hover:shadow-premium hover:border-primary/30 transition-all duration-300 cursor-pointer relative ${className}`}
       onClick={handleViewDetails}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -73,28 +73,30 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
       role="button"
       tabIndex={0}
     >
+      {/* Corner Bookmark (Absolute Overlay) */}
+      <button
+        type="button"
+        onClick={handleBookmark}
+        className="absolute top-4 right-4 z-10 size-8 flex items-center justify-center rounded-full bg-slate-100/80 hover:bg-primary/10 hover:text-primary dark:bg-slate-900/80 dark:hover:bg-primary/20 text-muted-foreground transition-all duration-200"
+        title={isSaved ? "Unsave" : "Save"}
+      >
+        <Bookmark
+          size={16}
+          className={
+            isSaved ? "fill-primary text-primary" : "transition-colors"
+          }
+        />
+      </button>
+
       <div className="flex justify-between items-start gap-4 mb-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-base md:text-lg text-foreground truncate leading-snug">
+        <div className="flex-1 min-w-0 pr-8">
+          <h3 className="font-bold text-base md:text-lg text-foreground truncate leading-snug group-hover:text-primary transition-colors">
             <Highlight text={tuition.subject} query={searchQuery} />
           </h3>
           <span className="text-xs text-muted-foreground font-medium mt-1 block">
             {formatRelativeTime(tuition.createdAt) || "Recent"}
           </span>
         </div>
-        <button
-          type="button"
-          onClick={handleBookmark}
-          className="shrink-0 p-2 -mr-2 -mt-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
-          title={isSaved ? "Unsave" : "Save"}
-        >
-          <Bookmark
-            size={18}
-            className={
-              isSaved ? "fill-primary text-primary" : "transition-colors"
-            }
-          />
-        </button>
       </div>
 
       <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
@@ -103,13 +105,13 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
 
       <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-muted-foreground mb-5">
         <div className="flex items-center gap-1.5">
-          <GraduationCap className="size-4 text-muted-foreground/60" />
+          <GraduationCap className="size-4 text-primary/70" />
           <span className="truncate max-w-[140px]">
             {tuition.qualification || tuition.class_name || "N/A"}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <MapPin className="size-4 text-muted-foreground/60" />
+          <MapPin className="size-4 text-primary/70" />
           <span className="truncate max-w-[140px]">
             <Highlight
               text={(tuition.location || "N/A").split(",")[0]}
@@ -128,7 +130,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
         </div>
         <button
           type="button"
-          className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-all active:scale-95 group/btn"
+          className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-xl transition-all active:scale-95 group/btn shadow-sm hover:shadow-glow-blue hover:-translate-y-0.5 duration-300"
           onClick={handleViewDetails}
         >
           View Details

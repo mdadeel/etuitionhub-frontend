@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useForm, Controller } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import StudentPayments from "./StudentPayments";
@@ -42,8 +41,17 @@ const StudentDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") || "overview";
+  const { pathname } = useLocation();
+  const initialTab = pathname.includes('/applications') ? 'applications' : (searchParams.get("tab") || "overview");
   const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    if (pathname.includes('/applications')) {
+      setActiveTab('applications');
+    } else {
+      setActiveTab(searchParams.get("tab") || "overview");
+    }
+  }, [pathname, searchParams]);
   const [bookings, setBookings] = useState([]);
   const [myTuitions, setMyTuitions] = useState([]);
   const [applications, setApplications] = useState([]);

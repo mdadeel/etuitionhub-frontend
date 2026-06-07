@@ -50,7 +50,7 @@ const ActivePanel = ({ connection, onPaused, onCompleted, onCancel }) => {
           <button
             type="button"
             onClick={() => setShowPauseReason(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-violet-300 text-violet-700 rounded-md hover:bg-violet-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-cyan-300 text-cyan-700 rounded-md hover:bg-cyan-50"
           >
             <Pause size={12} /> Pause
           </button>
@@ -81,7 +81,7 @@ const ActivePanel = ({ connection, onPaused, onCompleted, onCancel }) => {
             className="w-full border border-border rounded-md p-2 text-sm bg-background text-foreground"
           />
           <div className="flex gap-2">
-            <button type="submit" disabled={submitting} className="px-3 py-1.5 bg-violet-600 text-white text-sm rounded-md hover:bg-violet-700">Confirm pause</button>
+            <button type="submit" disabled={submitting} className="px-3 py-1.5 bg-cyan-600 text-white text-sm rounded-md hover:bg-cyan-700">Confirm pause</button>
             <button type="button" onClick={() => setShowPauseReason(false)} className="px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted rounded-md">Cancel</button>
           </div>
         </form>

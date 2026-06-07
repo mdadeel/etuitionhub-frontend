@@ -6,6 +6,9 @@ import {
   BookOpen,
   Clock,
   Bookmark,
+  Briefcase,
+  ChevronRight,
+  Check,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +63,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
         toast.success("Tutor saved to your list");
       }
     } catch (error) {
+      console.error(error);
       toast.error("Could not save tutor");
     }
     setSaving(false);
@@ -75,7 +79,6 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
     location,
     subjects = [],
     isVerified,
-    availableDays = [],
   } = tutor;
   const rating = tutor.ratings || tutor.rating || 4.8;
   const salary = tutor.expectedSalary || 5000;
@@ -86,7 +89,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
     <Card
       hover={!isBannerPreview}
       className={cn(
-        "group h-full flex flex-col border border-border/80 bg-card rounded-2xl overflow-hidden hover:shadow-premium hover:border-primary/30 transition-all duration-300",
+        "group h-full flex flex-col border border-border/80 bg-card rounded-2xl overflow-hidden hover:shadow-premium hover:border-primary/30 transition-all duration-300 relative",
         isBannerPreview ? "" : "cursor-pointer"
       )}
       onClick={isBannerPreview ? undefined : () => navigate(`/tutor/${_id}`)}
@@ -98,42 +101,56 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
       role={isBannerPreview ? undefined : "button"}
       tabIndex={isBannerPreview ? -1 : 0}
     >
-      <div className="p-5 flex-grow">
-        <div className="flex items-start gap-4">
-          <Avatar
-            src={photoURL}
-            alt={displayName}
-            size="md"
-            gender={tutor.gender}
-            verified={isVerified}
-            className="ring-2 ring-border group-hover:ring-primary/30 transition-all rounded-xl overflow-hidden"
-          />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-base text-foreground tracking-tight truncate leading-snug">
-                  <Highlight text={displayName} query={searchQuery} />
-                </h3>
-                <p className="text-xs text-muted-foreground font-medium mt-0.5 truncate" title={qualification}>
-                  {qualification || "Experienced Tutor"}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleBookmark}
-                disabled={saving}
-                className="shrink-0 p-2 -mr-2 -mt-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
-                title={isSaved ? "Unsave" : "Save"}
+      {/* Corner Bookmark (Absolute Overlay) */}
+      <button
+        type="button"
+        onClick={handleBookmark}
+        disabled={saving}
+        className="absolute top-4 right-4 z-10 size-8 flex items-center justify-center rounded-full bg-slate-100/80 hover:bg-primary/10 hover:text-primary dark:bg-slate-900/80 dark:hover:bg-primary/20 text-muted-foreground transition-all duration-200"
+        title={isSaved ? "Unsave" : "Save"}
+      >
+        <Bookmark
+          size={16}
+          className={cn(
+            isSaved ? "fill-primary text-primary" : "transition-colors"
+          )}
+        />
+      </button>
+
+      <div className="p-6 flex-grow">
+        {/* Avatar & Main Credentials Header */}
+        <div className="flex items-center gap-4">
+          <div className="relative shrink-0">
+            <Avatar
+              src={photoURL}
+              alt={displayName}
+              size="xl"
+              gender={tutor.gender}
+              verified={false}
+              className="ring-2 ring-border group-hover:ring-primary/30 transition-all rounded-xl overflow-hidden"
+            />
+            {isVerified && (
+              <span 
+                className="absolute -bottom-1 -right-1 size-5 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card select-none"
+                title="Verified Profile"
               >
-                <Bookmark
-                  size={18}
-                  className={
-                    isSaved
-                      ? "fill-primary text-primary"
-                      : "transition-colors"
-                  }
-                />
-              </button>
+                <Check className="size-3 stroke-[3]" />
+              </span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0 pr-8">
+            <h3 className="font-bold text-lg text-foreground tracking-tight truncate leading-snug group-hover:text-primary transition-colors">
+              <Highlight text={displayName} query={searchQuery} />
+            </h3>
+            <p className="text-xs text-muted-foreground font-medium mt-0.5 truncate" title={qualification}>
+              {qualification || "Experienced Tutor"}
+            </p>
+            {/* Rating moved directly under credentials */}
+            <div className="flex items-center gap-1.5 mt-1">
+              <Star size={14} className="fill-amber-500 text-amber-500" />
+              <span className="text-xs font-bold text-foreground">
+                {rating.toFixed(1)}
+              </span>
             </div>
           </div>
         </div>
@@ -161,35 +178,30 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-y-2.5 gap-x-3 mt-4 pt-4 border-t border-border text-[11px] text-muted-foreground">
+        {/* Cleaned 3-item metadata info grid */}
+        <div className="grid grid-cols-2 gap-y-2 gap-x-4 mt-4 pt-4 border-t border-border text-xs text-muted-foreground">
           <span className="flex items-center gap-2">
-            <BookOpen
-              size={12}
-              className="text-primary/70"
+            <Briefcase
+              size={14}
+              className="text-primary"
             />
             <span className="truncate">{experience}</span>
           </span>
           <span className="flex items-center gap-2">
-            <Star size={12} className="fill-amber-400 text-amber-400" />
-            <span className="font-semibold text-foreground">
-              {rating.toFixed(1)}
-            </span>
-          </span>
-          <span className="flex items-center gap-2">
             <MapPin
-              size={12}
-              className="text-primary/70"
+              size={14}
+              className="text-primary"
             />
             <span className="truncate">
               {(location || "N/A").split(",")[0]}
             </span>
           </span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-2 col-span-2">
             <Clock
-              size={12}
-              className="text-primary/70"
+              size={14}
+              className="text-primary"
             />
-            <span className="truncate">Fast Response</span>
+            <span className="truncate">Responds in 15 mins</span>
           </span>
         </div>
 
@@ -198,18 +210,21 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-5 py-4 border-t border-border bg-muted/10">
-        <div className="flex items-baseline gap-1">
-          <span className="text-xl font-bold text-foreground tracking-tight">
-            ৳{salary.toLocaleString()}
-          </span>
-          <span className="text-xs text-muted-foreground font-medium">/mo</span>
+      <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/10">
+        <div>
+          <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Expected Salary</div>
+          <div className="flex items-baseline gap-0.5">
+            <span className="text-xl font-bold text-foreground tracking-tight">
+              ৳{salary.toLocaleString()}
+            </span>
+            <span className="text-[10px] text-muted-foreground font-semibold">/mo</span>
+          </div>
         </div>
         <Button
           type="button"
           size="sm"
           variant="primary"
-          className="font-semibold text-xs tracking-wider pointer-events-auto"
+          className="font-semibold text-xs tracking-wider pointer-events-auto flex items-center gap-1 group/btn"
           onClick={(e) => {
             if (isBannerPreview) {
               e.stopPropagation();
@@ -218,6 +233,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           }}
         >
           View Profile
+          <ChevronRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform" />
         </Button>
       </div>
     </Card>

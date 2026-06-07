@@ -8,23 +8,22 @@ import {
   LogOut,
   ShieldCheck,
   Banknote,
-  Briefcase,
-  Edit3,
   Bookmark,
   Bell,
   Wallet,
   ArrowDownToLine,
   Settings,
   History,
-  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Cookies from "js-cookie";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const DashboardSidebar = ({ role }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const { user, dbUser, logout } = useAuth();
 
@@ -41,7 +40,6 @@ const DashboardSidebar = ({ role }) => {
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { path: "/dashboard/profile", label: "My Profile", icon: User },
     { path: "/dashboard/notifications", label: "Notifications", icon: Bell },
-    { path: "/dashboard/messages", label: "Messages", icon: MessageSquare },
   ];
 
   if (role?.toLowerCase() === "admin") {
@@ -67,16 +65,6 @@ const DashboardSidebar = ({ role }) => {
     });
   } else if (role?.toLowerCase() === "tutor") {
     menuItems.push({
-      path: "/dashboard/my-profile",
-      label: "Tutor Profile",
-      icon: Edit3,
-    });
-    menuItems.push({
-      path: "/dashboard/applications",
-      label: "Applications",
-      icon: FileText,
-    });
-    menuItems.push({
       path: "/dashboard/wallet",
       label: "Wallet",
       icon: Wallet,
@@ -88,23 +76,13 @@ const DashboardSidebar = ({ role }) => {
     });
   } else {
     menuItems.push({
-      path: "/dashboard/payments",
-      label: "Payments",
+      path: "/dashboard/billing",
+      label: "Billing & Receipts",
       icon: Banknote,
     });
     menuItems.push({
-      path: "/dashboard/receipts",
-      label: "Receipts",
-      icon: FileText,
-    });
-    menuItems.push({
-      path: "/dashboard/saved-tutors",
-      label: "Saved Tutors",
-      icon: Bookmark,
-    });
-    menuItems.push({
-      path: "/dashboard/saved-tuitions",
-      label: "Saved Tuitions",
+      path: "/dashboard/bookmarks",
+      label: "Bookmarks",
       icon: Bookmark,
     });
   }
@@ -152,7 +130,7 @@ const DashboardSidebar = ({ role }) => {
         <div className="flex-grow space-y-8">
           <div>
             <p className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-muted-foreground/40 mb-5 px-4">
-              Main Menu
+              {t("sidebar.main_menu", "Main Menu")}
             </p>
             <ul className="space-y-2">
               {menuItems.map((item) => {
@@ -204,7 +182,7 @@ const DashboardSidebar = ({ role }) => {
               className="opacity-60 group-hover:opacity-100 group-hover:-translate-x-0.5 transition-transform"
             />
             <span className="text-[10px] font-heading font-black tracking-widest uppercase mt-0.5">
-              Sign Out
+              {t("sidebar.sign_out", "Sign Out")}
             </span>
           </button>
         </div>

@@ -16,7 +16,7 @@ const categories = [
     { icon: Languages, label: "IELTS", count: "340+", rating: "4.6", slug: "ielts", tag: null, context: "International Exam Prep", accent: "orange" },
     { icon: Languages, label: "English", count: "480+", rating: "4.7", slug: "english-medium", tag: null, context: "Language & Literature", accent: "cyan" },
     { icon: Calculator, label: "University", count: "480+", rating: "4.6", slug: "university", tag: "High demand", context: "Admission Preparation", accent: "indigo" },
-    { icon: Code, label: "Programming", count: "290+", rating: "4.9", slug: "programming", tag: null, context: "Coding & Web Development", accent: "purple" },
+    { icon: Code, label: "Programming", count: "290+", rating: "4.9", slug: "programming", tag: null, context: "Coding & Web Development", accent: "teal" },
     { icon: Award, label: "Admission", count: "310+", rating: "4.5", slug: "admission", tag: null, context: "University Admission", accent: "pink" },
     { icon: Palette, label: "Arts", count: "180+", rating: "4.6", slug: "arts", tag: null, context: "Creative Studies", accent: "rose" },
 ];
@@ -27,9 +27,20 @@ const accentStyles = {
     orange: { iconColor: 'text-orange-500', borderColor: 'border-orange-500/20', hoverShadow: 'shadow-orange-500/10' },
     cyan: { iconColor: 'text-cyan-500', borderColor: 'border-cyan-500/20', hoverShadow: 'shadow-cyan-500/10' },
     indigo: { iconColor: 'text-indigo-500', borderColor: 'border-indigo-500/20', hoverShadow: 'shadow-indigo-500/10' },
-    purple: { iconColor: 'text-purple-500', borderColor: 'border-purple-500/20', hoverShadow: 'shadow-purple-500/10' },
+    teal: { iconColor: 'text-teal-500', borderColor: 'border-teal-500/20', hoverShadow: 'shadow-teal-500/10' },
     pink: { iconColor: 'text-pink-500', borderColor: 'border-pink-500/20', hoverShadow: 'shadow-pink-500/10' },
     rose: { iconColor: 'text-rose-500', borderColor: 'border-rose-500/20', hoverShadow: 'shadow-rose-500/10' },
+};
+
+const glowStyles = {
+    emerald: 'bg-emerald-500/10 dark:bg-emerald-500/5',
+    blue: 'bg-blue-500/10 dark:bg-blue-500/5',
+    orange: 'bg-orange-500/10 dark:bg-orange-500/5',
+    cyan: 'bg-cyan-500/10 dark:bg-cyan-500/5',
+    indigo: 'bg-indigo-500/10 dark:bg-indigo-500/5',
+    teal: 'bg-teal-500/10 dark:bg-teal-500/5',
+    pink: 'bg-pink-500/10 dark:bg-pink-500/5',
+    rose: 'bg-rose-500/10 dark:bg-rose-500/5',
 };
 
 const FeaturedCategories = () => {
@@ -49,6 +60,7 @@ const FeaturedCategories = () => {
                         const a = accentStyles[cat.accent] || accentStyles.emerald;
                         const tag = cat.tag ? tagConfig[cat.tag] : null;
                         const TagIcon = tag?.icon;
+                        const glowBg = glowStyles[cat.accent] || glowStyles.emerald;
 
                         return (
                             <Link
@@ -57,14 +69,17 @@ const FeaturedCategories = () => {
                                 className="block group opacity-0 animate-scale-in"
                                 style={{ animationDelay: `${150 + idx * 50}ms` }}
                             >
-                                <Card variant="elevated" className="p-5 relative h-full transition-all duration-500 hover:border-primary/30 hover:shadow-xl">
+                                <Card variant="elevated" className="p-5 relative h-full transition-all duration-500 hover:border-primary/30 hover:shadow-xl overflow-hidden">
+                                    {/* Ambient Hover Glow Bubble */}
+                                    <div className={`absolute -top-12 -left-12 size-24 rounded-full ${glowBg} blur-xl group-hover:scale-150 transition-transform duration-500 pointer-events-none`}></div>
+
                                     {tag && TagIcon && (
                                         <Badge variant={tag.variant} size="xs" className="absolute top-3 right-3 z-10 gap-1 shadow-sm">
                                             <TagIcon className="size-3" /> {cat.tag}
                                         </Badge>
                                     )}
 
-                                    <div className="flex items-center gap-3 mb-4">
+                                    <div className="flex items-center gap-3 mb-4 relative z-10">
                                         <div className={`size-12 flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-muted to-background border ${a.borderColor} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
                                             <cat.icon className={`size-6 ${a.iconColor}`} />
                                         </div>
@@ -74,7 +89,7 @@ const FeaturedCategories = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                                    <div className="flex items-center justify-between pt-3 border-t border-border/50 relative z-10">
                                         <div>
                                             <div className="text-sm font-semibold text-foreground">{cat.count}</div>
                                             <div className="text-[10px] text-muted-foreground">Tutors</div>
@@ -83,7 +98,9 @@ const FeaturedCategories = () => {
                                             <div className="text-sm font-semibold text-amber-500">{cat.rating}★</div>
                                             <div className="text-[10px] text-muted-foreground">Rating</div>
                                         </div>
-                                        <ArrowRight className="size-4 text-muted-foreground/50 group-hover:text-primary transition-colors group-hover:translate-x-1 transition-transform" />
+                                        <div className="p-1.5 rounded-full bg-muted/80 dark:bg-slate-900 group-hover:bg-primary group-hover:text-white text-muted-foreground transition-all duration-300 group-hover:translate-x-1">
+                                            <ArrowRight className="size-3.5" />
+                                        </div>
                                     </div>
                                 </Card>
                             </Link>

@@ -15,7 +15,7 @@ const TrustBadges = ({ tutor }) => {
         </span>
       )}
       {tutor.credentialVerified && (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full bg-violet-50 text-violet-700 border border-violet-200">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full bg-teal-50 text-teal-700 border border-teal-200">
           <BadgeCheck size={12} /> Degree verified
         </span>
       )}

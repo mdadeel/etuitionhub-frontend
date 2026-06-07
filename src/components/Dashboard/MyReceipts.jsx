@@ -9,7 +9,7 @@ import ReceiptModal from '../shared/ReceiptModal';
  * Lists all the user's receipts (student or tutor) with click-to-open modal.
  * Reachable from student/tutor sidebar.
  */
-const MyReceipts = () => {
+const MyReceipts = ({ hideHeader }) => {
     const [receipts, setReceipts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [openId, setOpenId] = useState(null);
@@ -32,14 +32,16 @@ const MyReceipts = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            <header className="border-b border-border pb-6">
-                <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-1.5 bg-primary rounded-none"></div>
-                    <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-primary">Financial Records</span>
-                </div>
-                <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">My Receipts</h2>
-                <p className="text-xs text-muted-foreground mt-1">All payment receipts for transactions you participated in.</p>
-            </header>
+            {!hideHeader && (
+                <header className="border-b border-border pb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-1.5 bg-primary rounded-none"></div>
+                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-primary">Financial Records</span>
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">My Receipts</h2>
+                    <p className="text-xs text-muted-foreground mt-1">All payment receipts for transactions you participated in.</p>
+                </header>
+            )}
 
             {receipts.length === 0 ? (
                 <div className="bg-card border border-border p-12 text-center">

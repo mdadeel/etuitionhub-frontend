@@ -285,13 +285,13 @@ const TutorDetails = () => {
                     </Link>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-4">
-                        {/* Identity Card */}
-                        <div className="bg-card p-6 rounded-lg border border-border">
-                            <div className="flex flex-col md:flex-row gap-6">
-                                <div className="relative shrink-0">
+                <div className="space-y-4">
+                    {/* Identity Card */}
+                    <div className="bg-card p-6 rounded-lg border border-border">
+                        <div className="flex flex-col lg:flex-row gap-6 lg:justify-between lg:items-stretch">
+                            {/* Left Column: Avatar & Basic Stats */}
+                            <div className="flex flex-col sm:flex-row gap-6 flex-grow">
+                                <div className="relative shrink-0 mx-auto sm:mx-0">
                                     <div className="size-28 rounded-lg overflow-hidden border border-border">
                                         <Avatar
                                             src={tutor.photoURL}
@@ -302,199 +302,214 @@ const TutorDetails = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex-grow">
-                                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                                <div className="flex-grow flex flex-col justify-between">
+                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-3">
+                                        <div className="text-center sm:text-left">
+                                            <h1 className="text-xl sm:text-2xl font-heading text-foreground mb-1">
+                                                {tutor.displayName || 'Tutor'}
+                                            </h1>
+                                            <p className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-2">
+                                                <GraduationCap size={16} className="text-[#2563EB]" />
+                                                {tutor.qualification || 'Verified Educator'}
+                                            </p>
+                                        </div>
+
                                         {tutor.isVerified && tutor._id !== 'tutor_001' && (
-                                            <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] text-xs font-medium rounded-full">Verified</span>
+                                            <div className="flex justify-center sm:justify-end shrink-0">
+                                                <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-medium rounded-lg flex items-center gap-1 shadow-sm">
+                                                    <ShieldCheck size={14} className="text-emerald-600" />
+                                                    Verified
+                                                </span>
+                                            </div>
                                         )}
-                                        <span className="text-xs text-muted-foreground flex items-center gap-1 px-2 py-1 bg-muted rounded-full">
-                                            <MapPin size={12} /> {tutor.location || 'N/A'}
-                                        </span>
                                     </div>
 
-                                    <h1 className="text-xl font-heading text-foreground mb-1">
-                                        {tutor.displayName || 'Tutor'}
-                                    </h1>
-                                    <p className="text-sm text-muted-foreground mb-4 flex items-center gap-2">
-                                        <GraduationCap size={16} className="text-[#2563EB]" />
-                                        {tutor.qualification || 'Verified Educator'}
-                                    </p>
-
-                                    <div className="flex items-center gap-6 pt-4 border-t border-border">
+                                    <div className="flex flex-wrap items-center justify-around sm:justify-start gap-4 sm:gap-6 pt-4 border-t border-border">
                                         <div>
                                             <p className="text-xs text-muted-foreground mb-1">Monthly Fee</p>
-                                            <p className="text-lg font-heading text-foreground">৳{tutor.expectedSalary || 'Negotiable'}</p>
+                                            <p className="text-base sm:text-lg font-heading text-foreground">৳{tutor.expectedSalary || 'Negotiable'}</p>
                                         </div>
-                                        <div className="w-px h-8 bg-[#E2E8F0]"></div>
+                                        <div className="w-px h-8 bg-[#E2E8F0] hidden sm:block"></div>
                                         <div>
                                             <p className="text-xs text-muted-foreground mb-1">Experience</p>
-                                            <p className="text-lg font-heading text-foreground">{tutor.experience || 'Verified'}</p>
+                                            <p className="text-base sm:text-lg font-heading text-foreground">{tutor.experience || 'Verified'}</p>
                                         </div>
-                                        <div className="w-px h-8 bg-[#E2E8F0]"></div>
+                                        <div className="w-px h-8 bg-[#E2E8F0] hidden sm:block"></div>
                                         <div>
                                             <p className="text-xs text-muted-foreground mb-1">Rating</p>
                                             <div className="flex items-center gap-1">
-                                                <p className="text-lg font-heading text-foreground">{tutor.ratings || '4.9'}</p>
+                                                <p className="text-base sm:text-lg font-heading text-foreground">{tutor.ratings || '4.9'}</p>
                                                 <Star size={14} className="fill-amber-400 text-amber-400" />
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Subjects & Availability */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-card p-4 rounded-lg border border-border">
-                                <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
-                                    <Award size={14} className="text-[#2563EB]" /> Subjects
-                                </h2>
-                                <div className="flex flex-wrap gap-2">
-                                    {Array.isArray(tutor.subjects) ? tutor.subjects.map((subject, idx) => (
-                                        <span key={idx} className="bg-muted text-[#374151] px-3 py-1 rounded-lg text-xs">
-                                            {subject}
-                                        </span>
-                                    )) : (
-                                        <span className="text-muted-foreground text-xs">No subjects listed</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="bg-card p-4 rounded-lg border border-border">
-                                <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
-                                    <Calendar size={14} className="text-[#2563EB]" /> Availability
-                                </h2>
-                                <div className="flex flex-wrap gap-2">
-                                    {Array.isArray(tutor.availableDays) ? tutor.availableDays.map((day, idx) => (
-                                        <span key={idx} className="bg-muted text-[#374151] px-3 py-1 rounded-lg text-xs">
-                                            {day}
-                                        </span>
-                                    )) : (
-                                        <span className="text-muted-foreground text-xs">Contact for availability</span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* About Section */}
-                        <div className="bg-card p-4 rounded-lg border border-border">
-                            <h2 className="text-sm font-medium text-[#374151] mb-3">About the Tutor</h2>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                {tutor.displayName} is a qualified educator specialized in {Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'their field'}.
-                                With {tutor.experience || 'years'} of experience, they provide structured learning for students in {tutor.location || 'their area'}.
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                                Committed to academic excellence and student growth, {firstName} focuses on building strong conceptual foundations.
-                            </p>
-                        </div>
-
-                        {/* Reviews Section */}
-                        <div className="bg-card p-4 rounded-lg border border-border">
-                            <h3 className="text-lg font-heading mb-4 flex items-center gap-2">
-                                Reviews ({reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : '0'})
-                            </h3>
-                            
-                            {reviews.length > 0 ? (
-                                <div className="space-y-4">
-                                    {reviews.map(review => (
-                                        <div key={review._id} className="p-4 border border-border rounded-lg">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-medium text-foreground">{review.studentEmail}</span>
-                                                <span className="text-amber-500">{'★'.repeat(review.rating)}</span>
-                                            </div>
-                                            <p className="text-muted-foreground mt-2 text-sm">{review.comment}</p>
+                                        <div className="w-px h-8 bg-[#E2E8F0] hidden sm:block"></div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground mb-1">Location</p>
+                                            <p className="text-base sm:text-lg font-heading text-foreground flex items-center gap-1">
+                                                <MapPin size={14} className="text-[#2563EB]" /> {tutor.location || 'N/A'}
+                                            </p>
                                         </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-muted-foreground text-sm">No reviews yet.</p>
-                            )}
-
-                            {user && canReview ? (
-                                <form onSubmit={handleSubmitReview} className="mt-6 pt-4 border-t border-border">
-                                    <h4 className="text-sm font-medium text-[#374151] mb-3">Write a Review</h4>
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <label className="text-sm text-muted-foreground">Rating:</label>
-                                        <select 
-                                            value={newReview.rating} 
-                                            onChange={(e) => setNewReview({...newReview, rating: parseInt(e.target.value)})}
-                                            className="border border-border rounded-lg px-2 py-1 text-sm bg-background text-foreground"
-                                        >
-                                            {[1,2,3,4,5].map(n => (
-                                                <option key={n} value={n}>{n} ★</option>
-                                            ))}
-                                        </select>
                                     </div>
-                                    <textarea
-                                        value={newReview.comment}
-                                        onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
-                                        placeholder="Write your review..."
-                                        className="w-full border border-border rounded-lg p-3 text-sm mb-3 bg-background text-foreground placeholder:text-muted-foreground"
-                                        rows={3}
-                                    />
-                                    <button 
-                                        type="submit" 
-                                        disabled={submitting}
-                                        className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#1D4ED8] disabled:opacity-50 transition-colors"
-                                    >
-                                        {submitting ? 'Submitting...' : 'Submit Review'}
-                                    </button>
-                                </form>
-                            ) : user && (
-                                <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground">
-                                    You can only write a review after completing a session with this tutor.
                                 </div>
-                            )}
-                        </div>
-                    </div>
+                            </div>
 
-                    {/* Sidebar */}
-                    <div className="space-y-4">
-                        <div className="bg-card p-4 rounded-lg border border-border">
-                            <div className="text-center">
-                                <h3 className="text-base font-heading text-foreground mb-2">Learn with {firstName}</h3>
-                                <p className="text-sm text-muted-foreground mb-4">
-                                    Book a trial class and experience quality academic support.
-                                </p>
+                            {/* Vertical separator on desktop screens */}
+                            <div className="hidden lg:block w-px bg-border self-stretch my-2"></div>
 
-                                <div className="space-y-2">
-                                    {!user ? (
-                                        <Link to="/login" className="block w-full px-4 py-2.5 bg-muted text-[#374151] font-medium rounded-lg hover:bg-[#E2E8F0] text-sm transition-colors">
-                                            Login to Message
-                                        </Link>
-                                    ) : (
-                                        <button
-                                            id="contact-tutor-btn"
-                                            onClick={handleContact}
-                                            className="w-full px-4 py-2.5 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#1D4ED8] flex items-center justify-center gap-2 text-sm transition-colors shadow-sm active:scale-95"
-                                        >
-                                            <Send size={16} /> Contact Tutor
-                                        </button>
-                                    )}
+                            {/* Right Column: CTA card */}
+                            <div className="flex flex-col justify-between lg:w-80 lg:shrink-0 pt-6 lg:pt-0 border-t lg:border-t-0 border-border">
+                                <div className="space-y-2 mb-4 lg:mb-0">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <h3 className="text-sm font-semibold text-foreground">Learn with {firstName}</h3>
+                                        <ResponseTimeIndicator tutor={tutor} />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                        Book a trial class and experience quality academic support.
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-2 mt-auto">
+                                    <div className="flex-grow">
+                                        {!user ? (
+                                            <Link to="/login" className="block w-full px-4 py-2 bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-medium rounded-lg text-xs sm:text-sm transition-colors text-center shadow-sm cursor-pointer">
+                                                Login to Message
+                                            </Link>
+                                        ) : (
+                                            <button
+                                                id="contact-tutor-btn"
+                                                onClick={handleContact}
+                                                className="w-full px-4 py-2 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#1D4ED8] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-colors shadow-sm active:scale-95 cursor-pointer"
+                                            >
+                                                <Send size={14} /> Message
+                                            </button>
+                                        )}
+                                    </div>
 
                                     <button
                                         onClick={handleSave}
-                                        className={`w-full px-4 py-2.5 border font-medium rounded-lg flex items-center justify-center gap-2 text-sm transition-colors ${
+                                        title={isSaved ? 'Remove from saved' : 'Save Profile'}
+                                        className={`p-2 border rounded-lg flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
                                             isSaved
-                                                ? 'border-primary/30 text-primary bg-primary/5 hover:bg-primary/10'
-                                                : 'border-border text-muted-foreground hover:bg-background'
+                                                ? 'border-red-200 text-red-500 bg-red-50 hover:bg-red-100'
+                                                : 'border-border text-muted-foreground hover:bg-muted/50'
                                         }`}
                                     >
-                                        <Heart size={16} className={isSaved ? 'fill-primary' : ''} />
-                                        {isSaved ? 'Saved' : 'Save Profile'}
+                                        <Heart size={16} className={isSaved ? 'fill-red-500 text-red-500' : ''} />
                                     </button>
 
-                                    <WhatsAppShareButton tutor={tutor} className="w-full justify-center py-2.5 text-sm" />
+                                    <WhatsAppShareButton 
+                                        tutor={tutor} 
+                                        className="p-2 border rounded-lg shrink-0 cursor-pointer" 
+                                        variant="outline" 
+                                        iconOnly={true} 
+                                    />
                                 </div>
+                            </div>
+                        </div>
+                    </div>
 
-                                {/* Verified Profile section removed as per request */}
+                    {/* Subjects & Availability */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-card p-4 rounded-lg border border-border">
+                            <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
+                                <Award size={14} className="text-[#2563EB]" /> Subjects
+                            </h2>
+                            <div className="flex flex-wrap gap-2">
+                                {Array.isArray(tutor.subjects) ? tutor.subjects.map((subject, idx) => (
+                                    <span key={idx} className="bg-muted text-[#374151] px-3 py-1 rounded-lg text-xs">
+                                        {subject}
+                                    </span>
+                                )) : (
+                                    <span className="text-muted-foreground text-xs">No subjects listed</span>
+                                )}
                             </div>
                         </div>
 
-                        {/* Activity */}
                         <div className="bg-card p-4 rounded-lg border border-border">
-                            <ResponseTimeIndicator tutor={tutor} />
+                            <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
+                                <Calendar size={14} className="text-[#2563EB]" /> Availability
+                            </h2>
+                            <div className="flex flex-wrap gap-2">
+                                {Array.isArray(tutor.availableDays) ? tutor.availableDays.map((day, idx) => (
+                                    <span key={idx} className="bg-muted text-[#374151] px-3 py-1 rounded-lg text-xs">
+                                        {day}
+                                    </span>
+                                )) : (
+                                    <span className="text-muted-foreground text-xs">Contact for availability</span>
+                                )}
+                            </div>
                         </div>
+                    </div>
+
+                    {/* About Section */}
+                    <div className="bg-card p-4 rounded-lg border border-border">
+                        <h2 className="text-sm font-medium text-[#374151] mb-3">About the Tutor</h2>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                            {tutor.displayName} is a qualified educator specialized in {Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'their field'}.
+                            With {tutor.experience || 'years'} of experience, they provide structured learning for students in {tutor.location || 'their area'}.
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+                            Committed to academic excellence and student growth, {firstName} focuses on building strong conceptual foundations.
+                        </p>
+                    </div>
+
+                    {/* Reviews Section */}
+                    <div className="bg-card p-4 rounded-lg border border-border">
+                        <h3 className="text-lg font-heading mb-4 flex items-center gap-2">
+                            Reviews ({reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : '0'})
+                        </h3>
+                        
+                        {reviews.length > 0 ? (
+                            <div className="space-y-4">
+                                {reviews.map(review => (
+                                    <div key={review._id} className="p-4 border border-border rounded-lg">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-medium text-foreground">{review.studentEmail}</span>
+                                            <span className="text-amber-500">{'★'.repeat(review.rating)}</span>
+                                        </div>
+                                        <p className="text-muted-foreground mt-2 text-sm">{review.comment}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-muted-foreground text-sm">No reviews yet.</p>
+                        )}
+
+                        {user && canReview ? (
+                            <form onSubmit={handleSubmitReview} className="mt-6 pt-4 border-t border-border">
+                                <h4 className="text-sm font-medium text-[#374151] mb-3">Write a Review</h4>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <label className="text-sm text-muted-foreground">Rating:</label>
+                                    <select 
+                                        value={newReview.rating} 
+                                        onChange={(e) => setNewReview({...newReview, rating: parseInt(e.target.value)})}
+                                        className="border border-border rounded-lg px-2 py-1 text-sm bg-background text-foreground"
+                                    >
+                                        {[1,2,3,4,5].map(n => (
+                                            <option key={n} value={n}>{n} ★</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <textarea
+                                    value={newReview.comment}
+                                    onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
+                                    placeholder="Write your review..."
+                                    className="w-full border border-border rounded-lg p-3 text-sm mb-3 bg-background text-foreground placeholder:text-muted-foreground"
+                                    rows={3}
+                                />
+                                <button 
+                                    type="submit" 
+                                    disabled={submitting}
+                                    className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#1D4ED8] disabled:opacity-50 transition-colors"
+                                >
+                                    {submitting ? 'Submitting...' : 'Submit Review'}
+                                </button>
+                            </form>
+                        ) : user && (
+                            <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground">
+                                You can only write a review after completing a session with this tutor.
+                            </div>
+                        )}
                     </div>
                 </div>
 

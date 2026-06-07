@@ -34,6 +34,8 @@ const Navbar = () => {
   });
   const debouncedQuery = useDebouncedValue(searchQuery, 300);
   const dropdownRef = useRef(null);
+  const profileDropdownRef = useRef(null);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -111,6 +113,12 @@ const Navbar = () => {
         !searchInputRef.current.contains(e.target)
       ) {
         setShowDropdown(false);
+      }
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(e.target)
+      ) {
+        setIsProfileDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -332,19 +340,21 @@ const Navbar = () => {
 
         {/* Right Section: Calm Authentication */}
         <div className="flex items-center justify-end gap-6">
-          {/* Post Tuition Action Button */}
-          <div className="hidden sm:flex items-center">
-            <Button
-              asChild
-              size="sm"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-heading text-[11px] uppercase tracking-[0.08em] gap-1.5 px-4 h-9 shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/30 active:scale-95"
-            >
-              <Link to="/post-tuition">
-                <Plus size={14} strokeWidth={2.5} />
-                <span>{t("nav.post_tuition_btn", "Post Tuition")}</span>
-              </Link>
-            </Button>
-          </div>
+          {/* Post Tuition Action Button (students only) */}
+          {userRole === "student" && (
+            <div className="hidden sm:flex items-center">
+              <Button
+                asChild
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-heading text-[11px] uppercase tracking-[0.08em] gap-1.5 px-4 h-9 shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/30 active:scale-95"
+              >
+                <Link to="/post-tuition">
+                  <Plus size={14} strokeWidth={2.5} />
+                  <span>{t("nav.post_tuition_btn", "Post Tuition")}</span>
+                </Link>
+              </Button>
+            </div>
+          )}
 
           {user ? (
             <div className="flex items-center gap-5">
@@ -361,8 +371,11 @@ const Navbar = () => {
               <NotificationBell />
 
               {/* User Avatar with Dropdown */}
-              <div className="relative group">
-                <div className="size-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300">
+              <div ref={profileDropdownRef} className="relative">
+                <button
+                  onClick={() => setIsProfileDropdownOpen((prev) => !prev)}
+                  className="size-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300 block focus:outline-none"
+                >
                   {user.photoURL ? (
                     <img
                       src={user.photoURL}
@@ -374,10 +387,17 @@ const Navbar = () => {
                       {user.displayName?.charAt(0)}
                     </div>
                   )}
-                </div>
+                </button>
 
                 {/* Dropdown */}
-                <div className="absolute right-0 top-full pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300">
+                <div
+                  className={cn(
+                    "absolute right-0 top-full pt-2 transition-all duration-200 z-50",
+                    isProfileDropdownOpen
+                      ? "opacity-100 translate-y-0 pointer-events-auto"
+                      : "opacity-0 -translate-y-2 pointer-events-none"
+                  )}
+                >
                   <div className="w-52 bg-card border border-border shadow-xl rounded-lg overflow-hidden">
                     <div className="px-4 py-3 border-b border-border">
                       <p className="text-sm font-heading text-foreground truncate">
@@ -389,13 +409,17 @@ const Navbar = () => {
                     </div>
                     <Link
                       to="/dashboard/profile"
+                      onClick={() => setIsProfileDropdownOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-background transition-all"
                     >
                       <User size={16} /> My Profile
                     </Link>
                     <div className="h-px bg-border" />
                     <button
-                      onClick={handleLogout}
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        handleLogout();
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-all text-left"
                     >
                       <LogOut size={16} /> Logout Session

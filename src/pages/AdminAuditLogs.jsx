@@ -12,14 +12,14 @@ const ACTION_COLORS = {
     withdrawal_approved: 'bg-indigo-100 text-indigo-800 border-indigo-300',
     withdrawal_rejected: 'bg-amber-100 text-amber-800 border-amber-300',
     withdrawal_paid: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-    commission_applied: 'bg-violet-100 text-violet-800 border-violet-300',
+    commission_applied: 'bg-teal-100 text-teal-800 border-teal-300',
 };
 
 const ENTITY_COLORS = {
     payment: 'text-primary',
     withdrawal: 'text-amber-600',
     wallet: 'text-emerald-600',
-    commission: 'text-violet-600',
+    commission: 'text-teal-600',
 };
 
 const AdminAuditLogs = () => {

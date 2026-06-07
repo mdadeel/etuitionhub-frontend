@@ -1,26 +1,23 @@
 import { Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
 import StudentDashboard from "../components/Dashboard/StudentDashboard";
 import TutorDashboard from "../components/Dashboard/TutorDashboard";
-import TutorProfile from "../components/Dashboard/TutorProfile";
 import AdminDashboard from "../components/Dashboard/AdminDashboard";
 import Profile from "../components/Dashboard/Profile";
 import DashUsers from "../components/Dashboard/DashUsers";
-import StudentPayments from "../components/Dashboard/StudentPayments";
 import TutorSessions from "../components/Dashboard/TutorSessions";
-import SavedTutors from "../components/Dashboard/SavedTutors";
-import SavedTuitions from "../components/Dashboard/SavedTuitions";
+import Bookmarks from "../components/Dashboard/Bookmarks";
+import BillingHistory from "../components/Dashboard/BillingHistory";
 import NotificationPage from "../components/Dashboard/NotificationPage";
-import ChatInterface from "../components/Dashboard/ChatInterface";
 import VerificationFlow from "../components/Dashboard/VerificationFlow";
 import TutorWallet from "../components/Dashboard/TutorWallet";
 import TutorWithdraw from "../components/Dashboard/TutorWithdraw";
 import AdminWithdrawals from "./AdminWithdrawals";
 import AdminAuditLogs from "./AdminAuditLogs";
 import DashSettings from "../components/Dashboard/DashSettings";
-import MyReceipts from "../components/Dashboard/MyReceipts";
 import { Menu, X, Home } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
 import { cn } from "@/lib/utils";
@@ -40,6 +37,7 @@ const AdminRoute = ({ children, role }) => {
  * Dashboard Component — role-aware routing hub with Apple Design System.
  */
 const Dashboard = () => {
+  const { t } = useTranslation();
   const { user, dbUser, loading } = useAuth();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -63,7 +61,7 @@ const Dashboard = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="flex items-center gap-3">
             <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
-            <span className="text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">Loading dashboard...</span>
+            <span className="text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">{t("dashboard_loading", "Loading dashboard...")}</span>
           </div>
         </div>
       </div>
@@ -111,10 +109,10 @@ const Dashboard = () => {
                   className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
                 >
                   <Home size={12} />
-                  <span className="hidden sm:inline">Home</span>
+                  <span className="hidden sm:inline">{t("nav.home", "Home")}</span>
                 </Link>
                 <span className="text-[#E2E8F0] font-normal">/</span>
-                <span className="text-foreground">Dashboard</span>
+                <span className="text-foreground">{t("nav.dashboard", "Dashboard")}</span>
               </nav>
             </div>
 
@@ -176,21 +174,10 @@ const Dashboard = () => {
 
               <Route
                 path="my-profile"
-                element={
-                  role === "tutor" ? (
-                    <TutorProfile />
-                  ) : (
-                    <Navigate to="/dashboard/profile" replace />
-                  )
-                }
+                element={<Navigate to="/dashboard/profile" replace />}
               />
 
-              <Route
-                path="applications"
-                element={
-                  role === "tutor" ? <TutorDashboard /> : <StudentDashboard />
-                }
-              />
+
 
               <Route
                 path="sessions"
@@ -204,33 +191,39 @@ const Dashboard = () => {
               />
 
               <Route
-                path="payments"
+                path="billing"
                 element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <StudentPayments />
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <BillingHistory />
                 }
+              />
+
+              <Route
+                path="bookmarks"
+                element={
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <Bookmarks />
+                }
+              />
+
+              <Route
+                path="payments"
+                element={<Navigate to="/dashboard/billing" replace />}
               />
               <Route
                 path="receipts"
-                element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <MyReceipts />
-                }
+                element={<Navigate to="/dashboard/billing" replace />}
               />
 
               <Route
                 path="saved-tutors"
-                element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <SavedTutors />
-                }
+                element={<Navigate to="/dashboard/bookmarks" replace />}
               />
               <Route
                 path="saved-tuitions"
-                element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <SavedTuitions />
-                }
+                element={<Navigate to="/dashboard/bookmarks" replace />}
               />
               <Route path="notifications" element={<NotificationPage />} />
 
-              <Route path="messages" element={<ChatInterface />} />
+
 
               <Route
                 path="verification"

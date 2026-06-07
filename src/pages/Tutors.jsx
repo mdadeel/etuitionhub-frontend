@@ -36,6 +36,29 @@ const Tutors = () => {
   const [pagination, setPagination] = useState(null);
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleWindowScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+    };
+  }, []);
+
+  const handleMainScroll = (e) => {
+    if (e.currentTarget.scrollTop > 20) {
+      setScrolled(true);
+    } else {
+      setScrolled(false);
+    }
+  };
 
   useEffect(() => {
     if (isMobileFiltersOpen) {
@@ -230,30 +253,39 @@ const Tutors = () => {
       />
       <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col flex-1 min-h-0 w-full">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 shrink-0">
-          <div>
-            <h1 className="text-2xl font-heading text-foreground tracking-tight leading-none mb-2">
-              Verified <span className="text-[#2563EB]">Tutors.</span>
-            </h1>
-            <p className="text-sm text-muted-foreground font-medium">
-              Browse through our verified network of academic professionals.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
-              <span className="text-xl font-heading text-foreground leading-none">
-                {filteredAndSortedTutors.length}
-              </span>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
-                Available
-              </span>
+        <div
+          className={cn(
+            "transition-all duration-300 ease-in-out overflow-hidden shrink-0",
+            scrolled
+              ? "max-h-0 opacity-0 mb-0 pointer-events-none"
+              : "max-h-[250px] opacity-100 mb-8"
+          )}
+        >
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <h1 className="text-2xl font-heading text-foreground tracking-tight leading-none mb-2">
+                Verified <span className="text-[#2563EB]">Tutors.</span>
+              </h1>
+              <p className="text-sm text-muted-foreground font-medium">
+                Browse through our verified network of academic professionals.
+              </p>
             </div>
-            <div className="px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
-              <ShieldCheck size={18} className="text-[#2563EB] mb-1" />
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
-                100% Vetted
-              </span>
+
+            <div className="flex items-center gap-2">
+              <div className="px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
+                <span className="text-xl font-heading text-foreground leading-none">
+                  {filteredAndSortedTutors.length}
+                </span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
+                  Available
+                </span>
+              </div>
+              <div className="px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
+                <ShieldCheck size={18} className="text-[#2563EB] mb-1" />
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
+                  100% Vetted
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -416,7 +448,7 @@ const Tutors = () => {
           </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-3 relative pb-24 md:pb-0 overflow-y-auto custom-scrollbar pr-1">
+          <main onScroll={handleMainScroll} className="lg:col-span-3 relative pb-24 md:pb-0 overflow-y-auto custom-scrollbar pr-1">
             {loading && tutors.length === 0 && (
               <div className="py-12 text-center">
                 <p className="text-sm text-muted-foreground">Loading tutors...</p>

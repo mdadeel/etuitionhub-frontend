@@ -14,7 +14,7 @@ const CallToAction = () => {
             <div className="max-w-5xl mx-auto px-6 relative z-10 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                 <div className="bg-gradient-to-br from-background to-card border border-border/60 rounded-2xl p-8 md:p-16 lg:p-20 text-center shadow-premium-lg relative overflow-hidden">
                     {/* Decorative header */}
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-purple-500 to-accent"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-cyan-500 to-accent"></div>
 
                     <div className="space-y-8 relative z-10">
                         <div className="space-y-4">

@@ -2,8 +2,10 @@ import React from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useChat } from '../../contexts/ChatContext';
+import { useTranslation } from 'react-i18next';
 
 const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
+    const { t } = useTranslation();
     const { onlineUsers, typingUsers } = useChat();
 
     const other = conv.participants.find(p => p.email !== user?.email);
@@ -82,7 +84,7 @@ const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
                             <span className="inline-block size-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                             <span className="inline-block size-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                             <span className="inline-block size-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                            <span className="ml-1 text-xs">typing...</span>
+                            <span className="ml-1 text-xs">{t("chat.typing", "typing...")}</span>
                         </p>
                     ) : (
                         <p className={cn(
@@ -91,7 +93,7 @@ const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
                                 ? "font-bold text-foreground" 
                                 : "text-muted-foreground/80 group-hover:text-muted-foreground"
                         )}>
-                            {isLastMessageMine && <span className="opacity-70 text-[12px] font-bold">You: </span>}
+                            {isLastMessageMine && <span className="opacity-70 text-[12px] font-bold">{t("chat.you", "You: ")}</span>}
                             <span>
                                 {conv.lastMessage?.text || "Started a conversation"}
                             </span>

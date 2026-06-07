@@ -30,6 +30,30 @@ const Tuitions = () => {
   const searchQuery = filters.search;
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleWindowScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+    };
+  }, []);
+
+  const handleMainScroll = (e) => {
+    if (e.currentTarget.scrollTop > 20) {
+      setScrolled(true);
+    } else {
+      setScrolled(false);
+    }
+  };
+
   const [savedTuitionIds, setSavedTuitionIds] = useState(new Set());
   const { user } = useAuth();
 
@@ -113,21 +137,30 @@ const Tuitions = () => {
       />
       <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col flex-1 min-h-0 w-full">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 shrink-0">
-          <div className="md:block hidden">
-            <h1 className="text-xl font-heading text-foreground">
-              Available Tuition Jobs
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Find the perfect teaching opportunity that matches your skills.
-            </p>
-          </div>
-          <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-card rounded-xl border border-border">
-              <span className="text-lg font-heading text-foreground">
-                {pagination?.totalItems || 0}
-              </span>
-              <span className="text-xs text-muted-foreground">Jobs Available</span>
+        <div
+          className={cn(
+            "transition-all duration-300 ease-in-out overflow-hidden shrink-0",
+            scrolled
+              ? "max-h-0 opacity-0 mb-0 pointer-events-none"
+              : "max-h-[250px] opacity-100 mb-6"
+          )}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="md:block hidden">
+              <h1 className="text-xl font-heading text-foreground">
+                Available Tuition Jobs
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Find the perfect teaching opportunity that matches your skills.
+              </p>
+            </div>
+            <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-card rounded-xl border border-border">
+                <span className="text-lg font-heading text-foreground">
+                  {pagination?.totalItems || 0}
+                </span>
+                <span className="text-xs text-muted-foreground">Jobs Available</span>
+              </div>
             </div>
           </div>
         </div>
@@ -292,7 +325,7 @@ const Tuitions = () => {
           </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-3 overflow-y-auto custom-scrollbar pr-1">
+          <main onScroll={handleMainScroll} className="lg:col-span-3 overflow-y-auto custom-scrollbar pr-1">
             {loading && tuitions.length === 0 && (
               <div className="py-12 text-center">
                 <p className="text-sm text-muted-foreground">Loading tuitions...</p>

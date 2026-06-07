@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
 import api from '../../services/api';
@@ -24,11 +24,20 @@ import { cn } from '@/lib/utils';
 const TutorDashboard = () => {
     const { user } = useAuth();
     const [searchParams] = useSearchParams();
-    const initialTab = searchParams.get('tab') || 'overview';
+    const { pathname } = useLocation();
+    const initialTab = pathname.includes('/applications') ? 'applications' : (searchParams.get('tab') || 'overview');
     const [activeTab, setActiveTab] = useState(initialTab);
     const [apps, setApps] = useState([]);
     const [loading, setLoading] = useState(true);
     const [revenue, setRevenue] = useState([]);
+
+    useEffect(() => {
+        if (pathname.includes('/applications')) {
+            setActiveTab('applications');
+        } else {
+            setActiveTab(searchParams.get('tab') || 'overview');
+        }
+    }, [pathname, searchParams]);
 
     // Fetch applications
     const fetchApplications = useCallback(async () => {

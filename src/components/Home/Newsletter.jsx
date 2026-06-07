@@ -35,7 +35,7 @@ const Newsletter = () => {
             <div className="max-w-7xl mx-auto px-6 relative z-10 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
                 <div className="bg-card border border-border/60 rounded-2xl p-8 md:p-12 lg:p-16 text-center space-y-8 md:space-y-12 shadow-premium-lg relative overflow-hidden">
                     {/* Decorative gradient lines */}
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-purple-500 to-accent"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-cyan-500 to-accent"></div>
 
                     {/* Header */}
                     <div className="flex flex-col items-center space-y-4 relative z-10">
