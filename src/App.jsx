@@ -43,7 +43,14 @@ import PasswordReset from "./pages/PasswordReset";
 import SearchPage from "./pages/SearchPage";
 import FloatingChat from "./components/shared/FloatingChat";
 import VercelAlert from "./components/shared/VercelAlert";
+import AiAssistantHome from "./pages/AiAssistant/AiAssistantHome";
+import AiAssistantChat from "./pages/AiAssistant/AiAssistantChat";
+import AiAssistantQuiz from "./pages/AiAssistant/AiAssistantQuiz";
+import AiAssistantHistory from "./pages/AiAssistant/AiAssistantHistory";
+import AiAssistantTutorTools from "./pages/AiAssistant/AiAssistantTutorTools";
+import SavedNotes from "./pages/AiAssistant/SavedNotes";
 import { cn } from "@/lib/utils";
+import ErrorBoundary from "./components/shared/ErrorBoundary";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -67,7 +74,8 @@ const ConditionalFooter = () => {
   const isSession = pathname.startsWith("/session");
   const isTutors = pathname.startsWith("/tutors");
   const isTuitions = pathname.startsWith("/tuitions");
-  if (isDashboard || isSession || isTutors || isTuitions) return null;
+  const isAiAssistant = pathname.startsWith("/ai-assistant");
+  if (isDashboard || isSession || isTutors || isTuitions || isAiAssistant) return null;
   return <Footer />;
 };
 
@@ -82,7 +90,8 @@ const ConditionalMobileBottomNav = () => {
 const ConditionalFloatingChat = () => {
   const { pathname } = useLocation();
   const isSession = pathname.startsWith("/session");
-  if (isSession) return null;
+  const isAiAssistant = pathname.startsWith("/ai-assistant");
+  if (isSession || isAiAssistant) return null;
   return <FloatingChat />;
 };
 
@@ -135,6 +144,7 @@ let App = () => {
             <VercelAlert />
             <ConditionalNavbar />
             <MainContent>
+              <ErrorBoundary>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/tuitions" element={<Tuitions />} />
@@ -219,8 +229,57 @@ let App = () => {
                   }
                 />
                 <Route path="/search" element={<SearchPage />} />
+                <Route
+                  path="/ai-assistant"
+                  element={
+                    <PrivateRoute>
+                      <AiAssistantHome />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/ai-assistant/chat/:sessionId"
+                  element={
+                    <PrivateRoute>
+                      <AiAssistantChat />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/ai-assistant/quiz/:quizId"
+                  element={
+                    <PrivateRoute>
+                      <AiAssistantQuiz />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/ai-assistant/history"
+                  element={
+                    <PrivateRoute>
+                      <AiAssistantHistory />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/ai-assistant/tutor-tools"
+                  element={
+                    <PrivateRoute>
+                      <AiAssistantTutorTools />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/ai-assistant/saved-notes"
+                  element={
+                    <PrivateRoute>
+                      <SavedNotes />
+                    </PrivateRoute>
+                  }
+                />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </ErrorBoundary>
             </MainContent>
               <ConditionalFooter />
               <ConditionalMobileBottomNav />

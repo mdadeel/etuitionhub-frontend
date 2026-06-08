@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useTuitions } from "../hooks/useTuitions";
+import { useTuitionsQuery } from "../hooks/queries/useTuitionsQuery";
 import { useTuitionFilters } from "../hooks/useTuitionFilters";
 import useDebouncedValue from "../hooks/useDebouncedValue";
 import TuitionCard from "../components/shared/TuitionCard";
@@ -19,6 +19,7 @@ import {
 import FilterSelect from "../components/shared/FilterSelect";
 import { cn } from "@/lib/utils";
 import SEO from '../components/shared/SEO';
+import { TuitionCardGridSkeleton } from "@/components/shared/skeletons";
 
 const Tuitions = () => {
   const [, setSearchParams] = useSearchParams();
@@ -31,20 +32,6 @@ const Tuitions = () => {
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleWindowScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-    window.addEventListener("scroll", handleWindowScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleWindowScroll);
-    };
-  }, []);
 
   const handleMainScroll = (e) => {
     if (e.currentTarget.scrollTop > 20) {
@@ -71,12 +58,17 @@ const Tuitions = () => {
     filters.sortBy,
   ]);
 
-  const { tuitions, pagination, filterOptions, loading, error } = useTuitions({
+  const { data, isLoading, error } = useTuitionsQuery({
     ...filters,
     page,
-    limit: 8,
+    limit: 21,
     status: "approved",
   });
+
+  const tuitions = data?.data || [];
+  const pagination = data?.pagination;
+  const filterOptions = data?.filterOptions;
+  const loading = isLoading;
 
   useEffect(() => {
     if (!user || tuitions.length === 0) return;
@@ -110,17 +102,7 @@ const Tuitions = () => {
   }, [filterOptions?.subjects]);
 
   const totalPages = pagination?.totalPages || 1;
-  const hasMore = page < totalPages;
-
-  const observerTarget = useCallback(node => {
-    if (loading || !hasMore) return;
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prev => prev + 1);
-      }
-    }, { threshold: 1.0 });
-    if (node) observer.observe(node);
-  }, [loading, hasMore]);
+  const hasMore = pagination ? pagination.page < totalPages : false;
 
   const handleClearAll = () => {
     setSearchParams({});
@@ -161,6 +143,26 @@ const Tuitions = () => {
                 </span>
                 <span className="text-xs text-muted-foreground">Jobs Available</span>
               </div>
+
+              {/* Mobile Filters Inline Trigger */}
+              <button
+                onClick={() => setIsMobileFiltersOpen(true)}
+                className="lg:hidden px-3 py-1.5 bg-card border border-border rounded-xl shadow-sm flex items-center justify-center gap-2 hover:bg-muted active:scale-[0.98] transition-all relative self-stretch"
+              >
+                <Filter size={16} className="text-[#2563EB]" />
+                <span className="text-xs text-muted-foreground font-semibold">
+                  Filters
+                </span>
+                {(filters.subjects.length > 0 ||
+                  filters.classFilter ||
+                  filters.locationFilter) && (
+                  <span className="absolute -top-1 -right-1 size-5 bg-[#2563EB] text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-card shadow-sm">
+                    {(filters.subjects.length > 0 ? 1 : 0) +
+                      (filters.classFilter ? 1 : 0) +
+                      (filters.locationFilter ? 1 : 0)}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -180,29 +182,12 @@ const Tuitions = () => {
         </div>
 
         <div className="grid lg:grid-cols-4 gap-6 flex-1 min-h-0 overflow-hidden">
-          {/* Mobile Filters Trigger */}
-          <button
-            onClick={() => setIsMobileFiltersOpen(true)}
-            className="lg:hidden fixed bottom-20 right-6 z-40 bg-[#2563EB] text-white p-4 rounded-full shadow-lg flex items-center gap-2 hover:bg-[#1D4ED8] active:scale-95 transition-all"
-          >
-            <Filter size={20} />
-            <span className="font-medium text-sm">Filters</span>
-            {(filters.subjects.length > 0 ||
-              filters.classFilter ||
-              filters.locationFilter) && (
-              <span className="absolute -top-1 -right-1 size-5 bg-card text-[#2563EB] text-[10px] flex items-center justify-center rounded-full border-2 border-white">
-                {(filters.subjects.length > 0 ? 1 : 0) +
-                  (filters.classFilter ? 1 : 0) +
-                  (filters.locationFilter ? 1 : 0)}
-              </span>
-            )}
-          </button>
 
           {/* Sidebar Filters */}
           <aside
             className={cn(
               "lg:col-span-1 h-full",
-              "fixed inset-0 z-[60] bg-black/50 lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
+              "fixed inset-0 z-[60] bg-black/55 lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
               isMobileFiltersOpen
                 ? "opacity-100"
                 : "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto",
@@ -325,11 +310,10 @@ const Tuitions = () => {
           </aside>
 
           {/* Main Content */}
-          <main onScroll={handleMainScroll} className="lg:col-span-3 overflow-y-auto custom-scrollbar pr-1">
+          <main onScroll={handleMainScroll} className="lg:col-span-3 overflow-y-auto custom-scrollbar pr-1 relative pb-24 md:pb-0">
+
             {loading && tuitions.length === 0 && (
-              <div className="py-12 text-center">
-                <p className="text-sm text-muted-foreground">Loading tuitions...</p>
-              </div>
+              <TuitionCardGridSkeleton count={6} columns={3} className="gap-3 md:gap-4" />
             )}
 
             {filters.search && (
@@ -381,7 +365,7 @@ const Tuitions = () => {
               </div>
             ) : (
               <div>
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                   {tuitions.map((tuition) => (
                     <TuitionCard
                       key={tuition._id}
@@ -393,11 +377,25 @@ const Tuitions = () => {
                 </div>
 
                 {loading && tuitions.length > 0 && (
-                  <div className="py-8 text-center">
-                    <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin mx-auto" />
+                  <div className="mt-6">
+                    <TuitionCardGridSkeleton count={3} columns={3} className="gap-3 md:gap-4" />
                   </div>
                 )}
-                <div ref={observerTarget} className="h-4" />
+                {hasMore && !loading && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={() => setPage((prev) => prev + 1)}
+                      className="px-6 py-3 bg-[#2563EB] text-white font-medium rounded-xl hover:bg-[#1D4ED8] active:scale-[0.98] transition-all shadow-md"
+                    >
+                      Load More Tuitions
+                    </button>
+                  </div>
+                )}
+                {!hasMore && tuitions.length > 0 && !loading && (
+                  <div className="py-8 text-center text-sm text-muted-foreground border-t border-border mt-8">
+                    No more tuition jobs available
+                  </div>
+                )}
               </div>
             )}
           </main>

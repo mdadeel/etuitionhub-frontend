@@ -84,7 +84,7 @@ const Register = () => {
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
 
             <div className="w-full max-w-md z-10">
-                <div className="bg-card border-2 border-border rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.05)] overflow-hidden p-6 sm:p-8">
+                <div className="bg-card border border-border rounded-xl shadow-editorial overflow-hidden p-6 sm:p-8">
                     
                     {step === 1 ? (
                         <>
@@ -105,13 +105,13 @@ const Register = () => {
                             <div className="space-y-4">
                                 <div
                                     onClick={() => selectRole('student')}
-                                    className="group bg-card border-2 border-border hover:border-primary hover:shadow-[4px_4px_0px_0px_var(--primary)] p-4 cursor-pointer transition-smooth rounded-none flex items-start gap-4"
+                                    className="group bg-card border border-border hover:border-primary hover:shadow-editorial p-4 cursor-pointer transition-smooth rounded-xl flex items-start gap-4"
                                 >
-                                    <div className="size-10 bg-primary text-primary-foreground flex items-center justify-center rounded-none shrink-0">
+                                    <div className="size-10 bg-primary text-primary-foreground flex items-center justify-center rounded-xl shrink-0">
                                         <User size={20} />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-heading font-bold text-foreground mb-1 uppercase tracking-wider group-hover:text-primary transition-smooth">
+                                        <h3 className="text-sm font-medium text-foreground mb-1 group-hover:text-primary transition-smooth">
                                             {t('register.student_portal', 'Student Portal')}
                                         </h3>
                                         <p className="text-xs text-muted-foreground font-body leading-normal">
@@ -122,13 +122,13 @@ const Register = () => {
 
                                 <div
                                     onClick={() => selectRole('tutor')}
-                                    className="group bg-card border-2 border-border hover:border-primary hover:shadow-[4px_4px_0px_0px_var(--primary)] p-4 cursor-pointer transition-smooth rounded-none flex items-start gap-4"
+                                    className="group bg-card border border-border hover:border-primary hover:shadow-editorial p-4 cursor-pointer transition-smooth rounded-xl flex items-start gap-4"
                                 >
-                                    <div className="size-10 bg-foreground text-background flex items-center justify-center rounded-none shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-smooth">
+                                    <div className="size-10 bg-foreground text-background flex items-center justify-center rounded-xl shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-smooth">
                                         <Briefcase size={20} />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-heading font-bold text-foreground mb-1 uppercase tracking-wider group-hover:text-primary transition-smooth">
+                                        <h3 className="text-sm font-medium text-foreground mb-1 group-hover:text-primary transition-smooth">
                                             {t('register.tutor_portal', 'Tutor Portal')}
                                         </h3>
                                         <p className="text-xs text-muted-foreground font-body leading-normal">
@@ -140,7 +140,7 @@ const Register = () => {
 
                             <p className="text-center text-xs font-body text-muted-foreground mt-6 pt-5 border-t border-border">
                                 {t('register.already_have_account', 'Already have an account?')}{' '}
-                                <Link to="/login" className="font-heading font-bold text-primary hover:underline">
+                                <Link to="/login" className="font-medium text-primary hover:underline">
                                     {t('register.sign_in', 'Sign In')}
                                 </Link>
                             </p>
@@ -151,11 +151,11 @@ const Register = () => {
                             <div className="mb-5 flex items-center justify-between">
                                 <button
                                     onClick={goBack}
-                                    className="flex items-center gap-1 text-[10px] font-heading font-bold text-muted-foreground hover:text-foreground uppercase tracking-wider transition-smooth"
+                                    className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-smooth"
                                 >
-                                    <ArrowLeft size={12} /> {t('register.change_role', 'Change Role')}
+                                    <ArrowLeft size={14} /> {t('register.change_role', 'Change Role')}
                                 </button>
-                                <span className="text-[10px] font-heading font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-none">
+                                <span className="text-sm font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-lg">
                                     {t('register.role', 'Role:')} {role}
                                 </span>
                             </div>
@@ -164,7 +164,7 @@ const Register = () => {
                                 <h2 className="text-lg font-heading font-bold text-foreground">
                                     {t('register.profile_details', 'Profile Details')}
                                 </h2>
-                                <p className="text-[10px] text-muted-foreground font-body">
+                                <p className="text-sm text-muted-foreground">
                                     {t('register.real_info', 'Please enter your real information.')}
                                 </p>
                             </div>
@@ -172,7 +172,7 @@ const Register = () => {
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-3">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
+                                        <label className="text-sm font-medium text-muted-foreground block">
                                             {t('register.full_name', 'Full Name')}
                                         </label>
                                         <div className="relative">
@@ -183,13 +183,13 @@ const Register = () => {
                                                 onChange={(e) => setName(e.target.value)}
                                                 placeholder="e.g. Adeel Rahman"
                                                 required
-                                                className="pl-9 h-10 bg-input/40 border-2 border-border focus-visible:border-primary text-foreground rounded-none transition-smooth"
+                                                className="pl-9 h-11 bg-input/40 border border-border focus-visible:border-primary text-foreground rounded-xl transition-smooth"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
+                                        <label className="text-sm font-medium text-muted-foreground block">
                                             {t('register.phone_number', 'Phone Number')}
                                         </label>
                                         <div className="relative">
@@ -199,13 +199,13 @@ const Register = () => {
                                                 value={phone}
                                                 onChange={(e) => setPhone(e.target.value)}
                                                 placeholder="01XXXXXXXXX"
-                                                className="pl-9 h-10 bg-input/40 border-2 border-border focus-visible:border-primary text-foreground rounded-none transition-smooth"
+                                                className="pl-9 h-11 bg-input/40 border border-border focus-visible:border-primary text-foreground rounded-xl transition-smooth"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
+                                        <label className="text-sm font-medium text-muted-foreground block">
                                             {t('register.email_address', 'Email Address')}
                                         </label>
                                         <div className="relative">
@@ -216,13 +216,13 @@ const Register = () => {
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 placeholder="name@domain.com"
                                                 required
-                                                className="pl-9 h-10 bg-input/40 border-2 border-border focus-visible:border-primary text-foreground rounded-none transition-smooth"
+                                                className="pl-9 h-11 bg-input/40 border border-border focus-visible:border-primary text-foreground rounded-xl transition-smooth"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
+                                        <label className="text-sm font-medium text-muted-foreground block">
                                             {t('register.password', 'Password')}
                                         </label>
                                         <div className="relative">
@@ -233,7 +233,7 @@ const Register = () => {
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="Min. 6 characters"
                                                 required
-                                                className="pl-9 h-10 bg-input/40 border-2 border-border focus-visible:border-primary text-foreground rounded-none transition-smooth"
+                                                className="pl-9 h-11 bg-input/40 border border-border focus-visible:border-primary text-foreground rounded-xl transition-smooth"
                                             />
                                         </div>
                                     </div>
@@ -242,7 +242,7 @@ const Register = () => {
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full h-11 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-heading font-bold uppercase tracking-wider transition-smooth active:scale-[0.99] text-xs"
+                                    className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-smooth active:scale-[0.99] text-sm"
                                 >
                                     {loading ? t('register.registering', 'Registering...') : t('register.create_account', 'Create Account')}
                                 </Button>
@@ -250,7 +250,7 @@ const Register = () => {
 
                             <div className="relative my-5 flex items-center justify-center">
                                 <span className="absolute inset-x-0 h-px bg-border"></span>
-                                <span className="relative bg-card px-3 text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-widest">
+                                <span className="relative bg-card px-3 text-xs font-medium text-muted-foreground">
                                     {t('register.or_connect_with', 'Or Connect With')}
                                 </span>
                             </div>
@@ -259,7 +259,7 @@ const Register = () => {
                                 type="button"
                                 variant="outline"
                                 onClick={handleGoogleLogin}
-                                className="w-full h-11 rounded-none border-2 border-border hover:bg-muted text-foreground font-heading font-bold uppercase tracking-wider text-xs transition-smooth"
+                                className="w-full h-11 rounded-xl border border-border hover:bg-muted text-foreground text-sm transition-smooth"
                             >
                                 <svg className="size-4 mr-2.5 inline-block" viewBox="0 0 24 24">
                                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -272,7 +272,7 @@ const Register = () => {
 
                             <p className="text-center text-xs font-body text-muted-foreground mt-5">
                                 {t('register.already_have_account', 'Already have an account?')}{' '}
-                                <Link to="/login" className="font-heading font-bold text-primary hover:underline">
+                                <Link to="/login" className="font-medium text-primary hover:underline">
                                     {t('register.sign_in', 'Sign In')}
                                 </Link>
                             </p>

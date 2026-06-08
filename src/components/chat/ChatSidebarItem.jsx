@@ -3,6 +3,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useChat } from '../../contexts/ChatContext';
 import { useTranslation } from 'react-i18next';
+import { Check, CheckCheck } from 'lucide-react';
 
 const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
     const { t } = useTranslation();
@@ -102,18 +103,17 @@ const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
                     
                     {/* Unread Badge OR Sent/Seen Indicator */}
                     {conv.unreadCount > 0 && !isActive ? (
-                        <div className="shrink-0 size-5 bg-[#0A7CFF] text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-md animate-pulse">
+                        <div className="shrink-0 size-5 bg-gradient-to-tr from-blue-600 to-blue-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm animate-pulse animate-duration-1000">
                             {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
                         </div>
                     ) : (
                         isLastMessageMine && conv.lastMessage && (
-                            <span className={cn(
-                                "shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider scale-90",
-                                conv.lastMessage.isRead
-                                    ? "text-primary/95 bg-primary/10"
-                                    : "text-muted-foreground/50 bg-muted/40"
-                            )}>
-                                {conv.lastMessage.isRead ? 'Seen' : 'Sent'}
+                            <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">
+                                {conv.lastMessage.isRead ? (
+                                    <CheckCheck size={16} className="text-[#2563EB]" title="Seen" strokeWidth={2.5} />
+                                ) : (
+                                    <Check size={16} className="text-muted-foreground/45" title="Sent" strokeWidth={2.5} />
+                                )}
                             </span>
                         )
                     )}

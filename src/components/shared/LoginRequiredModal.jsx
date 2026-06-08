@@ -17,15 +17,15 @@ const LoginRequiredModal = ({ open, onOpenChange, action = "continue" }) => {
                 </DialogHeader>
 
                 <div className="flex flex-col gap-3 mt-2">
-                    <Button asChild className="w-full h-11 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-heading font-bold uppercase tracking-wider text-xs">
+                    <Button asChild className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm">
                         <Link to="/login">
-                            <LogIn size={14} className="mr-2" />
+                            <LogIn size={16} className="mr-2" />
                             Sign In
                         </Link>
                     </Button>
-                    <Button asChild variant="outline" className="w-full h-11 rounded-none border-2 border-border font-heading font-bold uppercase tracking-wider text-xs">
+                    <Button asChild variant="outline" className="w-full h-11 rounded-xl border border-border font-medium text-sm">
                         <Link to="/register">
-                            <UserPlus size={14} className="mr-2" />
+                            <UserPlus size={16} className="mr-2" />
                             Create Account
                         </Link>
                     </Button>

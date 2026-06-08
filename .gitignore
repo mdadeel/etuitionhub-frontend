@@ -19,6 +19,7 @@ coverage
 .env.local
 .env.development.local
 .env.test.local
+.env.production
 .env.production.local
 
 # Editor directories and files
@@ -44,3 +45,11 @@ clean-code
 src/components/Dashboard/ChatInterface.jsx.backup
 src/components/chat/MessageBubble.jsx.backup
 src/components/chat/ChatInputBar.jsx.backup
+.vercel
+test-results/admin-approve-payment-admi-2a18f--in-and-reach-the-dashboard-chromium/error-context.md
+test-results/.playwright-artifacts-1/traces/badc1754af1944f68b2b-ba9cc635ac7ef8afc0d4.network
+test-results/.playwright-artifacts-1/traces/badc1754af1944f68b2b-ba9cc635ac7ef8afc0d4.trace
+test-results/.playwright-artifacts-1/traces/resources/page@b00d3c1ca525cce02730d8ced33fbcb0-1780893650388.jpeg
+test-results/admin-approve-payment-admi-2a18f--in-and-reach-the-dashboard-chromium/test-failed-1.png
+test-results/.playwright-artifacts-1/traces/resources/page@b00d3c1ca525cce02730d8ced33fbcb0-1780893650534.jpeg
+test-results/.playwright-artifacts-1/traces/resources/page@b00d3c1ca525cce02730d8ced33fbcb0-1780893649848.jpeg

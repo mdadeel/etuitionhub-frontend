@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import { useRealtimeStore } from '../store/realtimeStore';
+import { getSocket } from './useSocketEvents';
 
 const useNotifications = ({ userId, pageSize = 20 } = {}) => {
     const [notifications, setNotifications] = useState([]);
@@ -45,6 +46,17 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
             .then((res) => setUnreadCount(res.data.count || 0))
             .catch(() => {});
     }, [refetch, setUnreadCount]);
+
+    // Prepend new notifications from socket events for instant display
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket) return;
+        const handler = (notification) => {
+            setNotifications((prev) => [notification, ...prev]);
+        };
+        socket.on('notification:new', handler);
+        return () => socket.off('notification:new', handler);
+    }, []);
 
     const goToPage = useCallback((page) => refetch(page), [refetch]);
 

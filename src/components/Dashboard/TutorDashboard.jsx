@@ -3,7 +3,7 @@ import { useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
 import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import { 
     Activity, 
     FileText, 
@@ -83,7 +83,7 @@ const TutorDashboard = () => {
         loadData();
     }, [user?.email, fetchApplications, fetchRevenue]);
 
-    const totalEarnings = revenue.reduce((sum, p) => sum + (p.amount || 0), 0);
+    const totalEarnings = revenue.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
     const activeEngagements = apps.filter(a => a.status === 'approved').length;
 
     const handleDelete = async (id) => {
@@ -97,7 +97,18 @@ const TutorDashboard = () => {
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <StatCardSkeleton key={i} />
+                    ))}
+                </div>
+                <TableSkeleton rows={5} columns={4} />
+            </div>
+        );
+    }
 
     const tabs = [
         { id: 'overview', label: 'Overview', icon: Activity },
@@ -341,7 +352,7 @@ const TutorDashboard = () => {
                                                 <p className="text-sm font-bold text-foreground">{payment.tuitionId?.subject || 'Tutoring Fee'}</p>
                                                 <p className="text-xs text-muted-foreground font-medium mt-1">{payment.studentEmail}</p>
                                             </td>
-                                            <td className="px-8 py-6 text-center text-sm font-bold text-[#2563EB] tabular-nums">৳{payment.amount}</td>
+                                            <td className="px-8 py-6 text-center text-sm font-bold text-[#2563EB] tabular-nums">৳{payment.grossAmount}</td>
                                             <td className="px-8 py-6 text-right">
                                                 <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${payment.status === 'verified' ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-background text-muted-foreground'}`}>
                                                     {payment.status}

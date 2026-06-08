@@ -3,7 +3,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { Skeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import useDebouncedValue from '../../hooks/useDebouncedValue';
 import { AppleButton } from '../shared/AppleUI';
 import { UserX, Edit2, ShieldAlert, UserCog, Search } from 'lucide-react';
@@ -134,7 +135,19 @@ const DashUsers = () => {
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) {
+      return (
+        <div className="space-y-6">
+          <div className="flex gap-4">
+            <Skeleton className="h-10 w-64 rounded-xl" />
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-8 w-20 rounded-full" />
+            ))}
+          </div>
+          <TableSkeleton rows={8} columns={5} hasAvatar />
+        </div>
+      );
+    }
 
     return (
         <div className="bg-transparent animate-in fade-in duration-500">

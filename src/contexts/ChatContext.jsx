@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
@@ -9,7 +9,7 @@ const ChatContext = createContext();
 export const useChat = () => useContext(ChatContext);
 
 export const ChatProvider = ({ children }) => {
-    const { user } = useAuth();
+    const { user, dbUser } = useAuth();
     const [conversations, setConversations] = useState([]);
     const [socket, setSocket] = useState(null);
     const [unreadTotal, setUnreadTotal] = useState(0);
@@ -19,6 +19,7 @@ export const ChatProvider = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState(new Set());
     // typingUsers: a Set of room_userId keys like "convId_userId" that indicate active typing
     const [typingUsers, setTypingUsers] = useState(new Set());
+    const [pollingIntervalId, setPollingIntervalId] = useState(null);
     const socketRef = useRef(null);
 
     // Fetch conversations and unread count
@@ -57,7 +58,9 @@ export const ChatProvider = ({ children }) => {
                 const res = await api.get('/api/users/online');
                 const ids = res.data.online.map(u => u._id.toString());
                 setOnlineUsers(new Set(ids));
-            } catch {}
+            } catch {
+                // Silently fail — online status is non-critical UX
+            }
         };
         fetchOnline();
         const interval = setInterval(fetchOnline, 30000);
@@ -115,7 +118,7 @@ export const ChatProvider = ({ children }) => {
                 const existingIndex = prev.findIndex(c => c._id === data.conversationId);
                 if (existingIndex >= 0) {
                     const updatedConv = { ...prev[existingIndex], lastMessage: data, updatedAt: new Date() };
-                    if (data.senderId !== user.uid && data.senderId !== user.dbUser?._id) {
+                    if (data.senderId !== user.uid && data.senderId !== dbUser?._id) {
                         updatedConv.unreadCount = (updatedConv.unreadCount || 0) + 1;
                     }
                     const newConvs = [...prev];
@@ -144,6 +147,7 @@ export const ChatProvider = ({ children }) => {
                 s.disconnect();
                 setSocket(null);
             }
+            stopMessagePolling();
         };
     }, [user]);
 
@@ -172,10 +176,38 @@ export const ChatProvider = ({ children }) => {
         setIsFloatingOpen(true);
     };
 
+    const startMessagePolling = useCallback((conversationId) => {
+        if (pollingIntervalId) {
+            clearInterval(pollingIntervalId);
+        }
+
+        if (socketRef.current?.connected) return;
+
+        const intervalId = setInterval(async () => {
+            try {
+                const res = await api.get(`/api/messages/${conversationId}`);
+                const msgs = Array.isArray(res.data) ? res.data : (res.data.messages || []);
+                window.dispatchEvent(new CustomEvent('chat:messages-updated', {
+                    detail: { conversationId, messages: msgs }
+                }));
+            } catch (err) {
+            }
+        }, 3000);
+
+        setPollingIntervalId(intervalId);
+    }, [pollingIntervalId]);
+
+    const stopMessagePolling = useCallback(() => {
+        if (pollingIntervalId) {
+            clearInterval(pollingIntervalId);
+            setPollingIntervalId(null);
+        }
+    }, [pollingIntervalId]);
+
     return (
-        <ChatContext.Provider value={{ 
-            socket, 
-            conversations, 
+        <ChatContext.Provider value={{
+            socket,
+            conversations,
             setConversations,
             unreadTotal,
             fetchConversations,
@@ -187,6 +219,8 @@ export const ChatProvider = ({ children }) => {
             openChatWith,
             onlineUsers,
             typingUsers,
+            startMessagePolling,
+            stopMessagePolling,
         }}>
             {children}
         </ChatContext.Provider>

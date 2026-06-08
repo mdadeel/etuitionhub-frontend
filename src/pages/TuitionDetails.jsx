@@ -36,6 +36,52 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
+import { Skeleton } from "@/components/ui/skeleton";
+import { CardSkeleton } from "@/components/shared/skeletons";
+
+function TuitionDetailsSkeleton() {
+  return (
+    <div className="bg-background min-h-screen py-8">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="mb-6">
+          <Skeleton className="w-36 h-4 rounded-full" />
+        </div>
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <CardSkeleton className="p-6">
+              <div className="flex gap-2 mb-4">
+                <Skeleton className="w-20 h-6 rounded-full" />
+                <Skeleton className="w-16 h-6 rounded-full" />
+              </div>
+              <Skeleton className="w-64 h-7 rounded-lg mb-6" />
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
+                <Skeleton className="w-20 h-14 rounded-lg" />
+                <Skeleton className="w-24 h-14 rounded-lg" />
+                <Skeleton className="w-20 h-14 rounded-lg" />
+              </div>
+            </CardSkeleton>
+            <CardSkeleton className="p-6 space-y-3">
+              <Skeleton className="w-32 h-5 rounded-lg" />
+              <Skeleton className="w-full h-3 rounded-lg" />
+              <Skeleton className="w-5/6 h-3 rounded-lg" />
+              <Skeleton className="w-4/5 h-3 rounded-lg" />
+            </CardSkeleton>
+          </div>
+          <div className="space-y-4">
+            <CardSkeleton className="p-6">
+              <Skeleton className="w-32 h-5 rounded-lg mb-4" />
+              <div className="space-y-3">
+                <Skeleton className="w-full h-10 rounded-xl" />
+                <Skeleton className="w-full h-10 rounded-xl" />
+                <Skeleton className="w-full h-10 bg-primary/20 rounded-xl" />
+              </div>
+            </CardSkeleton>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const TuitionDetails = () => {
     const { id } = useParams();
@@ -134,58 +180,7 @@ const TuitionDetails = () => {
         }
     };
 
-    if (loading) return (
-        <div className="bg-background min-h-screen py-8">
-            <div className="max-w-6xl mx-auto px-4">
-                <div className="mb-6">
-                    <div className="w-36 h-4 bg-muted rounded-full animate-pulse"></div>
-                </div>
-                <div className="grid lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-4">
-                        <div className="bg-card p-6 rounded-lg border border-border">
-                            <div className="flex gap-2 mb-4">
-                                <div className="w-20 h-6 bg-muted rounded-full animate-pulse"></div>
-                                <div className="w-16 h-6 bg-muted rounded-full animate-pulse"></div>
-                            </div>
-                            <div className="w-64 h-7 bg-muted rounded animate-pulse mb-6"></div>
-                            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
-                                <div className="w-20 h-14 bg-muted rounded animate-pulse"></div>
-                                <div className="w-24 h-14 bg-muted rounded animate-pulse"></div>
-                                <div className="w-20 h-14 bg-muted rounded animate-pulse"></div>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-card p-4 rounded-lg border border-border h-32">
-                                <div className="w-28 h-4 bg-muted rounded animate-pulse mb-3"></div>
-                                <div className="space-y-3">
-                                    <div className="w-full h-3 bg-muted rounded animate-pulse"></div>
-                                    <div className="w-3/4 h-3 bg-muted rounded animate-pulse"></div>
-                                </div>
-                            </div>
-                            <div className="bg-card p-4 rounded-lg border border-border h-32">
-                                <div className="w-28 h-4 bg-muted rounded animate-pulse mb-3"></div>
-                                <div className="space-y-2">
-                                    <div className="w-full h-3 bg-muted rounded animate-pulse"></div>
-                                    <div className="w-5/6 h-3 bg-muted rounded animate-pulse"></div>
-                                    <div className="w-2/3 h-3 bg-muted rounded animate-pulse"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="bg-card p-6 rounded-lg border border-border h-56">
-                            <div className="w-32 h-5 bg-muted rounded animate-pulse mb-4"></div>
-                            <div className="space-y-3">
-                                <div className="w-full h-10 bg-muted rounded animate-pulse"></div>
-                                <div className="w-full h-10 bg-muted rounded animate-pulse"></div>
-                                <div className="w-full h-10 bg-[#2563EB]/20 rounded animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    if (loading) return <TuitionDetailsSkeleton />;
 
     if (!tuition) {
         return (

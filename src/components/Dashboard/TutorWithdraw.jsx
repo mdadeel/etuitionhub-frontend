@@ -4,8 +4,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { ArrowDownToLine, Wallet, AlertCircle, ArrowRight } from 'lucide-react';
 import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import { useWalletQuery } from '../../hooks/useWalletQuery';
+import { Skeleton } from "@/components/ui/skeleton";
+import { FormSkeleton, CardSkeleton } from "@/components/shared/skeletons";
 import { useWithdrawalsQuery } from '../../hooks/queries/useWithdrawalsQuery';
 
 const METHODS = [
@@ -68,7 +69,24 @@ const TutorWithdraw = () => {
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) {
+        return (
+            <div className="grid lg:grid-cols-2 gap-6">
+                <FormSkeleton fields={4} />
+                <div className="space-y-3">
+                    {[...Array(3)].map((_, i) => (
+                        <CardSkeleton key={i} className="p-4 space-y-2">
+                            <div className="flex justify-between">
+                                <Skeleton className="h-4 w-24 rounded-lg" />
+                                <Skeleton className="h-4 w-16 rounded-lg" />
+                            </div>
+                            <Skeleton className="h-3 w-32 rounded-lg" />
+                        </CardSkeleton>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700">

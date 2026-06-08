@@ -55,7 +55,8 @@ const FeaturedCategories = () => {
                     <p className="text-lg text-muted-foreground leading-relaxed font-body">From school preparation to university-level coaching</p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {/* Desktop Grid Layout */}
+                <div className="hidden md:grid grid-cols-4 gap-6">
                     {categories.map((cat, idx) => {
                         const a = accentStyles[cat.accent] || accentStyles.emerald;
                         const tag = cat.tag ? tagConfig[cat.tag] : null;
@@ -66,41 +67,97 @@ const FeaturedCategories = () => {
                             <Link
                                 key={cat.slug}
                                 to={`/tutors?subjects=${cat.slug}`}
-                                className="block group opacity-0 animate-scale-in"
+                                className="block group opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
                                 style={{ animationDelay: `${150 + idx * 50}ms` }}
                             >
-                                <Card variant="elevated" className="p-5 relative h-full transition-all duration-500 hover:border-primary/30 hover:shadow-xl overflow-hidden">
+                                <Card variant="elevated" className="p-4 relative h-full transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98] overflow-hidden flex flex-col gap-2.5">
                                     {/* Ambient Hover Glow Bubble */}
                                     <div className={`absolute -top-12 -left-12 size-24 rounded-full ${glowBg} blur-xl group-hover:scale-150 transition-transform duration-500 pointer-events-none`}></div>
 
-                                    {tag && TagIcon && (
-                                        <Badge variant={tag.variant} size="xs" className="absolute top-3 right-3 z-10 gap-1 shadow-sm">
-                                            <TagIcon className="size-3" /> {cat.tag}
-                                        </Badge>
-                                    )}
-
-                                    <div className="flex items-center gap-3 mb-4 relative z-10">
-                                        <div className={`size-12 flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-muted to-background border ${a.borderColor} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                                            <cat.icon className={`size-6 ${a.iconColor}`} />
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                            <div className="font-heading text-base text-foreground tracking-tight leading-tight mb-1">{cat.label}</div>
-                                            <div className="text-xs text-muted-foreground leading-tight">{cat.context}</div>
-                                        </div>
+                                    <div className="relative z-10">
+                                        {tag && TagIcon && (
+                                            <Badge variant={tag.variant} size="xs" className="gap-1 shadow-sm">
+                                                <TagIcon className="size-2.5" /> {cat.tag}
+                                            </Badge>
+                                        )}
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-border/50 relative z-10">
-                                        <div>
-                                            <div className="text-sm font-semibold text-foreground">{cat.count}</div>
-                                            <div className="text-[10px] text-muted-foreground">Tutors</div>
+                                    <div className="relative z-10 flex items-start justify-between gap-3">
+                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                            <div className={`size-11 flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-muted to-background border ${a.borderColor} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                                                <cat.icon className={`size-5 ${a.iconColor}`} />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="font-heading text-sm text-foreground tracking-tight leading-tight">{cat.label}</div>
+                                                <div className="text-xs text-muted-foreground leading-tight mt-0.5">{cat.context}</div>
+                                            </div>
                                         </div>
-                                        <div className="text-center">
-                                            <div className="text-sm font-semibold text-amber-500">{cat.rating}★</div>
-                                            <div className="text-[10px] text-muted-foreground">Rating</div>
+                                        <Button variant="ghost" size="icon-xs" className="shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-white transition-all duration-300 group-hover:translate-x-0.5">
+                                            <ArrowRight className="size-3" />
+                                        </Button>
+                                    </div>
+
+                                    <div className="relative z-10 flex items-center gap-1.5 text-xs pt-2 border-t border-border/50">
+                                        <span className="font-semibold text-foreground">{cat.count}</span>
+                                        <span className="text-muted-foreground">Tutors</span>
+                                        <span className="text-border/50 mx-0.5">•</span>
+                                        <span className="font-semibold text-amber-500">{cat.rating}★</span>
+                                        <span className="text-muted-foreground">Rating</span>
+                                    </div>
+                                </Card>
+                            </Link>
+                        );
+                    })}
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="flex flex-col gap-3 md:hidden">
+                    {categories.map((cat, idx) => {
+                        const a = accentStyles[cat.accent] || accentStyles.emerald;
+                        const tag = cat.tag ? tagConfig[cat.tag] : null;
+                        const TagIcon = tag?.icon;
+                        const glowBg = glowStyles[cat.accent] || glowStyles.emerald;
+
+                        return (
+                            <Link
+                                key={cat.slug}
+                                to={`/tutors?subjects=${cat.slug}`}
+                                className="block group opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
+                                style={{ animationDelay: `${150 + idx * 50}ms` }}
+                            >
+                                <Card variant="elevated" className="p-4 relative transition-all duration-300 hover:border-primary/30 hover:shadow-xl active:scale-[0.98] overflow-hidden flex flex-col gap-2.5">
+                                    {/* Ambient Hover Glow Bubble */}
+                                    <div className={`absolute -top-12 -left-12 size-24 rounded-full ${glowBg} blur-xl group-hover:scale-150 transition-transform duration-500 pointer-events-none`}></div>
+
+                                    <div className="relative z-10">
+                                        {tag && TagIcon && (
+                                            <Badge variant={tag.variant} size="xs" className="gap-1 shadow-sm">
+                                                <TagIcon className="size-2.5" /> {cat.tag}
+                                            </Badge>
+                                        )}
+                                    </div>
+
+                                    <div className="relative z-10 flex items-start justify-between gap-3">
+                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                            <div className={`size-11 flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-muted to-background border ${a.borderColor} shadow-sm`}>
+                                                <cat.icon className={`size-5 ${a.iconColor}`} />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="font-heading text-sm text-foreground tracking-tight leading-tight">{cat.label}</div>
+                                                <div className="text-xs text-muted-foreground leading-tight mt-0.5">{cat.context}</div>
+                                            </div>
                                         </div>
-                                        <div className="p-1.5 rounded-full bg-muted/80 dark:bg-slate-900 group-hover:bg-primary group-hover:text-white text-muted-foreground transition-all duration-300 group-hover:translate-x-1">
-                                            <ArrowRight className="size-3.5" />
-                                        </div>
+                                        <Button variant="ghost" size="icon-xs" className="shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                            <ArrowRight className="size-3" />
+                                        </Button>
+                                    </div>
+
+                                    <div className="relative z-10 flex items-center gap-1.5 text-xs pt-2 border-t border-border/50">
+                                        <span className="font-semibold text-foreground">{cat.count}</span>
+                                        <span className="text-muted-foreground">Tutors</span>
+                                        <span className="text-border/50 mx-0.5">•</span>
+                                        <span className="font-semibold text-amber-500">{cat.rating}★</span>
+                                        <span className="text-muted-foreground">Rating</span>
                                     </div>
                                 </Card>
                             </Link>

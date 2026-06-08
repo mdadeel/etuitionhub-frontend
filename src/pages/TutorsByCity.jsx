@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import api from '../services/api';
 import TutorCard from '../components/shared/TutorCard';
 import SEO from '../components/shared/SEO';
@@ -9,18 +9,16 @@ const formatCity = (slug) => slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.t
 
 const TutorsByCity = () => {
   const { city } = useParams();
-  const [tutors, setTutors] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    api.get(`/api/tutors?location=${encodeURIComponent(formatCity(city))}`)
-      .then((r) => setTutors(r.data || []))
-      .catch(() => setTutors([]))
-      .finally(() => setLoading(false));
-  }, [city]);
-
   const cityName = formatCity(city);
+
+  const { data: tutors = [], isLoading: loading } = useQuery({
+    queryKey: ['tutors', 'city', city],
+    queryFn: async () => {
+      const res = await api.get(`/api/tutors?location=${encodeURIComponent(cityName)}`);
+      return res.data || [];
+    },
+    staleTime: 120_000,
+  });
 
   return (
     <div className="min-h-screen bg-background py-12 px-4">

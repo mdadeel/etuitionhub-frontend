@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { Bookmark, Trash2, ExternalLink, Users, BookOpen } from "lucide-react";
 import { AppleCard, AppleHeader } from "../shared/AppleUI";
 import { cn } from "@/lib/utils";
+import { TutorCardGridSkeleton, TuitionCardGridSkeleton } from "@/components/shared/skeletons";
 
 const Bookmarks = () => {
   const navigate = useNavigate();
@@ -113,12 +114,11 @@ const Bookmarks = () => {
 
       {/* Content */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
-          <span className="ml-3 text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">
-            Loading bookmarks...
-          </span>
-        </div>
+        activeTab === "tutors" ? (
+          <TutorCardGridSkeleton count={4} />
+        ) : (
+          <TuitionCardGridSkeleton count={4} />
+        )
       ) : activeTab === "tutors" ? (
         savedTutors.length === 0 ? (
           <AppleCard className="p-16 text-center border-dashed" hover={false}>

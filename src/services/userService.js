@@ -14,6 +14,11 @@ export const userService = {
         return response.data;
     },
 
+    getById: async (id) => {
+        const response = await api.get(`/api/users/id/${id}`);
+        return response.data;
+    },
+
     update: async (id, updateData) => {
         const response = await api.patch(`/api/users/${id}`, updateData);
         return response.data;

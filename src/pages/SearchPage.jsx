@@ -6,6 +6,8 @@ import TuitionCard from "../components/shared/TuitionCard";
 import useDebouncedValue from "../hooks/useDebouncedValue";
 import API_URL from "../config/api";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { TutorCardGridSkeleton, TuitionCardGridSkeleton } from "@/components/shared/skeletons";
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -131,11 +133,18 @@ const SearchPage = () => {
           )}
         </div>
 
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
+        {loading ? (
+          <div className="space-y-8">
+            <div>
+              <Skeleton className="h-5 w-32 rounded-lg mb-4" />
+              <TutorCardGridSkeleton count={4} />
+            </div>
+            <div>
+              <Skeleton className="h-5 w-32 rounded-lg mb-4" />
+              <TuitionCardGridSkeleton count={4} />
+            </div>
           </div>
-        )}
+        ) : null}
 
         {!loading && debouncedQuery.length >= 2 && totalResults === 0 && (
           <div className="text-center py-20">
@@ -158,7 +167,7 @@ const SearchPage = () => {
                 </h2>
                 <div className="space-y-3">
                   {tutors.length === 0 && (
-                    <p className="text-sm text-[#94A3B8]">No tutors found</p>
+                    <p className="text-sm text-muted-foreground">No tutors found</p>
                   )}
                   {tutors.map((tutor, idx) => (
                     <div
@@ -181,7 +190,7 @@ const SearchPage = () => {
                 </h2>
                 <div className="space-y-3">
                   {tuitions.length === 0 && (
-                    <p className="text-sm text-[#94A3B8]">No tuitions found</p>
+                    <p className="text-sm text-muted-foreground">No tuitions found</p>
                   )}
                   {tuitions.map((tuition, idx) => (
                     <div

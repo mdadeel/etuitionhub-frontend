@@ -24,6 +24,65 @@ import SEO from '../components/shared/SEO';
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
 import ResponseTimeIndicator from '../components/shared/ResponseTimeIndicator';
 import WhatsAppShareButton from '../components/shared/WhatsAppShareButton';
+import { Skeleton } from "@/components/ui/skeleton";
+import { CardSkeleton, CircleSkeleton } from "@/components/shared/skeletons";
+import CredibilityBadge from '@/components/CredibilityBadge';
+
+function TutorDetailsSkeleton() {
+  return (
+    <div className="bg-background min-h-screen py-8">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="mb-6">
+          <Skeleton className="w-32 h-4 rounded-full" />
+        </div>
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <CardSkeleton className="p-6">
+              <div className="flex flex-col md:flex-row gap-6">
+                <CircleSkeleton size={112} className="rounded-lg" />
+                <div className="flex-grow space-y-3">
+                  <Skeleton className="w-48 h-6 rounded-lg" />
+                  <Skeleton className="w-64 h-4 rounded-lg" />
+                  <Skeleton className="w-32 h-4 rounded-lg" />
+                  <div className="flex gap-6 pt-4 border-t border-border">
+                    <Skeleton className="w-24 h-12 rounded-lg" />
+                    <Skeleton className="w-24 h-12 rounded-lg" />
+                    <Skeleton className="w-24 h-12 rounded-lg" />
+                  </div>
+                </div>
+              </div>
+            </CardSkeleton>
+            <CardSkeleton className="p-6 space-y-3">
+              <Skeleton className="w-40 h-5 rounded-lg" />
+              <div className="flex flex-wrap gap-2">
+                {[...Array(5)].map((_, i) => (
+                  <Skeleton key={i} className="h-8 w-24 rounded-full" />
+                ))}
+              </div>
+            </CardSkeleton>
+            <CardSkeleton className="p-6 space-y-3">
+              <Skeleton className="w-36 h-5 rounded-lg" />
+              <div className="grid grid-cols-2 gap-3">
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="h-10 rounded-lg" />
+                ))}
+              </div>
+            </CardSkeleton>
+          </div>
+          <div className="space-y-4">
+            <CardSkeleton className="p-6">
+              <Skeleton className="w-32 h-5 rounded-lg mb-4" />
+              <div className="space-y-3">
+                <Skeleton className="w-full h-10 rounded-xl" />
+                <Skeleton className="w-full h-10 rounded-xl" />
+              </div>
+            </CardSkeleton>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const TutorDetails = () => {
     const { id } = useParams();
@@ -201,59 +260,7 @@ const TutorDetails = () => {
         }
     };
 
-    if (loading) return (
-        <div className="bg-background min-h-screen py-8">
-            <div className="max-w-6xl mx-auto px-4">
-                <div className="mb-6">
-                    <div className="w-32 h-4 bg-muted rounded-full animate-pulse"></div>
-                </div>
-                <div className="grid lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-4">
-                        <div className="bg-card p-6 rounded-lg border border-border">
-                            <div className="flex flex-col md:flex-row gap-6">
-                                <div className="size-28 rounded-lg bg-muted animate-pulse"></div>
-                                <div className="flex-grow space-y-3">
-                                    <div className="w-48 h-6 bg-muted rounded animate-pulse"></div>
-                                    <div className="w-64 h-4 bg-muted rounded animate-pulse"></div>
-                                    <div className="w-32 h-4 bg-muted rounded animate-pulse"></div>
-                                    <div className="flex gap-6 pt-4 border-t border-border">
-                                        <div className="w-24 h-12 bg-muted rounded animate-pulse"></div>
-                                        <div className="w-24 h-12 bg-muted rounded animate-pulse"></div>
-                                        <div className="w-24 h-12 bg-muted rounded animate-pulse"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-card p-4 rounded-lg border border-border h-32">
-                                <div className="w-24 h-4 bg-muted rounded animate-pulse mb-3"></div>
-                                <div className="flex gap-2">
-                                    <div className="w-16 h-6 bg-muted rounded-full animate-pulse"></div>
-                                    <div className="w-20 h-6 bg-muted rounded-full animate-pulse"></div>
-                                </div>
-                            </div>
-                            <div className="bg-card p-4 rounded-lg border border-border h-32">
-                                <div className="w-24 h-4 bg-muted rounded animate-pulse mb-3"></div>
-                                <div className="space-y-2">
-                                    <div className="w-full h-3 bg-muted rounded animate-pulse"></div>
-                                    <div className="w-3/4 h-3 bg-muted rounded animate-pulse"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="bg-card p-6 rounded-lg border border-border h-48">
-                            <div className="w-32 h-5 bg-muted rounded animate-pulse mb-4"></div>
-                            <div className="space-y-3">
-                                <div className="w-full h-10 bg-muted rounded animate-pulse"></div>
-                                <div className="w-full h-10 bg-muted rounded animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    if (loading) return <TutorDetailsSkeleton />;
 
     if (!tutor) {
         return (
@@ -322,6 +329,13 @@ const TutorDetails = () => {
                                                 </span>
                                             </div>
                                         )}
+                                        <CredibilityBadge 
+                                            requestsReceived={tutor.requestsReceived || 0}
+                                            requestsRespondedCount={tutor.requestsRespondedCount || 0}
+                                            profileCompleteness={tutor.profileCompleteness || 0}
+                                            reviewCount={tutor.reviewCount || 0}
+                                            rating={tutor.ratings || 0}
+                                        />
                                     </div>
 
                                     <div className="flex flex-wrap items-center justify-around sm:justify-start gap-4 sm:gap-6 pt-4 border-t border-border">

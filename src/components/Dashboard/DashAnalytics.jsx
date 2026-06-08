@@ -70,7 +70,7 @@ const DashAnalytics = () => {
             const pending = tuitions.filter(t => t.status === 'pending').length;
             const approved = tuitions.filter(t => t.status === 'approved').length;
             const completed = payments.filter(p => p.status === 'verified');
-            const revenue = completed.reduce((sum, p) => sum + (p.amount || 0), 0);
+            const revenue = completed.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
 
             setTransactions(payments);
             setStats({

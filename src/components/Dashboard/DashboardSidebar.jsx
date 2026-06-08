@@ -10,10 +10,13 @@ import {
   Banknote,
   Bookmark,
   Bell,
+  Inbox,
   Wallet,
   ArrowDownToLine,
   Settings,
   History,
+  DollarSign,
+  Scale,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,6 +42,7 @@ const DashboardSidebar = ({ role }) => {
   const menuItems = [
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { path: "/dashboard/profile", label: "My Profile", icon: User },
+    { path: "/dashboard/requests", label: "Requests", icon: Inbox },
     { path: "/dashboard/notifications", label: "Notifications", icon: Bell },
   ];
 
@@ -63,6 +67,16 @@ const DashboardSidebar = ({ role }) => {
       label: "Audit Logs",
       icon: History,
     });
+    menuItems.push({
+      path: "/dashboard/admin/payments",
+      label: "Payment Queue",
+      icon: DollarSign,
+    });
+    menuItems.push({
+      path: "/dashboard/admin/disputes",
+      label: "Disputes",
+      icon: Scale,
+    });
   } else if (role?.toLowerCase() === "tutor") {
     menuItems.push({
       path: "/dashboard/wallet",
@@ -81,6 +95,11 @@ const DashboardSidebar = ({ role }) => {
       icon: Banknote,
     });
     menuItems.push({
+      path: "/dashboard/relationships",
+      label: "My Relationships",
+      icon: Users,
+    });
+    menuItems.push({
       path: "/dashboard/bookmarks",
       label: "Bookmarks",
       icon: Bookmark,
@@ -90,7 +109,6 @@ const DashboardSidebar = ({ role }) => {
   const handleLogout = async () => {
     try {
       await logout();
-      Cookies.set("token", "");
       toast.success("Signed out successfully");
     } catch {
       toast.error("Sign out failed");

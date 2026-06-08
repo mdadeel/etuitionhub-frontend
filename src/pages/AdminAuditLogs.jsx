@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
+import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import { History, Filter, ChevronDown, ChevronRight, Search, RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -137,7 +137,16 @@ const AdminAuditLogs = () => {
             </div>
 
             {/* Table */}
-            {loading ? <LoadingSpinner /> : logs.length === 0 ? (
+            {loading ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-4">
+                  {[...Array(3)].map((_, i) => (
+                    <StatCardSkeleton key={i} />
+                  ))}
+                </div>
+                <TableSkeleton rows={6} columns={4} />
+              </div>
+            ) : logs.length === 0 ? (
                 <div className="bg-card border border-border p-12 text-center">
                     <History size={32} className="mx-auto text-muted-foreground/40 mb-3" />
                     <p className="text-xs text-muted-foreground">No audit entries match the current filters.</p>

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import LoginRequiredModal from "./LoginRequiredModal";
 
-const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = null }) => {
+const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = null, onRequestTutor }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(initialIsSaved === true);
@@ -60,6 +60,15 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
     navigate(`/tuition/${tuition._id}`);
   };
 
+  const handleRequestClick = (e) => {
+    e.stopPropagation();
+    if (onRequestTutor) {
+      onRequestTutor(tuition);
+    } else {
+      navigate(`/tuition/${tuition._id}`);
+    }
+  };
+
   return (
     <>
     <div
@@ -87,6 +96,19 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
           }
         />
       </button>
+
+      {tuition.poster && (
+        <div className="flex items-center gap-1.5 mb-2">
+          {tuition.poster.photoURL ? (
+            <img src={tuition.poster.photoURL} alt="" className="size-5 rounded-full object-cover" />
+          ) : (
+            <div className="size-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-muted-foreground">
+              {tuition.poster.name?.charAt(0) || '?'}
+            </div>
+          )}
+          <span className="text-xs text-muted-foreground truncate">{tuition.poster.name || 'Unknown'}</span>
+        </div>
+      )}
 
       <div className="flex justify-between items-start gap-4 mb-3">
         <div className="flex-1 min-w-0 pr-8">
@@ -119,6 +141,15 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
             />
           </span>
         </div>
+        {tuition.mode === 'online' && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-500 font-medium">Online</span>
+        )}
+        {tuition.mode === 'home' && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">Home</span>
+        )}
+        {tuition.mode === 'both' && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-500 font-medium">Both</span>
+        )}
       </div>
 
       <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
@@ -130,10 +161,11 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
         </div>
         <button
           type="button"
+          data-action="request-tutor"
           className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-xl transition-all active:scale-95 group/btn shadow-sm hover:shadow-glow-blue hover:-translate-y-0.5 duration-300"
-          onClick={handleViewDetails}
+          onClick={handleRequestClick}
         >
-          View Details
+          Request Tutor
           <ArrowRight className="size-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
         </button>
       </div>

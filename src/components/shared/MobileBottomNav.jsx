@@ -1,29 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Search, LayoutDashboard, User, Compass } from 'lucide-react';
+import { Home, Compass, BookOpen, LogIn } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
-
-const ANON_ITEMS = [
-    { icon: Home, label: 'Home', path: '/' },
-    { icon: Search, label: 'Search', path: '/tuitions' },
-    { icon: LayoutDashboard, label: 'Login', path: '/login' },
-    { icon: User, label: 'Sign Up', path: '/register' },
-];
-
-const STUDENT_ITEMS = [
-    { icon: Home, label: 'Home', path: '/' },
-    { icon: Search, label: 'Search', path: '/tuitions' },
-    { icon: LayoutDashboard, label: 'Dash', path: '/dashboard' },
-    { icon: User, label: 'Profile', path: '/dashboard/profile' },
-];
-
-const TUTOR_ITEMS = [
-    { icon: Home, label: 'Home', path: '/' },
-    { icon: Compass, label: 'Browse', path: '/tutors' },
-    { icon: LayoutDashboard, label: 'Dash', path: '/dashboard' },
-    { icon: User, label: 'Profile', path: '/dashboard/profile' },
-];
+import API_URL from '../../config/api';
+import PoruaLogo from '../AiAssistant/PoruaLogo';
 
 /**
  * MobileBottomNav Component - Provides a fixed bottom navigation for mobile users.
@@ -33,14 +14,36 @@ const TUTOR_ITEMS = [
 const MobileBottomNav = () => {
     const { user, dbUser, loading } = useAuth();
 
-    let navItems = ANON_ITEMS;
+    const getFullUrl = (url) => {
+        if (!url || typeof url !== 'string') return url;
+        if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+        if (url.startsWith('/')) return `${API_URL}${url}`;
+        return url;
+    };
+
+    const navItems = [
+        { icon: Home, label: 'Home', path: '/' },
+        { icon: Compass, label: 'Tutors', path: '/tutors' },
+        { icon: BookOpen, label: 'Tuitions', path: '/tuitions' },
+    ];
+
     if (!loading && user) {
-        const role = dbUser?.role?.toLowerCase();
-        if (role === 'tutor') {
-            navItems = TUTOR_ITEMS;
-        } else {
-            navItems = STUDENT_ITEMS;
-        }
+        navItems.push({
+            icon: (props) => <PoruaLogo iconOnly {...props} />,
+            label: 'Porua',
+            path: '/ai-assistant',
+        });
+        navItems.push({
+            label: 'Profile',
+            path: '/dashboard',
+            isProfile: true
+        });
+    } else {
+        navItems.push({
+            icon: LogIn,
+            label: 'Sign In',
+            path: '/login'
+        });
     }
 
     return (
@@ -59,7 +62,31 @@ const MobileBottomNav = () => {
                     >
                         {({ isActive }) => (
                             <>
-                                <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} className={cn(isActive && "drop-shadow-[0_0_8px_rgba(37,99,235,0.3)]")} />
+                                {item.isProfile ? (
+                                    user?.photoURL ? (
+                                        <img
+                                            src={getFullUrl(user.photoURL)}
+                                            alt={user.displayName || "Profile"}
+                                            className={cn(
+                                                "size-5 rounded-full object-cover border transition-all duration-300",
+                                                isActive 
+                                                    ? "border-blue-600 ring-2 ring-blue-600/20 scale-105" 
+                                                    : "border-slate-300"
+                                            )}
+                                        />
+                                    ) : (
+                                        <div className={cn(
+                                            "size-5 rounded-full flex items-center justify-center text-[9px] font-bold border transition-all duration-300",
+                                            isActive 
+                                                ? "bg-blue-50 border-blue-600 text-blue-600 ring-2 ring-blue-600/20 scale-105" 
+                                                : "bg-slate-100 border-slate-300 text-slate-600"
+                                        )}>
+                                            {(user?.displayName || dbUser?.displayName || 'U').charAt(0).toUpperCase()}
+                                        </div>
+                                    )
+                                ) : (
+                                    <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} className={cn(isActive && "drop-shadow-[0_0_8px_rgba(37,99,235,0.3)]")} />
+                                )}
                                 <span className={cn(
                                     "text-[9px] font-bold uppercase tracking-widest",
                                     isActive ? "opacity-100" : "opacity-60"

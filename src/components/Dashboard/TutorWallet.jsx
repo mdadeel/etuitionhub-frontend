@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Wallet, TrendingUp, Clock, ArrowDownToLine, Banknote, ArrowUpRight } from 'lucide-react';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import { useRealtimeStore } from '../../store/realtimeStore';
 import { useWalletQuery } from '../../hooks/useWalletQuery';
 
@@ -26,7 +26,18 @@ const TutorWallet = () => {
     }, [data, walletSnapshot]);
     const recentPayments = data?.recentPayments || [];
 
-    if (isLoading) return <LoadingSpinner />;
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <StatCardSkeleton key={i} />
+                    ))}
+                </div>
+                <TableSkeleton rows={5} columns={4} />
+            </div>
+        );
+    }
     if (isError || !wallet) return null;
 
     return (
@@ -81,7 +92,7 @@ const TutorWallet = () => {
                                 {recentPayments.map((p) => (
                                     <tr key={p._id} className="hover:bg-background transition-colors">
                                         <td className="px-6 py-4 text-xs font-bold text-foreground">{(p.studentEmail || '').split('@')[0]}</td>
-                                        <td className="px-6 py-4 text-xs font-heading font-black text-foreground tabular-nums">৳{p.amount}</td>
+                                        <td className="px-6 py-4 text-xs font-heading font-black text-foreground tabular-nums">৳{p.grossAmount}</td>
                                         <td className="px-6 py-4 text-xs font-heading font-black text-emerald-700 tabular-nums">৳{p.netTutorAmount}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-0.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${STATUS_COLORS[p.status] || STATUS_COLORS.pending_verification}`}>

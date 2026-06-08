@@ -179,7 +179,7 @@ const DashPayments = () => {
                                                 </span>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
-                                                <p className="text-xs md:text-sm font-heading font-black text-foreground tabular-nums italic">৳{payment.amount}</p>
+                                                <p className="text-xs md:text-sm font-heading font-black text-foreground tabular-nums italic">৳{payment.grossAmount}</p>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
                                                 <span className={`px-2.5 py-1 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${

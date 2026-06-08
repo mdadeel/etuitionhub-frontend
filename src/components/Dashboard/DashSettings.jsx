@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import { AppleButton, AppleInput } from '../shared/AppleUI';
+import { FormSkeleton } from "@/components/shared/skeletons";
 import { Save, RefreshCw, Info, Globe, Phone, Banknote, Layout } from 'lucide-react';
 
 const DashSettings = () => {
@@ -68,7 +68,15 @@ const DashSettings = () => {
         appearance: <Layout size={16} className="text-primary" />
     };
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                {[...Array(3)].map((_, i) => (
+                    <FormSkeleton key={i} fields={3} />
+                ))}
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700">

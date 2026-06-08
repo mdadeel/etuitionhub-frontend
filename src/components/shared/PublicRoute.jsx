@@ -11,7 +11,7 @@ function PublicRoute({ children }) {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <span className="loading loading-spinner loading-lg text-teal-600"></span>
+                <div className="size-8 border-2 border-t-primary border-muted rounded-full animate-spin"></div>
             </div>
         );
     }

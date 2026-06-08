@@ -69,7 +69,7 @@ export function useAnalyticsFallback() {
 
                 // revenue calc
                 var completed = payments.filter(p => p.status === 'completed');
-                var revenue = completed.reduce((sum, p) => sum + (p.amount || 0), 0);
+                var revenue = completed.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
 
                 setStats({
                     totalUsers: users.length, totalStudents: students,

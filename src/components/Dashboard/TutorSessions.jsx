@@ -1,6 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
+import { Skeleton } from "@/components/ui/skeleton";
+import { CardSkeleton, LineSkeleton } from "@/components/shared/skeletons";
+
+function SessionCardSkeleton() {
+  return (
+    <CardSkeleton className="p-4 space-y-3">
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-5 w-32 rounded-lg" />
+        <Skeleton className="h-6 w-20 rounded-full" />
+      </div>
+      <LineSkeleton width="2/3" className="h-3" />
+      <div className="flex justify-between">
+        <Skeleton className="h-3 w-24 rounded-lg" />
+        <Skeleton className="h-3 w-16 rounded-lg" />
+      </div>
+    </CardSkeleton>
+  );
+}
 
 export default function TutorSessions() {
     const { dbUser } = useAuth();
@@ -16,7 +34,15 @@ export default function TutorSessions() {
         }
     }, [dbUser]);
 
-    if (loading) return <div className="p-4">Loading...</div>;
+    if (loading) {
+      return (
+        <div className="space-y-3">
+          {[...Array(4)].map((_, i) => (
+            <SessionCardSkeleton key={i} />
+          ))}
+        </div>
+      );
+    }
 
     return (
         <div className="space-y-4">

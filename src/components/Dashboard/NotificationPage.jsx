@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import useNotifications from '@/hooks/useNotifications';
 import { formatRelativeTime } from '@/utils/dateUtils';
 import { cn } from '@/lib/utils';
+import { NotificationListSkeleton } from "@/components/shared/skeletons";
 
 const PAGE_SIZE = 20;
 
@@ -116,9 +117,7 @@ const NotificationPage = () => {
             </div>
 
             {isLoading ? (
-                <div className="flex items-center justify-center py-20">
-                    <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
-                </div>
+                <NotificationListSkeleton count={6} />
             ) : !Array.isArray(notifications) || notifications.length === 0 ? (
                 <div className="text-center py-20">
                     <Bell size={40} className="mx-auto mb-4 text-[#94A3B8]" />

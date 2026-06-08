@@ -9,41 +9,57 @@ export const useTuitions = (initialFilters = {}) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const fetchTuitions = useCallback(async () => {
-        try {
+    const [trigger, setTrigger] = useState(0);
+    const refetch = useCallback(() => setTrigger(t => t + 1), []);
+
+    useEffect(() => {
+        let active = true;
+
+        // Reset state immediately for page 1/initial load to display skeleton instantly
+        if (!initialFilters.page || initialFilters.page === 1) {
+            setTuitions([]);
             setLoading(true);
-            setError(null);
-            const data = await tuitionService.getAll(initialFilters);
-            if (data.data) {
-                setTuitions((prev) => 
-                    initialFilters.page && initialFilters.page > 1
-                        ? [...prev, ...data.data]
-                        : data.data
-                );
-                setPagination(data.pagination);
-                setFilterOptions(data.filterOptions);
-            } else {
-                setTuitions((prev) => 
-                    initialFilters.page && initialFilters.page > 1
-                        ? [...prev, ...(Array.isArray(data) ? data : [])]
-                        : (Array.isArray(data) ? data : [])
-                );
-            }
-        } catch (err) {
-            console.error('tuition fetch error:', err);
-            const errorMsg = err.response?.data?.error || 'Failed to load tuitions. Please check your connection.';
-            setError(errorMsg);
-            toast.error(errorMsg);
-        } finally {
-            setLoading(false);
         }
-    }, [JSON.stringify(initialFilters)]);
 
-    useEffect(() => { 
+        const fetchTuitions = async () => {
+            try {
+                setError(null);
+                const data = await tuitionService.getAll(initialFilters);
+                if (!active) return;
+
+                if (data.data) {
+                    setTuitions((prev) => 
+                        initialFilters.page && initialFilters.page > 1
+                            ? [...prev, ...data.data]
+                            : data.data
+                    );
+                    setPagination(data.pagination);
+                    setFilterOptions(data.filterOptions);
+                } else {
+                    setTuitions((prev) => 
+                        initialFilters.page && initialFilters.page > 1
+                            ? [...prev, ...(Array.isArray(data) ? data : [])]
+                            : (Array.isArray(data) ? data : [])
+                    );
+                }
+            } catch (err) {
+                if (!active) return;
+                console.error('tuition fetch error:', err);
+                const errorMsg = err.response?.data?.error || 'Failed to load tuitions. Please check your connection.';
+                setError(errorMsg);
+                toast.error(errorMsg);
+            } finally {
+                if (active) setLoading(false);
+            }
+        };
+
         fetchTuitions();
-    }, [fetchTuitions]);
+        return () => {
+            active = false;
+        };
+    }, [JSON.stringify(initialFilters), trigger]);
 
-    return { tuitions, pagination, filterOptions, loading, error, refetch: fetchTuitions };
+    return { tuitions, pagination, filterOptions, loading, error, refetch };
 };
 
 export const useTuition = (tuitionId) => {

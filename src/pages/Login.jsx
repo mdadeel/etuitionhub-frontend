@@ -64,7 +64,7 @@ const Login = () => {
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
             
             <div className="w-full max-w-md z-10">
-                <div className="bg-card border-2 border-border rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.05)] overflow-hidden p-6 sm:p-8">
+                <div className="bg-card border border-border rounded-xl shadow-editorial overflow-hidden p-6 sm:p-8">
                     
                     {/* Header */}
                     <div className="text-center mb-6">
@@ -84,7 +84,7 @@ const Login = () => {
                         type="button"
                         variant="outline"
                         onClick={handleGoogleLogin}
-                        className="w-full h-11 rounded-none border-2 border-border hover:bg-muted text-foreground font-heading font-bold uppercase tracking-wider text-xs transition-smooth mb-4"
+                        className="w-full h-11 rounded-xl border border-border hover:bg-muted text-foreground text-sm transition-smooth mb-4"
                     >
                         <svg className="size-4 mr-2.5 inline-block" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -97,7 +97,7 @@ const Login = () => {
 
                     <div className="relative mb-5 flex items-center justify-center">
                         <span className="absolute inset-x-0 h-px bg-border"></span>
-                        <span className="relative bg-card px-3 text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-widest">
+                        <span className="relative bg-card px-3 text-xs font-medium text-muted-foreground">
                             Or Email Login
                         </span>
                     </div>
@@ -105,7 +105,7 @@ const Login = () => {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="space-y-3">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
+                                <label className="text-sm font-medium text-muted-foreground block">
                                     Email Address
                                 </label>
                                 <div className="relative">
@@ -114,19 +114,19 @@ const Login = () => {
                                         type="email"
                                         {...register("email", { required: true })}
                                         placeholder="name@domain.com"
-                                        className="pl-9 h-10 bg-input/40 border-2 border-border focus-visible:border-primary text-foreground rounded-none transition-smooth"
+                                        className="pl-9 h-11 bg-input/40 border border-border focus-visible:border-primary text-foreground rounded-xl transition-smooth"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-[10px] font-heading font-bold text-muted-foreground uppercase tracking-wider block">
+                                    <label className="text-sm font-medium text-muted-foreground block">
                                         Password
                                     </label>
                                     <Link 
                                         to="/password-reset" 
-                                        className="text-[10px] font-heading font-bold text-primary hover:underline"
+                                        className="text-sm font-medium text-primary hover:underline"
                                     >
                                         Forgot?
                                     </Link>
@@ -137,7 +137,7 @@ const Login = () => {
                                         type="password"
                                         {...register("password", { required: true })}
                                         placeholder="••••••••"
-                                        className="pl-9 h-10 bg-input/40 border-2 border-border focus-visible:border-primary text-foreground rounded-none transition-smooth"
+                                        className="pl-9 h-11 bg-input/40 border border-border focus-visible:border-primary text-foreground rounded-xl transition-smooth"
                                     />
                                 </div>
                             </div>
@@ -147,7 +147,7 @@ const Login = () => {
                             <label className="flex items-center gap-2 cursor-pointer select-none">
                                 <input 
                                     type="checkbox" 
-                                    className="size-3.5 rounded-none border-2 border-border text-primary focus:ring-0 cursor-pointer accent-primary animate-none" 
+                                    className="size-3.5 rounded border-2 border-border text-primary focus:ring-0 cursor-pointer accent-primary animate-none" 
                                 />
                                 <span className="text-xs font-body text-muted-foreground">Keep me signed in</span>
                             </label>
@@ -156,7 +156,7 @@ const Login = () => {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full h-11 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-heading font-bold uppercase tracking-wider transition-smooth active:scale-[0.99] text-xs"
+                            className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-smooth active:scale-[0.99] text-sm"
                         >
                             {loading ? 'Authenticating...' : 'Sign In'}
                         </Button>
@@ -166,26 +166,26 @@ const Login = () => {
                     <div className="mt-6 pt-5 border-t border-border space-y-4">
                         <div className="bg-muted/40 p-3 border border-border">
                             <div className="flex items-center justify-between mb-2">
-                                <h4 className="text-[10px] font-heading font-bold text-foreground uppercase tracking-wider">
+                                <h4 className="text-sm font-medium text-foreground">
                                     Test Accounts
                                 </h4>
-                                <span className="text-[9px] text-muted-foreground uppercase font-mono">click to load</span>
+                                <span className="text-xs text-muted-foreground">click to load</span>
                             </div>
                             <div className="flex gap-2">
                                 <button
                                     type="button"
                                     onClick={() => fillDemo('user')}
-                                    className="flex-1 h-8 rounded-none border border-border hover:border-foreground bg-card text-foreground text-[10px] font-heading font-bold tracking-wide uppercase transition-smooth flex items-center justify-center gap-1"
+                                    className="flex-1 h-9 rounded-xl border border-border hover:border-foreground bg-card text-foreground text-sm font-medium transition-smooth flex items-center justify-center gap-1"
                                 >
-                                    <User size={10} />
+                                    <User size={14} />
                                     Student
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => navigate('/admin-login')}
-                                    className="flex-1 h-8 rounded-none border border-border hover:border-foreground bg-card text-foreground text-[10px] font-heading font-bold tracking-wide uppercase transition-smooth flex items-center justify-center gap-1"
+                                    className="flex-1 h-9 rounded-xl border border-border hover:border-foreground bg-card text-foreground text-sm font-medium transition-smooth flex items-center justify-center gap-1"
                                 >
-                                    <Shield size={10} />
+                                    <Shield size={14} />
                                     Admin
                                 </button>
                             </div>

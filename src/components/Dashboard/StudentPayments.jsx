@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import { useRealtimeStore } from '../../store/realtimeStore';
+import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import toast from 'react-hot-toast';
 import {
     Banknote,
@@ -55,7 +55,7 @@ const StudentPayments = ({ hideHeader }) => {
 
     const stats = useMemo(() => {
         const total = payments.length;
-        const totalSpent = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+        const totalSpent = payments.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
         const pending = payments.filter(p => p.status === 'pending_verification').length;
         const completed = payments.filter(p => p.status === 'verified').length;
         return { total, totalSpent, pending, completed };
@@ -73,7 +73,18 @@ const StudentPayments = ({ hideHeader }) => {
         { id: 'rejected', label: 'Rejected', count: payments.filter(p => p.status === 'rejected').length }
     ];
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <StatCardSkeleton key={i} />
+                    ))}
+                </div>
+                <TableSkeleton rows={5} columns={5} />
+            </div>
+        );
+    }
 
     const getStatusBadge = (status) => {
         const variants = {
@@ -231,7 +242,7 @@ const StudentPayments = ({ hideHeader }) => {
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6 text-center">
-                                                <span className="text-lg font-bold text-primary tabular-nums">৳{payment.amount?.toLocaleString()}</span>
+                                                <span className="text-lg font-bold text-primary tabular-nums">৳{payment.grossAmount?.toLocaleString()}</span>
                                             </td>
                                             <td className="px-8 py-6 text-center">
                                                 <span className="text-xs font-mono text-muted-foreground bg-muted/30 px-2 py-1 rounded-none">

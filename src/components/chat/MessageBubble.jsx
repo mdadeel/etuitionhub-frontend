@@ -35,16 +35,18 @@ const MessageBubble = memo(({
     const isEdited = msg.isEdited || (msg.updatedAt && (new Date(msg.updatedAt) - new Date(msg.createdAt) > 5000));
     const isDeleted = msg.isDeleted;
 
-    // Calculate dynamic border radii (Messenger/2026 UX grouping styling)
-    let roundedClass = "rounded-[24px]";
+    // Calculate dynamic border radii (18px bubble radius with proper chat-tail grouping styling)
+    let roundedClass = "rounded-[18px]";
     if (isMe) {
-        if (isConsecutivePrev && isConsecutiveNext) roundedClass = "rounded-[24px] rounded-r-[8px]";
-        else if (isConsecutivePrev) roundedClass = "rounded-[24px] rounded-tr-[8px]";
-        else if (isConsecutiveNext) roundedClass = "rounded-[24px] rounded-br-[8px]";
+        if (isConsecutivePrev && isConsecutiveNext) roundedClass = "rounded-[18px] rounded-r-[4px]";
+        else if (isConsecutivePrev) roundedClass = "rounded-[18px] rounded-tr-[4px] rounded-br-[18px]";
+        else if (isConsecutiveNext) roundedClass = "rounded-[18px] rounded-br-[4px] rounded-tr-[18px]";
+        else roundedClass = "rounded-[18px] rounded-br-[4px]";
     } else {
-        if (isConsecutivePrev && isConsecutiveNext) roundedClass = "rounded-[24px] rounded-l-[8px]";
-        else if (isConsecutivePrev) roundedClass = "rounded-[24px] rounded-tl-[8px]";
-        else if (isConsecutiveNext) roundedClass = "rounded-[24px] rounded-bl-[8px]";
+        if (isConsecutivePrev && isConsecutiveNext) roundedClass = "rounded-[18px] rounded-l-[4px]";
+        else if (isConsecutivePrev) roundedClass = "rounded-[18px] rounded-tl-[4px] rounded-bl-[18px]";
+        else if (isConsecutiveNext) roundedClass = "rounded-[18px] rounded-bl-[4px] rounded-tl-[18px]";
+        else roundedClass = "rounded-[18px] rounded-bl-[4px]";
     }
 
     const openMoreMenu = () => {
@@ -409,13 +411,13 @@ const MessageBubble = memo(({
 
                     <div 
                         className={cn(
-                            "bubble-content px-4 py-2.5 text-[15px] relative leading-relaxed w-fit font-body z-10 flex flex-col gap-1.5 transition-all duration-200",
+                            "bubble-content px-4 py-2 text-[14px] relative leading-relaxed w-fit font-body z-10 flex flex-col gap-1 transition-all duration-200",
                             roundedClass,
                             isMe 
-                                ? (isDeleted ? "bg-muted text-muted-foreground border border-border/50" : "bg-[color:hsl(var(--chat-sent))] text-[color:hsl(var(--chat-sent-foreground))] ml-auto")
-                                : (isDeleted ? "bg-muted/50 text-muted-foreground italic border border-border/30" : "bg-[color:hsl(var(--chat-received))] text-[color:hsl(var(--chat-received-foreground))] mr-auto border border-border/20 dark:border-border/10"),
-                            isHighlighted && "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg shadow-primary/20",
-                            isDeleted && "py-1.5 px-3 text-[13px]"
+                                ? (isDeleted ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700" : "bg-gradient-to-br from-[#3B82F6] to-[#2563EB] text-white ml-auto shadow-[0_2px_8px_rgba(37,99,235,0.15)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.25)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.35)] hover:-translate-y-[0.5px] active:scale-[0.99]")
+                                : (isDeleted ? "bg-slate-100/50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 italic border border-slate-200/50 dark:border-slate-700/50" : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 mr-auto border border-slate-150 dark:border-slate-700/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:-translate-y-[0.5px] active:scale-[0.99]"),
+                            isHighlighted && "ring-2 ring-blue-500 ring-offset-2 ring-offset-background shadow-lg shadow-blue-500/20",
+                            isDeleted && "py-1.5 px-3 text-[12.5px]"
                         )}
                     >
                         {!isDeleted && renderMilestoneIndicator()}
@@ -498,14 +500,14 @@ const MessageBubble = memo(({
                     </div>
                 )}
 
-                {/* 2026 Redesign Metadata row under the bubble */}
+                {/* Redesigned Metadata row under the bubble */}
                 <div className={cn(
-                    "flex items-center gap-1 text-[10px] font-bold tracking-tight text-muted-foreground/50 select-none transition-all duration-300",
-                    isMe ? "justify-end mr-2" : "justify-start ml-2",
+                    "flex items-center gap-1 text-[9px] font-medium tracking-tight text-slate-400/70 dark:text-slate-500/70 select-none transition-all duration-300",
+                    isMe ? "justify-end mr-1.5" : "justify-start ml-1.5",
                     // Hide consecutive timestamps by default, show on hover (using group-hover/bubble helper)
                     (isConsecutivePrev && !isLatestOutgoing)
-                        ? "h-0 opacity-0 overflow-hidden group-hover/bubble:h-auto group-hover/bubble:opacity-100 group-hover/bubble:mt-1 group-hover/bubble:mb-0.5"
-                        : "mt-1 mb-0.5 opacity-100"
+                        ? "h-0 opacity-0 overflow-hidden group-hover/bubble:h-auto group-hover/bubble:opacity-100 group-hover/bubble:mt-0.5 group-hover/bubble:mb-0.5"
+                        : "mt-0.5 mb-0.5 opacity-100"
                 )}>
                     {isEdited && !isDeleted && (
                         <button 
@@ -524,22 +526,9 @@ const MessageBubble = memo(({
                     {isMe && isLatestOutgoing && !isDeleted && (
                         <span className="shrink-0 flex items-center ml-0.5">
                             {msg.isRead ? (
-                                otherParticipant?.photoURL ? (
-                                    <img 
-                                        src={otherParticipant.photoURL} 
-                                        alt="Seen" 
-                                        className="size-3.5 rounded-full object-cover ring-1 ring-black/5" 
-                                        title="Seen"
-                                    />
-                                ) : (
-                                    <span className="text-[#0A7CFF]" title="Seen">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                                    </span>
-                                )
+                                <CheckCheck size={13} className="text-[#2563EB]" title="Seen" strokeWidth={2.8} />
                             ) : (
-                                <span className="text-muted-foreground/30" title="Sent">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                                </span>
+                                <Check size={13} className="text-slate-400" title="Delivered" strokeWidth={2.5} />
                             )}
                         </span>
                     )}

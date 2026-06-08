@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
+import ModernSidebar from "../components/shared/ModernSidebar";
 import StudentDashboard from "../components/Dashboard/StudentDashboard";
 import TutorDashboard from "../components/Dashboard/TutorDashboard";
 import AdminDashboard from "../components/Dashboard/AdminDashboard";
@@ -11,6 +11,7 @@ import DashUsers from "../components/Dashboard/DashUsers";
 import TutorSessions from "../components/Dashboard/TutorSessions";
 import Bookmarks from "../components/Dashboard/Bookmarks";
 import BillingHistory from "../components/Dashboard/BillingHistory";
+import HireRequests from "../components/Dashboard/HireRequests";
 import NotificationPage from "../components/Dashboard/NotificationPage";
 import VerificationFlow from "../components/Dashboard/VerificationFlow";
 import TutorWallet from "../components/Dashboard/TutorWallet";
@@ -18,6 +19,10 @@ import TutorWithdraw from "../components/Dashboard/TutorWithdraw";
 import AdminWithdrawals from "./AdminWithdrawals";
 import AdminAuditLogs from "./AdminAuditLogs";
 import DashSettings from "../components/Dashboard/DashSettings";
+import ActiveRelationships from "@/components/Dashboard/ActiveRelationships.jsx";
+import SessionConfirmationList from "@/components/Dashboard/SessionConfirmationList.jsx";
+import VerificationQueue from '@/components/Dashboard/VerificationQueue.jsx';
+import DisputeWorkspace from '@/components/Dashboard/DisputeWorkspace.jsx';
 import { Menu, X, Home } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
 import { cn } from "@/lib/utils";
@@ -71,7 +76,7 @@ const Dashboard = () => {
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Desktop Sidebar */}
-      <DashboardSidebar role={role} />
+      <ModernSidebar className="hidden lg:flex" />
 
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
@@ -84,12 +89,13 @@ const Dashboard = () => {
       {/* Mobile Sidebar Content */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 w-72 bg-card z-[70] lg:hidden transition-transform duration-300 border-r border-border overflow-y-auto",
+          "fixed inset-y-0 left-0 bg-card z-[70] lg:hidden transition-transform duration-300 border-r border-border overflow-y-auto",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <DashboardSidebar role={role} />
+        <ModernSidebar className="w-[260px]" />
       </div>
+
 
       <main className="flex-1 h-full overflow-y-auto overflow-x-hidden relative flex flex-col safe-bottom">
         {/* Dashboard Top Navbar */}
@@ -222,6 +228,8 @@ const Dashboard = () => {
                 element={<Navigate to="/dashboard/bookmarks" replace />}
               />
               <Route path="notifications" element={<NotificationPage />} />
+              <Route path="requests" element={<HireRequests />} />
+              <Route path="relationships" element={<ActiveRelationships />} />
 
 
 
@@ -281,6 +289,24 @@ const Dashboard = () => {
                 element={
                   <AdminRoute role={role}>
                     <AdminAuditLogs />
+                  </AdminRoute>
+                }
+              />
+
+              <Route
+                path="admin/payments"
+                element={
+                  <AdminRoute role={role}>
+                    <VerificationQueue />
+                  </AdminRoute>
+                }
+              />
+
+              <Route
+                path="admin/disputes"
+                element={
+                  <AdminRoute role={role}>
+                    <DisputeWorkspace />
                   </AdminRoute>
                 }
               />

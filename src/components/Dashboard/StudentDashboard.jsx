@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
-import LoadingSpinner from "../shared/LoadingSpinner";
+import { StatCardSkeleton } from "@/components/shared/skeletons";
 import StudentPayments from "./StudentPayments";
 import {
   Activity,
@@ -222,8 +222,10 @@ const StudentDashboard = () => {
       {/* Overview Content */}
       {activeTab === "overview" &&
         (loading ? (
-          <div className="flex items-center justify-center py-20">
-            <LoadingSpinner />
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            {[...Array(6)].map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">

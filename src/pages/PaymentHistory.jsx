@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import { useAuth } from '../contexts/AuthContext'
 import api from '../services/api';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
 import toast from 'react-hot-toast';
+import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import { Database, Banknote, Clock, ShieldCheck, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -31,7 +31,18 @@ const PaymentHistory = () => {
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <StatCardSkeleton key={i} />
+                    ))}
+                </div>
+                <TableSkeleton rows={5} columns={5} />
+            </div>
+        );
+    }
 
     return (
         <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary animate-in fade-in duration-700">
@@ -95,7 +106,7 @@ const PaymentHistory = () => {
                                                 </div>
                                             </td>
                                             <td className="px-10 py-8 text-center">
-                                                <p className="text-base font-black text-foreground tabular-nums italic">৳{payment.amount}</p>
+                                                <p className="text-base font-black text-foreground tabular-nums italic">৳{payment.grossAmount}</p>
                                             </td>
                                             <td className="px-10 py-8 text-right">
                                                 {(() => {

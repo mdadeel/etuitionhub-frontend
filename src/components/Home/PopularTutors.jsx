@@ -1,24 +1,22 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import TutorCard from '../shared/TutorCard';
 import api from '../../services/api';
+import { TutorCardGridSkeleton } from '../shared/skeletons';
 
 const PopularTutors = () => {
-    const [tutors, setTutors] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data, isLoading } = useQuery({
+        queryKey: ['tutors', 'popular'],
+        queryFn: async () => {
+            const res = await api.get('/api/tutors?page=1&limit=4&sort=ratings');
+            const raw = res.data?.data || res.data?.tutors || res.data;
+            return Array.isArray(raw) ? raw.slice(0, 4) : [];
+        },
+        staleTime: 120_000,
+    });
 
-    useEffect(() => {
-        api.get('/api/tutors?page=1&limit=4&sort=ratings')
-            .then(res => {
-                // API returns { data: [...] } or just an array
-                const data = res.data?.data || res.data?.tutors || res.data;
-                if (Array.isArray(data)) setTutors(data.slice(0, 4));
-            })
-            .catch(() => {
-                // Silently fail — section just won't show
-            })
-            .finally(() => setLoading(false));
-    }, []);
+    const tutors = data || [];
+    const loading = isLoading;
 
     return (
         <section className="py-16 bg-card relative overflow-hidden">
@@ -34,11 +32,7 @@ const PopularTutors = () => {
                 </div>
 
                 {loading && (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-                        {[1,2,3,4].map(i => (
-                            <div key={i} className="rounded shimmer-bg border border-border h-64" />
-                        ))}
-                    </div>
+                    <TutorCardGridSkeleton count={4} />
                 )}
 
                 {!loading && tutors.length > 0 && (

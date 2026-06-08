@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import useDebouncedValue from "../hooks/useDebouncedValue";
 import { useSearchParams } from "react-router-dom";
 import TutorCard from "../components/shared/TutorCard";
@@ -17,6 +17,7 @@ import SaveSearchButton from "../components/shared/SaveSearchButton";
 import api from "../services/api";
 import { cn } from "@/lib/utils";
 import SEO from '../components/shared/SEO';
+import { TutorCardGridSkeleton } from "@/components/shared/skeletons";
 
 const Tutors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,24 +34,11 @@ const Tutors = () => {
   const searchQuery = searchParams.get("q") || "";
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState(null);
+  const [_pagination, setPagination] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleWindowScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-    window.addEventListener("scroll", handleWindowScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleWindowScroll);
-    };
-  }, []);
 
   const handleMainScroll = (e) => {
     if (e.currentTarget.scrollTop > 20) {
@@ -71,9 +59,12 @@ const Tutors = () => {
     };
   }, [isMobileFiltersOpen]);
 
-  // Reset page when search or filters change
+  // Reset page, loaders, and list when search or filters change to prevent visual glitches
   useEffect(() => {
     setPage(1);
+    setHasMore(true);
+    setTutors([]);
+    setLoading(true);
   }, [
     debouncedSearch,
     selectedSubjects,
@@ -114,18 +105,9 @@ const Tutors = () => {
     if (sort) setSortBy(sort);
   }, []);
 
-  const [hasMore, setHasMore] = useState(true);
-  const observerTarget = useCallback(node => {
-    if (loading || !hasMore) return;
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prev => prev + 1);
-      }
-    }, { threshold: 1.0 });
-    if (node) observer.observe(node);
-  }, [loading, hasMore]);
 
   useEffect(() => {
+    let active = true;
     const fetchTutors = async () => {
       setLoading(true);
       try {
@@ -139,7 +121,7 @@ const Tutors = () => {
           params.append("language", selectedLanguage);
 
         params.append("page", page);
-        params.append("limit", 9);
+        params.append("limit", 21);
 
         if (sortBy) {
           params.append("sort", sortBy);
@@ -148,6 +130,9 @@ const Tutors = () => {
         const response = await api.get(
           `/api/tutors?${params.toString()}`,
         );
+        
+        if (!active) return;
+        
         const responseData = response.data;
         const tutorsData = responseData.data || responseData;
         const paginationData = responseData.pagination || null;
@@ -155,7 +140,7 @@ const Tutors = () => {
 
         setTutors(prev => page === 1 ? (Array.isArray(tutorsData) ? tutorsData : []) : [...prev, ...(Array.isArray(tutorsData) ? tutorsData : [])]);
         setPagination(paginationData);
-        setHasMore(paginationData ? page < paginationData.pages : false);
+        setHasMore(paginationData ? paginationData.page < paginationData.pages : false);
 
         if (filterOptions) {
           if (filterOptions.subjects) {
@@ -181,12 +166,16 @@ const Tutors = () => {
           }
         }
       } catch (error) {
+        if (!active) return;
         console.error("Error fetching tutors", error);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
     fetchTutors();
+    return () => {
+      active = false;
+    };
   }, [
     debouncedSearch,
     selectedSubjects,
@@ -286,6 +275,22 @@ const Tutors = () => {
                   100% Vetted
                 </span>
               </div>
+
+              {/* Mobile Filters Inline Trigger */}
+              <button
+                onClick={() => setIsMobileFiltersOpen(true)}
+                className="lg:hidden px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center justify-center min-w-[80px] hover:bg-muted active:scale-[0.98] transition-all relative self-stretch"
+              >
+                <Filter size={18} className="text-[#2563EB] mb-1" />
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
+                  Filters
+                </span>
+                {(selectedSubjects.length > 0 || selectedArea !== "All") && (
+                  <span className="absolute -top-1 -right-1 size-5 bg-[#2563EB] text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-card shadow-sm">
+                    {(selectedSubjects.length > 0 ? 1 : 0) + (selectedArea !== "All" ? 1 : 0)}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -305,26 +310,6 @@ const Tutors = () => {
         </div>
 
         <div className="grid lg:grid-cols-4 gap-6 flex-1 min-h-0 overflow-hidden">
-          {/* Mobile Filters Trigger */}
-          <button
-            onClick={() => setIsMobileFiltersOpen(true)}
-            className="lg:hidden fixed z-40 bg-[#2563EB] text-white h-14 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:bg-[#1D4ED8] active:scale-[0.98] transition-all"
-            style={{
-              bottom: "calc(env(safe-area-inset-bottom) + 5.25rem)",
-              left: "1rem",
-              right: "1rem",
-            }}
-          >
-            <Filter size={20} />
-            <span className="font-medium text-base tracking-wide">Filters</span>
-            {(selectedSubjects.length > 0 ||
-              selectedArea !== "All") && (
-              <span className="absolute top-1/2 -translate-y-1/2 right-4 size-6 bg-card text-[#2563EB] text-xs font-bold flex items-center justify-center rounded-full">
-                {(selectedSubjects.length > 0 ? 1 : 0) +
-                  (selectedArea !== "All" ? 1 : 0)}
-              </span>
-            )}
-          </button>
 
           {/* Sidebar Filters */}
           <aside
@@ -449,10 +434,9 @@ const Tutors = () => {
 
           {/* Main Content */}
           <main onScroll={handleMainScroll} className="lg:col-span-3 relative pb-24 md:pb-0 overflow-y-auto custom-scrollbar pr-1">
+
             {loading && tutors.length === 0 && (
-              <div className="py-12 text-center">
-                <p className="text-sm text-muted-foreground">Loading tutors...</p>
-              </div>
+              <TutorCardGridSkeleton count={9} columns={3} className="gap-4 md:gap-4" />
             )}
 
             {searchQuery && (
@@ -513,11 +497,25 @@ const Tutors = () => {
                 </div>
 
                 {loading && tutors.length > 0 && (
-                  <div className="py-8 text-center">
-                    <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin mx-auto" />
+                  <div className="mt-6">
+                    <TutorCardGridSkeleton count={3} columns={3} className="gap-4 md:gap-4" />
                   </div>
                 )}
-                <div ref={observerTarget} className="h-4" />
+                {hasMore && !loading && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={() => setPage((prev) => prev + 1)}
+                      className="px-6 py-3 bg-[#2563EB] text-white font-medium rounded-xl hover:bg-[#1D4ED8] active:scale-[0.98] transition-all shadow-md"
+                    >
+                      Load More Tutors
+                    </button>
+                  </div>
+                )}
+                {!hasMore && tutors.length > 0 && !loading && (
+                  <div className="py-8 text-center text-sm text-muted-foreground border-t border-border mt-8">
+                    No more tutors available
+                  </div>
+                )}
               </div>
             )}
           </main>

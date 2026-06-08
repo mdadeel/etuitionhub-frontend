@@ -13,6 +13,8 @@ import { useTranslation } from "react-i18next";
 import useDebouncedValue from "../../hooks/useDebouncedValue";
 import API_URL from "../../config/api";
 
+import PoruaLogo from "../AiAssistant/PoruaLogo";
+
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,6 +38,7 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -84,6 +87,7 @@ const Navbar = () => {
 
     navigate(`/search?q=${encodeURIComponent(q)}`);
     setShowDropdown(false);
+    setIsMobileSearchOpen(false);
   };
 
   // Fetch autocomplete suggestions
@@ -129,7 +133,6 @@ const Navbar = () => {
     const toastId = toast.loading("Logging out...");
     try {
       await logout();
-      Cookies.set("token", "");
       toast.dismiss(toastId);
       toast.success("Session ended.");
       setTimeout(() => navigate("/login"), 500);
@@ -143,8 +146,11 @@ const Navbar = () => {
   const navLinks = [
     { path: "/tutors", label: t("nav.find_tutors", "Find Tutors") },
     { path: "/tuitions", label: t("nav.tuitions", "Subjects") },
-    ...(userRole !== "tutor" 
-      ? [{ path: "/become-tutor", label: t("nav.become_tutor", "Become Tutor") }] 
+    ...(user
+      ? [{ path: "/ai-assistant", label: t("nav.ai_tutor", "Porua AI"), icon: (props) => <PoruaLogo iconOnly {...props} /> }]
+      : []),
+    ...(userRole !== "tutor" && !user
+      ? [{ path: "/become-tutor", label: t("nav.become_tutor", "Become Tutor") }]
       : []),
     { path: "/about", label: t("nav.about", "About") },
   ];
@@ -157,6 +163,37 @@ const Navbar = () => {
         isScrolled ? "shadow-sm shadow-[rgba(0,0,0,0.04)]" : "",
       )}
     >
+      {/* Mobile Search Overlay */}
+      {isMobileSearchOpen && (
+        <div className="absolute inset-0 bg-background z-50 flex items-center px-4 md:hidden animate-in fade-in duration-200">
+          <form onSubmit={handleSearch} className="w-full flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsMobileSearchOpen(false)}
+              className="p-2 text-muted-foreground hover:text-foreground rounded-lg transition-colors"
+            >
+              <X size={20} />
+            </button>
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <input
+                autoFocus
+                type="text"
+                placeholder="Search tutors..."
+                className="w-full pl-9 pr-4 h-10 rounded-lg text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 transition-all duration-300"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+              <button
+                type="submit"
+                className="px-4 h-10 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium rounded-lg transition-all active:scale-95 shadow-sm"
+              >
+              Search
+            </button>
+          </form>
+        </div>
+      )}
       <div className="container-premium flex items-center justify-between h-full">
         {/* Left Section: Calm Academic Branding */}
         <div className="flex items-center gap-8">
@@ -180,20 +217,28 @@ const Navbar = () => {
             className="hidden lg:flex items-center gap-8"
             data-tour="find-tutors"
           >
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                className={({ isActive }) =>
-                  cn(
-                    "text-muted-foreground hover:text-foreground transition-colors duration-300 font-label text-xs tracking-wide",
-                    isActive && "text-foreground",
-                  )
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const isAi = link.path === "/ai-assistant";
+              return (
+                <NavLink
+                  key={link.path}
+                  to={link.path}
+                  className={({ isActive }) =>
+                    cn(
+                      "transition-colors duration-300 font-label text-xs tracking-wide flex items-center gap-1.5",
+                      isAi
+                        ? "text-primary hover:text-primary/80"
+                        : "text-muted-foreground hover:text-foreground",
+                      isActive && !isAi && "text-foreground",
+                    )
+                  }
+                >
+                  {Icon && <Icon size={13} strokeWidth={2.5} className="animate-pulse" />}
+                  {link.label}
+                </NavLink>
+              );
+            })}
           </nav>
         </div>
 
@@ -232,7 +277,7 @@ const Navbar = () => {
                   {/* Recent Searches */}
                   {searchQuery.length < 2 && recentSearches.length > 0 && (
                     <div>
-                      <div className="px-4 py-2 text-[10px] font-heading font-bold uppercase tracking-wider text-[#94A3B8]">
+                      <div className="px-4 py-2 text-xs font-medium text-muted-foreground">
                         Recent Searches
                       </div>
                       {recentSearches.map((s, i) => (
@@ -264,7 +309,7 @@ const Navbar = () => {
                   {/* Tutor Suggestions */}
                   {suggestions.tutors.length > 0 && (
                     <div>
-                      <div className="px-4 py-2 text-[10px] font-heading font-bold uppercase tracking-wider text-[#94A3B8]">
+                      <div className="px-4 py-2 text-xs font-medium text-muted-foreground">
                         Tutors
                       </div>
                       {suggestions.tutors.map((tutor) => (
@@ -282,7 +327,7 @@ const Navbar = () => {
                               {tutor.displayName}
                             </p>
                             {tutor.subjects && (
-                              <p className="text-[10px] text-[#94A3B8]">
+                              <p className="text-xs text-muted-foreground">
                                 {tutor.subjects}
                               </p>
                             )}
@@ -295,7 +340,7 @@ const Navbar = () => {
                   {/* Tuition Suggestions */}
                   {suggestions.tuitions.length > 0 && (
                     <div>
-                      <div className="px-4 py-2 text-[10px] font-heading font-bold uppercase tracking-wider text-[#94A3B8]">
+                      <div className="px-4 py-2 text-xs font-medium text-muted-foreground">
                         Tuitions
                       </div>
                       {suggestions.tuitions.map((tuition) => (
@@ -314,7 +359,7 @@ const Navbar = () => {
                             <p className="text-sm font-medium text-foreground">
                               {tuition.subject}
                             </p>
-                            <p className="text-[10px] text-[#94A3B8]">
+                            <p className="text-xs text-muted-foreground">
                               {tuition.location} &bull; {tuition.class_name}
                             </p>
                           </div>
@@ -328,7 +373,7 @@ const Navbar = () => {
                     <Link
                       to={`/search?q=${encodeURIComponent(searchQuery)}`}
                       onClick={() => setShowDropdown(false)}
-                      className="block px-4 py-3 text-center text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] border-t border-border hover:bg-background transition-colors"
+                      className="block px-4 py-3 text-center text-xs font-medium text-primary border-t border-border hover:bg-background transition-colors"
                     >
                       View All Results &rarr;
                     </Link>
@@ -356,22 +401,31 @@ const Navbar = () => {
             </div>
           )}
 
+          {/* Theme & Search Toggles */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300"
+              aria-label={theme === "light" ? "Dark Mode" : "Light Mode"}
+            >
+              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+
+            <button
+              onClick={() => setIsMobileSearchOpen(true)}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300 md:hidden"
+              aria-label="Search"
+            >
+              <Search size={18} />
+            </button>
+
+            {user && <NotificationBell />}
+          </div>
+
           {user ? (
             <div className="flex items-center gap-5">
-              {/* Theme Toggle - icon only */}
-              <button
-                onClick={toggleTheme}
-                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300"
-                aria-label={theme === "light" ? "Dark Mode" : "Light Mode"}
-              >
-                {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
-              </button>
-
-              {/* Notification Bell */}
-              <NotificationBell />
-
               {/* User Avatar with Dropdown */}
-              <div ref={profileDropdownRef} className="relative">
+              <div ref={profileDropdownRef} className="relative hidden md:block">
                 <button
                   onClick={() => setIsProfileDropdownOpen((prev) => !prev)}
                   className="size-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300 block focus:outline-none"
@@ -429,7 +483,7 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-5">
+            <div className="hidden sm:flex items-center gap-5">
               <Link
                 to="/login"
                 className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-label text-xs tracking-wide"
@@ -438,7 +492,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/register"
-                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-lg font-label text-xs tracking-wide transition-all duration-300 hover:shadow-md"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-lg text-xs font-medium transition-all duration-300 hover:shadow-md"
               >
                 {t("nav.get_started", "Get Started")}
               </Link>
@@ -479,7 +533,7 @@ const Navbar = () => {
                     cn(
                       "px-4 py-3 text-sm font-heading transition-all duration-300",
                       isActive
-                        ? "bg-[#2563EB] text-white shadow-sm"
+                        ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )
                   }

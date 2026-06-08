@@ -33,9 +33,9 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = emptySuggesti
     return (
         <div className="flex flex-col items-center justify-center py-16 px-4">
             <div className="size-16 bg-background rounded-full flex items-center justify-center mb-4">
-                <SearchX size={28} className="text-[#94A3B8]" />
+                <SearchX size={28} className="text-muted-foreground" />
             </div>
-            <h3 className="font-heading font-black text-lg text-foreground mb-1">
+            <h3 className="font-heading font-bold text-lg text-foreground mb-1">
                 No {type} found
             </h3>
             {query && (
@@ -50,7 +50,7 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = emptySuggesti
             )}
             {suggestions.length > 0 && (
                 <div className="text-center">
-                    <p className="text-xs text-[#94A3B8] mb-2 font-heading font-bold uppercase tracking-wider">
+                    <p className="text-xs text-muted-foreground mb-2 font-medium">
                         Suggestions
                     </p>
                     <div className="flex flex-wrap gap-2 justify-center">
@@ -67,7 +67,7 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = emptySuggesti
             )}
             {spellingSuggestions.length > 0 && (
                 <div className="text-center mt-4">
-                    <p className="text-xs text-[#94A3B8] mb-2 font-heading font-bold uppercase tracking-wider">
+                    <p className="text-xs text-muted-foreground mb-2 font-medium">
                         Did you mean?
                     </p>
                     <div className="flex flex-wrap gap-2 justify-center">
@@ -75,7 +75,7 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = emptySuggesti
                             <button
                                 key={i}
                                 onClick={() => navigate(`/tutors?q=${encodeURIComponent(s)}`)}
-                                className="px-3 py-1.5 text-xs font-medium text-[#2563EB] bg-[#2563EB]/10 hover:bg-[#2563EB]/20 border border-[#2563EB]/20 rounded-lg transition-colors"
+                                className="px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-lg transition-colors"
                             >
                                 {s}
                             </button>

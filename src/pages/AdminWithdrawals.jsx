@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { ArrowDownToLine, Database, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 import api from '../services/api';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
+import { Skeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { useRealtimeStore } from '../store/realtimeStore';
 
 const STATUS_COLORS = {
@@ -93,7 +94,18 @@ const AdminWithdrawals = () => {
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) {
+      return (
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-8 w-24 rounded-full" />
+            ))}
+          </div>
+          <TableSkeleton rows={6} columns={5} />
+        </div>
+      );
+    }
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700 p-6 md:p-8 lg:p-12 max-w-7xl mx-auto">
