@@ -1,10 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Compass, BookOpen, LogIn } from 'lucide-react';
+import { Home, Compass, BookOpen, LogIn, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
 import API_URL from '../../config/api';
 import PoruaLogo from '../AiAssistant/PoruaLogo';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 /**
  * MobileBottomNav Component - Provides a fixed bottom navigation for mobile users.
@@ -14,6 +15,7 @@ import PoruaLogo from '../AiAssistant/PoruaLogo';
 const MobileBottomNav = () => {
     const { user, dbUser, loading } = useAuth();
 
+    // eslint-disable-next-line no-unused-vars
     const getFullUrl = (url) => {
         if (!url || typeof url !== 'string') return url;
         if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
@@ -63,27 +65,29 @@ const MobileBottomNav = () => {
                         {({ isActive }) => (
                             <>
                                 {item.isProfile ? (
-                                    user?.photoURL ? (
-                                        <img
-                                            src={getFullUrl(user.photoURL)}
-                                            alt={user.displayName || "Profile"}
-                                            className={cn(
-                                                "size-5 rounded-full object-cover border transition-all duration-300",
-                                                isActive 
-                                                    ? "border-blue-600 ring-2 ring-blue-600/20 scale-105" 
-                                                    : "border-slate-300"
-                                            )}
+                                    <Avatar
+                                        size="xs"
+                                        className={cn(
+                                            "size-5 rounded-full border transition-all duration-300",
+                                            isActive 
+                                                ? "border-blue-600 ring-2 ring-blue-600/20 scale-105" 
+                                                : "border-slate-300"
+                                        )}
+                                    >
+                                        <AvatarImage
+                                            src={dbUser?.photoURL || user?.photoURL}
+                                            alt={dbUser?.displayName || user?.displayName}
+                                            gender={dbUser?.gender}
                                         />
-                                    ) : (
-                                        <div className={cn(
-                                            "size-5 rounded-full flex items-center justify-center text-[9px] font-bold border transition-all duration-300",
+                                        <AvatarFallback className={cn(
+                                            "size-full rounded-full flex items-center justify-center text-[9px] font-bold border transition-all duration-300",
                                             isActive 
                                                 ? "bg-blue-50 border-blue-600 text-blue-600 ring-2 ring-blue-600/20 scale-105" 
                                                 : "bg-slate-100 border-slate-300 text-slate-600"
                                         )}>
-                                            {(user?.displayName || dbUser?.displayName || 'U').charAt(0).toUpperCase()}
-                                        </div>
-                                    )
+                                            {(dbUser?.displayName || user?.displayName || 'U').charAt(0).toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
                                 ) : (
                                     <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} className={cn(isActive && "drop-shadow-[0_0_8px_rgba(37,99,235,0.3)]")} />
                                 )}

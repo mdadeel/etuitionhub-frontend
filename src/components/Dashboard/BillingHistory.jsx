@@ -14,25 +14,25 @@ const BillingHistory = () => {
   ];
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="space-y-10 animate-in fade-in animate-fade-in-up duration-700">
       <AppleHeader
         title="Billing & Financials"
         subtitle="Manage payments, track verification status, and view generated receipts."
         badge={
-          <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-none bg-secondary/10 text-secondary">
+          <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-lg bg-secondary/10 text-secondary">
             Financial Dashboard
           </span>
         }
       />
 
       {/* Tab Switcher */}
-      <div className="flex items-center gap-1 bg-muted/30 p-1.5 rounded-none border border-border/40 w-fit max-w-full">
+      <div className="flex items-center gap-1 bg-muted/30 p-1.5 rounded-lg border border-border/40 w-fit max-w-full">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "flex items-center gap-2 px-5 py-2.5 text-xs font-semibold transition-all duration-300 rounded-none whitespace-nowrap",
+              "flex items-center gap-2 px-5 py-2.5 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap active:scale-[0.98]",
               activeTab === tab.id
                 ? "bg-background text-primary shadow-sm shadow-primary/5 border border-border/40"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"

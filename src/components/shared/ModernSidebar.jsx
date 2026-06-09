@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -30,6 +31,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAiStore } from '@/store/aiStore';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import aiService from '@/services/aiService';
 import ConfirmModal from '@/components/shared/ConfirmModal';
 import {
@@ -52,8 +54,6 @@ const subjects = [
 
 const ModernSidebar = ({ className }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [recentChats, setRecentChats] = useState([]);
-  const [isLoadingChats, setIsLoadingChats] = useState(false);
   const [editingChatId, setEditingChatId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [chatToDelete, setChatToDelete] = useState(null);
@@ -61,18 +61,28 @@ const ModernSidebar = ({ className }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, dbUser } = useAuth();
+  const queryClient = useQueryClient();
   const role = dbUser && dbUser.role ? dbUser.role.toLowerCase() : 'student';
 
   const currentSubject = useAiStore((s) => s.subject);
   const setSubject = useAiStore((s) => s.setSubject);
   const setActiveSessionId = useAiStore((s) => s.setActiveSessionId);
 
+  // Use TanStack Query to prevent blinking (§5.9)
+  const { data: recentData, isLoading: isLoadingChats } = useQuery({
+    queryKey: ['recent-chats', user?.uid],
+    queryFn: () => aiService.listChatSessions({ limit: 10 }),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+  });
+
+  const recentChats = Array.isArray(recentData?.sessions) 
+    ? recentData.sessions 
+    : (Array.isArray(recentData) ? recentData : []);
+
   const handleNewChat = () => {
     // Clear any in-flight session state and return to the AI home.
     setActiveSessionId(null);
-    // Refresh the recent-chats list so a freshly-sent message from the
-    // home page appears immediately if the user starts typing.
-    fetchRecentChats();
     if (location.pathname !== '/ai-assistant') {
       navigate('/ai-assistant');
     }
@@ -98,23 +108,6 @@ const ModernSidebar = ({ className }) => {
     dashboardItems.push({ path: "/dashboard/bookmarks", label: "Bookmarks", icon: Bookmark });
   }
 
-  const fetchRecentChats = async () => {
-    if (!user) return;
-    setIsLoadingChats(true);
-    try {
-      const data = await aiService.listChatSessions({ limit: 10 });
-      setRecentChats(Array.isArray(data?.sessions) ? data.sessions : (Array.isArray(data) ? data : []));
-    } catch (error) {
-      console.error('Failed to fetch recent chats:', error);
-    } finally {
-      setIsLoadingChats(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchRecentChats();
-  }, [user]); // Only fetch on mount or user change, don't refetch aggressively on every route change
-
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
   const promptDeleteChat = (e, chatId) => {
@@ -128,7 +121,7 @@ const ModernSidebar = ({ className }) => {
     setIsDeleting(true);
     try {
       await aiService.deleteChatSession(chatToDelete);
-      setRecentChats(prev => prev.filter(c => c._id !== chatToDelete));
+      queryClient.invalidateQueries({ queryKey: ['recent-chats'] });
       if (location.pathname.includes(chatToDelete)) {
         navigate('/ai-assistant');
       }
@@ -156,15 +149,11 @@ const ModernSidebar = ({ className }) => {
     }
     
     try {
-        // Optimistically update
-        setRecentChats(prev => prev.map(c => c._id === chatId ? { ...c, title: editTitle } : c));
         setEditingChatId(null);
-        
         await aiService.updateChatSession(chatId, { title: editTitle });
+        queryClient.invalidateQueries({ queryKey: ['recent-chats'] });
     } catch (err) {
         console.error("Failed to update chat title", err);
-        // Revert on failure
-        fetchRecentChats();
     }
   };
 
@@ -475,10 +464,10 @@ const ModernSidebar = ({ className }) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    to="/ai-assistant/tutor-tools"
+                    to="/ai-assistant/lesson-planner"
                     className={cn(
                       'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
-                      location.pathname === '/ai-assistant/tutor-tools'
+                      location.pathname === '/ai-assistant/lesson-planner'
                         ? 'bg-primary/10 text-primary'
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     )}
@@ -515,10 +504,10 @@ const ModernSidebar = ({ className }) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                to="/dashboard/admin/settings"
+                to="/ai-assistant/settings"
                 className={cn(
                   'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
-                  location.pathname.includes('/settings')
+                  location.pathname === '/ai-assistant/settings'
                     ? 'bg-primary/10 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}
