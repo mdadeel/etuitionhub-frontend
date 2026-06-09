@@ -1,5 +1,5 @@
 import "./app.css";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -12,45 +12,58 @@ import { queryClient } from "./lib/queryClient";
 import Navbar from "./components/shared/Navbar";
 import MobileBottomNav from "./components/shared/MobileBottomNav";
 import toast, { Toaster } from "react-hot-toast";
-import Home from "./pages/Home";
 import Footer from "./components/shared/Footer";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Tuitions from "./pages/Tuitions";
-import Tutors from "./pages/Tutors";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChatProvider } from "./contexts/ChatContext";
 import useSocketEvents from "./hooks/useSocketEvents";
 import ToastViewport from "./components/shared/ToastViewport";
-import Blog from "./pages/Blog";
-import TutorDetails from "./pages/TutorDetails";
-import TuitionDetails from "./pages/TuitionDetails";
-import PostTuition from "./pages/PostTuition";
-import BecomeTutor from "./pages/BecomeTutor";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/shared/PrivateRoute";
 import PublicRoute from "./components/shared/PublicRoute";
-import NotFound from "./pages/NotFound";
-import SessionRoom from "./pages/SessionRoom";
-import Checkout from "./pages/Checkout";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import PaymentHistory from "./pages/PaymentHistory";
-import AdminLogin from "./pages/AdminLogin";
-import PasswordReset from "./pages/PasswordReset";
-import SearchPage from "./pages/SearchPage";
 import FloatingChat from "./components/shared/FloatingChat";
 import VercelAlert from "./components/shared/VercelAlert";
-import AiAssistantHome from "./pages/AiAssistant/AiAssistantHome";
-import AiAssistantChat from "./pages/AiAssistant/AiAssistantChat";
-import AiAssistantQuiz from "./pages/AiAssistant/AiAssistantQuiz";
-import AiAssistantHistory from "./pages/AiAssistant/AiAssistantHistory";
-import AiAssistantTutorTools from "./pages/AiAssistant/AiAssistantTutorTools";
-import SavedNotes from "./pages/AiAssistant/SavedNotes";
 import { cn } from "@/lib/utils";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
+import { DynamicIslandProvider } from "./contexts/DynamicIslandProvider";
+import { DynamicIsland } from "./components/shared/DynamicIsland";
+
+// Lazy-loaded page components for code splitting
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Tuitions = lazy(() => import("./pages/Tuitions"));
+const Tutors = lazy(() => import("./pages/Tutors"));
+const Blog = lazy(() => import("./pages/Blog"));
+const TutorDetails = lazy(() => import("./pages/TutorDetails"));
+const TuitionDetails = lazy(() => import("./pages/TuitionDetails"));
+const PostTuition = lazy(() => import("./pages/PostTuition"));
+const BecomeTutor = lazy(() => import("./pages/BecomeTutor"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const SessionRoom = lazy(() => import("./pages/SessionRoom"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const PaymentHistory = lazy(() => import("./pages/PaymentHistory"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const PasswordReset = lazy(() => import("./pages/PasswordReset"));
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const TutorsByCity = lazy(() => import("./pages/TutorsByCity"));
+const AiAssistantHome = lazy(() => import("./pages/AiAssistant/AiAssistantHome"));
+const AiAssistantChat = lazy(() => import("./pages/AiAssistant/AiAssistantChat"));
+const AiAssistantQuiz = lazy(() => import("./pages/AiAssistant/AiAssistantQuiz"));
+const AiAssistantHistory = lazy(() => import("./pages/AiAssistant/AiAssistantHistory"));
+const AiAssistantTutorTools = lazy(() => import("./pages/AiAssistant/AiAssistantTutorTools"));
+const SavedNotes = lazy(() => import("./pages/AiAssistant/SavedNotes"));
+const AiAssistantSettings = lazy(() => import("./pages/AiAssistant/AiAssistantSettings"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -136,158 +149,170 @@ let App = () => {
     <ThemeProvider>
       <AuthProvider>
         <ChatProvider>
-          <RealtimeBridge />
-          <BrowserRouter>
-            <SessionExpiryCheck />
-          <ScrollToTop />
-          <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
-            <VercelAlert />
-            <ConditionalNavbar />
-            <MainContent>
-              <ErrorBoundary>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/tuitions" element={<Tuitions />} />
-                <Route path="/tutors" element={<Tutors />} />
-                <Route path="/tutor/:id" element={<TutorDetails />} />
-                <Route path="/tuition/:id" element={<TuitionDetails />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/post-tuition" element={<PostTuition />} />
-                <Route path="/become-tutor" element={<BecomeTutor />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route
-                  path="/login"
-                  element={
-                    <PublicRoute>
-                      <Login />
-                    </PublicRoute>
-                  }
-                />
-                <Route
-                  path="/password-reset"
-                  element={
-                    <PublicRoute>
-                      <PasswordReset />
-                    </PublicRoute>
-                  }
-                />
-                <Route
-                  path="/admin-login"
-                  element={
-                    <PublicRoute>
-                      <AdminLogin />
-                    </PublicRoute>
-                  }
-                />
-                <Route
-                  path="/register"
-                  element={
-                    <PublicRoute>
-                      <Register />
-                    </PublicRoute>
-                  }
-                />
-                <Route
-                  path="/dashboard/*"
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/checkout/:id"
-                  element={
-                    <PrivateRoute>
-                      <Checkout />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/session/:id"
-                  element={
-                    <PrivateRoute>
-                      <SessionRoom />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/payment-success"
-                  element={
-                    <PrivateRoute>
-                      <PaymentSuccess />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/payment-history"
-                  element={
-                    <PrivateRoute>
-                      <PaymentHistory />
-                    </PrivateRoute>
-                  }
-                />
-                <Route path="/search" element={<SearchPage />} />
-                <Route
-                  path="/ai-assistant"
-                  element={
-                    <PrivateRoute>
-                      <AiAssistantHome />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/ai-assistant/chat/:sessionId"
-                  element={
-                    <PrivateRoute>
-                      <AiAssistantChat />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/ai-assistant/quiz/:quizId"
-                  element={
-                    <PrivateRoute>
-                      <AiAssistantQuiz />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/ai-assistant/history"
-                  element={
-                    <PrivateRoute>
-                      <AiAssistantHistory />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/ai-assistant/tutor-tools"
-                  element={
-                    <PrivateRoute>
-                      <AiAssistantTutorTools />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/ai-assistant/saved-notes"
-                  element={
-                    <PrivateRoute>
-                      <SavedNotes />
-                    </PrivateRoute>
-                  }
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              </ErrorBoundary>
-            </MainContent>
-              <ConditionalFooter />
-              <ConditionalMobileBottomNav />
-              <ConditionalFloatingChat />
-              <Toaster position="top-right" />
-              <ToastViewport />
-            </div>
-          </BrowserRouter>
+          <DynamicIslandProvider>
+            <RealtimeBridge />
+            <BrowserRouter>
+              <SessionExpiryCheck />
+            <ScrollToTop />
+            <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
+              <DynamicIsland />
+              <VercelAlert />
+              <ConditionalNavbar />
+              <MainContent>
+                <ErrorBoundary>
+                <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/tuitions" element={<Tuitions />} />
+                  <Route path="/tutors" element={<Tutors />} />
+                  <Route path="/tutors/:city" element={<TutorsByCity />} />
+                  <Route path="/tutor/:id" element={<TutorDetails />} />
+                  <Route path="/tuition/:id" element={<TuitionDetails />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/post-tuition" element={<PostTuition />} />
+                  <Route path="/become-tutor" element={<BecomeTutor />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route
+                    path="/login"
+                    element={
+                      <PublicRoute>
+                        <Login />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/password-reset"
+                    element={
+                      <PublicRoute>
+                        <PasswordReset />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin-login"
+                    element={
+                      <PublicRoute>
+                        <AdminLogin />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/register"
+                    element={
+                      <PublicRoute>
+                        <Register />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/dashboard/*"
+                    element={
+                      <PrivateRoute>
+                        <Dashboard />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/checkout/:id"
+                    element={
+                      <PrivateRoute>
+                        <Checkout />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/session/:id"
+                    element={
+                      <PrivateRoute>
+                        <SessionRoom />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/payment-success"
+                    element={
+                      <PrivateRoute>
+                        <PaymentSuccess />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/payment-history"
+                    element={
+                      <PrivateRoute>
+                        <PaymentHistory />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route path="/search" element={<SearchPage />} />
+                  <Route
+                    path="/ai-assistant"
+                    element={
+                      <PrivateRoute>
+                        <AiAssistantHome />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/ai-assistant/chat/:sessionId"
+                    element={
+                      <PrivateRoute>
+                        <AiAssistantChat />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/ai-assistant/quiz/:quizId"
+                    element={
+                      <PrivateRoute>
+                        <AiAssistantQuiz />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/ai-assistant/history"
+                    element={
+                      <PrivateRoute>
+                        <AiAssistantHistory />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/ai-assistant/lesson-planner"
+                    element={
+                      <PrivateRoute>
+                        <AiAssistantTutorTools />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/ai-assistant/saved-notes"
+                    element={
+                      <PrivateRoute>
+                        <SavedNotes />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/ai-assistant/settings"
+                    element={
+                      <PrivateRoute>
+                        <AiAssistantSettings />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                </Suspense>
+                </ErrorBoundary>
+              </MainContent>
+                <ConditionalFooter />
+                <ConditionalMobileBottomNav />
+                <ConditionalFloatingChat />
+              </div>
+            </BrowserRouter>
+          </DynamicIslandProvider>
         </ChatProvider>
       </AuthProvider>
     </ThemeProvider>
