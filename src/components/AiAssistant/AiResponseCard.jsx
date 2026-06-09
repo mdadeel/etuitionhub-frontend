@@ -1,12 +1,3 @@
-// components/AiAssistant/AiResponseCard.jsx
-// The crown jewel of the AI Assistant. Renders the LLM's structured
-// JSON response as a beautiful, multi-section card. The component is
-// dispatch-by-templateType — each template has its own layout. We
-// never render raw markdown from the LLM (the prompt forbids it).
-//
-// All sections animate in with a small stagger via inline CSS so the
-// card *feels* alive without being noisy. Each section is a "Section"
-// component (label + body) for visual consistency across templates.
 import { useState, Component } from 'react';
 import {
     BookOpen, Target, Brain, Globe, AlertTriangle, ClipboardList,
@@ -37,57 +28,51 @@ class RendererBoundary extends Component {
     }
 }
 
-// Inline-styled section with fade-up entrance.
-function Section({ icon: Icon, label, children, delay = 0, accent = 'primary' }) {
+// Flat V2 Section Header
+function SectionTitle({ icon: Icon, title }) {
     return (
-        <div
-            className="space-y-2 animate-fade-in-up"
-            style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
-        >
-            <div className="flex items-center gap-2">
-                {Icon && (
-                    <span
-                        className={cn(
-                            'flex items-center justify-center size-6 rounded-md',
-                            accent === 'amber' ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary',
-                        )}
-                    >
-                        <Icon size={13} strokeWidth={2.4} />
-                    </span>
-                )}
-                <h4 className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                    {label}
-                </h4>
-            </div>
-            <div className="text-sm leading-relaxed text-foreground/90">{children}</div>
+        <div className="flex items-center gap-2 mb-2 mt-6">
+            {Icon && <Icon size={16} className="text-primary/70" />}
+            <h3 className="text-[16px] font-semibold text-foreground tracking-tight">{title}</h3>
         </div>
     );
 }
 
-function CollapsibleList({ items, renderItem, emptyText = 'Nothing to show.' }) {
-    const [open, setOpen] = useState(false);
-    const visible = open ? items : items?.slice(0, 3);
-    if (!items || items.length === 0) {
-        return <p className="text-xs text-muted-foreground italic">{emptyText}</p>;
-    }
+// V2 Educational Highlight Block (compact, minimal border)
+function Highlight({ type, title, children }) {
+    const config = {
+        key: { icon: Idea, color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', defaultTitle: 'Key Point' },
+        mistake: { icon: AlertTriangle, color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20', defaultTitle: 'Common Mistake' },
+        tip: { icon: Sparkles, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', defaultTitle: 'Exam Tip' },
+    };
+    const c = config[type] || config.key;
+    const Icon = c.icon;
+
     return (
-        <ul className="space-y-1.5">
-            {visible.map((item, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm leading-relaxed">
-                    <span className="mt-2 size-1 rounded-full bg-primary/60 shrink-0" />
-                    <span className="flex-1">{renderItem ? renderItem(item, i) : item}</span>
+        <div className={cn("mt-4 mb-2 p-3 rounded-lg border", c.bg, c.border)}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+                <Icon size={14} className={c.color} />
+                <span className={cn("text-xs font-bold uppercase tracking-wider", c.color)}>
+                    {title || c.defaultTitle}
+                </span>
+            </div>
+            <div className="text-[15px] leading-relaxed text-foreground/80 pl-5">
+                {children}
+            </div>
+        </div>
+    );
+}
+
+function BulletList({ items }) {
+    if (!items || items.length === 0) return null;
+    return (
+        <ul className="space-y-1.5 mt-2">
+            {items.map((item, i) => (
+                <li key={i} className="flex items-start gap-2 text-[15px] leading-[1.6] text-foreground/90">
+                    <span className="mt-2 size-1.5 rounded-full bg-primary/60 shrink-0" />
+                    <span className="flex-1">{item}</span>
                 </li>
             ))}
-            {items.length > 3 && (
-                <button
-                    type="button"
-                    onClick={() => setOpen((o) => !o)}
-                    className="text-[11px] font-medium text-primary hover:underline mt-1 flex items-center gap-1"
-                >
-                    {open ? 'Show less' : `+${items.length - 3} more`}
-                    <ChevronDown size={11} className={cn('transition-transform', open && 'rotate-180')} />
-                </button>
-            )}
         </ul>
     );
 }
@@ -102,305 +87,44 @@ function CodeBlock({ code }) {
         });
     };
     return (
-        <div className="relative group">
-            <pre className="bg-muted/60 border border-border/60 rounded-lg p-3 text-xs font-mono leading-relaxed overflow-x-auto whitespace-pre">
+        <div className="relative group mt-3 mb-4">
+            <pre className="bg-zinc-950/90 dark:bg-zinc-950 border border-zinc-800 rounded-lg p-4 text-[13px] font-mono leading-relaxed overflow-x-auto whitespace-pre text-zinc-100">
                 {code}
             </pre>
             <button
                 type="button"
                 onClick={handleCopy}
-                className="absolute top-2 right-2 text-[10px] font-label tracking-wider px-2 py-1 rounded bg-background/80 border border-border/60 text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute top-2 right-2 text-[10px] font-medium tracking-wider px-2 py-1 rounded bg-zinc-800/80 border border-zinc-700 text-zinc-300 hover:text-white transition-colors"
             >
-                {copied ? '✓ Copied' : 'Copy'}
+                {copied ? 'Copied' : 'Copy'}
             </button>
         </div>
     );
 }
 
-// ---------- Inline Quick Quiz (self-check MCQs from concept/math responses) ----------
-
-function QuickQuizMini({ questions }) {
-    const [answers, setAnswers] = useState({});
-    if (!questions || questions.length === 0) return null;
+// Minimal Direct Answer Block
+function DirectAnswer({ text }) {
+    if (!text) return null;
     return (
-        <div
-            className="space-y-3 animate-fade-in-up"
-            style={{ animationDelay: '280ms', animationFillMode: 'both' }}
-        >
-            <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center size-6 rounded-md bg-accent/10 text-accent">
-                    <ClipboardList size={13} strokeWidth={2.4} />
-                </span>
-                <h4 className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                    Quick Self-Check ({questions.length} Q{questions.length > 1 ? 's' : ''})
-                </h4>
-            </div>
-            <div className="space-y-3">
-                {questions.map((q, qi) => {
-                    const chosen = answers[qi];
-                    const revealed = chosen !== undefined;
-                    const isCorrect = revealed && chosen === q.answer;
-                    return (
-                        <div key={qi} className="rounded-xl border border-border/60 bg-muted/20 p-3 space-y-2">
-                            <p className="text-sm font-medium text-foreground leading-snug">{q.q}</p>
-                            <div className="grid grid-cols-1 gap-1.5">
-                                {(q.options || []).map((opt, oi) => {
-                                    let optStyle = 'border-border/50 bg-card/30 text-foreground/80 hover:border-primary/40 hover:bg-card/60';
-                                    if (revealed) {
-                                        if (oi === q.answer) {
-                                            optStyle = 'border-emerald-500/60 bg-emerald-500/10 text-foreground';
-                                        } else if (oi === chosen) {
-                                            optStyle = 'border-destructive/50 bg-destructive/10 text-foreground';
-                                        } else {
-                                            optStyle = 'border-border/30 bg-card/20 text-muted-foreground opacity-60';
-                                        }
-                                    }
-                                    return (
-                                        <button
-                                            key={oi}
-                                            type="button"
-                                            disabled={revealed}
-                                            onClick={() => setAnswers((a) => ({ ...a, [qi]: oi }))}
-                                            className={cn(
-                                                'w-full flex items-center gap-2.5 rounded-lg border px-3 py-2 text-xs text-left transition-all',
-                                                optStyle,
-                                                !revealed && 'cursor-pointer active:scale-[0.99]',
-                                                revealed && 'cursor-default',
-                                            )}
-                                        >
-                                            <span className="shrink-0 size-4 rounded-full border border-current flex items-center justify-center text-[9px] font-bold">
-                                                {String.fromCharCode(65 + oi)}
-                                            </span>
-                                            <span className="flex-1">{opt}</span>
-                                            {revealed && oi === q.answer && <CheckCircle2 size={12} className="shrink-0 text-emerald-500" />}
-                                            {revealed && oi === chosen && oi !== q.answer && <XCircle size={12} className="shrink-0 text-destructive" />}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                            {revealed && (
-                                <p className={cn(
-                                    'text-xs mt-1 font-medium',
-                                    isCorrect ? 'text-emerald-500' : 'text-destructive',
-                                )}>
-                                    {isCorrect ? '✓ Correct!' : `✕ The correct answer is ${String.fromCharCode(65 + q.answer)}.`}
-                                </p>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
+        <p className="text-[15px] sm:text-[16px] text-foreground leading-[1.6] mb-4">
+            {text}
+        </p>
     );
 }
 
-// ---------- Template renderers ----------
-
-function ConceptTemplate({ data }) {
-    return (
-        <div className="space-y-4">
-            <Section icon={BookOpen} label="Topic" delay={0.05}>
-                <p className="text-base font-heading font-semibold text-foreground">{data.topic}</p>
-            </Section>
-            {data.easyExplanation && (
-                <Section icon={Target} label="Easy Explanation" delay={0.1}>
-                    <p>{data.easyExplanation}</p>
-                </Section>
-            )}
-            {data.keyConcepts?.length > 0 && (
-                <Section icon={Brain} label={`Key Concepts (${data.keyConcepts.length})`} delay={0.15}>
-                    <CollapsibleList items={data.keyConcepts} />
-                </Section>
-            )}
-            {data.realLifeExample && (
-                <Section icon={Globe} label="Real Life Example" delay={0.2}>
-                    <p className="italic text-muted-foreground border-l-2 border-primary/40 pl-3">
-                        {data.realLifeExample}
-                    </p>
-                </Section>
-            )}
-            {data.commonMistakes?.length > 0 && (
-                <Section icon={AlertTriangle} label="Common Mistakes" delay={0.25} accent="amber">
-                    <CollapsibleList items={data.commonMistakes} />
-                </Section>
-            )}
-            {data.quickQuiz?.length > 0 && (
-                <QuickQuizMini questions={data.quickQuiz} />
-            )}
-        </div>
-    );
-}
-
-function MathTemplate({ data }) {
-    return (
-        <div className="space-y-4">
-            <Section icon={Sigma} label="Topic" delay={0.05}>
-                <p className="text-base font-heading font-semibold text-foreground">{data.topic}</p>
-            </Section>
-            {data.problem && (
-                <Section icon={FileText} label="Problem" delay={0.1}>
-                    <p className="font-mono text-sm bg-muted/40 rounded px-3 py-2 border border-border/50">
-                        {data.problem}
-                    </p>
-                </Section>
-            )}
-            {data.given && (
-                <Section icon={ListChecks} label="Given" delay={0.15}>
-                    <p>{data.given}</p>
-                </Section>
-            )}
-            {data.stepByStep?.length > 0 && (
-                <Section icon={Calculator} label="Step-by-Step Solution" delay={0.2}>
-                    <ol className="space-y-1.5 list-decimal list-inside marker:text-primary marker:font-semibold">
-                        {data.stepByStep.map((step, i) => (
-                            <li key={i} className="text-sm leading-relaxed pl-1">{step}</li>
-                        ))}
-                    </ol>
-                </Section>
-            )}
-            {data.finalAnswer && (
-                <Section icon={CheckCircle2} label="Final Answer" delay={0.25}>
-                    <p className="font-mono font-semibold text-primary bg-primary/5 border border-primary/20 rounded-md px-3 py-2">
-                        {data.finalAnswer}
-                    </p>
-                </Section>
-            )}
-            {data.whyThisWorks && (
-                <Section icon={Lightbulb} label="Why This Works" delay={0.3} accent="amber">
-                    <p>{data.whyThisWorks}</p>
-                </Section>
-            )}
-            {data.similarPractice && (
-                <Section icon={ClipboardList} label="Similar Practice Question" delay={0.35}>
-                    <p className="italic">{data.similarPractice}</p>
-                </Section>
-            )}
-            {data.quickQuiz?.length > 0 && (
-                <QuickQuizMini questions={data.quickQuiz} />
-            )}
-        </div>
-    );
-}
-
-function ProgrammingTemplate({ data }) {
-    return (
-        <div className="space-y-4">
-            <Section icon={Code2} label="Topic" delay={0.05}>
-                <p className="text-base font-heading font-semibold text-foreground">{data.topic}</p>
-            </Section>
-            {data.solution && (
-                <Section icon={Code2} label="Solution" delay={0.1}>
-                    <CodeBlock code={data.solution} />
-                </Section>
-            )}
-            {data.codeExplanation && (
-                <Section icon={Brain} label="Code Explanation" delay={0.15}>
-                    <p>{data.codeExplanation}</p>
-                </Section>
-            )}
-            {data.bestPractices?.length > 0 && (
-                <Section icon={Zap} label="Best Practices" delay={0.2}>
-                    <CollapsibleList items={data.bestPractices} />
-                </Section>
-            )}
-            {data.commonMistakes?.length > 0 && (
-                <Section icon={AlertTriangle} label="Common Mistakes" delay={0.25} accent="amber">
-                    <CollapsibleList items={data.commonMistakes} />
-                </Section>
-            )}
-            {data.testCases?.length > 0 && (
-                <Section icon={CheckCircle2} label="Test Cases" delay={0.3}>
-                    <div className="space-y-2">
-                        {data.testCases.map((tc, i) => (
-                            <div key={i} className="bg-muted/40 border border-border/50 rounded-md p-2.5 text-xs font-mono">
-                                <div><span className="text-muted-foreground">Input:</span> {tc.input}</div>
-                                <div><span className="text-muted-foreground">Output:</span> {tc.expectedOutput}</div>
-                            </div>
-                        ))}
-                    </div>
-                </Section>
-            )}
-        </div>
-    );
-}
-
-function ScorePill({ label, value }) {
-    return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted/50 border border-border/50 text-foreground">
-            <span className="text-muted-foreground text-[10px] uppercase tracking-wider font-label">{label}</span>
-            <span className="font-bold">{value}</span>
-        </span>
-    );
-}
-
-function IeltsTemplate({ data }) {
-    const s = data.estimatedScore || {};
-    return (
-        <div className="space-y-4">
-            <Section icon={Languages} label="Topic" delay={0.05}>
-                <p className="text-base font-heading font-semibold text-foreground">{data.topic}</p>
-            </Section>
-            {data.evaluation && (
-                <Section icon={FileEdit} label="Evaluation" delay={0.1}>
-                    <p>{data.evaluation}</p>
-                </Section>
-            )}
-            {s.overall != null && (
-                <Section icon={Target} label="Estimated Score" delay={0.15}>
-                    <div className="flex flex-wrap items-center gap-3">
-                        <div className="flex items-baseline gap-1.5">
-                            <span className="text-3xl font-heading font-bold text-primary">{s.overall}</span>
-                            <span className="text-xs text-muted-foreground">/ 9.0</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2 text-xs">
-                            {s.grammar != null && <ScorePill label="Grammar" value={s.grammar} />}
-                            {s.vocabulary != null && <ScorePill label="Vocab" value={s.vocabulary} />}
-                            {s.coherence != null && <ScorePill label="Coherence" value={s.coherence} />}
-                        </div>
-                    </div>
-                </Section>
-            )}
-            {data.strengths?.length > 0 && (
-                <Section icon={CheckCircle2} label="Strengths" delay={0.2}>
-                    <CollapsibleList items={data.strengths} />
-                </Section>
-            )}
-            {data.improvements?.length > 0 && (
-                <Section icon={AlertTriangle} label="Areas for Improvement" delay={0.25} accent="amber">
-                    <CollapsibleList items={data.improvements} />
-                </Section>
-            )}
-            {data.improvedVersion && (
-                <Section icon={FileText} label="Improved Version" delay={0.3}>
-                    <div className="bg-muted/40 border border-border/50 rounded-md p-3 text-sm leading-relaxed whitespace-pre-wrap">
-                        {data.improvedVersion}
-                    </div>
-                </Section>
-            )}
-            {data.practiceTips?.length > 0 && (
-                <Section icon={Sparkles} label="Practice Tips" delay={0.35}>
-                    <CollapsibleList items={data.practiceTips} />
-                </Section>
-            )}
-        </div>
-    );
-}
-
-function FollowUpChips({ suggestions, onClick, delayMs = 600 }) {
+// Follow-up chips
+function FollowUpChips({ suggestions, onClick }) {
     if (!Array.isArray(suggestions) || suggestions.length === 0) return null;
     return (
-        <div
-            className="flex flex-wrap gap-2 animate-fade-in-up"
-            style={{ animationDelay: `${delayMs}ms`, animationFillMode: 'both' }}
-        >
+        <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-border/40">
             {suggestions.slice(0, 3).map((s, i) => (
                 <button
                     key={i}
                     type="button"
                     onClick={() => onClick?.(s)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/60 bg-card/50 text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-transparent text-[13px] text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 cursor-pointer"
                 >
-                    <Idea size={11} />
+                    <Idea size={14} />
                     <span>{s}</span>
                 </button>
             ))}
@@ -408,97 +132,234 @@ function FollowUpChips({ suggestions, onClick, delayMs = 600 }) {
     );
 }
 
-function GeneralTemplate({ data, onFollowUpClick }) {
+// Main Templates
+function ConceptTemplate({ data }) {
     return (
-        <div className="space-y-4">
-            <Section icon={Compass} label="Topic" delay={0.05}>
-                <p className="text-base font-heading font-semibold text-foreground">{data.topic}</p>
-            </Section>
-            {data.answer && (
-                <Section icon={FileText} label="Answer" delay={0.1}>
-                    <p className="whitespace-pre-wrap leading-relaxed">{data.answer}</p>
-                </Section>
-            )}
-            {data.keyPoints?.length > 0 && (
-                <Section icon={ListChecks} label="Key Points" delay={0.15}>
-                    <CollapsibleList items={data.keyPoints} />
-                </Section>
-            )}
-            {data.didYouKnow && (
-                <div
-                    className="bg-accent/5 border-l-2 border-accent/60 px-3 py-2 text-sm italic text-foreground/90 animate-fade-in-up"
-                    style={{ animationDelay: '200ms', animationFillMode: 'both' }}
-                >
-                    <span className="font-label not-italic text-[10px] uppercase tracking-wider text-accent mr-1">Did you know?</span>
-                    {data.didYouKnow}
+        <div>
+            <DirectAnswer text={data.easyExplanation} />
+            
+            {data.keyConcepts?.length > 0 && (
+                <div>
+                    <SectionTitle icon={Brain} title="Key Concepts" />
+                    <BulletList items={data.keyConcepts} />
                 </div>
             )}
-            <FollowUpChips suggestions={data.followUpSuggestions} onClick={onFollowUpClick} delayMs={600} />
+            
+            {data.realLifeExample && (
+                <Highlight type="key" title="Real-Life Example">
+                    {data.realLifeExample}
+                </Highlight>
+            )}
+            
+            {data.commonMistakes?.length > 0 && (
+                <Highlight type="mistake" title="Common Mistakes">
+                    <BulletList items={data.commonMistakes} />
+                </Highlight>
+            )}
+        </div>
+    );
+}
+
+function MathTemplate({ data }) {
+    return (
+        <div>
+            {data.problem && (
+                <div className="bg-muted/30 border-l-4 border-primary/40 pl-4 py-2 mb-4 text-[15px] font-mono text-foreground/80">
+                    {data.problem}
+                </div>
+            )}
+            
+            {data.given && (
+                <div className="mb-4 text-[15px] leading-[1.6]">
+                    <strong>Given:</strong> {data.given}
+                </div>
+            )}
+            
+            {data.stepByStep?.length > 0 && (
+                <div>
+                    <SectionTitle icon={Calculator} title="Step-by-Step Solution" />
+                    <ol className="space-y-2 list-decimal list-inside marker:text-primary marker:font-semibold text-[15px] leading-[1.6] text-foreground/90">
+                        {data.stepByStep.map((step, i) => (
+                            <li key={i} className="pl-1">{step}</li>
+                        ))}
+                    </ol>
+                </div>
+            )}
+            
+            {data.finalAnswer && (
+                <div className="mt-6 mb-4">
+                    <span className="inline-block bg-primary/10 text-primary border border-primary/20 rounded-md px-4 py-2 font-mono font-semibold text-base">
+                        Answer: {data.finalAnswer}
+                    </span>
+                </div>
+            )}
+            
+            {data.whyThisWorks && (
+                <Highlight type="key" title="Why This Works">
+                    {data.whyThisWorks}
+                </Highlight>
+            )}
+            
+            {data.similarPractice && (
+                <Highlight type="tip" title="Practice Idea">
+                    {data.similarPractice}
+                </Highlight>
+            )}
+        </div>
+    );
+}
+
+function ProgrammingTemplate({ data }) {
+    return (
+        <div>
+            <DirectAnswer text={data.codeExplanation} />
+            
+            {data.solution && <CodeBlock code={data.solution} />}
+            
+            {data.bestPractices?.length > 0 && (
+                <div>
+                    <SectionTitle icon={Zap} title="Best Practices" />
+                    <BulletList items={data.bestPractices} />
+                </div>
+            )}
+            
+            {data.commonMistakes?.length > 0 && (
+                <Highlight type="mistake" title="Common Mistakes">
+                    <BulletList items={data.commonMistakes} />
+                </Highlight>
+            )}
+            
+            {data.testCases?.length > 0 && (
+                <div className="mt-4">
+                    <SectionTitle icon={CheckCircle2} title="Test Cases" />
+                    <div className="space-y-2">
+                        {data.testCases.map((tc, i) => (
+                            <div key={i} className="bg-muted/20 border border-border/50 rounded-md p-3 text-[14px] font-mono text-foreground/80">
+                                <div className="mb-1"><span className="text-muted-foreground">Input:</span> {tc.input}</div>
+                                <div><span className="text-muted-foreground">Output:</span> {tc.expectedOutput}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function GeneralTemplate({ data }) {
+    return (
+        <div>
+            <DirectAnswer text={data.answer} />
+            
+            {data.keyPoints?.length > 0 && (
+                <div>
+                    <SectionTitle icon={ListChecks} title="Key Points" />
+                    <BulletList items={data.keyPoints} />
+                </div>
+            )}
+            
+            {data.didYouKnow && (
+                <Highlight type="tip" title="Did you know?">
+                    {data.didYouKnow}
+                </Highlight>
+            )}
+        </div>
+    );
+}
+
+// Fallbacks for specific formats
+function IeltsTemplate({ data }) {
+    const s = data.estimatedScore || {};
+    return (
+        <div>
+            <DirectAnswer text={data.evaluation} />
+            
+            {s.overall != null && (
+                <div className="my-6 flex items-center gap-4 border border-border/50 rounded-xl p-4 bg-muted/10 w-fit">
+                    <div className="flex flex-col items-center border-r border-border/50 pr-4">
+                        <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">Score</span>
+                        <span className="text-3xl font-bold text-primary">{s.overall}</span>
+                    </div>
+                    <div className="flex flex-col gap-1.5 text-[14px]">
+                        {s.grammar != null && <div><span className="text-muted-foreground w-20 inline-block">Grammar:</span> <span className="font-medium">{s.grammar}</span></div>}
+                        {s.vocabulary != null && <div><span className="text-muted-foreground w-20 inline-block">Vocab:</span> <span className="font-medium">{s.vocabulary}</span></div>}
+                        {s.coherence != null && <div><span className="text-muted-foreground w-20 inline-block">Coherence:</span> <span className="font-medium">{s.coherence}</span></div>}
+                    </div>
+                </div>
+            )}
+            
+            {data.improvedVersion && (
+                <div>
+                    <SectionTitle icon={FileEdit} title="Improved Version" />
+                    <div className="bg-muted/20 border-l-4 border-primary/40 pl-4 py-3 text-[15px] leading-[1.6] whitespace-pre-wrap italic">
+                        {data.improvedVersion}
+                    </div>
+                </div>
+            )}
+            
+            {data.strengths?.length > 0 && (
+                <Highlight type="key" title="Strengths">
+                    <BulletList items={data.strengths} />
+                </Highlight>
+            )}
+            
+            {data.improvements?.length > 0 && (
+                <Highlight type="mistake" title="Areas for Improvement">
+                    <BulletList items={data.improvements} />
+                </Highlight>
+            )}
+            
+            {data.practiceTips?.length > 0 && (
+                <div>
+                    <SectionTitle icon={Sparkles} title="Practice Tips" />
+                    <BulletList items={data.practiceTips} />
+                </div>
+            )}
         </div>
     );
 }
 
 function SrijonshilTemplate({ data }) {
     const parts = [
-        { key: 'ka', label: 'ক', sublabel: 'Knowledge', marks: '1 mark', color: 'bg-blue-500/10 text-blue-600 border-blue-500/30' },
-        { key: 'kha', label: 'খ', sublabel: 'Comprehension', marks: '2 marks', color: 'bg-teal-500/10 text-teal-600 border-teal-500/30' },
-        { key: 'ga', label: 'গ', sublabel: 'Application', marks: '3 marks', color: 'bg-amber-500/10 text-amber-600 border-amber-500/30' },
-        { key: 'gha', label: 'ঘ', sublabel: 'Higher Order', marks: '4 marks', color: 'bg-primary/10 text-primary border-primary/30' },
+        { key: 'ka', label: 'ক', sublabel: 'Knowledge', marks: '1' },
+        { key: 'kha', label: 'খ', sublabel: 'Comprehension', marks: '2' },
+        { key: 'ga', label: 'গ', sublabel: 'Application', marks: '3' },
+        { key: 'gha', label: 'ঘ', sublabel: 'Higher Order', marks: '4' },
     ];
 
     return (
-        <div className="space-y-4">
-            <Section icon={BookOpen} label="Topic" delay={0.05}>
-                <p className="text-base font-heading font-semibold text-foreground">{data.topic}</p>
-            </Section>
-
+        <div>
             {data.stimulus && (
-                <Section icon={FileText} label="উদ্দীপক (Stimulus)" delay={0.1}>
-                    <blockquote className="border-l-2 border-primary/40 pl-3 py-1 text-sm italic text-foreground/80 bg-primary/5 rounded-r-lg">
-                        {data.stimulus}
-                    </blockquote>
-                </Section>
+                <div className="bg-muted/10 border-l-4 border-primary/40 pl-4 py-3 mb-6 text-[15px] italic text-foreground/80 leading-[1.6] rounded-r-lg">
+                    {data.stimulus}
+                </div>
             )}
 
-            {parts.map((part, i) => data[part.key] && (
-                <Section key={part.key} icon={null} label={`${part.label} — ${part.sublabel}`} delay={0.15 + i * 0.05}>
-                    <div className={cn('rounded-lg border px-3 py-2', part.color)}>
-                        <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-xs font-label font-semibold uppercase tracking-wider">{part.label} {part.sublabel}</span>
-                            <span className="text-[10px] font-label font-medium opacity-70">{part.marks}</span>
+            <div className="space-y-6">
+                {parts.map((part) => data[part.key] && (
+                    <div key={part.key}>
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="flex items-center justify-center size-6 rounded bg-primary/10 text-primary font-bold text-sm">
+                                {part.label}
+                            </span>
+                            <h4 className="text-[15px] font-semibold text-foreground/90">{part.sublabel}</h4>
+                            <span className="ml-auto text-[13px] font-medium text-muted-foreground">{part.marks} mark{part.marks > '1' ? 's' : ''}</span>
                         </div>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{data[part.key]}</p>
+                        <p className="text-[15px] leading-[1.6] whitespace-pre-wrap pl-8 text-foreground/90">
+                            {data[part.key]}
+                        </p>
                     </div>
-                </Section>
-            ))}
+                ))}
+            </div>
 
             {data.tips?.length > 0 && (
-                <Section icon={Lightbulb} label="Exam Tips" delay={0.4}>
-                    <ul className="space-y-1.5">
-                        {data.tips.map((tip, i) => (
-                            <li key={i} className="flex items-start gap-2 text-sm">
-                                <CheckCircle2 size={13} className="text-primary mt-0.5 shrink-0" />
-                                <span>{tip}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </Section>
+                <Highlight type="tip" title="Exam Tips">
+                    <BulletList items={data.tips} />
+                </Highlight>
             )}
         </div>
     );
 }
-
-// Compass (not Sparkles) for `general` per AI_TUTOR_DESIGN.md §2.4 + §5.15.
-// Sparkles is the AI's brand glyph; using it here would conflict with
-// the layout chrome (header logo, ThinkingBubble avatar).
-const TEMPLATE_META = {
-    concept: { label: 'Concept Explanation', color: 'from-blue-500/10 to-blue-500/0', icon: BookOpen },
-    math: { label: 'Math Solution', color: 'from-purple-500/10 to-purple-500/0', icon: Calculator },
-    programming: { label: 'Programming Help', color: 'from-emerald-500/10 to-emerald-500/0', icon: Code2 },
-    ielts: { label: 'IELTS Review', color: 'from-amber-500/10 to-amber-500/0', icon: Languages },
-    general: { label: 'Answer', color: 'from-indigo-500/10 to-indigo-500/0', icon: Compass },
-    srijonshil: { label: 'সৃজনশীল (Creative Question)', color: 'from-rose-500/10 to-rose-500/0', icon: FileText },
-};
 
 const TEMPLATE_RENDERERS = {
     concept: ConceptTemplate,
@@ -509,18 +370,27 @@ const TEMPLATE_RENDERERS = {
     srijonshil: SrijonshilTemplate,
 };
 
-/**
- * @param {Object}  props
- * @param {Object}  props.structured  The parsed LLM JSON (templateType + sections)
- * @param {string}  props.provider    'gemini' | 'openrouter'
- * @param {number}  props.latencyMs   LLM call latency
- * @param {Object}  [props.quizCta]   If present, renders a "Start quiz on this topic" button.
- * @param {Function}[props.onStartQuiz]
- * @param {React.ReactNode} [props.children]  Extra sections to render (e.g. tutor recommendations).
- */
+function getMetadataLabel(type, topic) {
+    // Generate a simple metadata string, e.g., "Programming • Beginner • 2 min read"
+    let cat = "General";
+    if (type === 'concept') cat = "Education";
+    if (type === 'math') cat = "Mathematics";
+    if (type === 'programming') cat = "Programming";
+    if (type === 'ielts') cat = "IELTS";
+    if (type === 'srijonshil') cat = "Srijonshil";
+    
+    // Very naive read time estimation
+    const words = JSON.stringify(topic || "").split(/\s+/).length * 10; // rough proxy
+    const time = Math.max(1, Math.ceil(words / 200));
+    
+    return `${cat} • ${time} min read`;
+}
+
 export default function AiResponseCard({
     structured,
+    // eslint-disable-next-line no-unused-vars
     provider,
+    // eslint-disable-next-line no-unused-vars
     latencyMs,
     quizCta,
     onStartQuiz,
@@ -530,82 +400,57 @@ export default function AiResponseCard({
 }) {
     if (!structured) return null;
 
-    // AI_TUTOR_DESIGN.md §5.12.3 — conversational template is rendered
-    // via ConversationalBubble, not as a card. Bail out here so the
-    // dispatcher in ChatMessage.jsx doesn't accidentally double-render.
     if (structured.templateType === 'conversational') {
         return <ConversationalBubble structured={structured} onFollowUpClick={onFollowUpClick} className={className} />;
     }
 
     const type = structured.templateType || 'general';
     const Renderer = TEMPLATE_RENDERERS[type] || GeneralTemplate;
-    const meta = TEMPLATE_META[type] || TEMPLATE_META.general;
-    const MetaIcon = meta.icon;
+    const metadataStr = getMetadataLabel(type, structured.topic);
 
     return (
-        <article
-            className={cn(
-                'relative overflow-hidden rounded-2xl rounded-tl-sm border border-border/70 bg-card/80 backdrop-blur-md shadow-sm animate-fade-in-up w-full',
-                className,
-            )}
-        >
-            {/* Soft top gradient */}
-            <div className={cn('absolute inset-x-0 top-0 h-20 bg-gradient-to-b pointer-events-none', meta.color)} />
-
-            {/* Header */}
-            <header className="relative flex items-center justify-between gap-2 px-5 pt-4 pb-3 border-b border-border/40">
+        <article className={cn('animate-fade-in-up w-full max-w-[850px] bg-card/60 border border-border/60 shadow-sm rounded-2xl p-5', className)}>
+            {/* Header: Small metadata row */}
+            <div className="flex items-center gap-3 text-[13px] text-muted-foreground mb-3 font-medium">
                 <div className="flex items-center gap-2">
-                    <span className="flex items-center justify-center size-7 rounded-lg bg-primary/15 text-primary">
-                        <MetaIcon size={15} strokeWidth={2.4} />
+                    <span className="flex items-center justify-center size-5 rounded-md bg-primary/10 text-primary">
+                        <Sparkles size={12} />
                     </span>
-                    <div>
-                        <p className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                            Porua
-                        </p>
-                        <h3 className="text-sm font-heading font-bold text-foreground">{meta.label}</h3>
-                    </div>
+                    <span>{metadataStr}</span>
                 </div>
-                {(provider || latencyMs) && (
-                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/80 font-label tracking-wider">
-                        <Clock size={10} />
-                        <span>{latencyMs ? `${(latencyMs / 1000).toFixed(1)}s` : ''}</span>
-                        {provider && (
-                            <span className="px-1.5 py-0.5 rounded bg-muted/60 text-foreground/80 capitalize">
-                                {provider === 'openrouter' ? 'OR' : 'Gemini'}
-                            </span>
-                        )}
-                    </div>
-                )}
-            </header>
+            </div>
+
+            {/* Main Title: Large clear title */}
+            {structured.topic && (
+                <h1 className="text-[22px] font-bold text-foreground leading-snug mb-4 tracking-tight">
+                    {structured.topic}
+                </h1>
+            )}
 
             {/* Body */}
-            <div className="relative px-5 py-4 space-y-4">
+            <div className="space-y-2">
                 <RendererBoundary>
-                    <Renderer data={structured} onFollowUpClick={onFollowUpClick} />
+                    <Renderer data={structured} />
                 </RendererBoundary>
 
-                {/* Optional inline quiz CTA */}
+                <FollowUpChips suggestions={structured.followUpSuggestions} onClick={onFollowUpClick} />
+
+                {/* Optional inline quiz CTA (V2 flat style) */}
                 {quizCta && (
-                    <div
-                        className="flex items-center justify-between gap-3 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 animate-fade-in-up"
-                        style={{ animationDelay: '400ms', animationFillMode: 'both' }}
-                    >
-                        <div className="flex items-center gap-2">
-                            <ClipboardList size={16} className="text-accent" />
-                            <div>
-                                <p className="text-sm font-semibold text-foreground">{quizCta.label || 'Ready to test yourself?'}</p>
-                                {quizCta.description && (
-                                    <p className="text-xs text-muted-foreground">{quizCta.description}</p>
-                                )}
-                            </div>
+                    <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 border-t border-border/40">
+                        <div className="flex items-center gap-3">
+                            <Brain size={20} className="text-primary" />
+                            <p className="text-[15px] font-medium text-foreground">
+                                🧠 Want to test yourself?
+                            </p>
                         </div>
                         <button
                             type="button"
                             onClick={() => onStartQuiz?.(structured?.topic)}
-                            className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-accent text-accent-foreground px-3.5 h-9 text-xs font-semibold hover:opacity-90 active:scale-95 transition-all"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-[14px] font-semibold hover:bg-primary/90 transition-colors"
                         >
-                            <ClipboardList size={12} />
-                            Start Quiz
+                            <ClipboardList size={16} />
+                            Generate Quiz
                         </button>
                     </div>
                 )}

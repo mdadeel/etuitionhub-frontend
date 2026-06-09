@@ -5,6 +5,7 @@
 import { Link } from 'react-router-dom';
 import { Star, MapPin, ArrowRight, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import aiService from '../../services/aiService';
 
 export default function TutorRecommendationCard({ tutors = [], subject, onTrackClick }) {
@@ -48,13 +49,12 @@ export default function TutorRecommendationCard({ tutors = [], subject, onTrackC
                             )}
                         >
                             <div className="shrink-0 size-10 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center">
-                                {tutor.photoURL ? (
-                                    <img src={tutor.photoURL} alt={tutor.displayName} className="size-full object-cover" />
-                                ) : (
-                                    <span className="text-sm font-heading font-bold text-muted-foreground">
+                                <Avatar size="sm" className="size-10 rounded-lg">
+                                    <AvatarImage src={tutor.photoURL} alt={tutor.displayName} />
+                                    <AvatarFallback className="text-sm font-heading font-bold rounded-lg">
                                         {tutor.displayName?.charAt(0)?.toUpperCase() || 'T'}
-                                    </span>
-                                )}
+                                    </AvatarFallback>
+                                </Avatar>
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">

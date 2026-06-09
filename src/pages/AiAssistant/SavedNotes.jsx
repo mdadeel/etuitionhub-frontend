@@ -33,7 +33,7 @@ export default function SavedNotes() {
 
   return (
     <AiAssistantLayout>
-      <div className="w-full space-y-6 px-4 md:px-8 pt-20 pb-6">
+      <div className="w-full space-y-6 px-4 md:px-8 pt-4 pb-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-heading font-bold text-foreground flex items-center gap-2">
@@ -45,7 +45,7 @@ export default function SavedNotes() {
             </p>
           </div>
           <Link
-            to="/ai-assistant/tutor-tools"
+            to="/ai-assistant/lesson-planner"
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-4 h-9 text-xs font-semibold hover:bg-primary/90 transition-all"
           >
             <Plus size={13} />
@@ -59,8 +59,8 @@ export default function SavedNotes() {
             <p className="text-sm">No saved notes yet</p>
             <p className="text-xs mt-1">
               Generate a lesson plan or assignment from{' '}
-              <Link to="/ai-assistant/tutor-tools" className="text-primary hover:underline">
-                Tutor Tools
+              <Link to="/ai-assistant/lesson-planner" className="text-primary hover:underline">
+                Lesson Planner
               </Link>{' '}
               and save it here.
             </p>

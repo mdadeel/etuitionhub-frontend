@@ -132,6 +132,19 @@ export default function ChatInput({
 
     const handleRemoveAttachment = () => setAttachmentFile(null);
 
+// Pick a sensible default STT language. Bangladeshi students often
+// speak Bangla; default to bn-BD if the browser reports Bangla as the
+// user's language, otherwise en-US. Users can override in their OS
+// settings — we always honor the browser's reported language if it's
+// a known one.
+function pickRecognitionLang() {
+    const nav = (typeof navigator !== 'undefined' && navigator.language) || 'en-US';
+    const lower = nav.toLowerCase();
+    if (lower.startsWith('bn')) return 'bn-BD';
+    if (lower.startsWith('en')) return 'en-US';
+    return 'en-US';
+}
+
     // ───── Voice input ─────
     const startRecording = () => {
         if (!SPEECH_SUPPORTED) return;
@@ -139,7 +152,7 @@ export default function ChatInput({
         const rec = new Ctor();
         rec.continuous = false;
         rec.interimResults = false;
-        rec.lang = 'en-US';
+        rec.lang = pickRecognitionLang();
         rec.onresult = (ev) => {
             const transcript = ev.results?.[0]?.[0]?.transcript || '';
             if (transcript) {

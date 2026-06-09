@@ -9,7 +9,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ChatBubbleLeftIcon, ArrowRightIcon, WrenchIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { MessageSquare, ArrowRight, Wrench, Sparkles } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import useAiStore from '../../store/aiStore';
 import aiService from '../../services/aiService';
@@ -17,9 +17,11 @@ import AiAssistantLayout from '../../components/AiAssistant/AiAssistantLayout';
 import SubjectSelector from '../../components/AiAssistant/SubjectSelector';
 import SuggestedActions from '../../components/AiAssistant/SuggestedActions';
 import ChatInput from '../../components/AiAssistant/ChatInput';
+// eslint-disable-next-line no-unused-vars
 import { cn } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
 
+// eslint-disable-next-line no-unused-vars
 function formatRelative(dateLike) {
     if (!dateLike) return '';
     const d = new Date(dateLike);
@@ -49,6 +51,7 @@ export default function AiAssistantHome() {
         queryFn: () => aiService.listChatSessions({ limit: 5 }),
         staleTime: 30_000,
     });
+    // eslint-disable-next-line no-unused-vars
     const recentChats = Array.isArray(recentData?.sessions)
         ? recentData.sessions
         : Array.isArray(recentData)

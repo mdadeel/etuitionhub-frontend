@@ -234,6 +234,7 @@ function AssistantMessage({
  * @param {string}   [props.editingMessageId]      ID of the message currently in edit mode.
  * @param {string}   [props.copiedMessageId]       ID of the message whose Copy button is in "Copied" state.
  * @param {string}   [props.feedback]              Map of messageId → 'up' | 'down'.
+ * @param {Function} [props.onRetry]               (text) => void
  */
 export default function ChatMessage({
     message,
@@ -247,12 +248,60 @@ export default function ChatMessage({
     onFollowUpClick,
     onEditMessage,
     onCancelEdit,
+    onRetry,
     editingMessageId,
     copiedMessageId,
     feedbackMap = {},
 }) {
     if (message.isThinking) {
         return <ThinkingBubble />;
+    }
+
+    if (message.isError) {
+        return (
+            <div className="flex items-start gap-3 animate-fade-in-up w-full max-w-[850px] mb-4">
+                <div className="shrink-0 size-8 flex items-center justify-center mt-1">
+                    <PoruaLogo iconOnly size={20} className="text-destructive/80" />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="bg-destructive/10 border-l-4 border-destructive/40 text-destructive text-[15px] px-4 py-3 rounded-r-lg flex flex-col sm:flex-row sm:items-center gap-3">
+                        <span className="font-medium">⚠ Response could not be generated.</span>
+                        {onRetry && (
+                            <button onClick={() => onRetry(message.originalInput)} className="px-4 py-1.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg font-semibold text-[13px] hover:bg-destructive/20 transition-colors">
+                                Retry
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (message.isStreaming) {
+        // Strip out basic JSON structural elements if present to make stream readable
+        let display = message.content || '';
+        try {
+            display = display.replace(/\\n/g, '\n');
+            display = display.replace(/"[a-zA-Z0-9_]+"\s*:\s*/g, '');
+            // eslint-disable-next-line no-useless-escape
+            display = display.replace(/[\[\]{}"]/g, '');
+            display = display.trim() || 'Thinking...';
+        } catch {
+            display = 'Thinking...';
+        }
+
+        return (
+            <div className="flex items-start gap-3 animate-fade-in-up w-full max-w-[850px] mb-4">
+                <div className="shrink-0 size-8 flex items-center justify-center mt-1">
+                    <PoruaLogo iconOnly size={20} className="text-primary/70" />
+                </div>
+                <div className="flex-1 min-w-0 pt-1.5">
+                    <p className="text-[15px] leading-[1.6] text-foreground/90 whitespace-pre-wrap break-words">
+                        {display}<span className="inline-block w-1.5 h-3.5 ml-1 bg-primary animate-pulse align-middle" />
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     if (message.role === 'user') {

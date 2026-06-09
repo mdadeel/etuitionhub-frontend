@@ -35,7 +35,7 @@ const ACTIONS = [
         icon: Calculator,
         prompt: 'Solve: ',
         forceTemplate: 'math',
-        color: 'from-purple-500/20 to-purple-500/0',
+        color: 'from-teal-500/20 to-teal-500/0',
     },
     {
         id: 'ielts',

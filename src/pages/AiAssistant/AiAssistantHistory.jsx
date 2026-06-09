@@ -5,9 +5,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { 
-    ChatBubbleLeftEllipsisIcon, ClipboardDocumentListIcon, ArrowRightIcon, 
-    CalendarIcon, CheckCircleIcon, ChevronDownIcon, ArrowPathIcon 
-} from '@heroicons/react/24/outline';
+    MessageSquare, ClipboardList, ChevronRight, 
+    Calendar, CheckCircle, ChevronDown, RotateCcw,
+    History, X
+} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import aiService from '../../services/aiService';
@@ -25,7 +26,7 @@ function ChatRow({ session, onOpen, onDelete }) {
     return (
         <div className="group flex items-center gap-3 rounded-xl border border-border/60 bg-card/50 hover:border-primary/40 hover:shadow-sm transition-all p-3">
             <div className="shrink-0 size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                <ChatBubbleLeftEllipsisIcon className="size-5" />
+                <MessageSquare className="size-5" />
             </div>
             <button
                 onClick={() => onOpen(session._id)}
@@ -41,18 +42,18 @@ function ChatRow({ session, onOpen, onDelete }) {
                     <span>{session.messageCount} msgs</span>
                     <span>·</span>
                     <span className="flex items-center gap-1">
-                        <CalendarIcon className="size-3" />
+                        <Calendar className="size-3" />
                         {formatDate(session.lastMessageAt)}
                     </span>
                 </div>
             </button>
-            <ArrowRightIcon className="size-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight className="size-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
             <button
                 onClick={() => onDelete(session._id)}
                 className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
                 title="Delete"
             >
-                <span className="text-xs">✕</span>
+                <X className="size-3.5" />
             </button>
         </div>
     );
@@ -64,7 +65,7 @@ function QuizRow({ quiz, onOpen, onDelete }) {
     return (
         <div className="group flex items-center gap-3 rounded-xl border border-border/60 bg-card/50 hover:border-primary/40 hover:shadow-sm transition-all p-3">
             <div className="shrink-0 size-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center">
-                <ClipboardDocumentListIcon className="size-5" />
+                <ClipboardList className="size-5" />
             </div>
             <button
                 onClick={() => onOpen(quiz._id)}
@@ -85,25 +86,25 @@ function QuizRow({ quiz, onOpen, onDelete }) {
                                 'flex items-center gap-1 font-semibold',
                                 percent >= 70 ? 'text-emerald-500' : percent >= 40 ? 'text-amber-500' : 'text-destructive',
                             )}>
-                                <CheckCircleIcon className="size-3" />
+                                <CheckCircle className="size-3" />
                                 {percent}%
                             </span>
                         </>
                     )}
                     <span>·</span>
                     <span className="flex items-center gap-1">
-                        <CalendarIcon className="size-3" />
+                        <Calendar className="size-3" />
                         {formatDate(quiz.createdAt)}
                     </span>
                 </div>
             </button>
-            <ArrowRightIcon className="size-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight className="size-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
             <button
                 onClick={() => onDelete(quiz._id)}
                 className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
                 title="Delete"
             >
-                <span className="text-xs">✕</span>
+                <X className="size-3.5" />
             </button>
         </div>
     );
@@ -187,29 +188,44 @@ export default function AiAssistantHistory() {
 
     return (
         <AiAssistantLayout>
-            <div className="w-full space-y-4">
+            <div className="w-full px-4 md:px-8 pt-4 pb-12 space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-lg font-heading font-bold text-foreground flex items-center gap-2">
+                            <History size={18} className="text-primary" />
+                            Chat History
+                        </h1>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                            Review your previous conversations and quizzes
+                        </p>
+                    </div>
+                </div>
+
                 {/* Tabs */}
                 <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/50 w-fit">
                     <button
                         onClick={() => setTab('chats')}
                         className={cn(
-                            'px-4 h-9 text-xs font-semibold rounded-lg transition-all',
+                            'flex items-center gap-2 px-4 h-9 text-xs font-semibold rounded-lg transition-all',
                             tab === 'chats'
                                 ? 'bg-card text-foreground shadow-sm'
                                 : 'text-muted-foreground hover:text-foreground',
                         )}
                     >
+                        <MessageSquare size={13} />
                         Chats ({chatData?.total ?? '…'})
                     </button>
                     <button
                         onClick={() => setTab('quizzes')}
                         className={cn(
-                            'px-4 h-9 text-xs font-semibold rounded-lg transition-all',
+                            'flex items-center gap-2 px-4 h-9 text-xs font-semibold rounded-lg transition-all',
                             tab === 'quizzes'
                                 ? 'bg-card text-foreground shadow-sm'
                                 : 'text-muted-foreground hover:text-foreground',
                         )}
                     >
+                        <ClipboardList size={13} />
                         Quizzes ({quizData?.total ?? '…'})
                     </button>
                 </div>
@@ -239,7 +255,7 @@ export default function AiAssistantHistory() {
                                 disabled={chatFetching}
                                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border/60 bg-card/30 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all disabled:opacity-50"
                             >
-                                {chatFetching ? <ArrowPathIcon className="size-3 animate-spin" /> : <ChevronDownIcon className="size-3" />}
+                                {chatFetching ? <RotateCcw className="size-3 animate-spin" /> : <ChevronDown className="size-3" />}
                                 {chatFetching ? 'Loading...' : 'Load more'}
                             </button>
                         )}
@@ -248,7 +264,7 @@ export default function AiAssistantHistory() {
                     <div className="space-y-2">
                         {allQuizzes.length === 0 && !quizFetching ? (
                             <EmptyState
-                                icon={ClipboardDocumentListIcon}
+                                icon={ClipboardList}
                                 title="No quizzes yet"
                                 hint="Generate a quiz from a chat response or the home page."
                             />
@@ -268,7 +284,7 @@ export default function AiAssistantHistory() {
                                 disabled={quizFetching}
                                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border/60 bg-card/30 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all disabled:opacity-50"
                             >
-                                {quizFetching ? <ArrowPathIcon className="size-3 animate-spin" /> : <ChevronDownIcon className="size-3" />}
+                                {quizFetching ? <RotateCcw className="size-3 animate-spin" /> : <ChevronDown className="size-3" />}
                                 {quizFetching ? 'Loading...' : 'Load more'}
                             </button>
                         )}
@@ -288,6 +304,7 @@ export default function AiAssistantHistory() {
     );
 }
 
+// eslint-disable-next-line no-unused-vars
 function EmptyState({ icon: Icon, title, hint }) {
     return (
         <div className="rounded-2xl border border-dashed border-border/60 bg-card/30 p-12 text-center text-muted-foreground">

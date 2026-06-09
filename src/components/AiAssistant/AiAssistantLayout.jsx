@@ -18,6 +18,7 @@ function applyThemeClass(theme) {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
 export default function AiAssistantLayout({ children, showBack = false, rightSlot = null, className = '' }) {
     const theme = useAiStore((s) => s.theme);
     const setTheme = useAiStore((s) => s.setTheme);
@@ -40,6 +41,7 @@ export default function AiAssistantLayout({ children, showBack = false, rightSlo
         } catch { /* ignore */ }
     }, [setTheme, theme]);
 
+    // eslint-disable-next-line no-unused-vars
     const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
     return (
@@ -48,7 +50,7 @@ export default function AiAssistantLayout({ children, showBack = false, rightSlo
             <ModernSidebar className="hidden lg:flex shrink-0" />
 
             {/* Main content */}
-            <div className="flex-1 min-w-0 min-h-0 flex flex-col h-full relative">
+            <div className="flex-1 min-w-0 min-h-0 flex flex-col h-full relative pt-[58px]">
                 {children}
             </div>
         </div>

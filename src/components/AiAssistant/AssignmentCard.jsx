@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { ClipboardList, FileText, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// eslint-disable-next-line no-unused-vars
 function SectionHeader({ icon: Icon, label }) {
     return (
         <div className="flex items-center gap-2 mb-3">

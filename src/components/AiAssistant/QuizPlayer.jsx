@@ -16,10 +16,41 @@ export default function QuizPlayer({
     onExit,
     onAskFollowUp,
 }) {
-    const [currentIdx, setCurrentIdx] = useState(0);
-    const [responses, setResponses] = useState({}); // { [questionId]: selectedIndex }
+    const quizKey = `quiz_state_${quiz?._id || quiz?.id}`;
+
+    const [currentIdx, setCurrentIdx] = useState(() => {
+        if (!quiz || submitted) return 0;
+        try {
+            const saved = localStorage.getItem(quizKey);
+            if (saved) return JSON.parse(saved).currentIdx || 0;
+        // eslint-disable-next-line no-unused-vars, no-empty
+        } catch (e) {}
+        return 0;
+    });
+    
+    const [responses, setResponses] = useState(() => {
+        if (!quiz || submitted) return {};
+        try {
+            const saved = localStorage.getItem(quizKey);
+            if (saved) return JSON.parse(saved).responses || {};
+        // eslint-disable-next-line no-unused-vars, no-empty
+        } catch (e) {}
+        return {};
+    });
+    
+    // eslint-disable-next-line no-unused-vars, react-hooks/purity
     const [questionStart, setQuestionStart] = useState(Date.now());
+    // eslint-disable-next-line react-hooks/purity
     const startRef = useRef(Date.now());
+
+    // Save state to localStorage on change
+    useEffect(() => {
+        if (!quiz || submitted) return;
+        try {
+            localStorage.setItem(quizKey, JSON.stringify({ currentIdx, responses }));
+        // eslint-disable-next-line no-unused-vars, no-empty
+        } catch (e) {}
+    }, [currentIdx, responses, quiz, submitted, quizKey]);
 
     useEffect(() => {
         startRef.current = Date.now();
@@ -48,6 +79,10 @@ export default function QuizPlayer({
 
     const handleSkip = () => {
         if (submitted || submitting) return;
+        if (selected == null) {
+            const confirmed = window.confirm("You haven't selected an answer. Are you sure you want to skip?");
+            if (!confirmed) return;
+        }
         if (isLast) {
             handleSubmit();
         } else {
@@ -70,6 +105,10 @@ export default function QuizPlayer({
             selectedIndex,
             timeSpentMs,
         }));
+        try {
+            localStorage.removeItem(quizKey);
+        // eslint-disable-next-line no-unused-vars, no-empty
+        } catch (e) {}
         onSubmit?.(payload);
     };
 
@@ -102,10 +141,72 @@ export default function QuizPlayer({
                         </div>
                     </div>
                 )}
-                <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                    {/* AI_TUTOR_DESIGN.md §5.8.2 — the primary action is
-                        "Ask a follow-up" when inline; "Back to chat" only
-                        for the standalone /quiz/:id route. */}
+                
+                {/* Detailed Review Section */}
+                <div className="space-y-4 mt-8">
+                    <h4 className="font-semibold text-lg border-b border-border/50 pb-2">Review Answers</h4>
+                    {quiz.questions.map((q, i) => {
+                        // Attempt to find the specific result for this question
+                        const qResult = results.responses?.find(d => d.questionId === q.id);
+                        const userSelectedIdx = responses[q.id];
+                        // If backend provides correctOptionIdx use it, else we assume we don't have it explicitly
+                        // Wait, typically the correct answer is in the quiz object but stripped for client, OR returned in results.
+                        // We will highlight the user's choice and the correct choice if available.
+                        const isCorrect = qResult?.isCorrect;
+                        
+                        // After submission, 'results' is the full updated quiz object containing correctIndex and explanation
+                        const fullQ = results.questions?.find(d => d.id === q.id);
+                        const correctIdx = fullQ?.correctIndex;
+                        const explanation = fullQ?.explanation;
+                        
+                        return (
+                            <div key={q.id} className="p-4 rounded-xl border border-border/50 bg-card/50 space-y-3">
+                                <p className="font-medium text-[15px]">{i + 1}. {q.question}</p>
+                                <div className="space-y-2">
+                                    {q.options.map((opt, optIdx) => {
+                                        let bg = "bg-card/50 border-border";
+                                        let icon = <Circle size={14} className="text-muted-foreground/50 shrink-0" />;
+                                        
+                                        if (correctIdx != null) {
+                                            if (optIdx === correctIdx) {
+                                                bg = "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400";
+                                                icon = <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />;
+                                            } else if (optIdx === userSelectedIdx && !isCorrect) {
+                                                bg = "bg-destructive/10 border-destructive/30 text-destructive";
+                                                icon = <X size={14} className="text-destructive shrink-0" />;
+                                            }
+                                        } else {
+                                            // Fallback if backend doesn't provide exact correct index but just isCorrect boolean
+                                            if (optIdx === userSelectedIdx) {
+                                                if (isCorrect) {
+                                                    bg = "bg-emerald-500/10 border-emerald-500/30 text-emerald-700";
+                                                    icon = <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />;
+                                                } else {
+                                                    bg = "bg-destructive/10 border-destructive/30 text-destructive";
+                                                    icon = <X size={14} className="text-destructive shrink-0" />;
+                                                }
+                                            }
+                                        }
+
+                                        return (
+                                            <div key={optIdx} className={cn("flex items-start gap-3 p-2 rounded-lg border text-sm", bg)}>
+                                                <div className="mt-0.5">{icon}</div>
+                                                <span>{opt}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                {explanation && (
+                                    <p className="text-sm text-muted-foreground mt-2 bg-muted/30 p-2 rounded">
+                                        <span className="font-semibold text-foreground/80">Explanation:</span> {explanation}
+                                    </p>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2 justify-center mt-6">
                     {onAskFollowUp ? (
                         <button
                             onClick={onAskFollowUp}

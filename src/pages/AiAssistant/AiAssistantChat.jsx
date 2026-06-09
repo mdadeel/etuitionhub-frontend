@@ -16,7 +16,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { Trash2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import useAiStore from '../../store/aiStore';
 import aiService from '../../services/aiService';
@@ -43,6 +43,7 @@ export default function AiAssistantChat() {
     const [feedbackMap, setFeedbackMap] = useState({});
     const [inlineQuizzes, setInlineQuizzes] = useState({}); // { [quizKey]: { quiz, results } }
     const [quizSubmitting, setQuizSubmitting] = useState({}); // { [quizKey]: boolean }
+    const [streamingAssistantMessage, setStreamingAssistantMessage] = useState('');
     const abortControllerRef = useRef(null);
     const scrollRef = useRef(null);
 
@@ -64,23 +65,53 @@ export default function AiAssistantChat() {
     useEffect(() => {
         const el = scrollRef.current;
         if (el) el.scrollTop = el.scrollHeight;
-    }, [data?.messages?.length, thinking, inlineQuizzes]);
+    }, [data?.messages?.length, thinking, streamingAssistantMessage, inlineQuizzes]);
 
     const handleSend = async (msg) => {
         const trimmed = (msg || '').trim();
         if (!trimmed || sending) return;
+
+        // Optimistic UI update
+        const tempId = `temp-${Date.now()}`;
+        const optimisticMessage = {
+            _id: tempId,
+            role: 'user',
+            content: trimmed,
+            createdAt: new Date().toISOString(),
+            status: 'sent'
+        };
+
+        queryClient.setQueryData(['ai-session', sessionId], (old) => {
+            if (!old) return old;
+            return {
+                ...old,
+                messages: [...(old.messages || []), optimisticMessage]
+            };
+        });
+
         setSending(true);
         setThinking(true);
-        setText('');
+        setText(''); // Clear input instantly
+        
         const controller = new AbortController();
         abortControllerRef.current = controller;
 
+        setStreamingAssistantMessage('');
+        let localStreamData = '';
+
         try {
-            await aiService.sendChatMessage({
+            await aiService.sendChatMessageStream({
                 sessionId,
                 userMessage: trimmed,
                 subject,
+                signal: controller.signal,
+                onChunk: (chunk) => {
+                    setThinking(false);
+                    localStreamData += chunk;
+                    setStreamingAssistantMessage(localStreamData);
+                }
             });
+            setStreamingAssistantMessage('');
             await refetch();
         } catch (err) {
             if (err?.name === 'AbortError') {
@@ -88,11 +119,27 @@ export default function AiAssistantChat() {
             } else {
                 const m = err?.response?.data?.error || err?.message || 'Failed to send';
                 toast.error(m);
-                setText(trimmed);
+                // Append error message, keep user message
+                queryClient.setQueryData(['ai-session', sessionId], (old) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        messages: [
+                            ...old.messages,
+                            {
+                                _id: `err-${Date.now()}`,
+                                role: 'assistant',
+                                isError: true,
+                                originalInput: trimmed
+                            }
+                        ]
+                    };
+                });
             }
         } finally {
             setSending(false);
             setThinking(false);
+            setStreamingAssistantMessage('');
             abortControllerRef.current = null;
         }
     };
@@ -139,13 +186,13 @@ export default function AiAssistantChat() {
         if (!item?.quiz) return;
         setQuizSubmitting((s) => ({ ...s, [quizKey]: true }));
         try {
-            const { results } = await aiService.submitQuiz({
+            const updatedQuiz = await aiService.submitQuiz({
                 quizId: item.quiz._id,
                 responses,
             });
             setInlineQuizzes((q) => ({
                 ...q,
-                [quizKey]: { ...q[quizKey], results, submitting: false },
+                [quizKey]: { ...q[quizKey], results: updatedQuiz, submitting: false },
             }));
             // Invalidate the quiz history cache so the standalone
             // history page stays in sync.
@@ -159,7 +206,8 @@ export default function AiAssistantChat() {
     };
 
     const handleAskFollowUp = () => {
-        // Scroll to the input and focus it (§5.8.2).
+        // Pre-fill the input with context and scroll to it (§5.8.2).
+        setText("I have a question about the quiz: ");
         document.querySelector('textarea')?.focus();
         const el = document.querySelector('textarea');
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -243,7 +291,7 @@ export default function AiAssistantChat() {
                         className="p-2 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                         title="Delete chat"
                     >
-                        <TrashIcon className="size-4" />
+                        <Trash2 className="size-4" />
                     </button>
                     <ConfirmModal
                         open={confirmOpen}
@@ -297,14 +345,21 @@ export default function AiAssistantChat() {
                                     onFeedback={handleFeedback}
                                     onRegenerate={handleRegenerate}
                                     onFollowUpClick={handleFollowUpClick}
+                                    onRetry={(originalInput) => handleSend(originalInput)}
                                     copiedMessageId={copiedMessageId}
                                     feedbackMap={feedbackMap}
                                 />
                             ))
                         )}
-                        {thinking && (
+                        {thinking && !streamingAssistantMessage && (
                             <ChatMessage
                                 message={{ isThinking: true, role: 'assistant' }}
+                                user={user}
+                            />
+                        )}
+                        {streamingAssistantMessage && (
+                            <ChatMessage
+                                message={{ isStreaming: true, content: streamingAssistantMessage, role: 'assistant' }}
                                 user={user}
                             />
                         )}
