@@ -10,6 +10,20 @@ const __dirname = path.dirname(__filename)
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-ui': ['lucide-react', 'clsx', 'tailwind-merge', 'class-variance-authority'],
+          'vendor-socket': ['socket.io-client'],
+          'vendor-charts': ['recharts'],
+          'vendor-forms': ['react-hook-form', 'react-hot-toast'],
+        }
+      }
+    }
+  },
   plugins: [
     react(),
     nodePolyfills({
@@ -74,6 +88,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "react-hot-toast": path.resolve(__dirname, "./src/lib/react-hot-toast-mock.js"),
     },
   },
 })
