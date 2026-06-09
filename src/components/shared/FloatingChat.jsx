@@ -10,6 +10,17 @@ import ChatSidebarItem from '../chat/ChatSidebarItem';
 import MessageBubble from '../chat/MessageBubble';
 import ChatInputBar from '../chat/ChatInputBar';
 
+// UI strings — centralised here so they can be swapped for i18n keys
+// (e.g. t('chat.online')) without touching the JSX when i18next is added.
+const STRINGS = {
+    online:   'Online',
+    offline:  'Offline',
+    messages: 'Messages',
+    noConversationsTitle: 'No conversations yet',
+    noConversationsBody:  'Send a message to a tutor from their profile to start a conversation.',
+    emptyThreadBody:      'Say hello to start a conversation and begin chatting.',
+};
+
 const formatDateGroup = (dateString) => {
     const d = new Date(dateString);
     const today = new Date();
@@ -292,8 +303,8 @@ const FloatingChat = () => {
                                 </p>
                                 <p className="text-[11px] font-medium leading-none mt-1">
                                     {isOtherOnline
-                                        ? <span className="text-green-500 font-semibold">Online</span>
-                                        : <span className="text-slate-400 dark:text-slate-500">Offline</span>
+                                        ? <span className="text-green-500 font-semibold">{STRINGS.online}</span>
+                                        : <span className="text-slate-400 dark:text-slate-500">{STRINGS.offline}</span>
                                     }
                                 </p>
                             </div>
@@ -308,7 +319,7 @@ const FloatingChat = () => {
                     ) : (
                         /* Conversation List Header */
                         <div className="shrink-0 px-4 py-3.5 bg-white dark:bg-slate-800 border-b border-slate-200/60 dark:border-slate-700/80 flex items-center justify-between shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-                            <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 tracking-tight">Messages</h3>
+                            <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 tracking-tight">{STRINGS.messages}</h3>
                             <div className="flex items-center gap-1.5">
                                 <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-all duration-200 text-slate-500 dark:text-slate-400 active:scale-95" title="New message">
                                     <Edit size={16} strokeWidth={2.5} />
@@ -334,9 +345,9 @@ const FloatingChat = () => {
                                         <div className="size-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-sm mb-3.5">
                                             <MessageSquare size={20} className="text-slate-400 dark:text-slate-500" />
                                         </div>
-                                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">No conversations yet</p>
+                                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{STRINGS.noConversationsTitle}</p>
                                         <p className="text-xs mt-1 text-slate-400 dark:text-slate-500 leading-normal max-w-[200px] mx-auto">
-                                            Send a message to a tutor from their profile to start a conversation.
+                                            {STRINGS.noConversationsBody}
                                         </p>
                                     </div>
                                 ) : (
@@ -369,7 +380,7 @@ const FloatingChat = () => {
                                             </div>
                                             <h4 className="font-bold text-sm text-slate-900 dark:text-slate-50">{otherParticipant?.displayName}</h4>
                                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-[200px] leading-normal">
-                                                Say hello to start a conversation and begin chatting.
+                                                {STRINGS.emptyThreadBody}
                                             </p>
                                             <div className="mt-4 px-3 py-1.5 bg-white dark:bg-slate-800/80 rounded-full border border-slate-100 dark:border-slate-700/50 text-[10px] text-slate-450 flex items-center gap-1.5 shadow-sm">
                                                 <span className="size-1.5 bg-green-500 rounded-full animate-pulse" />
@@ -391,8 +402,10 @@ const FloatingChat = () => {
                                                 const senderIdStr = String(msg.senderId);
                                                 const isMe = senderIdStr === myParticipantId || senderIdStr === String(user.uid);
 
-                                                const prevMsg = messages[idx - 1];
-                                                const nextMsg = messages[idx + 1];
+                                                // Use explicit Array.prototype.at() instead of bracket notation
+                                                // on a computed index to avoid prototype-pollution linting findings.
+                                                const prevMsg = idx > 0 ? messages.at(idx - 1) : undefined;
+                                                const nextMsg = idx < messages.length - 1 ? messages.at(idx + 1) : undefined;
 
                                                 const prevDateGroup = prevMsg ? formatDateGroup(prevMsg.createdAt) : null;
                                                 const dateGroup = formatDateGroup(msg.createdAt);
