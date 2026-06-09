@@ -15,21 +15,23 @@ const PaymentHistory = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (!user?.email) return;
-        fetchPayments();
-    }, [user]);
-
     const fetchPayments = async () => {
         try {
             const res = await api.get(`/api/payments/student/${user.email}`);
             setPayments(res.data);
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error('Log recovery failure: Could not sync transaction history.');
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (!user?.email) return;
+        fetchPayments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     if (loading) {
         return (

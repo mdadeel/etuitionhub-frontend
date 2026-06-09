@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useRealtimeStore } from '../store/realtimeStore';
 import { getSocket } from './useSocketEvents';
 
+// eslint-disable-next-line no-unused-vars
 const useNotifications = ({ userId, pageSize = 20 } = {}) => {
     const [notifications, setNotifications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);

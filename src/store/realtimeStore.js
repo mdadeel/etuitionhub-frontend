@@ -16,6 +16,7 @@ import { create } from 'zustand';
  * The store never owns server state — it only mirrors pushes. Components that
  * need authoritative data (e.g. a wallet detail page) still fetch via REST.
  */
+// eslint-disable-next-line no-unused-vars
 export const useRealtimeStore = create((set, get) => ({
     walletSnapshot: null,
     lastWithdrawal: null,

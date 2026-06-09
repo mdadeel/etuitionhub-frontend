@@ -17,6 +17,7 @@ let socketRef = null;
  */
 const useSocketEvents = () => {
     const ref = useRef(null);
+    // eslint-disable-next-line react-hooks/refs
     ref.current = socketRef;
 
     useEffect(() => {

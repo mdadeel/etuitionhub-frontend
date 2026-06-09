@@ -4,10 +4,12 @@ const SEO = ({ title, description, keywords }) => {
     const siteName = "e-tuitionBD";
     const defaultTitle = "e-tuitionBD | Master Your Future with Expert Tutors";
     const defaultDescription = "Connect with top-rated educators across Bangladesh. Personalized learning tailored to your goals, pace, and schedule.";
+    const canonical = window.location.origin + window.location.pathname;
 
     return (
         <Helmet>
             <title>{title ? `${title} | ${siteName}` : defaultTitle}</title>
+            <link rel="canonical" href={canonical} />
             <meta name="description" content={description || defaultDescription} />
             {keywords && <meta name="keywords" content={keywords} />}
             

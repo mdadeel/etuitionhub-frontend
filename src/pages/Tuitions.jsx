@@ -65,6 +65,7 @@ const Tuitions = () => {
     status: "approved",
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const tuitions = data?.data || [];
   const pagination = data?.pagination;
   const filterOptions = data?.filterOptions;

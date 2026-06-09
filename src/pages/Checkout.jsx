@@ -49,15 +49,6 @@ const Checkout = () => {
         notes: ''
     });
 
-    useEffect(() => {
-        if (!id || !user?.email) {
-            toast.error('Session Invalid: Identity context missing');
-            navigate('/dashboard');
-            return;
-        }
-        fetchApplication();
-    }, [id, user]);
-
     const fetchApplication = async () => {
         try {
             setLoading(true);
@@ -65,11 +56,22 @@ const Checkout = () => {
             const response = await api.get(`/api/applications/${id}`);
             setApplication(response.data);
             setLoading(false);
+        // eslint-disable-next-line no-unused-vars
         } catch (err) {
             setError('Operational failure: Could not load target parameters');
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (!id || !user?.email) {
+            toast.error('Session Invalid: Identity context missing');
+            navigate('/dashboard');
+            return;
+        }
+        fetchApplication();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, user]);
 
     const handleChange = (e) => {
         setFormData(prev => ({

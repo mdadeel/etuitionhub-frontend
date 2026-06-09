@@ -15,6 +15,7 @@ import {
   LANGUAGE_OPTIONS,
   WEEK_DAYS,
 } from "../utils/constants";
+import SEO from '../components/shared/SEO';
 import {
   Briefcase,
   CheckCircle,
@@ -146,6 +147,7 @@ const BecomeTutor = () => {
 
   return (
     <div className="bg-background min-h-screen">
+      <SEO title="Apply to Become a Verified Tutor | eTuitionBD" description="Join 2,500+ verified tutors in Bangladesh. Apply to teach on eTuitionBD and connect with students directly. Free to join." />
       <div className="container-narrow px-6 py-8">
         {/* Header */}
         <div className="mb-8 text-center md:text-left">

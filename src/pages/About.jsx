@@ -1,8 +1,10 @@
 import { GraduationCap, CheckCircle, Users, BookOpen, MapPin, Globe } from "lucide-react";
+import SEO from '../components/shared/SEO';
 
 const About = () => {
     return (
         <div className="bg-background min-h-screen py-16">
+            <SEO title="About eTuitionBD | Connecting Students with Verified Tutors in Bangladesh" description="Learn how eTuitionBD helps parents and students find verified, trustworthy private tutors across Bangladesh — with no middleman fees." />
             <div className="max-w-4xl mx-auto px-6">
                 {/* Header */}
                 <div className="mb-12">

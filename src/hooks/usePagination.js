@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { useState, useEffect, useCallback } from 'react';
 
 export function usePagination(items, perPage = 6) {

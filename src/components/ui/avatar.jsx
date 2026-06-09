@@ -40,7 +40,6 @@ function Avatar({
   ...props
 }) {
   const hasImage = typeof src === 'string' && src !== 'null' && src !== 'undefined' && src.trim() !== '';
-  const renderImage = hasImage || !children;
 
   return (
     <AvatarPrimitive.Root
@@ -53,12 +52,16 @@ function Avatar({
       )}
       {...props}
     >
-      {renderImage && (
-        <AvatarImage src={src} alt={alt} gender={gender} />
+      {children ? children : (
+        <>
+          {hasImage && (
+            <AvatarImage src={src} alt={alt} gender={gender} />
+          )}
+          <AvatarFallback className="bg-slate-900 text-slate-400">
+            {alt ? alt.slice(0, 2).toUpperCase() : 'U'}
+          </AvatarFallback>
+        </>
       )}
-      <AvatarFallback className="bg-slate-900 text-slate-400">
-        {children || (alt ? alt.slice(0, 2).toUpperCase() : 'U')}
-      </AvatarFallback>
       {verified && (
         <span
           className={cn(
@@ -82,16 +85,26 @@ function AvatarImage({
   gender,
   ...props
 }) {
+  const [imgError, setImgError] = React.useState(false);
   const processedSrc = getFullUrl(src);
 
   const avatarSrc = typeof processedSrc === 'string' && processedSrc !== 'null' && processedSrc !== 'undefined' && processedSrc.trim() !== ''
     ? processedSrc
     : `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(alt || 'user')}${gender ? `&gender=${gender.toLowerCase()}` : ''}`;
 
+  const fallbackSrc = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(alt || 'user')}${gender ? `&gender=${gender.toLowerCase()}` : ''}`;
+
+  const handleError = () => {
+    if (!imgError) {
+      setImgError(true);
+    }
+  };
+
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
-      src={avatarSrc}
+      src={imgError ? fallbackSrc : avatarSrc}
+      onError={handleError}
       className={cn("aspect-square size-full rounded-none object-cover", className)}
       {...props} />
   );

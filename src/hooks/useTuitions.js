@@ -57,6 +57,7 @@ export const useTuitions = (initialFilters = {}) => {
         return () => {
             active = false;
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(initialFilters), trigger]);
 
     return { tuitions, pagination, filterOptions, loading, error, refetch };

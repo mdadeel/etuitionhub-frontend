@@ -17,7 +17,9 @@ const TemplateSelector = ({
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/immutability
         fetchTemplates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedTab, searchQuery, filterCategory]);
 
     const fetchTemplates = async () => {

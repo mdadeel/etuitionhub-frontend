@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight, Database, Clock, User } from "lucide-react";
+import SEO from '../components/shared/SEO';
 
 /**
  * Blog Page
@@ -35,6 +36,7 @@ const Blog = () => {
 
     return (
         <div className="bg-background min-h-screen py-24 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary animate-in fade-in duration-700">
+            <SEO title="Tutoring Tips & Educational Resources | eTuitionBD Blog" description="Expert tutoring tips, study guides, and educational resources for students and parents in Bangladesh." />
             {/* Background Technical Grid Element */}
             <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
                  style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>

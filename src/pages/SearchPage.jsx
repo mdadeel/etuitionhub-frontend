@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Search, ArrowUpDown } from "lucide-react";
+import SEO from '../components/shared/SEO';
 import TutorCard from "../components/shared/TutorCard";
 import TuitionCard from "../components/shared/TuitionCard";
 import useDebouncedValue from "../hooks/useDebouncedValue";
@@ -107,6 +108,7 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Search Tutors & Tuitions | eTuitionBD" description="Search for verified private tutors and tuition opportunities across Bangladesh." />
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="relative mb-8">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#94A3B8]" />

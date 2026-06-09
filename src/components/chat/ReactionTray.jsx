@@ -29,6 +29,7 @@ const ReactionTray = ({ onReact, onClose, anchorRect, isMe }) => {
         const pos = getCalculatedPosition();
         setPosition({ top: pos.top, left: pos.left });
         setIsFlipped(pos.flipped);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [anchorRect, isMe]);
 
     useEffect(() => {

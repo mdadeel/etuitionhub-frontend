@@ -57,6 +57,12 @@ export const aiService = {
             signal,
         });
         if (!res.ok || !res.body) {
+            if (res.status === 404) {
+                // Backend doesn't support streaming yet; fallback to non-streaming
+                const fallbackResponse = await aiService.sendChatMessage({ userMessage, subject, forceTemplate, sessionId, attachment });
+                // We could simulate a chunk, but the caller will refetch the session anyway
+                return fallbackResponse;
+            }
             // Surface the server's error message if it returned JSON.
             let detail = `Stream request failed (${res.status})`;
             try {

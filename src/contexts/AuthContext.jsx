@@ -17,12 +17,14 @@ import Cookies from 'js-cookie';
 import { AUTH_COOKIE_OPTIONS } from '../utils/cookieOptions';
 
 // Export auth context for app-wide access
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
 
 /**
  * Custom hook for easy auth access
  * @returns {Object} Auth context value
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
     const authContext = useContext(AuthContext);
     if (!authContext) {
@@ -35,6 +37,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    // eslint-disable-next-line no-unused-vars
     const [userData, setUserData] = useState([]);
     const [userRole, setUserRole] = useState("");
     const [loading, setLoading] = useState(true);
@@ -308,6 +311,7 @@ export const AuthProvider = ({ children }) => {
         }
         Cookies.remove('token', { path: '/' });
         Cookies.remove('refreshToken', { path: '/' });
+        // eslint-disable-next-line no-unused-vars
         try { await signOut(auth); } catch (_) { /* ignore */ }
         setDbUser(null);
         setUserRole(null);

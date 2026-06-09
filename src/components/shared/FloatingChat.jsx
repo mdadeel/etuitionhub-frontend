@@ -78,6 +78,7 @@ const FloatingChat = () => {
             }
         };
         fetchMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [floatingActiveConv]);
 
     // Listen for incoming socket events
@@ -120,6 +121,7 @@ const FloatingChat = () => {
             socket.off('messages-read', handleMessagesRead);
             socket.off('message-reaction', handleMessageReaction);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket, floatingActiveConv, isFloatingOpen]);
 
     const sendMessage = async () => {

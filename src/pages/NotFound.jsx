@@ -1,8 +1,10 @@
 // 404 page comp
 import { Link } from "react-router-dom"
+import SEO from '../components/shared/SEO';
 const NotFound = () => {
     return (
         <div className="fade-up min-h-[70vh] flex items-center justify-center p-8 bg-background/30">
+            <SEO title="Page Not Found | eTuitionBD" description="The page you are looking for does not exist. Return to eTuitionBD homepage to find verified tutors in Bangladesh." />
             <div className="text-center max-w-md">
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-red-500 mb-4 block italic">Address Resolution Failure</span>
                 <h1 className="text-8xl font-black text-foreground tracking-tighter mb-4 opacity-5 group-hover:opacity-10 transition-opacity">404</h1>

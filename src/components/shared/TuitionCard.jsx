@@ -7,6 +7,7 @@ import { formatRelativeTime } from "@/utils/dateUtils";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import LoginRequiredModal from "./LoginRequiredModal";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = null, onRequestTutor }) => {
   const navigate = useNavigate();
@@ -99,13 +100,12 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
 
       {tuition.poster && (
         <div className="flex items-center gap-1.5 mb-2">
-          {tuition.poster.photoURL ? (
-            <img src={tuition.poster.photoURL} alt="" className="size-5 rounded-full object-cover" />
-          ) : (
-            <div className="size-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium text-muted-foreground">
-              {tuition.poster.name?.charAt(0) || '?'}
-            </div>
-          )}
+          <Avatar size="xs" className="size-5 rounded-full">
+            <AvatarImage src={tuition.poster.photoURL} alt={tuition.poster.name} />
+            <AvatarFallback className="text-[10px] font-medium rounded-full">
+              {tuition.poster.name?.charAt(0)?.toUpperCase() || '?'}
+            </AvatarFallback>
+          </Avatar>
           <span className="text-xs text-muted-foreground truncate">{tuition.poster.name || 'Unknown'}</span>
         </div>
       )}
@@ -148,7 +148,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">Home</span>
         )}
         {tuition.mode === 'both' && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-500 font-medium">Both</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-500/10 text-teal-500 font-medium">Both</span>
         )}
       </div>
 

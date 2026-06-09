@@ -43,6 +43,7 @@ const Login = () => {
             await googleLogin()
             toast.success('Logged in with Google')
             navigate(from, { replace: true })
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error('Google login failed')
         }

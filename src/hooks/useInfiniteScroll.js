@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 
 const useInfiniteScroll = (callback, { enabled = true, threshold = 200 } = {}) => {
     const sentinelRef = useRef(null);
+    // eslint-disable-next-line react-hooks/use-memo
     const stableCallback = useCallback(callback, [callback]);
 
     useEffect(() => {

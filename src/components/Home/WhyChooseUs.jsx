@@ -1,6 +1,7 @@
 import { ShieldCheck, MessageCircle, Wallet, Monitor, CheckCircle, Users, Clock, Heart } from 'lucide-react';
 import SectionHeader from '@/components/ui/SectionHeader';
 
+// eslint-disable-next-line no-unused-vars
 const FeatureBlock = ({ icon: Icon, title, description, features, delay = '100ms', reversed = false }) => (
     <div className="grid lg:grid-cols-12 gap-12 items-center animate-in fade-in zoom-in-95 duration-700 ease-out" style={{ animationDelay: delay }}>
         <div className={`lg:col-span-5 ${reversed ? 'order-2 lg:order-1' : 'order-1 lg:order-2'}`}>

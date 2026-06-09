@@ -38,6 +38,7 @@ import { Input } from "@/components/ui/input";
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton } from "@/components/shared/skeletons";
+import SEO from '../components/shared/SEO';
 
 function TuitionDetailsSkeleton() {
   return (
@@ -86,6 +87,7 @@ function TuitionDetailsSkeleton() {
 const TuitionDetails = () => {
     const { id } = useParams();
     const { user, dbUser } = useAuth();
+    // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
 
     const [tuition, setTuition] = useState(null);
@@ -196,6 +198,7 @@ const TuitionDetails = () => {
 
     return (
         <>
+        <SEO title={`${tuition?.subject || 'Tuition'} in ${tuition?.location || 'Bangladesh'} | eTuitionBD`} description={`Find a verified ${tuition?.subject || 'tutor'} in ${tuition?.location || 'Bangladesh'}. View qualifications, experience, fees, and contact directly.`} />
         <div className="bg-background min-h-screen py-8">
             <div className="max-w-6xl mx-auto px-4">
                 {/* Back Link */}

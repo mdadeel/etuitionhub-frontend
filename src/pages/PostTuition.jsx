@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Send, ArrowLeft, GraduationCap } from "lucide-react";
 import LoginRequiredModal from "../components/shared/LoginRequiredModal";
+import SEO from '../components/shared/SEO';
 
 const PostTuition = () => {
   const { user, dbUser, loading: authLoading } = useAuth();
@@ -102,6 +103,7 @@ const PostTuition = () => {
 
   return (
     <div className="bg-background min-h-screen py-12">
+      <SEO title="Post a Tuition Request | Find a Tutor in Bangladesh – eTuitionBD" description="Need a tutor? Post your tuition requirements for free and get matched with verified private tutors in your area." />
       <div className="max-w-3xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">

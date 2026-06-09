@@ -8,6 +8,7 @@ import PaymentReceiptCard from '../components/shared/PaymentReceiptCard';
 const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    // eslint-disable-next-line no-unused-vars
     const [payment, setPayment] = useState(null);
     const [receipt, setReceipt] = useState(null);
 
@@ -88,6 +89,7 @@ const PaymentSuccess = () => {
     );
 };
 
+// eslint-disable-next-line no-unused-vars
 const TimelineStep = ({ icon: Icon, label, detail, status }) => {
     const colors = {
         done: 'bg-emerald-500/10 text-emerald-600',

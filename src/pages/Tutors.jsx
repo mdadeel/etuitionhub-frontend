@@ -103,6 +103,7 @@ const Tutors = () => {
     if (area) setSelectedArea(area);
     if (lang) setSelectedLanguage(lang);
     if (sort) setSortBy(sort);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 

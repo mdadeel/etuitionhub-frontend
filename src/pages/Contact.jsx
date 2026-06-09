@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Mail, MapPin, Clock, Send, Database, Terminal } from "lucide-react";
 import api from '../services/api';
+import SEO from '../components/shared/SEO';
 
 const Contact = () => {
     const [submitting, setSubmitting] = useState(false);
@@ -31,6 +32,7 @@ const Contact = () => {
 
     return (
         <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary">
+            <SEO title="Contact eTuitionBD | Get in Touch with Our Support Team" description="Have questions? Contact eTuitionBD's support team for help finding the right tutor, account assistance, or partnership inquiries." />
             {/* Background Technical Grid Element */}
             <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
                  style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>

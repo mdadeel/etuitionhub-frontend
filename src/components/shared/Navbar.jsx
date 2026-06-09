@@ -6,6 +6,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import NotificationBell from "./NotificationBell";
 import Logo from "./Logo";
 import { Button } from "../ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { toast } from "react-hot-toast";
 import Cookies from "js-cookie";
 import { cn } from "@/lib/utils";
@@ -18,7 +19,7 @@ import PoruaLogo from "../AiAssistant/PoruaLogo";
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, userRole } = useAuth();
+  const { user, dbUser, logout, userRole } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -430,17 +431,12 @@ const Navbar = () => {
                   onClick={() => setIsProfileDropdownOpen((prev) => !prev)}
                   className="size-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300 block focus:outline-none"
                 >
-                  {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      alt={user.displayName}
-                      className="size-full object-cover"
-                    />
-                  ) : (
-                    <div className="size-full flex items-center justify-center bg-background text-muted-foreground text-xs font-heading">
-                      {user.displayName?.charAt(0)}
-                    </div>
-                  )}
+                  <Avatar size="sm" className="size-9 rounded-lg">
+                    <AvatarImage src={dbUser?.photoURL || user?.photoURL} alt={dbUser?.displayName || user?.displayName} />
+                    <AvatarFallback className="bg-background text-muted-foreground text-xs font-heading rounded-lg">
+                      {user.displayName?.charAt(0)?.toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
                 </button>
 
                 {/* Dropdown */}

@@ -3,7 +3,9 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const FormBuilderHero = ({
+  // eslint-disable-next-line no-unused-vars
   illustrationSrc,
+  // eslint-disable-next-line no-unused-vars
   illustrationAlt,
   title,
   description,

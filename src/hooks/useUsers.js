@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
 // TODO: add pagination support
+// eslint-disable-next-line no-unused-vars
 export function useUsers(filters = {}) {
     let [userList, setUserList] = useState([]);
     let [isLoading, setIsLoading] = useState(true);

@@ -11,6 +11,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 export const useAiStore = create(
     persist(
+        // eslint-disable-next-line no-unused-vars
         (set, get) => ({
             // Currently selected subject (chips on the left of the chat).
             subject: 'general',
@@ -72,9 +73,10 @@ export const useAiStore = create(
             storage: createJSONStorage(() => localStorage),
             // Only persist user-tunable preferences. Session state, edit
             // state, attachments, and label indices reset on reload.
+            // `lastQuickAction` is operational (which chip was clicked),
+            // not a preference — keep it in memory only.
             partialize: (state) => ({
                 subject: state.subject,
-                lastQuickAction: state.lastQuickAction,
                 theme: state.theme,
             }),
         }
