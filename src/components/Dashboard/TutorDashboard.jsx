@@ -118,29 +118,29 @@ const TutorDashboard = () => {
     ];
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-10 animate-fade-in-up">
             
             <AppleHeader 
                 title={`Welcome back, ${user?.displayName?.split(' ')[0]}`}
                 subtitle="Here's a summary of your professional activity and performance."
-                badge={<span className="px-3 py-1 text-xs font-semibold rounded-none bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">Tutor Dashboard</span>}
+                badge={<span className="px-3 py-1 text-xs font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20">Tutor Dashboard</span>}
             />
 
             {/* Tab Navigation */}
             <div className="w-full overflow-hidden">
-                <div className="flex items-center gap-1 bg-muted p-1 rounded-none border border-border w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+                <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-none whitespace-nowrap min-w-fit",
+                                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap min-w-fit active:scale-[0.98]",
                                 activeTab === tab.id
-                                    ? "bg-card text-[#2563EB] shadow-sm border border-border"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                                    ? "bg-card text-primary shadow-sm border border-border"
+                                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                             )}
                         >
-                            <tab.icon size={14} className={activeTab === tab.id ? 'text-[#2563EB]' : 'opacity-50'} />
+                            <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-50'} />
                             {tab.label}
                         </button>
                     ))}
@@ -152,7 +152,7 @@ const TutorDashboard = () => {
                 <div className="space-y-10">
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                         <AppleCard className="p-6 md:p-10 group" hover={false}>
-                            <div className="size-12 rounded-none bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-[#2563EB]/20 shadow-sm">
+                            <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
                                 <FileText size={24} />
                             </div>
                             <p className="text-xs font-semibold text-muted-foreground mb-2">Total Applications</p>
@@ -163,7 +163,7 @@ const TutorDashboard = () => {
                         </AppleCard>
 
                         <AppleCard className="p-6 md:p-10 group" hover={false}>
-                            <div className="size-12 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
+                            <div className="size-12 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                                 <UserCheck size={24} />
                             </div>
                             <p className="text-xs font-semibold text-muted-foreground mb-2">Active Engagements</p>
@@ -174,7 +174,7 @@ const TutorDashboard = () => {
                         </AppleCard>
 
                         <AppleCard className="p-6 md:p-10 group col-span-2 lg:col-span-1" hover={false}>
-                            <div className="size-12 rounded-none bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
+                            <div className="size-12 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
                                 <TrendingUp size={24} />
                             </div>
                             <p className="text-xs font-semibold text-muted-foreground mb-2">Total Earnings</p>
@@ -186,7 +186,7 @@ const TutorDashboard = () => {
                     </div>
 
                     <AppleCard className="p-8 overflow-hidden relative">
-                        <div className="absolute top-0 right-0 size-64 bg-[#2563EB]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                        <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         <div className="relative z-10">
                             <h3 className="text-lg font-bold text-foreground tracking-tight mb-6">Recent Activity</h3>
                             {apps.length === 0 ? (
@@ -194,10 +194,10 @@ const TutorDashboard = () => {
                             ) : (
                                 <div className="space-y-4">
                                     {apps.slice(0, 3).map((app) => (
-                                        <div key={app._id} className="flex items-center justify-between p-4 rounded-none bg-background border border-border">
+                                        <div key={app._id} className="flex items-center justify-between p-4 rounded-lg bg-background border border-border">
                                             <div className="flex items-center gap-4">
-                                                <div className="size-8 rounded-none bg-background border border-border flex items-center justify-center">
-                                                    <FileText size={14} className="text-[#2563EB]/60" />
+                                                <div className="size-8 rounded-lg bg-background border border-border flex items-center justify-center">
+                                                    <FileText size={14} className="text-primary/60" />
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
@@ -242,9 +242,9 @@ const TutorDashboard = () => {
                                                 <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
                                                 <p className="text-xs text-muted-foreground font-medium mt-1">{app.studentEmail}</p>
                                             </td>
-                                            <td className="px-8 py-6 text-center text-sm font-bold text-[#2563EB] tabular-nums">৳{app.expectedSalary}</td>
+                                            <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary}</td>
                                             <td className="px-8 py-6 text-center">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${app.status === 'approved' ? 'bg-[#2563EB]/10 text-[#2563EB]' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-background text-muted-foreground'}`}>
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${app.status === 'approved' ? 'bg-primary/10 text-primary' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-background text-muted-foreground'}`}>
                                                     {app.status}
                                                 </span>
                                             </td>
@@ -252,7 +252,7 @@ const TutorDashboard = () => {
                                                 {app.status === 'pending' ? (
                                                     <button 
                                                         onClick={() => handleDelete(app._id)}
-                                                        className="text-xs font-bold text-red-600 hover:underline"
+                                                        className="text-xs font-bold text-red-600 hover:underline active:scale-[0.98]"
                                                     >
                                                         Recall Application
                                                     </button>
@@ -278,11 +278,11 @@ const TutorDashboard = () => {
                     ) : (
                         apps.filter(a => a.status === 'approved').map(app => (
                             <AppleCard key={app._id} className="p-4 md:p-8 group relative overflow-hidden">
-                                <div className="absolute top-0 right-0 size-32 bg-[#2563EB]/5 rounded-none -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
+                                <div className="absolute top-0 right-0 size-32 bg-primary/5 rounded-lg -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
                                 <div className="relative z-10">
                                     <div className="flex items-center gap-2 mb-6">
-                                        <div className="size-2 rounded-full bg-[#2563EB] animate-pulse"></div>
-                                        <span className="text-xs font-bold text-[#2563EB]">Active Connection</span>
+                                        <div className="size-2 rounded-full bg-primary animate-pulse"></div>
+                                        <span className="text-xs font-bold text-primary">Active Connection</span>
                                     </div>
                                     <h3 className="text-xl font-bold text-foreground mb-8 tracking-tight">{app.tuitionId?.subject}</h3>
                                     
@@ -293,11 +293,11 @@ const TutorDashboard = () => {
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="text-xs font-semibold text-muted-foreground">Monthly Fee</span>
-                                            <span className="text-sm font-bold text-[#2563EB] tabular-nums">৳{app.expectedSalary} <span className="text-xs text-muted-foreground opacity-50">/mo</span></span>
+                                            <span className="text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary} <span className="text-xs text-muted-foreground opacity-50">/mo</span></span>
                                         </div>
                                     </div>
                                     
-                                    <AppleButton asChild variant="outline" className="w-full h-11 rounded-none">
+                                    <AppleButton asChild variant="outline" className="w-full h-11 rounded-lg active:scale-[0.98]">
                                         <a href={`mailto:${app.studentEmail}`} className="flex items-center justify-center gap-2">
                                             Send Message <ArrowUpRight size={14} />
                                         </a>
@@ -315,14 +315,14 @@ const TutorDashboard = () => {
                     <div className="p-8 border-b border-border bg-background/50 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div>
                              <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
-                                <div className="size-2 rounded-full bg-[#2563EB]"></div>
+                                <div className="size-2 rounded-full bg-primary"></div>
                                 Earnings Report
                             </h2>
                             <p className="text-xs font-medium text-muted-foreground mt-1">Audit trail for all completed tutor payments.</p>
                         </div>
-                        <div className="bg-card px-8 py-4 rounded-none border border-border shadow-sm">
+                        <div className="bg-card px-8 py-4 rounded-xl border border-border shadow-sm">
                             <p className="text-xs font-semibold text-muted-foreground mb-1">Total Earnings</p>
-                            <p className="text-2xl font-bold text-[#2563EB] tracking-tight tabular-nums">৳{totalEarnings}</p>
+                            <p className="text-2xl font-bold text-primary tracking-tight tabular-nums">৳{totalEarnings}</p>
                         </div>
                     </div>
 
@@ -352,9 +352,9 @@ const TutorDashboard = () => {
                                                 <p className="text-sm font-bold text-foreground">{payment.tuitionId?.subject || 'Tutoring Fee'}</p>
                                                 <p className="text-xs text-muted-foreground font-medium mt-1">{payment.studentEmail}</p>
                                             </td>
-                                            <td className="px-8 py-6 text-center text-sm font-bold text-[#2563EB] tabular-nums">৳{payment.grossAmount}</td>
+                                            <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{payment.grossAmount}</td>
                                             <td className="px-8 py-6 text-right">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-none ${payment.status === 'verified' ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-background text-muted-foreground'}`}>
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${payment.status === 'verified' ? 'bg-primary/10 text-primary' : 'bg-background text-muted-foreground'}`}>
                                                     {payment.status}
                                                 </span>
                                             </td>

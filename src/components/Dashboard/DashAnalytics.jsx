@@ -44,6 +44,7 @@ const DashAnalytics = () => {
                 totalRevenue: statsData.totalRevenue ?? 0,
             });
         } else if (statsError) {
+            // eslint-disable-next-line react-hooks/immutability
             loadFallback();
         }
     }, [statsData, statsError]);
@@ -98,13 +99,13 @@ const DashAnalytics = () => {
     if (statsLoading) return <LoadingSpinner />;
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-500">
+        <div className="space-y-10 animate-in fade-in duration-500 animate-fade-in-up">
             <header className="mb-8 border-b border-border pb-6">
                 <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
-                    <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Operations Control</span>
+                    <div className="w-6 h-1.5 bg-primary rounded-lg"></div>
+                    <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Operations Control</span>
                 </div>
-                <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">Platform Insights</h2>
+                <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Platform Insights</h2>
                 <p className="text-xs text-muted-foreground mt-1">Real-time performance metrics and user distribution tracking.</p>
             </header>
 
@@ -139,10 +140,10 @@ const DashAnalytics = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Distribution Matrix */}
-                <div className="bg-card border border-border p-5 md:p-6 rounded-none relative overflow-hidden">
+                <div className="bg-card border border-border p-5 md:p-6 rounded-xl relative overflow-hidden">
                     <div className="mb-4">
-                        <h3 className="text-xs md:text-sm font-heading font-black uppercase tracking-wider text-foreground">User Distribution</h3>
-                        <p className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground mt-0.5">Breakdown by user roles</p>
+                        <h3 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-foreground">User Distribution</h3>
+                        <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">Breakdown by user roles</p>
                     </div>
                     
                     <div className="h-[220px] md:h-[260px]">
@@ -196,10 +197,10 @@ const DashAnalytics = () => {
                 </div>
 
                 {/* Operations Lifecycle */}
-                <div className="bg-card border border-border p-5 md:p-6 rounded-none relative overflow-hidden">
+                <div className="bg-card border border-border p-5 md:p-6 rounded-xl relative overflow-hidden">
                     <div className="mb-4">
-                        <h3 className="text-xs md:text-sm font-heading font-black uppercase tracking-wider text-foreground">Tuition Status</h3>
-                        <p className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground mt-0.5">Current status of tuition postings</p>
+                        <h3 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-foreground">Tuition Status</h3>
+                        <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">Current status of tuition postings</p>
                     </div>
                     
                     <div className="h-[220px] md:h-[260px]">
@@ -240,14 +241,14 @@ const DashAnalytics = () => {
             </div>
 
             {/* Yield Real-time Matrix */}
-            <div className="bg-card border border-border rounded-none overflow-hidden relative">
+            <div className="bg-card border border-border rounded-xl overflow-hidden relative">
                 <div className="px-6 py-5 border-b border-border bg-background flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
-                        <h3 className="text-xs md:text-sm font-heading font-black uppercase tracking-wider text-foreground">Recent Transactions</h3>
-                        <p className="text-[9px] font-heading font-bold text-muted-foreground mt-0.5 uppercase tracking-widest">Latest BDT Payment Operations</p>
+                        <h3 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-foreground">Recent Transactions</h3>
+                        <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">Latest BDT Payment Operations</p>
                     </div>
-                    <span className="rounded-none bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20 px-3 py-1 text-[9px] font-heading font-black uppercase tracking-widest flex items-center gap-1.5">
-                        <span className="size-1.5 bg-[#2563EB] rounded-none animate-pulse"></span>
+                    <span className="rounded-lg bg-primary/10 text-primary border border-primary/20 px-3 py-1 text-[10px] font-label font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="size-1.5 bg-primary rounded-lg animate-pulse"></span>
                         Live Sync
                     </span>
                 </div>
@@ -262,15 +263,15 @@ const DashAnalytics = () => {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-transparent border-b border-border text-muted-foreground">
-                                    <th className="hidden md:table-cell px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">Transaction ID</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">Node</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground text-center">Yield</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground text-right">Status</th>
+                                    <th className="hidden md:table-cell px-6 py-4 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Transaction ID</th>
+                                    <th className="px-4 md:px-6 py-4 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Node</th>
+                                    <th className="px-4 md:px-6 py-4 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground text-center">Yield</th>
+                                    <th className="px-4 md:px-6 py-4 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground text-right">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
                                 {transactions.slice(0, 8).map((tx) => (
-                                    <tr key={tx._id} className="hover:bg-background transition-colors">
+                                    <tr key={tx._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
                                         <td className="hidden md:table-cell px-6 py-4">
                                             <span className="text-xs font-mono font-medium text-muted-foreground">#{tx._id.slice(-8).toUpperCase()}</span>
                                         </td>
@@ -281,10 +282,10 @@ const DashAnalytics = () => {
                                             </div>
                                         </td>
                                         <td className="px-4 md:px-6 py-4 text-center">
-                                            <span className="text-xs md:text-sm font-heading font-black text-[#2563EB] tabular-nums">৳{tx.amount?.toLocaleString()}</span>
+                                            <span className="text-xs md:text-sm font-heading font-black text-primary tabular-nums">৳{tx.amount?.toLocaleString()}</span>
                                         </td>
                                         <td className="px-4 md:px-6 py-4 text-right">
-                                            <span className={`px-2.5 py-1 text-[9px] font-heading font-black uppercase tracking-wider rounded-none border ${tx.status === 'verified'
+                                            <span className={`px-2.5 py-1 text-[10px] font-label font-semibold uppercase tracking-wider rounded-lg border ${tx.status === 'verified'
                                                 ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
                                                 : tx.status === 'rejected'
                                                 ? 'bg-red-500/10 text-red-700 border-red-500/20'
@@ -308,20 +309,20 @@ const StatCard = ({ title, value, icon, isPrimary = false }) => {
     const IconComponent = icon;
     return (
         <div className={cn(
-            "p-4 md:p-6 bg-card border border-border rounded-none relative overflow-hidden border-l-[5px]",
-            isPrimary ? "border-l-[#2563EB]" : "border-l-[#1E293B]"
+            "p-4 md:p-6 bg-card border border-border rounded-xl relative overflow-hidden border-l-[5px]",
+            isPrimary ? "border-l-primary" : "border-l-[#1E293B]"
         )}>
             <div className="relative z-10">
                 <div className="flex items-start justify-between mb-4">
                     <div className={cn(
-                        "size-9 flex items-center justify-center rounded-none border",
-                        isPrimary ? "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20" : "bg-background text-muted-foreground border-border"
+                        "size-9 flex items-center justify-center rounded-lg border",
+                        isPrimary ? "bg-primary/10 text-primary border-primary/20" : "bg-background text-muted-foreground border-border"
                     )}>
                         <IconComponent size={16} strokeWidth={2.5} />
                     </div>
                 </div>
 
-                <p className="text-[10px] font-heading font-black text-muted-foreground uppercase tracking-widest mb-1.5">
+                <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                     {title}
                 </p>
 

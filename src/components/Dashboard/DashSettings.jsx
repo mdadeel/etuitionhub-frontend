@@ -79,14 +79,14 @@ const DashSettings = () => {
     }
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-10 animate-in fade-in duration-700 animate-fade-in-up">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-6">
                 <div>
                     <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
-                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">System Settings</span>
+                            <div className="w-6 h-1.5 bg-primary rounded-lg"></div>
+                            <span className="text-[9px] font-label font-semibold uppercase tracking-wider text-primary">System Settings</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">System Settings</h2>
+                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">System Settings</h2>
                     <p className="text-xs text-muted-foreground mt-1">
                         Manage platform constants and environment variables.
                     </p>
@@ -95,14 +95,14 @@ const DashSettings = () => {
                 <div className="flex gap-3">
                     <button 
                         onClick={loadSettings}
-                        className="h-10 px-4 rounded-none text-muted-foreground hover:text-foreground border border-border hover:bg-muted text-[9px] font-heading font-black uppercase tracking-widest transition-all"
+                        className="h-10 px-4 rounded-lg text-muted-foreground hover:text-foreground border border-border hover:bg-muted text-[9px] font-label font-semibold uppercase tracking-wider transition-all"
                     >
                         Reset
                     </button>
                     <button 
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="h-10 px-6 rounded-none bg-[#2563EB] text-white hover:bg-[#1D4ED8] text-[9px] font-heading font-black uppercase tracking-widest transition-all disabled:opacity-50"
+                        className="h-10 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-[9px] font-label font-semibold uppercase tracking-wider transition-all disabled:opacity-50"
                     >
                         {isSaving ? 'Saving...' : 'Save Changes'}
                     </button>
@@ -112,20 +112,20 @@ const DashSettings = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {Object.entries(groupedSettings).map(([category, items]) => (
                     <div key={category} className="space-y-4">
-                        <h3 className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-muted-foreground flex items-center gap-2 px-1">
-                            <span className="text-[#2563EB]">{categoryIcons[category]}</span> {category.charAt(0).toUpperCase() + category.slice(1)} Settings
+                        <h3 className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2 px-1">
+                            <span className="text-primary">{categoryIcons[category]}</span> {category.charAt(0).toUpperCase() + category.slice(1)} Settings
                         </h3>
                         
-                        <div className="bg-card border border-border rounded-none p-6 md:p-8 space-y-8 shadow-none">
+                        <div className="bg-card border border-border rounded-xl p-6 md:p-8 space-y-8 shadow-none">
                             {items.map(setting => (
                                 <div key={setting.key} className="space-y-2">
                                     <div className="flex items-center justify-between px-1">
-                                        <label className="text-[9px] font-heading font-black text-foreground uppercase tracking-widest">
+                                        <label className="text-[9px] font-label font-semibold text-foreground uppercase tracking-wider">
                                             {setting.label}
                                         </label>
                                         <div className="group relative">
-                                            <Info size={12} className="text-muted-foreground/40 hover:text-[#2563EB] cursor-help transition-colors" />
-                                            <div className="absolute bottom-full right-0 mb-2 w-48 p-3 bg-card border border-border shadow-xl rounded-none text-[9px] font-bold text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                                            <Info size={12} className="text-muted-foreground/40 hover:text-primary cursor-help transition-colors" />
+                                            <div className="absolute bottom-full right-0 mb-2 w-48 p-3 bg-card border border-border shadow-xl rounded-lg text-[9px] font-bold text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
                                                 {setting.description}
                                             </div>
                                         </div>
@@ -148,9 +148,9 @@ const DashSettings = () => {
                                                 handleInputChange(setting.key, v);
                                             }
                                         }}
-                                        className={`w-full px-4 py-3 text-xs bg-card border rounded-none focus:outline-none focus:border-[#2563EB] transition-all font-heading font-bold placeholder:text-muted-foreground/40 ${
+                                        className={`w-full px-4 py-3 text-xs bg-card border rounded-lg focus:outline-none focus:border-primary transition-all font-heading font-bold placeholder:text-muted-foreground/40 ${
                                             modifiedKeys.has(setting.key) 
-                                                ? 'border-[#2563EB] bg-[#2563EB]/5' 
+                                                ? 'border-primary bg-primary/5' 
                                                 : 'border-border'
                                         }`}
                                     />
@@ -162,13 +162,13 @@ const DashSettings = () => {
             </div>
 
             {modifiedKeys.size > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-card border border-border text-foreground px-6 py-4 rounded-none shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-10 z-[100] backdrop-blur-xl">
-                    <span className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-card border border-border text-foreground px-6 py-4 rounded-lg shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-10 z-[100] backdrop-blur-xl">
+                    <span className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                         {modifiedKeys.size} settings modified
                     </span>
                     <button 
                         onClick={handleSave}
-                        className="bg-[#2563EB] hover:bg-[#1D4ED8] px-5 py-2.5 rounded-none text-[9px] font-heading font-black uppercase tracking-widest text-white transition-all shadow-none"
+                        className="bg-primary hover:bg-primary/90 px-5 py-2.5 rounded-lg text-[9px] font-label font-semibold uppercase tracking-wider text-primary-foreground transition-all shadow-none"
                     >
                         Save Changes
                     </button>

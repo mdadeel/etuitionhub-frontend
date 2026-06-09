@@ -24,31 +24,31 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="animate-in fade-in duration-700 space-y-10 max-w-full pb-10">
+        <div className="animate-in fade-in duration-700 space-y-10 max-w-full pb-10 animate-fade-in-up">
             <AppleHeader 
                 title="Management" 
                 subtitle="High-precision monitoring and strategic platform administration."
                 badge={<AppleBadge variant="primary">System Command</AppleBadge>}
                 action={
-                    <div className="flex items-center gap-2.5 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-none shadow-none">
-                        <span className="size-2 bg-emerald-500 animate-pulse rounded-none"></span>
-                        <span className="text-[10px] font-heading font-black uppercase tracking-widest text-emerald-600">Protocol Active</span>
+                    <div className="flex items-center gap-2.5 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg shadow-none">
+                        <span className="size-2 bg-emerald-500 animate-pulse rounded-lg"></span>
+                        <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Protocol Active</span>
                     </div>
                 }
             />
 
             {/* Navigation Tabs */}
             <div className="w-full overflow-hidden">
-                <div className="flex bg-background p-1.5 rounded-none gap-2 overflow-x-auto border border-border w-full max-w-full backdrop-blur-md scrollbar-hide flex-nowrap">
+                <div className="flex bg-background p-1.5 rounded-lg gap-2 overflow-x-auto border border-border w-full max-w-full backdrop-blur-md scrollbar-hide flex-nowrap">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "px-6 py-3 text-[10px] font-heading font-black uppercase tracking-widest rounded-none transition-all duration-300 flex items-center gap-2 whitespace-nowrap min-w-fit border",
+                                "px-6 py-3 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground rounded-lg transition-all duration-300 flex items-center gap-2 whitespace-nowrap min-w-fit border active:scale-[0.98]",
                                 activeTab === tab.id
-                                    ? "bg-[#2563EB] text-white border-[#2563EB]"
-                                    : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
+                                    ? "bg-primary text-primary-foreground border-primary"
+                                    : "border-transparent hover:text-accent-foreground hover:bg-accent"
                             )}
                         >
                             {tab.label}

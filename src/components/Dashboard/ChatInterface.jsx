@@ -53,7 +53,8 @@ const ChatInterface = () => {
 
     // 2026 Redesign UI States
     const [activeSidebarTab, setActiveSidebarTab] = useState('all');
-    const [activeCallModal, setActiveCallModal] = useState(null);
+
+
     const [showInfoModal, setShowInfoModal] = useState(false);
 
     // Derived values
@@ -487,6 +488,7 @@ const ChatInterface = () => {
                     <div className="p-4 pb-2 flex items-center justify-between">
                         <h3 className="text-xl font-bold text-foreground font-heading">Messages</h3>
                         <button 
+                            onClick={() => toast('New message compose coming soon')}
                             className="p-2 hover:bg-[color:hsl(var(--chat-hover))] rounded-full text-foreground/80 hover:text-foreground transition-all active:scale-95"
                             title="New Message"
                         >
@@ -641,14 +643,14 @@ const ChatInterface = () => {
                             {/* Right: Actions (Call, Video, Info + Educational Actions) */}
                             <div className="flex items-center gap-1 shrink-0">
                                 <button
-                                    onClick={() => setActiveCallModal('audio')}
+                                    onClick={() => toast('Voice calls coming soon')}
                                     className="p-2 rounded-full hover:bg-[color:hsl(var(--chat-hover))] transition-all active:scale-95 text-muted-foreground hover:text-foreground"
                                     title="Voice Call"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                                 </button>
                                 <button
-                                    onClick={() => setActiveCallModal('video')}
+                                    onClick={() => toast('Video calls coming soon')}
                                     className="p-2 rounded-full hover:bg-[color:hsl(var(--chat-hover))] transition-all active:scale-95 text-muted-foreground hover:text-foreground"
                                     title="Video Call"
                                 >
@@ -948,51 +950,6 @@ const ChatInterface = () => {
                 />
 
                 {/* 2026 Redesign Call and Info Modals */}
-                {activeCallModal && (
-                    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
-                        <div className="bg-card/85 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[32px] w-[360px] max-w-[90%] p-6 text-center flex flex-col items-center justify-between h-[450px] animate-scale-in text-foreground">
-                            <div className="w-full flex justify-end">
-                                <span className="text-[10px] bg-primary/10 text-primary px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-                                    Secure peer call
-                                </span>
-                            </div>
-                            
-                            <div className="flex flex-col items-center gap-4 my-auto">
-                                <div className="relative">
-                                    <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" style={{ animationDuration: '3s' }} />
-                                    <Avatar 
-                                        src={otherParticipant?.photoURL} 
-                                        alt={otherParticipant?.displayName} 
-                                        className="size-24 rounded-full ring-4 ring-primary/30 relative z-10 shadow-lg" 
-                                    />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-foreground">{otherParticipant?.displayName}</h3>
-                                    <p className="text-xs text-muted-foreground/80 mt-1">
-                                        {activeCallModal === 'video' ? 'Establishing video bridge...' : 'Calling securely...'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Controls */}
-                            <div className="flex items-center gap-6 mt-auto">
-                                <button className="size-12 rounded-full bg-muted/65 hover:bg-muted flex items-center justify-center text-foreground hover:scale-105 active:scale-95 transition-all">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.23A8.38 8.38 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 8 6.9"/><path d="M9.39 9.39a3 3 0 0 1 4.22 4.22"/><path d="M10.3 4.6a3 3 0 0 1 3.7 3.7"/><path d="M12 18.5h.01"/></svg>
-                                </button>
-                                <button 
-                                    onClick={() => setActiveCallModal(null)}
-                                    className="size-16 rounded-full bg-destructive hover:bg-destructive/90 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all shadow-lg shadow-destructive/20"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/></svg>
-                                </button>
-                                <button className="size-12 rounded-full bg-muted/65 hover:bg-muted flex items-center justify-center text-foreground hover:scale-105 active:scale-95 transition-all">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.66 6H14a2 2 0 0 1 2 2v3.34"/><path d="m22 8-6 4 6 4v-4Z"/><path d="M20 12a8 8 0 0 0-8-8"/><path d="M2 2l20 20"/><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"/></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {showInfoModal && (
                     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in animate-duration-150">
                         <div className="bg-card border border-border/50 shadow-2xl rounded-3xl w-[380px] max-w-[90%] p-6 flex flex-col gap-5 animate-scale-in text-foreground">

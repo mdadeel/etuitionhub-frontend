@@ -46,9 +46,11 @@ const AdminWithdrawals = () => {
     const lastPayment = useRealtimeStore((s) => s.lastPayment);
     useEffect(() => {
         if (lastWithdrawal) load(filter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastWithdrawal]);
     useEffect(() => {
         if (lastPayment) load(filter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastPayment]);
 
     const handleApprove = async (id) => {
@@ -108,27 +110,27 @@ const AdminWithdrawals = () => {
     }
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700 p-6 md:p-8 lg:p-12 max-w-7xl mx-auto">
+        <div className="space-y-10 animate-in fade-in animate-fade-in-up duration-700 p-6 md:p-8 lg:p-12 max-w-7xl mx-auto">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-6">
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
-                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Withdrawal Management</span>
+                        <div className="w-6 h-1.5 bg-primary rounded-lg"></div>
+                        <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Withdrawal Management</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">Tutor Withdrawals</h2>
+                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Tutor Withdrawals</h2>
                     <p className="text-xs text-muted-foreground mt-1">Approve, reject, and mark withdrawal requests as paid.</p>
                 </div>
             </header>
 
-            <div className="flex flex-wrap bg-background p-1.5 rounded-none gap-2 border border-border w-fit">
+            <div className="flex flex-wrap bg-background p-1.5 rounded-lg gap-2 border border-border w-fit">
                 {FILTERS.map((f) => {
                     const Icon = f.icon;
                     return (
                         <button
                             key={f.id}
                             onClick={() => setFilter(f.id)}
-                            className={`px-5 py-2.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border transition-all flex items-center gap-2 ${filter === f.id
-                                ? 'bg-[#2563EB] border-[#2563EB] text-white'
+                            className={`px-5 py-2.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border transition-all flex items-center gap-2 active:scale-[0.98] ${filter === f.id
+                                ? 'bg-primary border-primary text-white'
                                 : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted'
                                 }`}
                         >
@@ -139,32 +141,32 @@ const AdminWithdrawals = () => {
             </div>
 
             {withdrawals.length === 0 ? (
-                <div className="py-40 text-center bg-background border border-border rounded-none">
+                <div className="py-40 text-center bg-background border border-border rounded-xl">
                     <Database size={48} className="text-muted-foreground/30 mx-auto mb-8" strokeWidth={1} />
-                    <p className="text-[10px] font-heading font-black text-muted-foreground/60 uppercase tracking-[0.25em]">
+                    <p className="text-[10px] font-heading font-bold text-muted-foreground/60 uppercase tracking-[0.25em]">
                         No withdrawal requests in this queue
                     </p>
                 </div>
             ) : (
-                <div className="bg-card border border-border rounded-none overflow-hidden">
+                <div className="bg-card border border-border rounded-xl overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-background border-b border-border text-muted-foreground">
-                                    <th className="hidden lg:table-cell px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Date</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Tutor</th>
-                                    <th className="hidden md:table-cell px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Method</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Amount</th>
-                                    <th className="hidden xl:table-cell px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Account</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Status</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60 text-right">Ops</th>
+                                    <th className="hidden lg:table-cell px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Date</th>
+                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Tutor</th>
+                                    <th className="hidden md:table-cell px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Method</th>
+                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Amount</th>
+                                    <th className="hidden xl:table-cell px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Account</th>
+                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Status</th>
+                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60 text-right">Ops</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border/40">
                                 {withdrawals.map((w) => {
                                     const tutor = w.userId || {};
                                     return (
-                                        <tr key={w._id} className="hover:bg-background transition-colors">
+                                        <tr key={w._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
                                             <td className="hidden lg:table-cell px-6 py-5 text-xs font-mono text-muted-foreground/60 tabular-nums">
                                                 {new Date(w.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                             </td>
@@ -172,10 +174,10 @@ const AdminWithdrawals = () => {
                                                 <p className="text-xs font-bold text-foreground">{tutor.displayName || tutor.email || '—'}</p>
                                                 {tutor.email && <p className="text-[10px] text-muted-foreground/60 mt-0.5">{tutor.email}</p>}
                                             </td>
-                                            <td className="hidden md:table-cell px-6 py-5 text-xs font-heading font-black uppercase tracking-widest text-foreground">
+                                            <td className="hidden md:table-cell px-6 py-5 text-xs font-heading font-bold uppercase tracking-widest text-foreground">
                                                 {w.method}
                                             </td>
-                                            <td className="px-4 md:px-6 py-5 text-sm font-heading font-black text-foreground tabular-nums italic">
+                                            <td className="px-4 md:px-6 py-5 text-sm font-heading font-bold text-foreground tabular-nums italic">
                                                 ৳{w.amount?.toLocaleString()}
                                             </td>
                                             <td className="hidden xl:table-cell px-6 py-5">
@@ -183,7 +185,7 @@ const AdminWithdrawals = () => {
                                                 <p className="text-[10px] text-muted-foreground/60">{w.accountName}</p>
                                             </td>
                                             <td className="px-4 md:px-6 py-5">
-                                                <span className={`px-2 py-0.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${STATUS_COLORS[w.status]}`}>
+                                                <span className={`px-2 py-0.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border ${STATUS_COLORS[w.status]}`}>
                                                     {w.status}
                                                 </span>
                                                 {w.transferTransactionId && (
@@ -208,10 +210,10 @@ const AdminWithdrawals = () => {
                                                         </ActionBtn>
                                                     )}
                                                     {w.status === 'paid' && (
-                                                        <span className="text-[9px] font-heading font-black text-emerald-700/50 uppercase tracking-widest">Done</span>
+                                                        <span className="text-[9px] font-heading font-bold text-emerald-700/50 uppercase tracking-widest">Done</span>
                                                     )}
                                                     {w.status === 'rejected' && (
-                                                        <span className="text-[9px] font-heading font-black text-red-700/50 uppercase tracking-widest">Closed</span>
+                                                        <span className="text-[9px] font-heading font-bold text-red-700/50 uppercase tracking-widest">Closed</span>
                                                     )}
                                                 </div>
                                             </td>
@@ -228,7 +230,7 @@ const AdminWithdrawals = () => {
 };
 
 const actionBtnColors = {
-    primary: 'bg-[#2563EB] border-[#2563EB] text-white hover:bg-[#1D4ED8]',
+    primary: 'bg-primary border-primary text-white hover:bg-primary/90',
     danger: 'bg-transparent border-transparent text-red-600 hover:border-red-200 hover:bg-red-50',
     success: 'bg-emerald-500 border-emerald-500 text-white hover:bg-emerald-600',
 };
@@ -239,7 +241,7 @@ const ActionBtn = ({ children, onClick, disabled, variant }) => {
             type="button"
             onClick={onClick}
             disabled={disabled}
-            className={`h-8 px-3 rounded-none border text-[9px] font-heading font-black uppercase tracking-widest transition-all disabled:opacity-40 ${actionBtnColors[variant]}`}
+            className={`h-8 px-3 rounded-lg border text-[9px] font-heading font-bold uppercase tracking-widest transition-all disabled:opacity-40 active:scale-[0.98] ${actionBtnColors[variant]}`}
         >
             {children}
         </button>

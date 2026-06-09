@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import ModernSidebar from "../components/shared/ModernSidebar";
+import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
 import StudentDashboard from "../components/Dashboard/StudentDashboard";
 import TutorDashboard from "../components/Dashboard/TutorDashboard";
 import AdminDashboard from "../components/Dashboard/AdminDashboard";
@@ -11,7 +11,6 @@ import DashUsers from "../components/Dashboard/DashUsers";
 import TutorSessions from "../components/Dashboard/TutorSessions";
 import Bookmarks from "../components/Dashboard/Bookmarks";
 import BillingHistory from "../components/Dashboard/BillingHistory";
-import HireRequests from "../components/Dashboard/HireRequests";
 import NotificationPage from "../components/Dashboard/NotificationPage";
 import VerificationFlow from "../components/Dashboard/VerificationFlow";
 import TutorWallet from "../components/Dashboard/TutorWallet";
@@ -19,12 +18,11 @@ import TutorWithdraw from "../components/Dashboard/TutorWithdraw";
 import AdminWithdrawals from "./AdminWithdrawals";
 import AdminAuditLogs from "./AdminAuditLogs";
 import DashSettings from "../components/Dashboard/DashSettings";
-import ActiveRelationships from "@/components/Dashboard/ActiveRelationships.jsx";
-import SessionConfirmationList from "@/components/Dashboard/SessionConfirmationList.jsx";
-import VerificationQueue from '@/components/Dashboard/VerificationQueue.jsx';
-import DisputeWorkspace from '@/components/Dashboard/DisputeWorkspace.jsx';
 import { Menu, X, Home } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
+import HireRequests from "../components/Dashboard/HireRequests";
+import ActiveRelationships from "../components/Dashboard/ActiveRelationships";
+import DashPayments from "../components/Dashboard/DashPayments";
 import { cn } from "@/lib/utils";
 
 /**
@@ -65,7 +63,7 @@ const Dashboard = () => {
         <div className="w-72 bg-card border-r border-border hidden lg:flex" />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex items-center gap-3">
-            <div className="size-5 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
+            <div className="size-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
             <span className="text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">{t("dashboard_loading", "Loading dashboard...")}</span>
           </div>
         </div>
@@ -76,7 +74,7 @@ const Dashboard = () => {
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Desktop Sidebar */}
-      <ModernSidebar className="hidden lg:flex" />
+      <DashboardSidebar role={role} />
 
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
@@ -89,15 +87,14 @@ const Dashboard = () => {
       {/* Mobile Sidebar Content */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 bg-card z-[70] lg:hidden transition-transform duration-300 border-r border-border overflow-y-auto",
+          "fixed inset-y-0 left-0 w-72 bg-card z-[70] lg:hidden transition-transform duration-300 border-r border-border overflow-y-auto",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <ModernSidebar className="w-[260px]" />
+        <DashboardSidebar role={role} />
       </div>
 
-
-      <main className="flex-1 h-full overflow-y-auto overflow-x-hidden relative flex flex-col safe-bottom">
+      <main className="flex-1 h-full overflow-y-auto overflow-x-hidden relative flex flex-col safe-bottom animate-fade-in-up">
         {/* Dashboard Top Navbar */}
         <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between h-16 px-6">
@@ -105,11 +102,11 @@ const Dashboard = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="lg:hidden p-2 hover:bg-background rounded-none border border-border transition-colors"
+                className="lg:hidden p-2 hover:bg-background rounded-lg border border-border transition-colors"
               >
                 <Menu size={20} className="text-muted-foreground" />
               </button>
-              <nav className="flex items-center gap-2 font-heading font-black text-[10px] uppercase tracking-widest">
+              <nav className="flex items-center gap-2 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                 <Link
                   to="/"
                   className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
@@ -118,7 +115,7 @@ const Dashboard = () => {
                   <span className="hidden sm:inline">{t("nav.home", "Home")}</span>
                 </Link>
                 <span className="text-[#E2E8F0] font-normal">/</span>
-                <span className="text-foreground">{t("nav.dashboard", "Dashboard")}</span>
+                <span className="text-foreground font-semibold">{t("nav.dashboard", "Dashboard")}</span>
               </nav>
             </div>
 
@@ -127,7 +124,7 @@ const Dashboard = () => {
               <NotificationBell />
               <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-border">
                 <div className="text-right">
-                  <p className="text-xs font-heading font-black text-foreground uppercase tracking-wider">
+                  <p className="text-xs font-label font-semibold text-foreground uppercase tracking-wider">
                     {user?.displayName?.split(" ")[0]}
                   </p>
                   <p className="text-[9px] font-heading font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{role}</p>
@@ -140,7 +137,7 @@ const Dashboard = () => {
                       className="size-full object-cover rounded-none"
                     />
                   ) : (
-                    <div className="size-full flex items-center justify-center text-muted-foreground text-xs font-heading font-black uppercase">
+                    <div className="size-full flex items-center justify-center text-muted-foreground text-xs font-label font-semibold uppercase">
                       {user?.displayName?.charAt(0)}
                     </div>
                   )}
@@ -229,7 +226,12 @@ const Dashboard = () => {
               />
               <Route path="notifications" element={<NotificationPage />} />
               <Route path="requests" element={<HireRequests />} />
-              <Route path="relationships" element={<ActiveRelationships />} />
+              <Route
+                path="relationships"
+                element={
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <ActiveRelationships />
+                }
+              />
 
 
 
@@ -297,16 +299,7 @@ const Dashboard = () => {
                 path="admin/payments"
                 element={
                   <AdminRoute role={role}>
-                    <VerificationQueue />
-                  </AdminRoute>
-                }
-              />
-
-              <Route
-                path="admin/disputes"
-                element={
-                  <AdminRoute role={role}>
-                    <DisputeWorkspace />
+                    <DashPayments />
                   </AdminRoute>
                 }
               />

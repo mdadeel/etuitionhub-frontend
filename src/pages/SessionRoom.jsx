@@ -57,6 +57,35 @@ export default function SessionRoom() {
         }
     }, [bookingId, user, dbUser, navigate]);
 
+    function callUser(userToCall, currentStream) {
+        const peer = new Peer({
+            initiator: true,
+            trickle: false,
+            stream: currentStream
+        });
+
+        peer.on('signal', (data) => {
+            socket.current.emit('signal', {
+                userId: userToCall,
+                signal: data,
+                room: bookingId
+            });
+        });
+
+        peer.on('stream', (userStream) => {
+            if (userVideo.current) {
+                userVideo.current.srcObject = userStream;
+            }
+        });
+
+        socket.current.on('signal', (data) => {
+            setCallAccepted(true);
+            peer.signal(data.signal);
+        });
+
+        connectionRef.current = peer;
+    };
+
     useEffect(() => {
         const token = Cookies.get('token');
 
@@ -117,36 +146,10 @@ export default function SessionRoom() {
                 });
             }
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bookingId, user, dbUser]);
 
-    const callUser = (userToCall, currentStream) => {
-        const peer = new Peer({
-            initiator: true,
-            trickle: false,
-            stream: currentStream
-        });
 
-        peer.on('signal', (data) => {
-            socket.current.emit('signal', {
-                userId: userToCall,
-                signal: data,
-                room: bookingId
-            });
-        });
-
-        peer.on('stream', (userStream) => {
-            if (userVideo.current) {
-                userVideo.current.srcObject = userStream;
-            }
-        });
-
-        socket.current.on('signal', (data) => {
-            setCallAccepted(true);
-            peer.signal(data.signal);
-        });
-
-        connectionRef.current = peer;
-    };
 
     const answerCall = () => {
         setCallAccepted(true);

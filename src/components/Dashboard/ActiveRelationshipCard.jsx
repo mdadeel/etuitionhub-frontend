@@ -3,7 +3,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { User, Pause, Play, CheckCircle, Clock, BookOpen } from 'lucide-react';
+import SessionLogModal from './SessionLogModal';
 
 const statusConfig = {
   active: { variant: 'success', label: 'Active' },
@@ -17,9 +19,11 @@ const statusConfig = {
 const ActiveRelationshipCard = ({ connection, onUpdate }) => {
   const { dbUser } = useAuth();
   const [actionLoading, setActionLoading] = useState(null);
+  const [showLogModal, setShowLogModal] = useState(false);
 
   const currentUserId = dbUser?._id;
   const isTutor = currentUserId === connection.tutorId?._id;
+  // eslint-disable-next-line no-unused-vars
   const isStudent = currentUserId === connection.studentId?._id;
   const other = isTutor ? connection.studentId : connection.tutorId;
 
@@ -54,13 +58,12 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
     <div className="bg-card border border-border rounded-xl p-4 hover:border-primary/20 transition-colors">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0 flex-1">
-          {photoURL ? (
-            <img src={photoURL} alt="" className="size-10 rounded-full object-cover shrink-0" />
-          ) : (
-            <div className="size-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+          <Avatar size="sm" className="size-10 rounded-full shrink-0">
+            <AvatarImage src={photoURL} alt={displayName} />
+            <AvatarFallback className="rounded-full">
               <User className="size-5 text-muted-foreground" />
-            </div>
-          )}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-medium text-foreground">{displayName}</h4>
@@ -97,7 +100,7 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
           <div className="flex gap-2 shrink-0">
             {isTutor && (
               <button
-                onClick={() => toast('Session logging coming soon')}
+                onClick={() => setShowLogModal(true)}
                 className="size-9 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 title="Log Session"
               >
@@ -138,6 +141,13 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
           </div>
         )}
       </div>
+
+      <SessionLogModal
+        connectionId={connection._id}
+        isOpen={showLogModal}
+        onClose={() => setShowLogModal(false)}
+        onLogged={() => { setShowLogModal(false); onUpdate?.(); }}
+      />
     </div>
   );
 };

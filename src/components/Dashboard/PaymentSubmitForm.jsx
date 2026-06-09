@@ -85,8 +85,8 @@ const PaymentSubmitForm = ({ payment, onSubmitted }) => {
       <div className="bg-card border border-border w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-1 bg-primary rounded-none" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Payment Proof</span>
+            <div className="w-4 h-1 bg-primary rounded-lg" />
+            <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Payment Proof</span>
           </div>
           <button onClick={onSubmitted} className="size-8 flex items-center justify-center hover:bg-muted transition-colors">
             <X className="size-4" />
@@ -96,7 +96,7 @@ const PaymentSubmitForm = ({ payment, onSubmitted }) => {
         <div className="p-6 space-y-6">
           {/* Invoice Summary */}
           <div className="border border-border bg-background p-5 space-y-3">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Invoice Summary</h3>
+            <h3 className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Invoice Summary</h3>
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -140,18 +140,18 @@ const PaymentSubmitForm = ({ payment, onSubmitted }) => {
           {/* Merchant Numbers */}
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="border border-border bg-background p-3">
-              <p className="font-black uppercase tracking-wider text-[10px] text-[#D12053] mb-1">bKash</p>
+              <p className="font-label font-semibold uppercase tracking-wider text-[10px] text-[#D12053] mb-1">bKash</p>
               <p className="font-mono font-bold text-foreground">{bkashNumber}</p>
             </div>
             <div className="border border-border bg-background p-3">
-              <p className="font-black uppercase tracking-wider text-[10px] text-[#F7941D] mb-1">Nagad</p>
+              <p className="font-label font-semibold uppercase tracking-wider text-[10px] text-[#F7941D] mb-1">Nagad</p>
               <p className="font-mono font-bold text-foreground">{nagadNumber}</p>
             </div>
           </div>
 
           {/* Payment Method */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Payment Method</label>
+            <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Payment Method</label>
             <div className="grid grid-cols-2 gap-3">
               {['bkash', 'nagad'].map((opt) => (
                 <button
@@ -173,7 +173,7 @@ const PaymentSubmitForm = ({ payment, onSubmitted }) => {
 
           {/* TRX ID */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">TRX ID <span className="text-destructive">*</span></label>
+            <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">TRX ID <span className="text-destructive">*</span></label>
             <input
               type="text"
               value={trxId}
@@ -185,7 +185,7 @@ const PaymentSubmitForm = ({ payment, onSubmitted }) => {
 
           {/* Sender Number */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Sender Number <span className="text-destructive">*</span></label>
+            <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Sender Number <span className="text-destructive">*</span></label>
             <input
               type="tel"
               value={senderNumber}
@@ -197,7 +197,7 @@ const PaymentSubmitForm = ({ payment, onSubmitted }) => {
 
           {/* Screenshot Upload */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Screenshot <span className="text-destructive">*</span></label>
+            <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Screenshot <span className="text-destructive">*</span></label>
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -247,7 +247,7 @@ const PaymentSubmitForm = ({ payment, onSubmitted }) => {
           <button
             onClick={handleSubmit}
             disabled={submitting || uploading}
-            className="h-10 px-8 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center gap-2"
+            className="h-10 px-8 bg-primary text-primary-foreground text-[10px] font-label font-semibold uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center gap-2"
           >
             {submitting || uploading ? <Loader2 className="size-4 animate-spin" /> : null}
             {submitting ? 'Submitting...' : uploading ? 'Uploading...' : 'Submit Proof'}

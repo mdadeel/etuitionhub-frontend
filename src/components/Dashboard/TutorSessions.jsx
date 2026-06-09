@@ -45,7 +45,7 @@ export default function TutorSessions() {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 animate-fade-in-up">
             <h2 className="text-xl font-bold">My Sessions</h2>
             {sessions.length === 0 ? (
                 <p className="text-muted-foreground">No sessions yet</p>

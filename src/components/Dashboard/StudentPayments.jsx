@@ -51,6 +51,7 @@ const StudentPayments = ({ hideHeader }) => {
     const lastPayment = useRealtimeStore((s) => s.lastPayment);
     useEffect(() => {
         if (lastPayment) fetchPayments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastPayment]);
 
     const stats = useMemo(() => {
@@ -97,7 +98,7 @@ const StudentPayments = ({ hideHeader }) => {
             rejected: { variant: 'error', label: 'Rejected' }
         };
         const { variant, label } = variants[status] || { variant: 'default', label: status };
-        return <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-none ${variant === 'warning' ? 'bg-amber-500/10 text-amber-600' : variant === 'primary' ? 'bg-primary/10 text-primary' : variant === 'success' ? 'bg-green-500/10 text-green-600' : variant === 'error' ? 'bg-red-500/10 text-red-600' : 'bg-muted text-muted-foreground'}`}>{label}</span>;
+        return <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-lg ${variant === 'warning' ? 'bg-amber-500/10 text-amber-600' : variant === 'primary' ? 'bg-primary/10 text-primary' : variant === 'success' ? 'bg-green-500/10 text-green-600' : variant === 'error' ? 'bg-red-500/10 text-red-600' : 'bg-muted text-muted-foreground'}`}>{label}</span>;
     };
 
     return (
@@ -106,9 +107,9 @@ const StudentPayments = ({ hideHeader }) => {
                 <AppleHeader 
                     title="Payment History" 
                     subtitle="Track all your transactions and payment activities."
-                    badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-none bg-secondary/10 text-secondary">Financial Records</span>}
+                    badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-lg bg-secondary/10 text-secondary">Financial Records</span>}
                     action={
-                        <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-none border border-green-500/20">
+                        <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-lg border border-green-500/20">
                             <div className="size-2 rounded-full bg-green-500 animate-pulse"></div>
                             <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Live Sync</span>
                         </div>
@@ -164,13 +165,13 @@ const StudentPayments = ({ hideHeader }) => {
             </div>
 
             {/* Filters */}
-            <div className="flex items-center gap-1 bg-muted/30 p-1.5 rounded-none border border-border/40 w-fit max-w-full overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-1 bg-muted/30 p-1.5 rounded-lg border border-border/40 w-fit max-w-full overflow-x-auto scrollbar-hide">
                 {filterOptions.map(opt => (
                     <button
                         key={opt.id}
                         onClick={() => setFilter(opt.id)}
                         className={cn(
-                            "flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all duration-300 rounded-none whitespace-nowrap",
+                            "flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap",
                             filter === opt.id
                                 ? "bg-background text-primary shadow-sm shadow-primary/5 border border-border/40"
                                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -178,7 +179,7 @@ const StudentPayments = ({ hideHeader }) => {
                     >
                         {opt.label}
                         <span className={cn(
-                            "px-2 py-0.5 text-[10px] rounded-none",
+                            "px-2 py-0.5 text-[10px] rounded-lg",
                             filter === opt.id ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
                         )}>
                             {opt.count}
@@ -245,7 +246,7 @@ const StudentPayments = ({ hideHeader }) => {
                                                 <span className="text-lg font-bold text-primary tabular-nums">৳{payment.grossAmount?.toLocaleString()}</span>
                                             </td>
                                             <td className="px-8 py-6 text-center">
-                                                <span className="text-xs font-mono text-muted-foreground bg-muted/30 px-2 py-1 rounded-none">
+                                                <span className="text-xs font-mono text-muted-foreground bg-muted/30 px-2 py-1 rounded-lg">
                                                     {payment.transactionId || 'N/A'}
                                                 </span>
                                             </td>

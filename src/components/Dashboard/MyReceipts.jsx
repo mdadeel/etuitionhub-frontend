@@ -31,14 +31,14 @@ const MyReceipts = ({ hideHeader }) => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
+        <div className="space-y-8 animate-in fade-in-up duration-700">
             {!hideHeader && (
                 <header className="border-b border-border pb-6">
                     <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-1.5 bg-primary rounded-none"></div>
-                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-primary">Financial Records</span>
+<div className="w-6 h-1.5 bg-primary rounded-lg"></div>
+                            <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Financial Records</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">My Receipts</h2>
+                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">My Receipts</h2>
                     <p className="text-xs text-muted-foreground mt-1">All payment receipts for transactions you participated in.</p>
                 </header>
             )}
@@ -52,7 +52,7 @@ const MyReceipts = ({ hideHeader }) => {
                 <div className="bg-card border border-border">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-border text-left text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">
+                            <tr className="border-b border-border text-left text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                                 <th className="px-6 py-4">Receipt #</th>
                                 <th className="px-6 py-4">Date</th>
                                 <th className="px-6 py-4">Counterparty</th>
@@ -84,7 +84,7 @@ const MyReceipts = ({ hideHeader }) => {
                                     <td className="px-6 py-4 text-right">
                                         <button
                                             onClick={() => setOpenId(r.paymentId?._id || r.paymentId)}
-                                            className="text-[9px] font-heading font-black uppercase tracking-widest text-primary hover:underline"
+                                            className="text-[9px] font-heading font-bold uppercase tracking-wider text-primary hover:underline active:scale-[0.98]"
                                         >
                                             View
                                         </button>

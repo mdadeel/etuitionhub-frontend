@@ -71,7 +71,7 @@ const NotificationPage = () => {
                     <button
                         key={idx}
                         onClick={() => handleAction(notif._id, action.action, action.link)}
-                        className="flex items-center gap-1 text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] hover:text-[#1d4ed8] hover:underline transition-colors"
+                        className="flex items-center gap-1 text-xs font-heading font-bold uppercase tracking-wider text-primary hover:text-primary/80 hover:underline transition-colors"
                     >
                         {action.label}
                         <ExternalLink size={12} />
@@ -82,12 +82,12 @@ const NotificationPage = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto animate-fade-in-up">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="font-heading font-black text-2xl text-foreground uppercase tracking-wider">
-                        Notifications
-                    </h1>
+                        <h1 className="font-heading font-bold text-2xl text-foreground uppercase tracking-wider">
+                            Notifications
+                        </h1>
                     <p className="text-sm text-muted-foreground mt-1">
                         {unreadCount > 0
                             ? `You have ${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}`
@@ -98,7 +98,7 @@ const NotificationPage = () => {
                     {selectedIds.size > 0 && (
                         <button
                             onClick={handleDeleteSelected}
-                            className="flex items-center gap-2 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider text-red-600 border border-red-200 hover:bg-red-50 transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider text-red-600 border border-red-200 hover:bg-red-50 transition-colors rounded-lg active:scale-[0.98]"
                         >
                             <Trash2 size={14} />
                             Delete ({selectedIds.size})
@@ -107,7 +107,7 @@ const NotificationPage = () => {
                     {unreadCount > 0 && (
                         <button
                             onClick={markAllAsRead}
-                            className="flex items-center gap-2 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider text-[#2563EB] border border-[#2563EB]/20 hover:bg-blue-50 transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider text-primary border border-primary/20 hover:bg-primary/10 transition-colors"
                         >
                             <Check size={14} />
                             Mark all read
@@ -142,7 +142,7 @@ const NotificationPage = () => {
                             key={notif._id}
                             className={cn(
                                 'flex items-start gap-4 px-4 py-4 border border-border bg-card transition-colors',
-                                !notif.isRead && 'bg-blue-50/30 border-blue-100'
+                                !notif.isRead && 'bg-primary/10 border-primary'
                             )}
                         >
                             <input
@@ -200,7 +200,7 @@ const NotificationPage = () => {
                         <button
                             onClick={() => goToPage(pagination.page - 1)}
                             disabled={pagination.page <= 1}
-                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-background transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-lg active:scale-[0.98]"
                         >
                             <ChevronLeft size={14} />
                             Previous
@@ -208,7 +208,7 @@ const NotificationPage = () => {
                         <button
                             onClick={() => goToPage(pagination.page + 1)}
                             disabled={pagination.page >= pagination.totalPages}
-                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-background transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-lg active:scale-[0.98]"
                         >
                             Next
                             <ChevronRight size={14} />

@@ -54,9 +54,9 @@ const EVENT_CONFIG = {
   status_change: {
     icon: ArrowRight,
     label: 'Status Changed',
-    iconColor: 'text-violet-600',
-    iconBg: 'bg-violet-100',
-    border: 'border-violet-200',
+    iconColor: 'text-teal-600',
+    iconBg: 'bg-teal-100',
+    border: 'border-teal-200',
   },
 };
 

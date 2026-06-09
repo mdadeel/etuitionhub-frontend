@@ -3,6 +3,7 @@ import api from '../../services/api';
 import { Loader2, Check, X, Send, Inbox, User, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Badge } from '@/components/ui/badge';
+import ImportantMails from './ImportantMails';
 
 const statusConfig = {
   pending: { variant: 'warning', label: 'Pending' },
@@ -54,7 +55,7 @@ const HireRequests = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in-up">
       {/* Tabs */}
       <div className="flex gap-2 border-b border-border pb-3">
         <button
@@ -73,10 +74,20 @@ const HireRequests = () => {
         >
           <Send className="size-4" /> Sent
         </button>
+        <button
+          onClick={() => setTab('important')}
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            tab === 'important' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
+          }`}
+        >
+          <Mail className="size-4" /> Important Inbox
+        </button>
       </div>
 
       {/* Content */}
-      {loading ? (
+      {tab === 'important' ? (
+        <ImportantMails />
+      ) : loading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
@@ -127,14 +138,14 @@ const HireRequests = () => {
                     <div className="flex gap-2 shrink-0">
                       <button
                         onClick={() => handleAccept(req._id)}
-                        className="size-9 flex items-center justify-center rounded-lg bg-success/10 text-success hover:bg-success/20 transition-colors"
+                        className="size-9 flex items-center justify-center rounded-lg bg-success/10 text-success hover:bg-success/20 active:scale-[0.98] transition-all"
                         title="Accept"
                       >
                         <Check className="size-4" />
                       </button>
                       <button
                         onClick={() => handleDecline(req._id)}
-                        className="size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                        className="size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 active:scale-[0.98] transition-all"
                         title="Decline"
                       >
                         <X className="size-4" />

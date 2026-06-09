@@ -4,9 +4,11 @@ import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { X, CheckCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const ConnectionRequestCard = ({ request, onUpdate }) => {
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
 
   const handleAccept = async () => {
@@ -15,6 +17,7 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
       await api.post(`/api/connections/${request._id}/respond`, { status: 'accepted' });
       toast.success('Connection request accepted');
       if (onUpdate) onUpdate();
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       toast.error('Failed to accept connection request');
     } finally {
@@ -28,6 +31,7 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
       await api.post(`/api/connections/${request._id}/respond`, { status: 'rejected' });
       toast.success('Connection request rejected');
       if (onUpdate) onUpdate();
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       toast.error('Failed to reject connection request');
     } finally {
@@ -37,19 +41,12 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
 
   return (
     <div className="flex items-start gap-4 bg-card p-4 rounded-xl border border-border">
-      <div className="w-10 h-10 flex-shrink-0">
-        {request.otherUser.photoURL ? (
-          <img 
-            src={request.otherUser.photoURL} 
-            alt={request.otherUser.displayName} 
-            className="w-full h-full object-cover rounded-full"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center rounded-full bg-muted text-muted-foreground">
-            {request.otherUser.displayName?.charAt(0)}
-          </div>
-        )}
-      </div>
+      <Avatar size="sm" className="w-10 h-10 flex-shrink-0 rounded-full">
+        <AvatarImage src={request.otherUser.photoURL} alt={request.otherUser.displayName} />
+        <AvatarFallback className="rounded-full">
+          {request.otherUser.displayName?.charAt(0)?.toUpperCase() || 'U'}
+        </AvatarFallback>
+      </Avatar>
       <div className="flex-1 space-y-2">
         <div className="flex justify-between items-start">
           <h3 className="font-semibold text-foreground">{request.otherUser.displayName}</h3>

@@ -41,19 +41,19 @@ const TutorWallet = () => {
     if (isError || !wallet) return null;
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-10 animate-in fade-in animate-fade-in-up duration-700">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-6">
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-6 h-1.5 bg-emerald-500 rounded-none"></div>
-                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-emerald-600">Tutor Wallet</span>
+                        <div className="w-6 h-1.5 bg-emerald-500 rounded-lg"></div>
+                        <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Tutor Wallet</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">Earnings Overview</h2>
+                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Earnings Overview</h2>
                     <p className="text-xs text-muted-foreground mt-1">Track available balance, pending earnings, and withdrawal history.</p>
                 </div>
                 <Link
                     to="/dashboard/withdraw"
-                    className="inline-flex items-center gap-2 h-10 px-6 rounded-none bg-emerald-500 text-white text-[10px] font-heading font-black uppercase tracking-widest hover:bg-emerald-600 transition-all"
+                    className="inline-flex items-center gap-2 h-10 px-6 rounded-lg bg-primary text-primary-foreground text-[10px] font-heading font-bold uppercase tracking-widest hover:bg-primary/90 transition-all active:scale-[0.98]"
                 >
                     <ArrowDownToLine size={14} /> Withdraw Funds
                 </Link>
@@ -68,34 +68,34 @@ const TutorWallet = () => {
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-heading font-black uppercase tracking-widest text-muted-foreground">Recent Earnings</h3>
+                    <h3 className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Recent Earnings</h3>
                 </div>
                 {recentPayments.length === 0 ? (
-                    <div className="py-20 text-center bg-card border border-border rounded-none">
+                    <div className="py-20 text-center bg-card border border-border rounded-xl">
                         <Wallet size={32} className="text-muted-foreground/30 mx-auto mb-4" strokeWidth={1} />
-                        <p className="text-[10px] font-heading font-black text-muted-foreground/60 uppercase tracking-[0.25em]">
+                        <p className="text-[10px] font-heading font-bold text-muted-foreground/60 uppercase tracking-[0.25em]">
                             No earnings yet
                         </p>
                     </div>
                 ) : (
-                    <div className="bg-card border border-border rounded-none overflow-hidden">
+                    <div className="bg-card border border-border rounded-xl overflow-hidden">
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-background border-b border-border">
-                                    <th className="px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Student</th>
-                                    <th className="px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Gross</th>
-                                    <th className="px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Net</th>
-                                    <th className="px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Status</th>
+                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Student</th>
+                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Gross</th>
+                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Net</th>
+                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border/40">
                                 {recentPayments.map((p) => (
-                                    <tr key={p._id} className="hover:bg-background transition-colors">
+                                    <tr key={p._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
                                         <td className="px-6 py-4 text-xs font-bold text-foreground">{(p.studentEmail || '').split('@')[0]}</td>
-                                        <td className="px-6 py-4 text-xs font-heading font-black text-foreground tabular-nums">৳{p.grossAmount}</td>
-                                        <td className="px-6 py-4 text-xs font-heading font-black text-emerald-700 tabular-nums">৳{p.netTutorAmount}</td>
+                                        <td className="px-6 py-4 text-xs font-heading font-bold text-foreground tabular-nums">৳{p.grossAmount}</td>
+                                        <td className="px-6 py-4 text-xs font-heading font-bold text-emerald-700 tabular-nums">৳{p.netTutorAmount}</td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-0.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${STATUS_COLORS[p.status] || STATUS_COLORS.pending_verification}`}>
+                                            <span className={`px-2 py-0.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border ${STATUS_COLORS[p.status] || STATUS_COLORS.pending_verification}`}>
                                                 {(p.status || '').replace(/_/g, ' ')}
                                             </span>
                                         </td>
@@ -110,6 +110,7 @@ const TutorWallet = () => {
     );
 };
 
+// eslint-disable-next-line no-unused-vars
 const BalanceCard = ({ icon: Icon, label, amount, accent, subtitle }) => {
     const colors = {
         emerald: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20',
@@ -118,15 +119,15 @@ const BalanceCard = ({ icon: Icon, label, amount, accent, subtitle }) => {
         zinc: 'text-zinc-700 bg-zinc-500/10 border-zinc-500/20',
     };
     return (
-        <div className="bg-card border border-border rounded-none p-6 space-y-3">
+        <div className="bg-card border border-border rounded-xl p-6 space-y-3">
             <div className="flex items-center justify-between">
-                <span className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">{label}</span>
-                <div className={`size-8 rounded-none flex items-center justify-center border ${colors[accent]}`}>
+                <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+                <div className={`size-8 rounded-lg flex items-center justify-center border ${colors[accent]}`}>
                     <Icon size={14} />
                 </div>
             </div>
-            <p className="text-3xl font-heading font-black text-foreground tabular-nums tracking-tighter">৳{(amount || 0).toLocaleString()}</p>
-            <p className="text-[9px] font-heading font-black text-muted-foreground/50 uppercase tracking-widest">{subtitle}</p>
+            <p className="text-3xl font-heading font-bold text-foreground tabular-nums tracking-tighter">৳{(amount || 0).toLocaleString()}</p>
+            <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">{subtitle}</p>
         </div>
     );
 };

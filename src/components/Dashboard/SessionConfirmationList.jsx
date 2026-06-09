@@ -82,13 +82,13 @@ const SessionConfirmationList = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in-up">
       <div className="flex items-center gap-2">
-        <h3 className="text-sm font-heading font-black uppercase tracking-widest text-foreground">Pending Session Confirmations</h3>
+        <h3 className="text-sm font-heading font-bold uppercase tracking-wider text-foreground">Pending Session Confirmations</h3>
         <span className="px-2 py-0.5 text-[10px] font-bold bg-yellow-100 text-yellow-800 rounded-full">{sessions.length}</span>
       </div>
 
-      <div className="divide-y divide-border border border-border">
+      <div className="divide-y divide-border border border-border rounded-lg">
         {sessions.map(session => (
           <div key={session._id} className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">

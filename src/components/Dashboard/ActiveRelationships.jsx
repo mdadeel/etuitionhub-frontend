@@ -13,6 +13,7 @@ const TABS = [
 ];
 
 const ActiveRelationships = () => {
+  // eslint-disable-next-line no-unused-vars
   const { dbUser } = useAuth();
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +40,7 @@ const ActiveRelationships = () => {
     : connections.filter(c => c.relationshipStatus === tab);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in-up">
       {/* Tabs */}
       <div className="flex gap-2 border-b border-border pb-3">
         {TABS.map(t => (

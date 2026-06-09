@@ -89,80 +89,80 @@ const TutorWithdraw = () => {
     }
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-10 animate-in fade-in animate-fade-in-up duration-700">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-6">
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-6 h-1.5 bg-emerald-500 rounded-none"></div>
-                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-emerald-600">Withdraw</span>
+                        <div className="w-6 h-1.5 bg-emerald-500 rounded-lg"></div>
+                        <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Withdraw</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">Withdraw Funds</h2>
+                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Withdraw Funds</h2>
                     <p className="text-xs text-muted-foreground mt-1">
-                        Available: <span className="font-heading font-black text-emerald-700">৳{wallet?.availableBalance?.toLocaleString()}</span>
+                        Available: <span className="font-heading font-bold text-emerald-700">৳{wallet?.availableBalance?.toLocaleString()}</span>
                     </p>
                 </div>
                 <button
                     onClick={() => navigate('/dashboard/wallet')}
-                    className="inline-flex items-center gap-2 h-10 px-6 rounded-none border border-border text-foreground text-[10px] font-heading font-black uppercase tracking-widest hover:bg-muted transition-all"
+                    className="inline-flex items-center gap-2 h-10 px-6 rounded-lg border border-border text-foreground text-[10px] font-heading font-bold uppercase tracking-widest hover:bg-accent transition-all active:scale-[0.98]"
                 >
                     <Wallet size={14} /> Back to Wallet
                 </button>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <form onSubmit={handleSubmit} className="bg-card border border-border rounded-none p-8 space-y-6">
-                    <h3 className="text-[10px] font-heading font-black uppercase tracking-widest text-muted-foreground">Request Withdrawal</h3>
+                <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-8 space-y-6">
+                    <h3 className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Request Withdrawal</h3>
 
                     <div className="space-y-2">
-                        <label className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Amount (৳)</label>
+                        <label className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Amount (৳)</label>
                         <input
                             type="number"
                             min="1000"
                             step="100"
                             value={form.amount}
                             onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                            className="w-full h-12 rounded-none border border-border bg-background px-4 font-heading font-black text-2xl text-foreground tabular-nums focus:outline-none focus:border-emerald-500"
+                            className="w-full h-12 rounded-lg border border-border bg-background px-4 font-heading font-bold text-2xl text-foreground tabular-nums focus:outline-none focus:border-emerald-500"
                             placeholder="5000"
                             required
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Method</label>
+                        <label className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Method</label>
                         <div className="grid grid-cols-2 gap-2">
                             {METHODS.map((m) => (
                                 <button
                                     key={m.id}
                                     type="button"
                                     onClick={() => setForm({ ...form, method: m.id })}
-                                    className={`h-12 px-4 rounded-none border flex items-center gap-3 transition-all ${form.method === m.id ? 'border-emerald-500 bg-emerald-500/5' : 'border-border hover:border-foreground/20'}`}
+                                    className={`h-12 px-4 rounded-lg border flex items-center gap-3 transition-all active:scale-[0.98] ${form.method === m.id ? 'border-emerald-500 bg-emerald-500/5' : 'border-border hover:border-foreground/20'}`}
                                 >
                                     <div className={`size-2 ${m.color}`}></div>
-                                    <span className="text-xs font-heading font-black uppercase tracking-widest">{m.name}</span>
+                                    <span className="text-xs font-heading font-bold uppercase tracking-widest">{m.name}</span>
                                 </button>
                             ))}
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Account Number</label>
+                        <label className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Account Number</label>
                         <input
                             type="text"
                             value={form.accountNumber}
                             onChange={(e) => setForm({ ...form, accountNumber: e.target.value })}
-                            className="w-full h-12 rounded-none border border-border bg-background px-4 font-bold tabular-nums focus:outline-none focus:border-emerald-500"
+                            className="w-full h-12 rounded-lg border border-border bg-background px-4 font-bold tabular-nums focus:outline-none focus:border-emerald-500"
                             placeholder="01XXXXXXXXX"
                             required
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground/60">Account Name</label>
+                        <label className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Account Name</label>
                         <input
                             type="text"
                             value={form.accountName}
                             onChange={(e) => setForm({ ...form, accountName: e.target.value })}
-                            className="w-full h-12 rounded-none border border-border bg-background px-4 font-bold focus:outline-none focus:border-emerald-500"
+                            className="w-full h-12 rounded-lg border border-border bg-background px-4 font-bold focus:outline-none focus:border-emerald-500"
                             placeholder="Name on account"
                             required
                         />
@@ -178,28 +178,28 @@ const TutorWithdraw = () => {
                     <button
                         type="submit"
                         disabled={submitting || !form.amount || !form.accountNumber || !form.accountName}
-                        className="w-full h-12 rounded-none bg-emerald-500 text-white text-[11px] font-heading font-black uppercase tracking-widest hover:bg-emerald-600 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                        className="w-full h-12 rounded-lg bg-primary text-primary-foreground text-[11px] font-heading font-bold uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98]"
                     >
                         {submitting ? 'Submitting…' : <>Request Withdrawal <ArrowRight size={14} /></>}
                     </button>
                 </form>
 
                 <div className="space-y-4">
-                    <h3 className="text-[10px] font-heading font-black uppercase tracking-widest text-muted-foreground">Withdrawal History</h3>
+                    <h3 className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Withdrawal History</h3>
                     {withdrawals.length === 0 ? (
-                        <div className="py-20 text-center bg-card border border-border rounded-none">
+                        <div className="py-20 text-center bg-card border border-border rounded-xl">
                             <ArrowDownToLine size={32} className="text-muted-foreground/30 mx-auto mb-4" strokeWidth={1} />
-                            <p className="text-[10px] font-heading font-black text-muted-foreground/60 uppercase tracking-[0.25em]">
+                            <p className="text-[10px] font-heading font-bold text-muted-foreground/60 uppercase tracking-[0.25em]">
                                 No withdrawal requests yet
                             </p>
                         </div>
                     ) : (
                         <div className="space-y-3">
                             {withdrawals.map((w) => (
-                                <div key={w._id} className="bg-card border border-border rounded-none p-5 space-y-2">
+                                <div key={w._id} className="bg-card border border-border rounded-xl p-5 space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-2xl font-heading font-black text-foreground tabular-nums">৳{w.amount?.toLocaleString()}</p>
-                                        <span className={`px-2 py-0.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${STATUS_COLORS[w.status]}`}>
+                                        <p className="text-2xl font-heading font-bold text-foreground tabular-nums">৳{w.amount?.toLocaleString()}</p>
+                                        <span className={`px-2 py-0.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border ${STATUS_COLORS[w.status]}`}>
                                             {w.status}
                                         </span>
                                     </div>
@@ -208,12 +208,12 @@ const TutorWithdraw = () => {
                                         <span className="tabular-nums">{new Date(w.createdAt).toLocaleDateString()}</span>
                                     </div>
                                     {w.rejectionReason && (
-                                        <p className="text-[10px] text-red-700 bg-red-500/5 border border-red-500/20 p-2 rounded-none">
+                                        <p className="text-[10px] text-red-700 bg-red-500/5 border border-red-500/20 p-2 rounded-lg">
                                             Rejected: {w.rejectionReason}
                                         </p>
                                     )}
                                     {w.transferTransactionId && (
-                                        <p className="text-[10px] text-emerald-700 bg-emerald-500/5 border border-emerald-500/20 p-2 rounded-none">
+                                        <p className="text-[10px] text-emerald-700 bg-emerald-500/5 border border-emerald-500/20 p-2 rounded-lg">
                                             Transfer ID: <span className="font-mono">{w.transferTransactionId}</span>
                                         </p>
                                     )}

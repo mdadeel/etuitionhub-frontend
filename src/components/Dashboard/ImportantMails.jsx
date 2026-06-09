@@ -77,7 +77,7 @@ const ImportantMails = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-48">
-                <div className="size-6 border-2 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin"></div>
+                <div className="size-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -89,7 +89,7 @@ const ImportantMails = () => {
                     <h2 className="text-xl font-bold text-foreground">Important Inbox</h2>
                     <p className="text-sm text-muted-foreground mt-1">Admin notices, booking confirmations, and critical alerts.</p>
                 </div>
-                <div className="size-12 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center text-[#2563EB]">
+                <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
                     <Mail size={24} />
                 </div>
             </div>
@@ -132,13 +132,13 @@ const ImportantMails = () => {
                                     "p-5 border rounded-2xl transition-all relative group overflow-hidden cursor-pointer",
                                     mail.isRead 
                                         ? "bg-card border-border" 
-                                        : "bg-muted border-[#2563EB]/20 shadow-sm"
+                                        : "bg-muted border-primary/20 shadow-sm"
                                 )}
                             >
                                 <div className="flex justify-between items-start mb-2 pr-10">
                                     <h3 className={cn(
                                         "text-sm", 
-                                        mail.isRead ? "font-semibold text-foreground" : "font-bold text-[#2563EB]"
+                                        mail.isRead ? "font-semibold text-foreground" : "font-bold text-primary"
                                     )}>
                                         {mail.subject}
                                     </h3>

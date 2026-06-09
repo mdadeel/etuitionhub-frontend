@@ -106,25 +106,25 @@ const DashTuitions = () => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-10 animate-in fade-in duration-700 animate-fade-in-up">
             <header className="mb-8 border-b border-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-1.5 bg-[#2563EB] rounded-none"></div>
-                        <span className="text-[9px] font-heading font-black uppercase tracking-[0.25em] text-[#2563EB]">Marketplace Management</span>
+                        <div className="w-6 h-1.5 bg-primary rounded-lg"></div>
+                        <span className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Marketplace Management</span>
                     </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground">Tuition Streams</h2>
+                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Tuition Streams</h2>
                     <p className="text-xs text-muted-foreground mt-1">
                         {tuitions.length} active metadata nodes detected.
                     </p>
                 </div>
 
-                <div className="flex bg-background p-1.5 rounded-none gap-2 border border-border w-fit backdrop-blur-md">
+                <div className="flex bg-background p-1.5 rounded-lg gap-2 border border-border w-fit backdrop-blur-md">
                     {['all', 'pending', 'approved'].map(f => (
                         <button
                             key={f}
-                            className={`px-5 py-2.5 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border transition-all duration-300 ${filter === f
-                                ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-none'
+                            className={`px-5 py-2.5 text-[9px] font-heading font-semibold uppercase tracking-widest rounded-lg border transition-all duration-300 ${filter === f
+                                ? 'bg-primary border-primary text-primary-foreground shadow-none'
                                 : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted'
                                 }`}
                             onClick={() => setFilter(f)}
@@ -139,11 +139,11 @@ const DashTuitions = () => {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-muted/30 border-b border-border text-foreground">
-                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70">Scope</th>
-                            <th className="hidden md:table-cell px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70">Geography</th>
-                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70 text-center">Yield</th>
-                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70 text-center">State</th>
-                            <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-black uppercase tracking-widest text-foreground/70 text-right">Ops</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Scope</th>
+                            <th className="hidden md:table-cell px-6 py-4 text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Geography</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground text-center">Yield</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground text-center">State</th>
+                            <th className="px-4 md:px-6 py-4 text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground text-right">Ops</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
@@ -152,28 +152,28 @@ const DashTuitions = () => {
                                 <td colSpan="5" className="px-6 py-24 text-center bg-muted/20">
                                     <div className="flex flex-col items-center gap-4">
                                         <ShieldAlert size={48} className="text-muted-foreground" strokeWidth={1} />
-                                        <p className="text-[10px] font-heading font-black uppercase tracking-[0.25em] text-muted-foreground">Universal records empty</p>
+                                        <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Universal records empty</p>
                                     </div>
                                 </td>
                             </tr>
                         ) : (
                             filtered.map((t) => (
-                                <tr key={t._id} className="hover:bg-background transition-colors">
+                                <tr key={t._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
                                     <td className="px-4 md:px-6 py-4">
                                         <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{t.subject}</p>
-                                        <p className="text-[9px] font-heading font-black text-muted-foreground uppercase tracking-widest mt-1">{t.class_name}</p>
+                                        <p className="text-[9px] font-label font-semibold text-muted-foreground uppercase tracking-wider mt-1">{t.class_name}</p>
                                     </td>
                                     <td className="hidden md:table-cell px-6 py-4">
                                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t.location}</p>
                                     </td>
                                     <td className="px-4 md:px-6 py-4 text-center">
-                                        <span className="text-xs md:text-sm font-heading font-black text-[#2563EB] tabular-nums">৳{t.salary}</span>
+                                        <span className="text-xs md:text-sm font-heading font-bold text-primary tabular-nums">৳{t.salary}</span>
                                     </td>
                                     <td className="px-4 md:px-6 py-4 text-center">
-                                        <span className={`px-2.5 py-1 text-[9px] font-heading font-black uppercase tracking-widest rounded-none border ${
+                                        <span className={`px-2.5 py-1 text-[9px] font-label font-semibold uppercase tracking-wider rounded-lg border ${
                                             t.status === 'approved' ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20' : 
                                             t.status === 'rejected' ? 'bg-red-500/10 text-red-700 border-red-500/20' : 
-                                            'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20'
+                                            'bg-primary/10 text-primary border-primary/20'
                                         }`}>
                                             {t.status.toUpperCase()}
                                         </span>
@@ -182,7 +182,7 @@ const DashTuitions = () => {
                                         <div className="flex justify-end gap-2 md:gap-3 items-center">
                                             <button
                                                 onClick={() => handleEditClick(t)}
-                                                className="size-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-none border border-transparent hover:border-primary/20 flex items-center justify-center transition-colors"
+                                                className="size-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg border border-transparent hover:border-primary/20 flex items-center justify-center transition-colors active:scale-[0.98]"
                                             >
                                                 <Edit2 size={12} />
                                             </button>
@@ -191,20 +191,20 @@ const DashTuitions = () => {
                                                 <>
                                                     <button
                                                         onClick={() => handleApprove(t._id)}
-                                                        className="h-8 px-4 rounded-none border border-[#2563EB] bg-[#2563EB] text-white text-[9px] font-heading font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all"
+                                                        className="h-8 px-4 rounded-lg border border-primary bg-primary text-primary-foreground text-[9px] font-heading font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all active:scale-[0.98]"
                                                     >
                                                         Verify
                                                     </button>
                                                     <button
                                                         onClick={() => handleReject(t._id)}
-                                                        className="h-8 px-4 rounded-none text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 text-[9px] font-heading font-black uppercase tracking-widest transition-all"
+                                                        className="h-8 px-4 rounded-lg text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 text-[9px] font-label font-semibold uppercase tracking-widest transition-all active:scale-[0.98]"
                                                     >
                                                         Drop
                                                     </button>
                                                 </>
                                             )}
                                             {t.status !== 'pending' && (
-                                                <span className="text-[9px] font-heading font-black text-muted-foreground/60 uppercase tracking-[0.2em] italic pr-4">Done</span>
+                                                <span className="text-[9px] font-heading font-bold text-muted-foreground/60 uppercase tracking-[0.2em] italic pr-4">Done</span>
                                             )}
                                         </div>
                                     </td>
