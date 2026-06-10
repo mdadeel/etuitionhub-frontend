@@ -17,6 +17,8 @@ import {
   History,
   DollarSign,
   Scale,
+  BookOpen,
+  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,6 +44,7 @@ const DashboardSidebar = ({ role }) => {
   const menuItems = [
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { path: "/dashboard/profile", label: "My Profile", icon: User },
+    { path: "/dashboard/messages", label: "Messages", icon: MessageSquare },
     { path: "/dashboard/requests", label: "Requests", icon: Inbox },
     { path: "/dashboard/notifications", label: "Notifications", icon: Bell },
   ];
@@ -72,6 +75,11 @@ const DashboardSidebar = ({ role }) => {
       label: "Payment Queue",
       icon: DollarSign,
     });
+    menuItems.push({
+      path: "/dashboard/disputes",
+      label: "Disputes",
+      icon: Scale,
+    });
   } else if (role?.toLowerCase() === "tutor") {
     menuItems.push({
       path: "/dashboard/wallet",
@@ -82,6 +90,11 @@ const DashboardSidebar = ({ role }) => {
       path: "/dashboard/withdraw",
       label: "Withdraw",
       icon: ArrowDownToLine,
+    });
+    menuItems.push({
+      path: "/dashboard/assignments",
+      label: "Assignments",
+      icon: BookOpen,
     });
   } else {
     menuItems.push({
@@ -98,6 +111,16 @@ const DashboardSidebar = ({ role }) => {
       path: "/dashboard/bookmarks",
       label: "Bookmarks",
       icon: Bookmark,
+    });
+    menuItems.push({
+      path: "/dashboard/assignments",
+      label: "Assignments",
+      icon: BookOpen,
+    });
+    menuItems.push({
+      path: "/dashboard/disputes",
+      label: "My Disputes",
+      icon: Scale,
     });
   }
 

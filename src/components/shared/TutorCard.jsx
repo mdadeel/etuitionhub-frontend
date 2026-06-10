@@ -207,7 +207,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               }
             }}
           >
-            Profile
+            View
             <ChevronRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
           </Button>
         </div>

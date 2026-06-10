@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
-import CountUp from 'react-countup';
+import countUpModule from 'react-countup';
+const CountUp = countUpModule.default || countUpModule;
 
 const variants = {
   default: 'text-center',

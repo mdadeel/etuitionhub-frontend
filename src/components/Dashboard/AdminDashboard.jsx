@@ -5,6 +5,7 @@ import DashAnalytics from './DashAnalytics';
 import DashPayments from './DashPayments';
 import DashSettings from './DashSettings';
 import AdminVerifications from './AdminVerifications';
+import DisputeWorkspace from './DisputeWorkspace';
 import { 
     AppleCard, 
     AppleBadge,
@@ -20,6 +21,7 @@ const AdminDashboard = () => {
         { id: 'users', label: 'Users' },
         { id: 'tuitions', label: 'Tuitions' },
         { id: 'verifications', label: 'Verifications' },
+        { id: 'disputes', label: 'Disputes' },
         { id: 'settings', label: 'Settings' }
     ];
 
@@ -65,6 +67,7 @@ const AdminDashboard = () => {
                     {activeTab === 'users' && <DashUsers />}
                     {activeTab === 'tuitions' && <DashTuitions />}
                     {activeTab === 'verifications' && <AdminVerifications />}
+                    {activeTab === 'disputes' && <DisputeWorkspace isAdminView />}
                     {activeTab === 'settings' && <DashSettings />}
                 </div>
             </AppleCard>

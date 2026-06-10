@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import api from "../../services/api";
 import { StatCardSkeleton } from "@/components/shared/skeletons";
 import StudentPayments from "./StudentPayments";
+import Assignments from "./Assignments";
 import {
   Activity,
   Plus,
@@ -32,6 +33,7 @@ const tabs = [
   { id: "applications", label: "Applications", icon: FileText },
   { id: "booked", label: "Engagements", icon: UserCheck },
   { id: "payments", label: "Payments", icon: Banknote },
+  { id: "assignments", label: "Assignments", icon: Search },
 ];
 
 /**
@@ -678,6 +680,9 @@ const StudentDashboard = () => {
 
       {/* Payments Tab */}
       {activeTab === "payments" && <StudentPayments />}
+
+      {/* Assignments Tab */}
+      {activeTab === "assignments" && <Assignments />}
     </div>
   );
 };

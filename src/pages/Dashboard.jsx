@@ -18,6 +18,9 @@ import TutorWithdraw from "../components/Dashboard/TutorWithdraw";
 import AdminWithdrawals from "./AdminWithdrawals";
 import AdminAuditLogs from "./AdminAuditLogs";
 import DashSettings from "../components/Dashboard/DashSettings";
+import DisputeWorkspace from "../components/Dashboard/DisputeWorkspace";
+import Assignments from "../components/Dashboard/Assignments";
+import ChatInterface from "../components/Dashboard/ChatInterface";
 import { Menu, X, Home } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
 import HireRequests from "../components/Dashboard/HireRequests";
@@ -91,6 +94,14 @@ const Dashboard = () => {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
+        <div className="sticky top-0 z-10 flex justify-end p-2 bg-card">
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-2 hover:bg-background rounded-lg border border-border transition-colors"
+          >
+            <X size={18} className="text-muted-foreground" />
+          </button>
+        </div>
         <DashboardSidebar role={role} />
       </div>
 
@@ -101,10 +112,14 @@ const Dashboard = () => {
             {/* Left: Mobile menu toggle + breadcrumb */}
             <div className="flex items-center gap-4">
               <button
-                onClick={() => setIsMobileMenuOpen(true)}
+                onClick={() => setIsMobileMenuOpen(prev => !prev)}
                 className="lg:hidden p-2 hover:bg-background rounded-lg border border-border transition-colors"
               >
-                <Menu size={20} className="text-muted-foreground" />
+                {isMobileMenuOpen ? (
+                  <X size={20} className="text-muted-foreground" />
+                ) : (
+                  <Menu size={20} className="text-muted-foreground" />
+                )}
               </button>
               <nav className="flex items-center gap-2 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                 <Link
@@ -302,6 +317,20 @@ const Dashboard = () => {
                     <DashPayments />
                   </AdminRoute>
                 }
+              />
+
+              <Route
+                path="disputes"
+                element={<DisputeWorkspace />}
+              />
+
+              <Route
+                path="messages"
+                element={<ChatInterface />}
+              />
+              <Route
+                path="assignments"
+                element={<Assignments />}
               />
 
               <Route path="*" element={<Navigate to="/dashboard" replace />} />

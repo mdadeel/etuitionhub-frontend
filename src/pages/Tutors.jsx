@@ -436,6 +436,17 @@ const Tutors = () => {
           {/* Main Content */}
           <main onScroll={handleMainScroll} className="lg:col-span-3 relative pb-24 md:pb-0 overflow-y-auto custom-scrollbar pr-1">
 
+            <div className="md:hidden mb-3 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <input
+                type="search"
+                placeholder="Search tutors..."
+                value={searchQuery}
+                onChange={(e) => setSearchParams(e.target.value ? { q: e.target.value } : {})}
+                className="w-full pl-9 pr-4 h-10 rounded-xl text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
+              />
+            </div>
+
             {loading && tutors.length === 0 && (
               <TutorCardGridSkeleton count={9} columns={3} className="gap-4 md:gap-4" />
             )}

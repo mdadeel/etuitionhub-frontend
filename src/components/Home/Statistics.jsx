@@ -1,4 +1,5 @@
-import CountUp from 'react-countup';
+import countUpModule from 'react-countup';
+const CountUp = countUpModule.default || countUpModule;
 
 const stats = [
     { value: 2500, label: 'Active Tutors', suffix: '+' },

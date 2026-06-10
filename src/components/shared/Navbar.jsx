@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import useDebouncedValue from "../../hooks/useDebouncedValue";
 import API_URL from "../../config/api";
-
 import PoruaLogo from "../AiAssistant/PoruaLogo";
 
 const Navbar = () => {
@@ -159,7 +158,7 @@ const Navbar = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full h-16",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full h-14 md:h-16",
         "bg-background border-b border-border",
         isScrolled ? "shadow-sm shadow-[rgba(0,0,0,0.04)]" : "",
       )}
@@ -385,7 +384,7 @@ const Navbar = () => {
         </div>
 
         {/* Right Section: Calm Authentication */}
-        <div className="flex items-center justify-end gap-6">
+        <div className="flex items-center justify-end gap-3 md:gap-6">
           {/* Post Tuition Action Button (students only) */}
           {userRole === "student" && (
             <div className="hidden sm:flex items-center">

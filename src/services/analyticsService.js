@@ -36,6 +36,36 @@ export const analyticsService = {
     getTransactions: async () => {
         const response = await api.get('/api/payments/all');
         return response.data;
+    },
+
+    getUsersStats: async () => {
+        const response = await api.get('/api/analytics/users');
+        return response.data;
+    },
+
+    getTuitionsStats: async () => {
+        const response = await api.get('/api/analytics/tuitions');
+        return response.data;
+    },
+
+    getRevenueStats: async () => {
+        const response = await api.get('/api/analytics/revenue');
+        return response.data;
+    },
+
+    getMonthlyRevenue: async () => {
+        const response = await api.get('/api/analytics/revenue/monthly');
+        return response.data;
+    },
+
+    getPopularSearches: async (params = {}) => {
+        const response = await api.get('/api/analytics/search/popular', { params });
+        return response.data;
+    },
+
+    getZeroResultSearches: async (params = {}) => {
+        const response = await api.get('/api/analytics/search/zero-results', { params });
+        return response.data;
     }
 };
 

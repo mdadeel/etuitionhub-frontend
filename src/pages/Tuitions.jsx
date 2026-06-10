@@ -313,6 +313,17 @@ const Tuitions = () => {
           {/* Main Content */}
           <main onScroll={handleMainScroll} className="lg:col-span-3 overflow-y-auto custom-scrollbar pr-1 relative pb-24 md:pb-0">
 
+            <div className="md:hidden mb-3 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <input
+                type="search"
+                placeholder="Search tuitions..."
+                value={filters.search || ""}
+                onChange={(e) => updateFilter("search", e.target.value)}
+                className="w-full pl-9 pr-4 h-10 rounded-xl text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
+              />
+            </div>
+
             {loading && tuitions.length === 0 && (
               <TuitionCardGridSkeleton count={6} columns={3} className="gap-3 md:gap-4" />
             )}

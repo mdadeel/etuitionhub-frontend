@@ -4,6 +4,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import toast from 'react-hot-toast'
 import api from '../../services/api';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
+import TutorAvailability from './TutorAvailability';
+import Assignments from './Assignments';
 import { 
     Activity, 
     FileText, 
@@ -13,7 +15,9 @@ import {
     Clock,
     UserCheck,
     ArrowUpRight,
-    TrendingUp
+    TrendingUp,
+    Calendar,
+    BookOpen
 } from "lucide-react";
 import { AppleCard, AppleHeader, AppleButton } from '../shared/AppleUI';
 import { cn } from '@/lib/utils';
@@ -114,7 +118,9 @@ const TutorDashboard = () => {
         { id: 'overview', label: 'Overview', icon: Activity },
         { id: 'applications', label: 'Applications', icon: FileText },
         { id: 'ongoing', label: 'Engagements', icon: UserCheck },
-        { id: 'revenue', label: 'Earnings', icon: Banknote }
+        { id: 'revenue', label: 'Earnings', icon: Banknote },
+        { id: 'availability', label: 'Availability', icon: Calendar },
+        { id: 'assignments', label: 'Assignments', icon: BookOpen },
     ];
 
     return (
@@ -366,6 +372,8 @@ const TutorDashboard = () => {
                     )}
                 </AppleCard>
             )}
+            {activeTab === 'availability' && <TutorAvailability />}
+            {activeTab === 'assignments' && <Assignments />}
         </div>
     );
 };

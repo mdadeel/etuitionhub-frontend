@@ -99,6 +99,13 @@ const TutorDetails = () => {
     const [sendingMessage, setSendingMessage] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    
+    // Hire Request State
+    const [isHireModalOpen, setIsHireModalOpen] = useState(false);
+    const [hireMessage, setHireMessage] = useState('');
+    const [hireRate, setHireRate] = useState('');
+    const [submittingHire, setSubmittingHire] = useState(false);
+
     // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
 
@@ -237,6 +244,31 @@ const TutorDetails = () => {
         // eslint-disable-next-line no-unused-vars
         } catch (err) {
             toast.error('Failed to save tutor');
+        }
+    };
+
+    const handleHireRequest = async (e) => {
+        e.preventDefault();
+        if (!hireMessage.trim()) {
+            toast.error('Please provide a message for your hire request.');
+            return;
+        }
+
+        setSubmittingHire(true);
+        try {
+            await api.post('/api/hire-requests', {
+                toUserId: tutor._id,
+                message: hireMessage,
+                proposedRate: hireRate ? Number(hireRate) : undefined
+            });
+            toast.success('Hire request sent successfully!');
+            setIsHireModalOpen(false);
+            setHireMessage('');
+            setHireRate('');
+        } catch (err) {
+            toast.error(err.response?.data?.error || 'Failed to send hire request');
+        } finally {
+            setSubmittingHire(false);
         }
     };
 
@@ -399,6 +431,22 @@ const TutorDetails = () => {
                                                 className="w-full px-4 py-2 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#1D4ED8] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-colors shadow-sm active:scale-95 cursor-pointer"
                                             >
                                                 <Send size={14} /> Message
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <div className="flex-grow">
+                                        {!user ? (
+                                            <button onClick={() => setShowLoginModal(true)} className="w-full px-4 py-2 bg-[#10b981] text-white font-medium rounded-lg hover:bg-[#059669] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-colors shadow-sm active:scale-95 cursor-pointer">
+                                                Request to Hire
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => setIsHireModalOpen(true)}
+                                                className="w-full px-4 py-2 bg-[#10b981] text-white font-medium rounded-lg hover:bg-[#059669] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-colors shadow-sm active:scale-95 cursor-pointer"
+                                            >
+                                                Request to Hire
                                             </button>
                                         )}
                                     </div>
@@ -584,6 +632,59 @@ const TutorDetails = () => {
                                     className="px-4 py-2 bg-[#2563EB] text-white text-sm font-medium rounded-lg hover:bg-[#1D4ED8] disabled:opacity-50 flex items-center gap-2 transition-colors shadow-sm"
                                 >
                                     {sendingMessage ? 'Sending...' : <><Send size={14} /> Send Message</>}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Hire Request Modal */}
+            {isHireModalOpen && (
+                <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-card w-full max-w-md rounded-lg border border-border shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-heading text-foreground">Request to Hire {firstName}</h3>
+                            <button onClick={() => setIsHireModalOpen(false)} className="text-muted-foreground hover:text-foreground text-xl leading-none">
+                                &times;
+                            </button>
+                        </div>
+                        <form onSubmit={handleHireRequest}>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">Message</label>
+                                    <textarea
+                                        value={hireMessage}
+                                        onChange={(e) => setHireMessage(e.target.value)}
+                                        placeholder={`Hi ${firstName}, I'd like to hire you for...`}
+                                        className="w-full h-24 bg-background border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-[#2563EB]/50 resize-none transition-colors"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">Proposed Monthly Rate (৳) (Optional)</label>
+                                    <input
+                                        type="number"
+                                        value={hireRate}
+                                        onChange={(e) => setHireRate(e.target.value)}
+                                        placeholder={tutor.expectedSalary ? `e.g. ${tutor.expectedSalary}` : 'e.g. 5000'}
+                                        className="w-full bg-background border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex gap-3 justify-end mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsHireModalOpen(false)}
+                                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submittingHire || !hireMessage.trim()}
+                                    className="px-4 py-2 bg-[#10b981] text-white text-sm font-medium rounded-lg hover:bg-[#059669] disabled:opacity-50 flex items-center gap-2 transition-colors shadow-sm"
+                                >
+                                    {submittingHire ? 'Sending...' : 'Send Request'}
                                 </button>
                             </div>
                         </form>

@@ -165,7 +165,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
           className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-xl transition-all active:scale-95 group/btn shadow-sm hover:shadow-glow-blue hover:-translate-y-0.5 duration-300"
           onClick={handleRequestClick}
         >
-          Request Tutor
+          View
           <ArrowRight className="size-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
         </button>
       </div>

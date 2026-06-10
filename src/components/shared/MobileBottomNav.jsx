@@ -34,6 +34,7 @@ const MobileBottomNav = () => {
             icon: (props) => <PoruaLogo iconOnly {...props} />,
             label: 'Porua',
             path: '/ai-assistant',
+            isAi: true,
         });
         navItems.push({
             label: 'Profile',
@@ -50,13 +51,13 @@ const MobileBottomNav = () => {
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-card/80 backdrop-blur-2xl border-t border-border pb-[env(safe-area-inset-bottom)] md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
-            <div className="flex items-center justify-around h-16">
+            <div className="flex items-center justify-around h-14">
                 {navItems.map((item) => (
                     <NavLink
                         key={item.path}
                         to={item.path}
                         className={({ isActive }) => cn(
-                            "flex flex-col items-center justify-center size-full gap-1 transition-all duration-300",
+                            "flex flex-col items-center justify-center size-full gap-0.5 transition-all duration-300",
                             isActive
                                 ? "text-blue-600 scale-105"
                                 : "text-slate-400 hover:text-muted-foreground"
@@ -93,7 +94,8 @@ const MobileBottomNav = () => {
                                 )}
                                 <span className={cn(
                                     "text-[9px] font-bold uppercase tracking-widest",
-                                    isActive ? "opacity-100" : "opacity-60"
+                                    isActive ? "opacity-100" : "opacity-60",
+                                    item.isAi && "bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
                                 )}>
                                     {item.label}
                                 </span>
