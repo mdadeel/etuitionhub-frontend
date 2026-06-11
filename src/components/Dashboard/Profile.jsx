@@ -34,7 +34,7 @@ import {
 const Profile = () => {
     const { user, dbUser, refreshUserFromDB, updateUserProfile } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState('account');
+
     const fileInputRef = useRef(null);
 
     // Form states
@@ -62,7 +62,7 @@ const Profile = () => {
             setMobileInput(dbUser?.mobileNumber || '');
             
             if (isTutor) {
-                setActiveTab('tutor');
+
                 setQualification(dbUser.qualification || '');
                 setSubjects(dbUser.subjects || []);
                 setExpectedSalary(dbUser.expectedSalary || '');

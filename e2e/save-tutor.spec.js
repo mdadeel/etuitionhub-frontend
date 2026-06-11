@@ -39,7 +39,7 @@ test('student saves a tutor and it stays saved after reload', async ({ page }) =
 
   // Check by looking for "Unsave" title, or fallback: check the bookmark was saved via a toast
   const unsaved = page.locator('button[title="Unsave"]').first();
-  const savedNow = await unsaved.isVisible().catch(() => false);
+  await unsaved.isVisible().catch(() => false);
 
   // Reload and verify
   await page.reload();

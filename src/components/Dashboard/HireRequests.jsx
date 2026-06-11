@@ -17,6 +17,13 @@ const HireRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   useEffect(() => {
     setLoading(true);
     api.get(`/api/hire-requests/${tab}`)
@@ -47,7 +54,7 @@ const HireRequests = () => {
 
   const getTimeRemaining = (expiresAt) => {
     if (!expiresAt) return null;
-    const diff = new Date(expiresAt) - Date.now();
+    const diff = new Date(expiresAt).getTime() - now;
     if (diff <= 0) return 'Expired';
     const hrs = Math.floor(diff / 3600000);
     const mins = Math.floor((diff % 3600000) / 60000);

@@ -337,17 +337,6 @@ const Assignments = () => {
             const conns = res.data?.data || res.data || [];
             setConnections(conns);
 
-            // Fetch assignments per connection and flatten
-            const allAssignments = [];
-            await Promise.allSettled(
-                conns.map(async (c) => {
-                    try {
-                        // The backend uses /api/assignment/:assignmentId
-                        // We can get by message or we need to list — for now use a search approach
-                        // that aggregates from connections
-                    } catch {}
-                })
-            );
 
             // Try the direct list endpoint
             try {
