@@ -13,7 +13,7 @@ const STATUS_COLORS = {
     pending: 'text-amber-700 bg-amber-500/10 border-amber-500/20',
     submitted: 'text-blue-700 bg-blue-500/10 border-blue-500/20',
     graded: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20',
-    returned: 'text-purple-700 bg-purple-500/10 border-purple-500/20',
+    returned: 'text-teal-700 bg-teal-500/10 border-teal-500/20',
 };
 
 /** Card that expands to show assignment details and actions */

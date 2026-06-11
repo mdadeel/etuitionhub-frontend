@@ -13,7 +13,10 @@ const Login = () => {
     const { login, googleLogin } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
-    const from = location.state?.from?.pathname || '/dashboard'
+    let from = location.state?.from?.pathname || '/dashboard'
+    if (typeof from !== 'string' || !from.startsWith('/') || from.startsWith('//')) {
+        from = '/dashboard'
+    }
     const [loading, setLoading] = useState(false)
 
     const onSubmit = async (data) => {

@@ -21,15 +21,14 @@ const useSocketEvents = () => {
     ref.current = socketRef;
 
     useEffect(() => {
-        const token = Cookies.get('token');
-        if (!token) return undefined;
+
         if (socketRef) return undefined;
 
         const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         if (backendUrl.includes('vercel')) return undefined;
 
         const s = io(backendUrl, {
-            auth: { token },
+            withCredentials: true,
             transports: ['polling', 'websocket'],
             reconnectionAttempts: 3,
             reconnectionDelay: 1000,

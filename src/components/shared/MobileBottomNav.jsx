@@ -95,7 +95,7 @@ const MobileBottomNav = () => {
                                 <span className={cn(
                                     "text-[9px] font-bold uppercase tracking-widest",
                                     isActive ? "opacity-100" : "opacity-60",
-                                    item.isAi && "bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+                                    item.isAi && "bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent"
                                 )}>
                                     {item.label}
                                 </span>

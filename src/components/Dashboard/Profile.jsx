@@ -167,7 +167,7 @@ const Profile = () => {
                             <div className="relative shrink-0 mx-auto md:mx-0">
                                 <div className="size-48 md:w-56 md:h-56 rounded-lg overflow-hidden border border-border bg-slate-950">
                                     <img
-                                        src={photoInput || "https://i.ibb.co/4pDNDk1/default-avatar.png"}
+                                        src={photoInput && (photoInput.startsWith('http://') || photoInput.startsWith('https://') || photoInput.startsWith('data:image/')) ? photoInput : "https://i.ibb.co/4pDNDk1/default-avatar.png"}
                                         className="size-full object-cover"
                                         alt="Profile Preview"
                                     />

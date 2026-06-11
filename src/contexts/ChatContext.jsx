@@ -71,8 +71,7 @@ export const ChatProvider = ({ children }) => {
 
     // Initialize Socket
     useEffect(() => {
-        const token = Cookies.get('token');
-        if (!token || !user) return;
+        if (!user) return;
 
         const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         
@@ -85,7 +84,7 @@ export const ChatProvider = ({ children }) => {
         }
 
         socketRef.current = io(backendUrl, {
-            auth: { token },
+            withCredentials: true,
             // Start with polling so the connection at least establishes on serverless hosts;
             // upgrade to websocket only on platforms that support it (Railway, Render, etc.)
             transports: ['polling', 'websocket'],

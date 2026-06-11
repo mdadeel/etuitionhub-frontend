@@ -1,9 +1,7 @@
 // axios setup with auth token
 // interceptors add kora ache for auth
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import API_URL from '../config/api';
-import { AUTH_COOKIE_OPTIONS } from '../utils/cookieOptions';
 
 const api = axios.create({
     baseURL: API_URL,
@@ -11,24 +9,14 @@ const api = axios.create({
     timeout: 30000
 });
 
-// request interceptor - add token
-api.interceptors.request.use(config => {
-    let token = Cookies.get('token')
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-    }
-    // console.log('request:', config.url) // debug
-    return config
-})
-
 // Response interceptor - error handling with token refresh
 let isRefreshing = false;
 let failedQueue = [];
 
-const processQueue = (error, token = null) => {
+const processQueue = (error) => {
     failedQueue.forEach(prom => {
         if (error) prom.reject(error);
-        else prom.resolve(token);
+        else prom.resolve();
     });
     failedQueue = [];
 };
@@ -43,8 +31,7 @@ api.interceptors.response.use(
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
-                }).then(token => {
-                    originalRequest.headers.Authorization = `Bearer ${token}`;
+                }).then(() => {
                     return api(originalRequest);
                 });
             }
@@ -58,16 +45,11 @@ api.interceptors.response.use(
                 // current origin, which on a separate-frontend/backend
                 // deployment is the frontend host — and /auth/refresh isn't
                 // served there.
-                const response = await api.post('/api/auth/refresh', {}, { withCredentials: true });
-                const { token: newToken } = response.data;
-                Cookies.set('token', newToken, AUTH_COOKIE_OPTIONS);
-                processQueue(null, newToken);
-                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                await api.post('/api/auth/refresh', {}, { withCredentials: true });
+                processQueue(null);
                 return api(originalRequest);
             } catch (refreshError) {
-                processQueue(refreshError, null);
-                Cookies.remove('token', { path: '/' });
-                Cookies.remove('refreshToken', { path: '/' });
+                processQueue(refreshError);
                 if (!window.location.pathname.includes('/login')) {
                     window.location.href = '/login?expired=true';
                 }
@@ -79,8 +61,6 @@ api.interceptors.response.use(
 
         // Handle other errors
         if (status === 401) {
-            Cookies.remove('token', { path: '/' });
-            Cookies.remove('refreshToken', { path: '/' });
             if (!window.location.pathname.includes('/login')) {
                 window.location.href = '/login?expired=true';
             }

@@ -4,7 +4,6 @@ import io from 'socket.io-client';
 import Peer from 'simple-peer';
 import API_URL from '../config/api';
 import api from '../services/api';
-import Cookies from 'js-cookie';
 import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../contexts/AuthContext';
@@ -87,7 +86,7 @@ export default function SessionRoom() {
     };
 
     useEffect(() => {
-        const token = Cookies.get('token');
+
 
         // No WebRTC on Vercel (serverless, no persistent connections)
         if (API_URL.includes('vercel')) {
@@ -96,7 +95,7 @@ export default function SessionRoom() {
         }
 
         socket.current = io(API_URL, {
-            auth: { token },
+            withCredentials: true,
             reconnectionAttempts: 3,
             reconnectionDelay: 1000,
             timeout: 5000,

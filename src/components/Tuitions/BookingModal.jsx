@@ -45,7 +45,12 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
             
             // 3. Redirect to the mock payment gateway URL
             if (paymentRes.data && (paymentRes.data.bkashURL || paymentRes.data.nagadURL)) {
-                window.location.href = paymentRes.data.bkashURL || paymentRes.data.nagadURL;
+                const redirectUrl = paymentRes.data.bkashURL || paymentRes.data.nagadURL;
+                if (redirectUrl && (redirectUrl.startsWith('http://') || redirectUrl.startsWith('https://'))) {
+                    window.location.href = redirectUrl;
+                } else {
+                    setStep(3);
+                }
             } else {
                 setStep(3);
             }
