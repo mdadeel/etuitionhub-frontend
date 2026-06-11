@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { StickyNote, Trash2, Plus, FileText } from 'lucide-react';
+import { StickyNote, Trash2, Plus, FileText, Loader2 } from 'lucide-react';
 import AiAssistantLayout from '../../components/AiAssistant/AiAssistantLayout';
 import { Card } from '@/components/ui/card';
+import api from '../../services/api';
+import toast from 'react-hot-toast';
 
 const NOTES_KEY = 'ai-tutor-saved-notes';
 
-function loadNotes() {
+function loadNotesLocal() {
   try {
     return JSON.parse(localStorage.getItem(NOTES_KEY) || '[]');
   } catch {
@@ -14,22 +16,51 @@ function loadNotes() {
   }
 }
 
-function saveNotes(notes) {
-  try {
-    localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
-  } catch { /* ignore */ }
-}
-
 export default function SavedNotes() {
-  const [notes, setNotes] = useState(loadNotes);
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(null);
 
+  // Load notes from backend, fallback to localStorage
   useEffect(() => {
-    saveNotes(notes);
-  }, [notes]);
+    const loadNotes = async () => {
+      try {
+        const res = await api.get('/api/ai/notes');
+        setNotes(res.data || []);
+      } catch {
+        // Fallback to localStorage
+        setNotes(loadNotesLocal());
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadNotes();
+  }, []);
 
-  const deleteNote = (id) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
+  const deleteNote = async (id) => {
+    setDeleting(id);
+    try {
+      await api.delete(`/api/ai/notes/${id}`);
+      setNotes(prev => prev.filter(n => n._id !== id));
+      toast.success('Note deleted');
+    } catch {
+      // Fallback: delete from localStorage
+      setNotes(prev => prev.filter(n => n._id !== id && n.id !== id));
+      toast.success('Note deleted locally');
+    } finally {
+      setDeleting(null);
+    }
   };
+
+  if (loading) {
+    return (
+      <AiAssistantLayout>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 size={24} className="animate-spin text-primary" />
+        </div>
+      </AiAssistantLayout>
+    );
+  }
 
   return (
     <AiAssistantLayout>
@@ -68,7 +99,7 @@ export default function SavedNotes() {
         ) : (
           <div className="space-y-3">
             {notes.map((note) => (
-              <Card key={note.id} className="p-4">
+              <Card key={note._id || note.id} className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-medium text-foreground truncate">
@@ -97,11 +128,16 @@ export default function SavedNotes() {
                     </p>
                   </div>
                   <button
-                    onClick={() => deleteNote(note.id)}
-                    className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors shrink-0"
+                    onClick={() => deleteNote(note._id || note.id)}
+                    disabled={deleting === (note._id || note.id)}
+                    className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors shrink-0 disabled:opacity-50"
                     title="Delete note"
                   >
-                    <Trash2 size={14} />
+                    {deleting === (note._id || note.id) ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={14} />
+                    )}
                   </button>
                 </div>
               </Card>

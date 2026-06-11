@@ -26,6 +26,11 @@ import NotificationBell from "../components/shared/NotificationBell";
 import HireRequests from "../components/Dashboard/HireRequests";
 import ActiveRelationships from "../components/Dashboard/ActiveRelationships";
 import DashPayments from "../components/Dashboard/DashPayments";
+import SavedSearchAlerts from "../components/Dashboard/SavedSearchAlerts";
+import AdminContacts from "../components/Dashboard/AdminContacts";
+import SessionConfirmationList from "../components/Dashboard/SessionConfirmationList";
+import SessionStatsCard from "../components/Dashboard/SessionStatsCard";
+import TemplateManager from "../components/Dashboard/TemplateManager";
 import { cn } from "@/lib/utils";
 
 /**
@@ -247,6 +252,20 @@ const Dashboard = () => {
                   role === "tutor" ? <Navigate to="/dashboard" replace /> : <ActiveRelationships />
                 }
               />
+              <Route
+                path="saved-searches"
+                element={
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <SavedSearchAlerts />
+                }
+              />
+              <Route
+                path="admin/contacts"
+                element={
+                  <AdminRoute role={role}>
+                    <AdminContacts />
+                  </AdminRoute>
+                }
+              />
 
 
 
@@ -331,6 +350,18 @@ const Dashboard = () => {
               <Route
                 path="assignments"
                 element={<Assignments />}
+              />
+              <Route
+                path="session-confirmations"
+                element={
+                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <SessionConfirmationList />
+                }
+              />
+              <Route
+                path="templates"
+                element={
+                  role === "student" ? <Navigate to="/dashboard" replace /> : <TemplateManager />
+                }
               />
 
               <Route path="*" element={<Navigate to="/dashboard" replace />} />

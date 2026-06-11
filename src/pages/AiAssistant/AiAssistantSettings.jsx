@@ -1,12 +1,13 @@
 // pages/AiAssistant/AiAssistantSettings.jsx
 // AI Assistant settings — theme, language, and AI preferences.
-import { useState } from 'react';
-import { Settings, Sun, Moon, Monitor, Globe, Sparkles, Save, RotateCcw } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings, Sun, Moon, Monitor, Globe, Sparkles, Save, RotateCcw, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import AiAssistantLayout from '../../components/AiAssistant/AiAssistantLayout';
 import { Card } from '@/components/ui/card';
 import { useAiStore } from '../../store/aiStore';
+import api from '../../services/api';
 
 const THEME_OPTIONS = [
     { id: 'light', label: 'Light', icon: Sun, description: 'Always use light mode' },
@@ -27,22 +28,58 @@ const AI_MODEL_OPTIONS = [
 
 export default function AiAssistantSettings() {
     const { theme, setTheme } = useAiStore();
-    const [language, setLanguage] = useState(() => {
-        try { return localStorage.getItem('ai-lang') || 'en'; } catch { return 'en'; }
-    });
-    const [aiModel, setAiModel] = useState(() => {
-        try { return localStorage.getItem('ai-model-pref') || 'default'; } catch { return 'default'; }
-    });
+    const [language, setLanguage] = useState('en');
+    const [aiModel, setAiModel] = useState('default');
     const [saved, setSaved] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-    const handleSave = () => {
+    // Load settings from backend on mount
+    useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                const res = await api.get('/api/ai/settings');
+                const s = res.data;
+                if (s.theme) setTheme(s.theme);
+                if (s.language) setLanguage(s.language);
+                if (s.aiModel) setAiModel(s.aiModel);
+            } catch {
+                // Fallback to localStorage
+                try {
+                    setLanguage(localStorage.getItem('ai-lang') || 'en');
+                    setAiModel(localStorage.getItem('ai-model-pref') || 'default');
+                } catch { /* ignore */ }
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadSettings();
+    }, [setTheme]);
+
+    const handleSave = async () => {
+        setSaving(true);
         try {
-            localStorage.setItem('ai-lang', language);
-            localStorage.setItem('ai-model-pref', aiModel);
-        } catch { /* ignore */ }
-        setSaved(true);
-        toast.success('Settings saved');
-        setTimeout(() => setSaved(false), 2000);
+            await api.patch('/api/ai/settings', { theme, language, aiModel });
+            // Also save to localStorage as fallback
+            try {
+                localStorage.setItem('ai-lang', language);
+                localStorage.setItem('ai-model-pref', aiModel);
+            } catch { /* ignore */ }
+            setSaved(true);
+            toast.success('Settings saved');
+            setTimeout(() => setSaved(false), 2000);
+        } catch {
+            // Fallback to localStorage only
+            try {
+                localStorage.setItem('ai-lang', language);
+                localStorage.setItem('ai-model-pref', aiModel);
+            } catch { /* ignore */ }
+            setSaved(true);
+            toast.success('Settings saved locally');
+            setTimeout(() => setSaved(false), 2000);
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleReset = () => {
@@ -51,6 +88,16 @@ export default function AiAssistantSettings() {
         setAiModel('default');
         toast.success('Settings reset to defaults');
     };
+
+    if (loading) {
+        return (
+            <AiAssistantLayout>
+                <div className="flex items-center justify-center h-64">
+                    <Loader2 size={24} className="animate-spin text-primary" />
+                </div>
+            </AiAssistantLayout>
+        );
+    }
 
     return (
         <AiAssistantLayout>
@@ -78,15 +125,17 @@ export default function AiAssistantSettings() {
                         </button>
                         <button
                             onClick={handleSave}
+                            disabled={saving}
                             className={cn(
                                 'inline-flex items-center gap-2 rounded-xl px-6 h-11 text-xs font-black uppercase tracking-[0.2em] transition-all shadow-lg active:scale-[0.98]',
                                 saved
                                     ? 'bg-emerald-500 text-white shadow-emerald-500/20'
-                                    : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20'
+                                    : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20',
+                                saving && 'opacity-70 cursor-not-allowed'
                             )}
                         >
-                            <Save size={14} />
-                            {saved ? 'Saved!' : 'Save Changes'}
+                            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                            {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
                         </button>
                     </div>
                 </div>

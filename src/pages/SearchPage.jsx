@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search, ArrowUpDown, User, BookOpen } from "lucide-react";
 import SEO from '../components/shared/SEO';
 import TutorCard from "../components/shared/TutorCard";
 import TuitionCard from "../components/shared/TuitionCard";
+import SaveSearchButton from "../components/shared/SaveSearchButton";
 import useDebouncedValue from "../hooks/useDebouncedValue";
 import API_URL from "../config/api";
 import { cn } from "@/lib/utils";
@@ -21,8 +22,11 @@ const SearchPage = () => {
   const [tuitions, setTuitions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [suggestions, setSuggestions] = useState({ tutors: [], tuitions: [] });
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef(null);
   const resultsRef = useRef(null);
+  const suggestionsRef = useRef(null);
 
   useEffect(() => {
     if (debouncedQuery !== q) {
@@ -69,12 +73,60 @@ const SearchPage = () => {
     return () => controller.abort();
   }, [debouncedQuery]);
 
+  // Fetch suggestions for autocomplete dropdown
+  useEffect(() => {
+    if (!debouncedQuery || debouncedQuery.length < 2) {
+      setSuggestions({ tutors: [], tuitions: [] });
+      return;
+    }
+    const controller = new AbortController();
+    const fetchSuggestions = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/api/search/suggest?q=${encodeURIComponent(debouncedQuery)}`,
+          { signal: controller.signal }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setSuggestions({
+            tutors: (data.tutors || []).slice(0, 5),
+            tuitions: (data.tuitions || []).slice(0, 5),
+          });
+          setShowSuggestions(true);
+        }
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setSuggestions({ tutors: [], tuitions: [] });
+        }
+      }
+    };
+    fetchSuggestions();
+    return () => controller.abort();
+  }, [debouncedQuery]);
+
+  // Close suggestions on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target) &&
+          inputRef.current && !inputRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const totalResults = tutors.length + tuitions.length;
+  const totalSuggestions = suggestions.tutors.length + suggestions.tuitions.length;
 
   const handleKeyDown = useCallback(
     (e) => {
       if (e.key === "Escape") {
-        setInput("");
+        if (showSuggestions) {
+          setShowSuggestions(false);
+        } else {
+          setInput("");
+        }
         inputRef.current?.focus();
         return;
       }
@@ -88,6 +140,7 @@ const SearchPage = () => {
       }
       if (e.key === "Enter" && activeIndex >= 0) {
         e.preventDefault();
+        setShowSuggestions(false);
         if (activeIndex < tutors.length) {
           navigate(`/tutor/${tutors[activeIndex]._id}`);
         } else {
@@ -95,7 +148,7 @@ const SearchPage = () => {
         }
       }
     },
-    [activeIndex, totalResults, tutors, tuitions, navigate],
+    [activeIndex, totalResults, tutors, tuitions, navigate, showSuggestions],
   );
 
   useEffect(() => {
@@ -123,17 +176,89 @@ const SearchPage = () => {
             autoFocus
           />
           {input && (
-            <button
-              onClick={() => {
-                setInput("");
-                inputRef.current?.focus();
-              }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
-            >
-              Clear
-            </button>
+            <>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                {debouncedQuery.length >= 2 && (
+                  <SaveSearchButton query={debouncedQuery} />
+                )}
+                <button
+                  onClick={() => {
+                    setInput("");
+                    inputRef.current?.focus();
+                  }}
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Clear
+                </button>
+              </div>
+            </>
           )}
         </div>
+
+        {/* Autocomplete Suggestions Dropdown */}
+        {showSuggestions && totalSuggestions > 0 && (
+          <div
+            ref={suggestionsRef}
+            className="absolute z-50 w-full mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden"
+          >
+            {suggestions.tutors.length > 0 && (
+              <div className="p-2">
+                <p className="px-3 py-1.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <User size={10} /> Tutors
+                </p>
+                {suggestions.tutors.map((tutor) => (
+                  <button
+                    key={tutor._id}
+                    onClick={() => {
+                      setShowSuggestions(false);
+                      navigate(`/tutor/${tutor._id}`);
+                    }}
+                    className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-accent transition-colors flex items-center gap-3"
+                  >
+                    <div className="size-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-bold text-muted-foreground">
+                        {tutor.displayName?.charAt(0)}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{tutor.displayName}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {tutor.subjects?.slice(0, 3).join(", ") || "Tutor"}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            {suggestions.tuitions.length > 0 && (
+              <div className={cn("p-2", suggestions.tutors.length > 0 && "border-t border-border")}>
+                <p className="px-3 py-1.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <BookOpen size={10} /> Tuitions
+                </p>
+                {suggestions.tuitions.map((tuition) => (
+                  <button
+                    key={tuition._id}
+                    onClick={() => {
+                      setShowSuggestions(false);
+                      navigate(`/tuition/${tuition._id}`);
+                    }}
+                    className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-accent transition-colors flex items-center gap-3"
+                  >
+                    <div className="size-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                      <BookOpen size={14} className="text-muted-foreground" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{tuition.subject}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {tuition.location || tuition.class_name || "Tuition"}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {loading ? (
           <div className="space-y-8">

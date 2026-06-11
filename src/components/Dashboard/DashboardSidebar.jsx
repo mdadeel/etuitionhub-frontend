@@ -19,6 +19,10 @@ import {
   Scale,
   BookOpen,
   MessageSquare,
+  BookmarkCheck,
+  Mail,
+  ClipboardCheck,
+  FileStack,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -76,6 +80,11 @@ const DashboardSidebar = ({ role }) => {
       icon: DollarSign,
     });
     menuItems.push({
+      path: "/dashboard/admin/contacts",
+      label: "Contact Submissions",
+      icon: Mail,
+    });
+    menuItems.push({
       path: "/dashboard/disputes",
       label: "Disputes",
       icon: Scale,
@@ -96,6 +105,11 @@ const DashboardSidebar = ({ role }) => {
       label: "Assignments",
       icon: BookOpen,
     });
+    menuItems.push({
+      path: "/dashboard/templates",
+      label: "Templates",
+      icon: FileStack,
+    });
   } else {
     menuItems.push({
       path: "/dashboard/billing",
@@ -111,6 +125,16 @@ const DashboardSidebar = ({ role }) => {
       path: "/dashboard/bookmarks",
       label: "Bookmarks",
       icon: Bookmark,
+    });
+    menuItems.push({
+      path: "/dashboard/saved-searches",
+      label: "Saved Searches",
+      icon: BookmarkCheck,
+    });
+    menuItems.push({
+      path: "/dashboard/session-confirmations",
+      label: "Confirm Sessions",
+      icon: ClipboardCheck,
     });
     menuItems.push({
       path: "/dashboard/assignments",

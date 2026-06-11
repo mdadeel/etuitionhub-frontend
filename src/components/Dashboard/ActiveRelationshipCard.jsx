@@ -4,8 +4,9 @@ import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { User, Pause, Play, CheckCircle, Clock, BookOpen } from 'lucide-react';
+import { User, Pause, Play, CheckCircle, Clock, BookOpen, Settings, ChevronDown, ChevronUp } from 'lucide-react';
 import SessionLogModal from './SessionLogModal';
+import ConnectionPrivacySettings from '../Connections/ConnectionPrivacySettings';
 
 const statusConfig = {
   active: { variant: 'success', label: 'Active' },
@@ -20,6 +21,7 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
   const { dbUser } = useAuth();
   const [actionLoading, setActionLoading] = useState(null);
   const [showLogModal, setShowLogModal] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const currentUserId = dbUser?._id;
   const isTutor = currentUserId === connection.tutorId?._id;
@@ -108,6 +110,14 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
               </button>
             )}
 
+            <button
+              onClick={() => setShowPrivacy(!showPrivacy)}
+              className="size-9 flex items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+              title="Privacy Settings"
+            >
+              <Settings className="size-4" />
+            </button>
+
             {isActive && (
               <button
                 onClick={() => handleAction('/pause', 'Relationship paused', 'pause')}
@@ -141,6 +151,15 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
           </div>
         )}
       </div>
+
+      {showPrivacy && (
+        <div className="mt-4 pt-4 border-t border-border">
+          <ConnectionPrivacySettings
+            connectionId={connection._id}
+            onClose={() => setShowPrivacy(false)}
+          />
+        </div>
+      )}
 
       <SessionLogModal
         connectionId={connection._id}

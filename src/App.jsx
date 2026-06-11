@@ -17,6 +17,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChatProvider } from "./contexts/ChatContext";
 import useSocketEvents from "./hooks/useSocketEvents";
+import useHeartbeat from "./hooks/useHeartbeat";
 import ToastViewport from "./components/shared/ToastViewport";
 import PrivateRoute from "./components/shared/PrivateRoute";
 import PublicRoute from "./components/shared/PublicRoute";
@@ -143,6 +144,11 @@ const RealtimeBridge = () => {
   return null;
 };
 
+const HeartbeatBridge = () => {
+  useHeartbeat();
+  return null;
+};
+
 let App = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -151,6 +157,7 @@ let App = () => {
         <ChatProvider>
           <DynamicIslandProvider>
             <RealtimeBridge />
+            <HeartbeatBridge />
             <BrowserRouter>
               <SessionExpiryCheck />
             <ScrollToTop />

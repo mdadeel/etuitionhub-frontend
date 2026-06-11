@@ -171,6 +171,7 @@ const Navbar = () => {
               type="button"
               onClick={() => setIsMobileSearchOpen(false)}
               className="p-2 text-muted-foreground hover:text-foreground rounded-lg transition-colors"
+              aria-label="Close search overlay"
             >
               <X size={20} />
             </button>
@@ -179,7 +180,8 @@ const Navbar = () => {
               <input
                 autoFocus
                 type="text"
-                placeholder="Search tutors..."
+                placeholder="Search tutors by subject or location…"
+                autoComplete="off"
                 className="w-full pl-9 pr-4 h-10 rounded-lg text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 transition-all duration-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -253,7 +255,8 @@ const Navbar = () => {
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Search tutors..."
+              placeholder="Search tutors by subject or location…"
+              autoComplete="off"
               className="w-full pl-10 pr-4 h-10 rounded-lg text-sm bg-muted border border-border !text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all duration-300 placeholder:text-muted-foreground"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -498,6 +501,7 @@ const Navbar = () => {
           <button
             className="lg:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           >
             {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -506,39 +510,46 @@ const Navbar = () => {
 
       {/* Mobile Menu - calm, welcoming */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-[100%] left-0 right-0 bg-background border-b border-border shadow-xl z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="container-premium py-5">
-            <form onSubmit={handleSearch} className="mb-5 relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search tutors..."
-                className="w-full pl-10 pr-4 h-11 rounded-lg bg-muted border border-border text-foreground text-sm placeholder:text-muted-foreground"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </form>
-            <div className="flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={({ isActive }) =>
-                    cn(
-                      "px-4 py-3 text-sm font-heading transition-all duration-300",
-                      isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    )
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
+        <>
+          <div 
+            className="fixed inset-0 top-14 bg-background/60 backdrop-blur-sm z-[90] lg:hidden animate-in fade-in duration-200"
+            onClick={() => setIsMenuOpen(false)}
+          />
+          <div className="lg:hidden absolute top-[100%] left-0 right-0 bg-background border-b border-border shadow-xl z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+            <div class="container-premium py-5">
+              <form onSubmit={handleSearch} className="mb-5 relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search tutors by subject or location…"
+                  autoComplete="off"
+                  className="w-full pl-10 pr-4 h-11 rounded-lg bg-muted border border-border text-foreground text-sm placeholder:text-muted-foreground"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </form>
+              <div className="flex flex-col gap-1">
+                {navLinks.map((link) => (
+                  <NavLink
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={({ isActive }) =>
+                      cn(
+                        "px-4 py-3 text-sm font-heading transition-all duration-300",
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                      )
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

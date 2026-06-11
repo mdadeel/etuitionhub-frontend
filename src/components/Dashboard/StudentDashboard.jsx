@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { AppleCard, AppleHeader, AppleButton } from "../shared/AppleUI";
 import FilterSelect from "../shared/FilterSelect";
 import { cn } from "@/lib/utils";
+import SessionStatsCard from "./SessionStatsCard";
 import { BANGLADESH_DIVISIONS, MEDIUM_OPTIONS } from "../../utils/constants";
 
 const tabs = [
@@ -224,13 +225,18 @@ const StudentDashboard = () => {
       {/* Overview Content */}
       {activeTab === "overview" &&
         (loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-            {[...Array(6)].map((_, i) => (
-              <StatCardSkeleton key={i} />
-            ))}
+          <div className="space-y-6">
+            <SessionStatsCard />
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+              {[...Array(6)].map((_, i) => (
+                <StatCardSkeleton key={i} />
+              ))}
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="space-y-6">
+            <SessionStatsCard />
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             <AppleCard className="p-6 md:p-10 group" hover={false}>
               <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
                 <Database size={24} />
@@ -284,6 +290,7 @@ const StudentDashboard = () => {
                 </span>
               </div>
             </AppleCard>
+          </div>
           </div>
         ))}
 
