@@ -17,6 +17,11 @@ const useSessionManager = () => {
     // it sets this flag. The next onAuthStateChanged callback checks it and skips.
     const authActionCompletedRef = useRef(false);
 
+    // Track whether initial auth check has completed.
+    // After initial load, subsequent onAuthStateChanged firings should NOT
+    // set loading=true (which unmounts/remounts Dashboard, causing full-page refresh).
+    const initialAuthDoneRef = useRef(false);
+
     const setJWT = useCallback(async (email, firebaseUser) => {
         if (!email) return;
         try {
@@ -58,8 +63,35 @@ const useSessionManager = () => {
         authActionCompletedRef.current = true;
     }, []);
 
+    // Reset initial auth state on logout so next login shows loading spinner.
+    const resetAuthState = useCallback(() => {
+        initialAuthDoneRef.current = false;
+    }, []);
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            // After initial auth check, don't set loading=true on subsequent firings.
+            // This prevents PrivateRoute from unmounting/remounting Dashboard (full-page refresh).
+            if (initialAuthDoneRef.current) {
+                setUser(currentUser);
+                // Auth action already handled its own work
+                if (authActionCompletedRef.current) {
+                    authActionCompletedRef.current = false;
+                    return;
+                }
+                // Token refresh or silent auth event — update user but don't show spinner
+                if (currentUser?.email) {
+                    // Silent JWT refresh + user refresh in background
+                    setJWT(currentUser.email, currentUser).catch(() => {});
+                    refreshUserFromDB(currentUser.email).catch(() => {});
+                } else {
+                    setDbUser(null);
+                    setUserRole(null);
+                }
+                return;
+            }
+
+            // Initial auth check — show loading spinner
             setLoading(true);
             setUser(currentUser);
 
@@ -67,6 +99,7 @@ const useSessionManager = () => {
             // skip the duplicate work. Reset the flag for next time.
             if (authActionCompletedRef.current) {
                 authActionCompletedRef.current = false;
+                initialAuthDoneRef.current = true;
                 setLoading(false);
                 return;
             }
@@ -89,6 +122,7 @@ const useSessionManager = () => {
                 setUserRole(null);
             }
 
+            initialAuthDoneRef.current = true;
             setLoading(false);
         });
 
@@ -110,6 +144,7 @@ const useSessionManager = () => {
         refreshUserFromDB,
         checkUserExists,
         markAuthActionInProgress,
+        resetAuthState,
     };
 };
 

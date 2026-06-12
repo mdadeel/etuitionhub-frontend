@@ -28,7 +28,7 @@ const AssignmentCard = ({
     const fetchAssignment = async () => {
         try {
             setLoading(true);
-            const res = await api.get(`/api/messages/assignments/${assignmentId}`);
+            const res = await api.get(`/api/assignments/${assignmentId}`);
             setAssignment(res.data);
             
             // Initialize edit form with current values
@@ -54,7 +54,7 @@ const AssignmentCard = ({
             let res;
             if (assignment.status === 'pending') {
                 // Submit assignment
-                res = await api.patch(`/api/messages/assignments/${assignmentId}/submit`);
+                res = await api.patch(`/api/assignments/${assignmentId}/submit`);
             } else if (assignment.status === 'submitted') {
                 // In a real app, this would be handled by tutor grading
                 // For now, we'll just show a message
@@ -63,7 +63,7 @@ const AssignmentCard = ({
                 return;
             } else {
                 // For other states, just refresh
-                res = await api.get(`/api/messages/assignments/${assignmentId}`);
+                res = await api.get(`/api/assignments/${assignmentId}`);
             }
             
             setAssignment(res.data);
@@ -83,7 +83,7 @@ const AssignmentCard = ({
         
         try {
             setSubmitting(true);
-            const res = await api.patch(`/api/messages/assignments/${assignmentId}/grade`, {
+            const res = await api.patch(`/api/assignments/${assignmentId}/grade`, {
                 feedback,
                 score
             });
@@ -105,7 +105,7 @@ const AssignmentCard = ({
         
         try {
             setSubmitting(true);
-            const res = await api.patch(`/api/messages/assignments/${assignmentId}/return`, {
+            const res = await api.patch(`/api/assignments/${assignmentId}/return`, {
                 feedback
             });
             setAssignment(res.data);
@@ -124,7 +124,7 @@ const AssignmentCard = ({
         if (!window.confirm('Are you sure you want to delete this assignment?')) return;
         
         try {
-            await api.delete(`/api/messages/assignments/${assignmentId}`);
+            await api.delete(`/api/assignments/${assignmentId}`);
             onClose();
             toast.success('Assignment deleted');
         } catch (err) {
@@ -139,7 +139,7 @@ const AssignmentCard = ({
         
         try {
             setSubmitting(true);
-            const res = await api.put(`/api/messages/assignments/${assignmentId}`, {
+            const res = await api.put(`/api/assignments/${assignmentId}`, {
                 title: editedTitle,
                 description: editedDescription,
                 dueDate: editedDueDate

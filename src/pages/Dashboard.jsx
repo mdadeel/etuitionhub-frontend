@@ -29,7 +29,6 @@ import DashPayments from "../components/Dashboard/DashPayments";
 import SavedSearchAlerts from "../components/Dashboard/SavedSearchAlerts";
 import AdminContacts from "../components/Dashboard/AdminContacts";
 import SessionConfirmationList from "../components/Dashboard/SessionConfirmationList";
-import SessionStatsCard from "../components/Dashboard/SessionStatsCard";
 import TemplateManager from "../components/Dashboard/TemplateManager";
 import { cn } from "@/lib/utils";
 

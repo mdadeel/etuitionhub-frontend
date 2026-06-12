@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Calendar, Check } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
     const { user, dbUser } = useAuth();
@@ -11,19 +12,23 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
     const [availability, setAvailability] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedSlot, setSelectedSlot] = useState(null);
+    const [booking, setBooking] = useState(null);
 
     useEffect(() => {
         if (isOpen && tutorId) {
-            const url = selectedDate 
+            const url = selectedDate
                 ? `/api/tutors/${tutorId}/availability?date=${selectedDate}`
                 : `/api/tutors/${tutorId}/availability`;
             api.get(url)
                 .then(res => setAvailability(res.data))
-                .catch(err => console.error(err));
+                .catch(err => {
+                    console.error(err);
+                    toast.error('Failed to load availability');
+                });
         }
     }, [isOpen, tutorId, selectedDate]);
 
-    const handleConfirm = async (method) => {
+    const handleConfirm = async () => {
         try {
             const bookingRes = await api.post('/api/bookings', {
                 tutorId,
@@ -34,28 +39,13 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                 duration: 60,
                 status: 'pending'
             });
-            
-            const bookingId = bookingRes.data._id || 'mock-id';
-            
-            const paymentRes = await api.post(`/api/payments/${method}/create`, {
-                amount: 500,
-                bookingId: bookingId,
-                tutorName: tutorName
-            });
-            
-            // 3. Redirect to the mock payment gateway URL
-            if (paymentRes.data && (paymentRes.data.bkashURL || paymentRes.data.nagadURL)) {
-                const redirectUrl = paymentRes.data.bkashURL || paymentRes.data.nagadURL;
-                if (redirectUrl && (redirectUrl.startsWith('http://') || redirectUrl.startsWith('https://'))) {
-                    window.location.href = redirectUrl;
-                } else {
-                    setStep(3);
-                }
-            } else {
-                setStep(3);
-            }
+
+            setBooking(bookingRes.data);
+            setStep(3);
+            toast.success('Booking created! Complete payment from your dashboard.');
         } catch (err) {
             console.error(err);
+            toast.error(err.response?.data?.error || 'Failed to create booking');
         }
     };
 
@@ -114,13 +104,10 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
                 {step === 2 && (
                     <div className="py-4">
-                        <p className="mb-4 text-sm text-muted-foreground">You have selected <span className="font-semibold text-foreground">{selectedSlot?.startTime} to {selectedSlot?.endTime}</span>. Choose your payment method to confirm:</p>
+                        <p className="mb-4 text-sm text-muted-foreground">You have selected <span className="font-semibold text-foreground">{selectedSlot?.startTime} to {selectedSlot?.endTime}</span>. Confirm your booking:</p>
                         <div className="flex flex-col gap-3 mt-6">
-                            <Button className="bg-[#E2136E] hover:bg-[#b00f55] text-white w-full" onClick={() => handleConfirm('bkash')}>
-                                Pay with bKash
-                            </Button>
-                            <Button className="bg-[#EC1C24] hover:bg-[#ba151c] text-white w-full" onClick={() => handleConfirm('nagad')}>
-                                Pay with Nagad
+                            <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full" onClick={handleConfirm}>
+                                Confirm Booking
                             </Button>
                             <Button variant="ghost" onClick={() => setStep(1)} className="w-full mt-2">Back</Button>
                         </div>
@@ -133,7 +120,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                             <Check className="size-6" />
                         </div>
                         <h3 className="text-lg font-medium text-foreground">Booking Confirmed!</h3>
-                        <p className="text-sm text-muted-foreground mt-2">Your session has been successfully scheduled.</p>
+                        <p className="text-sm text-muted-foreground mt-2">Your session has been scheduled. Complete payment from your dashboard under Billing &amp; Receipts.</p>
                         <Button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={onClose}>Done</Button>
                     </div>
                 )}

@@ -47,6 +47,7 @@ const ImportantMails = () => {
             setUserResults(res.data?.users || res.data || []);
         } catch (error) {
             console.error('Failed to search users', error);
+            toast.error('Failed to search users');
         } finally {
             setSearchingUsers(false);
         }
@@ -80,6 +81,7 @@ const ImportantMails = () => {
             setMails(mails.map(m => m._id === id ? { ...m, isRead: true } : m));
         } catch (error) {
             console.error(error);
+            toast.error('Failed to mark as read');
         }
     };
 
@@ -94,6 +96,7 @@ const ImportantMails = () => {
                 setMails(prev => prev.filter(m => m._id !== id));
             } catch (error) {
                 console.error('Failed to delete mail server-side', error);
+                toast.error('Failed to delete mail');
             }
             setDeletedItems(prev => {
                 const newState = { ...prev };

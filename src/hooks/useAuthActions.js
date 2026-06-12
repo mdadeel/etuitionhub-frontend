@@ -4,7 +4,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 
-const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, refreshUserFromDB, checkUserExists, markAuthActionInProgress }) => {
+const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, refreshUserFromDB, checkUserExists, markAuthActionInProgress, resetAuthState }) => {
     const googleProvider = new GoogleAuthProvider();
 
     const saveUserToDB = async (firebaseUser, role, mobileNumber = '') => {
@@ -160,6 +160,8 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
     const logout = async () => {
         setLoading(true);
+        // Reset initial auth state so next login shows loading spinner
+        resetAuthState();
         // Fire-and-forget: revoke server-side token, but don't block logout.
         // If backend is cold-starting on Vercel, this would delay the whole flow.
         api.post('/api/auth/logout').catch(() => {});

@@ -16,7 +16,7 @@ const TemplateManager = () => {
 
     const fetchTemplates = async () => {
         try {
-            const res = await api.get('/api/messages/templates');
+            const res = await api.get('/api/templates');
             setTemplates(res.data?.templates || res.data || []);
         } catch (error) {
             console.error('Failed to fetch templates', error);
@@ -37,7 +37,7 @@ const TemplateManager = () => {
         }
         setSaving(true);
         try {
-            const res = await api.post('/api/messages/templates', form);
+            const res = await api.post('/api/templates', form);
             setTemplates(prev => [res.data, ...prev]);
             toast.success('Template created');
             resetForm();
@@ -56,7 +56,7 @@ const TemplateManager = () => {
         }
         setSaving(true);
         try {
-            const res = await api.put(`/api/messages/templates/${editing._id}`, form);
+            const res = await api.put(`/api/templates/${editing._id}`, form);
             setTemplates(prev => prev.map(t => t._id === editing._id ? res.data : t));
             toast.success('Template updated');
             resetForm();
@@ -71,7 +71,7 @@ const TemplateManager = () => {
     const handleDelete = async (id) => {
         if (!confirm('Delete this template?')) return;
         try {
-            await api.delete(`/api/messages/templates/${id}`);
+            await api.delete(`/api/templates/${id}`);
             setTemplates(prev => prev.filter(t => t._id !== id));
             toast.success('Template deleted');
         } catch (error) {

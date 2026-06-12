@@ -65,6 +65,7 @@ const TutorDashboard = () => {
             setRevenue(res.data || []);
         } catch (err) {
             console.error('Failed to fetch earnings:', err);
+            toast.error('Failed to load earnings');
             setRevenue([]);
         }
     }, [user?.email]);

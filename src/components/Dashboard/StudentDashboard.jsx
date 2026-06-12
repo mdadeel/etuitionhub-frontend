@@ -90,6 +90,7 @@ const StudentDashboard = () => {
       setBookings(res.data || []);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);
+      toast.error("Failed to load bookings");
       setBookings([]);
     }
   }, [user?.email]);
@@ -102,6 +103,7 @@ const StudentDashboard = () => {
       setApplications(res.data || []);
     } catch (err) {
       console.error("Failed to fetch applications:", err);
+      toast.error("Failed to load applications");
       setApplications([]);
     }
   }, [user?.email]);

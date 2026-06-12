@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton, LineSkeleton } from "@/components/shared/skeletons";
+import toast from 'react-hot-toast';
 
 function SessionCardSkeleton() {
   return (
@@ -29,7 +30,10 @@ export default function TutorSessions() {
         if (dbUser?.email) {
             api.get(`/api/bookings/tutor/${dbUser.email}`)
                 .then(res => setSessions(res.data))
-                .catch(err => console.error(err))
+                .catch(err => {
+                    console.error(err);
+                    toast.error('Failed to load sessions');
+                })
                 .finally(() => setLoading(false));
         }
     }, [dbUser]);

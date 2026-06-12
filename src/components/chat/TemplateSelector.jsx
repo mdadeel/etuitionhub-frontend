@@ -28,9 +28,9 @@ const TemplateSelector = ({
             let res;
             
             if (selectedTab === 'my') {
-                res = await api.get(`/api/messages/templates`);
+                res = await api.get(`/api/templates`);
             } else {
-                res = await api.get(`/api/messages/templates/public`);
+                res = await api.get(`/api/templates/public`);
             }
             
             setTemplates(res.data);

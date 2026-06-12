@@ -8,6 +8,7 @@ import LoadingSpinner from '../shared/LoadingSpinner';
 import { Users, Zap, Layers, Banknote, Database } from 'lucide-react';
 import { useAnalyticsQuery } from '../../hooks/queries/useAnalyticsQuery';
 import { useAllPaymentsQuery } from '../../hooks/queries/usePaymentsQuery';
+import toast from 'react-hot-toast';
 
 const EMERALD_PRIMARY = '#10b981';
 const COLORS = [EMERALD_PRIMARY, '#3b82f6', '#6366f1', '#f43f5e'];
@@ -82,6 +83,7 @@ const DashAnalytics = () => {
             });
         } catch {
             console.error('Fallback systems failure');
+            toast.error('Failed to load analytics');
         }
     };
 
