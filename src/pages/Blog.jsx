@@ -49,7 +49,7 @@ const Blog = () => {
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Cognitive Stream</span>
                     </div>
                     
-                    <h1 className="text-6xl md:text-8xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85] mb-10">
+                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85] mb-10">
                         Industry <br />
                         <span className="text-primary italic">Insights.</span>
                     </h1>

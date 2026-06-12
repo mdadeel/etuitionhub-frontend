@@ -102,7 +102,7 @@ const Dashboard = () => {
         <div className="sticky top-0 z-10 flex justify-end p-2 bg-card">
           <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-2 hover:bg-background rounded-lg border border-border transition-colors"
+            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-background rounded-lg border border-border transition-colors"
           >
             <X size={18} className="text-muted-foreground" />
           </button>
@@ -118,7 +118,7 @@ const Dashboard = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsMobileMenuOpen(prev => !prev)}
-                className="lg:hidden p-2 hover:bg-background rounded-lg border border-border transition-colors"
+                className="lg:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-background rounded-lg border border-border transition-colors"
               >
                 {isMobileMenuOpen ? (
                   <X size={20} className="text-muted-foreground" />

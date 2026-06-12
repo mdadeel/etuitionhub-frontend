@@ -121,7 +121,7 @@ const NotificationBell = () => {
                                             {!notif.isRead && (
                                                 <button
                                                     onClick={() => markAsRead(notif._id)}
-                                                    className="p-1 hover:bg-muted rounded transition-colors"
+                                                    className="p-1 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded transition-colors"
                                                     title="Mark as read"
                                                 >
                                                     <Check size={14} className="text-green-600" />
@@ -129,7 +129,7 @@ const NotificationBell = () => {
                                             )}
                                             <button
                                                 onClick={() => deleteNotification(notif._id)}
-                                                className="p-1 hover:bg-muted rounded transition-colors"
+                                                className="p-1 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded transition-colors"
                                                 title="Delete"
                                             >
                                                 <Trash2 size={14} className="text-red-500" />

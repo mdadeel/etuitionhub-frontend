@@ -45,7 +45,7 @@ const Contact = () => {
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Communication Interface</span>
                     </div>
                     
-                    <h1 className="text-6xl md:text-7xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85] mb-10">
+                    <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85] mb-10">
                         Support <br />
                         <span className="text-muted-foreground">Infrastructure.</span>
                     </h1>

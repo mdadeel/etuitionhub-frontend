@@ -60,7 +60,7 @@ const PaymentHistory = () => {
                             <div className="w-10 h-1 bg-primary"></div>
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Financial Infrastructure</span>
                         </div>
-                        <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">Yield Logs.</h1>
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">Yield Logs.</h1>
                     </div>
                     <div className="flex items-center gap-4 bg-muted/20 px-6 py-4 rounded-none border border-border shrink-0 group hover:border-primary transition-colors">
                         <Database size={14} className="text-primary" />

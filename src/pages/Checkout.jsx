@@ -159,7 +159,7 @@ const Checkout = () => {
                             <div className="w-10 h-1 bg-primary"></div>
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Transaction Infrastructure</span>
                         </div>
-                        <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">Payment Submission.</h1>
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">Payment Submission.</h1>
                         <p className="mt-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] italic">Submit transaction parameters for administrative verification.</p>
                     </div>
                     <Button variant="ghost" onClick={() => navigate(-1)} className="text-[10px] font-black uppercase tracking-[0.3em] h-auto p-0 hover:bg-transparent hover:text-primary group">
@@ -298,7 +298,7 @@ const Checkout = () => {
                                 
                                 <div className="pt-10 border-t border-border">
                                     <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">Total Protocol Yield</p>
-                                    <p className="text-5xl font-black text-primary tabular-nums tracking-tighter italic leading-none">
+                                    <p className="text-3xl sm:text-5xl font-black text-primary tabular-nums tracking-tighter italic leading-none">
                                         ৳{application?.expectedSalary}
                                     </p>
                                     <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-[0.2em] mt-4 italic">Assigned Monthly Honorarium</p>

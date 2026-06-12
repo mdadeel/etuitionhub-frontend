@@ -241,7 +241,7 @@ const ModernSidebar = ({ className }) => {
           <TooltipTrigger asChild>
             <button
               onClick={toggleSidebar}
-              className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors shrink-0"
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
