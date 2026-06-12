@@ -4,7 +4,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 
-const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, refreshUserFromDB, checkUserExists }) => {
+const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, refreshUserFromDB, checkUserExists, markAuthActionInProgress }) => {
     const googleProvider = new GoogleAuthProvider();
 
     const saveUserToDB = async (firebaseUser, role, mobileNumber = '') => {
@@ -41,6 +41,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
     const register = async (email, password, name, role = 'student', phone = '') => {
         setLoading(true);
+        markAuthActionInProgress();
 
         if (!email.includes('@')) {
             toast.error('Please enter a valid email address.');
@@ -62,13 +63,13 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
         try {
             let result = await createUserWithEmailAndPassword(auth, email, password);
-            await updateProfile(result.user, { displayName: name });
-
-            let savedUser = await saveUserToDB(result.user, role, phone);
+            // Parallelize: update profile + save to DB + create JWT
+            const [, savedUser] = await Promise.all([
+                updateProfile(result.user, { displayName: name }),
+                saveUserToDB(result.user, role, phone),
+            ]);
 
             await setJWT(result.user.email, result.user);
-
-            await refreshUserFromDB(email);
 
             setLoading(false);
             return result;
@@ -81,6 +82,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
     const login = async (email, password) => {
         setLoading(true);
+        markAuthActionInProgress();
         try {
             const result = await signInWithEmailAndPassword(auth, email, password);
             await setJWT(result.user.email, result.user);
@@ -93,16 +95,19 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
     const googleLogin = async (selectedRole = 'student') => {
         setLoading(true);
+        markAuthActionInProgress();
         try {
             let result = await signInWithPopup(auth, googleProvider);
             const email = result.user.email;
 
-            const dbRecord = await saveUserToDB(result.user, selectedRole);
+            // Parallelize: save user to DB and create JWT at the same time
+            const [dbRecord] = await Promise.all([
+                saveUserToDB(result.user, selectedRole),
+                setJWT(email, result.user),
+            ]);
 
             setDbUser(dbRecord);
             setUserRole(dbRecord.role);
-
-            await setJWT(email, result.user);
 
             return result;
         } catch (error) {
@@ -113,6 +118,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
     const googleRegister = async (role = 'student') => {
         setLoading(true);
+        markAuthActionInProgress();
         try {
             let result = await signInWithPopup(auth, googleProvider);
             const email = result.user.email;
@@ -125,12 +131,14 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
                 throw error;
             }
 
-            const dbRecord = await saveUserToDB(result.user, role);
+            // Parallelize: save user to DB and create JWT at the same time
+            const [dbRecord] = await Promise.all([
+                saveUserToDB(result.user, role),
+                setJWT(email, result.user),
+            ]);
 
             setDbUser(dbRecord);
             setUserRole(dbRecord.role);
-
-            await setJWT(email, result.user);
 
             return result;
         } catch (error) {
@@ -141,14 +149,11 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
     const logout = async () => {
         setLoading(true);
-        try {
-            await api.post('/api/auth/logout');
-        } catch (err) {
-            // Backend logout failed — proceed with local cleanup
-        }
+        // Fire-and-forget: revoke server-side token, but don't block logout.
+        // If backend is cold-starting on Vercel, this would delay the whole flow.
+        api.post('/api/auth/logout').catch(() => {});
         Cookies.remove('token', { path: '/' });
         Cookies.remove('refreshToken', { path: '/' });
-        // eslint-disable-next-line no-unused-vars
         try { await signOut(auth); } catch (_) { /* ignore */ }
         setDbUser(null);
         setUserRole(null);
