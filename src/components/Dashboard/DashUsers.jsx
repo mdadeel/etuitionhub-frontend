@@ -150,7 +150,7 @@ const DashUsers = () => {
     }
 
     return (
-        <div className="bg-transparent animate-in fade-in duration-500 animate-fade-in-up">
+        <div className="bg-transparent">
             <header className="mb-8 border-b border-border pb-6 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-2 mb-3">
@@ -206,7 +206,7 @@ const DashUsers = () => {
                     </thead>
                     <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
                         {filtered.map((user) => (
-                            <tr key={user._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
+                            <tr key={user._id} className="hover:bg-muted/30 hover:text-foreground transition-colors">
                                 <td className="px-4 md:px-6 py-4">
                                     <div className="flex items-center gap-3 md:gap-4">
                                         <Avatar className="size-9 rounded-lg border border-border shadow-none">

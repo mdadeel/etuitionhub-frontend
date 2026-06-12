@@ -99,7 +99,7 @@ const DashAnalytics = () => {
     if (statsLoading) return <LoadingSpinner />;
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-500 animate-fade-in-up">
+        <div className="space-y-10">
             <header className="mb-8 border-b border-border pb-6">
                 <div className="flex items-center gap-2 mb-3">
                     <div className="w-6 h-1.5 bg-primary rounded-lg"></div>
@@ -271,7 +271,7 @@ const DashAnalytics = () => {
                             </thead>
                             <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
                                 {transactions.slice(0, 8).map((tx) => (
-                                    <tr key={tx._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
+                                    <tr key={tx._id} className="hover:bg-muted/30 hover:text-foreground transition-colors">
                                         <td className="hidden md:table-cell px-6 py-4">
                                             <span className="text-xs font-mono font-medium text-muted-foreground">#{tx._id.slice(-8).toUpperCase()}</span>
                                         </td>

@@ -90,7 +90,7 @@ const TutorWallet = () => {
                             </thead>
                             <tbody className="divide-y divide-border/40">
                                 {recentPayments.map((p) => (
-                                    <tr key={p._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
+                                    <tr key={p._id} className="hover:bg-muted/30 hover:text-foreground transition-colors">
                                         <td className="px-6 py-4 text-xs font-bold text-foreground">{(p.studentEmail || '').split('@')[0]}</td>
                                         <td className="px-6 py-4 text-xs font-heading font-bold text-foreground tabular-nums">৳{p.grossAmount}</td>
                                         <td className="px-6 py-4 text-xs font-heading font-bold text-emerald-700 tabular-nums">৳{p.netTutorAmount}</td>

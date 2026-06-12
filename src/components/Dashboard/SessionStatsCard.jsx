@@ -61,8 +61,8 @@ const SessionStatsCard = () => {
             label: 'Avg Duration',
             value: `${Math.round(stats.avgDuration || 0)}m`,
             icon: Clock,
-            color: 'text-violet-600',
-            bg: 'bg-violet-50',
+            color: 'text-emerald-600',
+            bg: 'bg-emerald-50',
         },
     ];
 

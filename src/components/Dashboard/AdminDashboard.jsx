@@ -26,7 +26,7 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="animate-in fade-in duration-700 space-y-10 max-w-full pb-10 animate-fade-in-up">
+        <div className="space-y-10 max-w-full pb-10">
             <AppleHeader 
                 title="Management" 
                 subtitle="High-precision monitoring and strategic platform administration."
@@ -50,7 +50,7 @@ const AdminDashboard = () => {
                                 "px-6 py-3 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground rounded-lg transition-all duration-300 flex items-center gap-2 whitespace-nowrap min-w-fit border active:scale-[0.98]",
                                 activeTab === tab.id
                                     ? "bg-primary text-primary-foreground border-primary"
-                                    : "border-transparent hover:text-accent-foreground hover:bg-accent"
+                                    : "border-transparent hover:text-foreground hover:bg-muted/50"
                             )}
                         >
                             {tab.label}
@@ -61,7 +61,7 @@ const AdminDashboard = () => {
 
             {/* Content Area */}
             <AppleCard className="p-4 md:p-10 min-h-fit" hover={false}>
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="space-y-4">
                     {activeTab === 'analytics' && <DashAnalytics />}
                     {activeTab === 'payments' && <DashPayments />}
                     {activeTab === 'users' && <DashUsers />}

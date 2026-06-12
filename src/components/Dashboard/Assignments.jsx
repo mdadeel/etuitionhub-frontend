@@ -68,7 +68,7 @@ const AssignmentCard = ({ assignment, role, onRefresh }) => {
         <div className={cn('bg-card border rounded-xl overflow-hidden transition-all', isOverdue ? 'border-red-300' : 'border-border')}>
             <button
                 onClick={() => setOpen(v => !v)}
-                className="w-full flex items-start justify-between px-6 py-4 hover:bg-accent transition-colors text-left gap-4"
+                className="w-full flex items-start justify-between px-6 py-4 hover:bg-muted/30 transition-colors text-left gap-4"
             >
                 <div className="flex items-start gap-3 min-w-0">
                     <div className="size-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5 border border-primary/20">

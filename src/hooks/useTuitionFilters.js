@@ -28,16 +28,45 @@ export const useTuitionFilters = () => {
 
   const [filters, setFilters] = useState(() => {
     const fromUrl = deserializeFilters(searchParams);
+    
+    // Check if URL has any filters
+    const hasUrlFilters = Object.values(fromUrl).some(val => 
+      Array.isArray(val) ? val.length > 0 : Boolean(val)
+    );
+
+    // If URL has filters, use them and save to localStorage
+    if (hasUrlFilters) {
+      const initialFilters = {
+        search: fromUrl.search ?? "",
+        classFilter: fromUrl.classFilter ?? "",
+        locationFilter: fromUrl.locationFilter ?? "",
+        subjects: fromUrl.subjects ?? [],
+        sortBy: fromUrl.sortBy ?? "newest",
+      };
+      localStorage.setItem("tuitionFilters", JSON.stringify(initialFilters));
+      return initialFilters;
+    }
+
+    // Otherwise, try to restore from localStorage
+    try {
+      const saved = localStorage.getItem("tuitionFilters");
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (err) {
+      console.warn("Failed to parse saved filters:", err);
+    }
+
     return {
-      search: fromUrl.search ?? "",
-      classFilter: fromUrl.classFilter ?? "",
-      locationFilter: fromUrl.locationFilter ?? "",
-      subjects: fromUrl.subjects ?? [],
-      sortBy: fromUrl.sortBy ?? "newest",
+      search: "",
+      classFilter: "",
+      locationFilter: "",
+      subjects: [],
+      sortBy: "newest",
     };
   });
 
-  // Sync filters to URL (replace, not push)
+  // Sync filters to URL (replace, not push) and localStorage
   useEffect(() => {
     const params = {};
     if (filters.search) params.q = filters.search;
@@ -47,8 +76,11 @@ export const useTuitionFilters = () => {
       params.subjects = filters.subjects.join(",");
     if (filters.sortBy && filters.sortBy !== "newest")
       params.sortBy = filters.sortBy;
+      
     setSearchParams(params, { replace: true });
+    localStorage.setItem("tuitionFilters", JSON.stringify(filters));
   }, [filters, setSearchParams]);
+
 
   const updateFilter = useCallback((key, val) => {
     setFilters((prev) => ({ ...prev, [key]: val }));

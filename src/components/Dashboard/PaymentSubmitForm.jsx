@@ -18,7 +18,7 @@ const PaymentSubmitForm = ({ payment, onSubmitted }) => {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
-  const grossAmount = payment?.amount || 0;
+  const grossAmount = payment?.grossAmount || payment?.amount || 0;
   const fee = grossAmount * 0.05;
   const netAmount = grossAmount - fee;
 

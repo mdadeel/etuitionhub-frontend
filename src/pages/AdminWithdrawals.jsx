@@ -110,7 +110,7 @@ const AdminWithdrawals = () => {
     }
 
     return (
-        <div className="space-y-10 animate-in fade-in animate-fade-in-up duration-700 p-6 md:p-8 lg:p-12 max-w-7xl mx-auto">
+        <div className="space-y-10 p-6 md:p-8 lg:p-12 max-w-7xl mx-auto">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-6">
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ const AdminWithdrawals = () => {
                                 {withdrawals.map((w) => {
                                     const tutor = w.userId || {};
                                     return (
-                                        <tr key={w._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
+                                        <tr key={w._id} className="hover:bg-muted/30 hover:text-foreground transition-colors">
                                             <td className="hidden lg:table-cell px-6 py-5 text-xs font-mono text-muted-foreground/60 tabular-nums">
                                                 {new Date(w.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                             </td>

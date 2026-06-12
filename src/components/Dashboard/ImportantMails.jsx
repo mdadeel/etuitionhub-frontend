@@ -188,7 +188,7 @@ const ImportantMails = () => {
                                             setUserSearch(user.displayName || user.email);
                                             setUserResults([]);
                                         }}
-                                        className="w-full text-left px-4 py-2.5 text-sm hover:bg-accent transition-colors flex items-center gap-3"
+                                        className="w-full text-left px-4 py-2.5 text-sm hover:bg-muted/30 transition-colors flex items-center gap-3"
                                     >
                                         <div className="size-7 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
                                             <span className="text-[10px] font-bold text-muted-foreground">

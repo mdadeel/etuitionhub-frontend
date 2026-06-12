@@ -45,16 +45,20 @@ const HowItWorks = () => {
                             className="relative group animate-in fade-in zoom-in-95 duration-700 ease-out"
                             style={{ animationDelay: `${150 + idx * 150}ms` }}
                         >
-                            {/* Card */}
-                            <div className="relative bg-card border border-border/60 rounded-3xl p-8 transition-all duration-300 hover:border-primary/30 hover:shadow-xl active:scale-[0.98]">
-                                {/* Step Number Badge */}
-                                <div className="absolute top-6 right-6 size-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center font-display font-black text-xl z-10">
+                            <div className="relative bg-card/40 border border-border/40 rounded-2xl p-8 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:-translate-y-1 hover:shadow-xl overflow-hidden">
+                                {/* Top gradient line on hover */}
+                                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                {/* Step Number - Gradient Circle */}
+                                <div className="w-13 h-13 rounded-full mb-6 flex items-center justify-center font-heading text-lg font-bold text-primary-foreground shadow-lg shadow-primary/25"
+                                    style={{ width: '52px', height: '52px', background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))' }}
+                                >
                                     {idx + 1}
                                 </div>
 
                                 {/* Icon */}
-                                <div className="relative z-10 size-16 rounded-2xl bg-muted border border-border text-foreground flex items-center justify-center mb-8">
-                                    <step.icon size={28} />
+                                <div className="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                                    <step.icon size={24} />
                                 </div>
 
                                 {/* Content */}

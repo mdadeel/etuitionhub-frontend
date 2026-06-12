@@ -144,7 +144,7 @@ const TutorDashboard = () => {
                                 "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap min-w-fit active:scale-[0.98]",
                                 activeTab === tab.id
                                     ? "bg-card text-primary shadow-sm border border-border"
-                                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                    : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
                             )}
                         >
                             <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-50'} />

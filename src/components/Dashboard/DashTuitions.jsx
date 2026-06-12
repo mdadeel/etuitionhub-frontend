@@ -158,7 +158,7 @@ const DashTuitions = () => {
                             </tr>
                         ) : (
                             filtered.map((t) => (
-                                <tr key={t._id} className="hover:bg-accent hover:text-accent-foreground transition-colors">
+                                <tr key={t._id} className="hover:bg-muted/30 hover:text-foreground transition-colors">
                                     <td className="px-4 md:px-6 py-4">
                                         <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{t.subject}</p>
                                         <p className="text-[9px] font-label font-semibold text-muted-foreground uppercase tracking-wider mt-1">{t.class_name}</p>

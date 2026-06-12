@@ -7,9 +7,8 @@ export default function useHeartbeat() {
     const intervalRef = useRef(null);
 
     useEffect(() => {
-        // Only for tutors, not on Vercel
+        // Only for tutors
         if (!user || dbUser?.role !== 'tutor') return;
-        if (import.meta.env.VITE_API_URL?.includes('vercel')) return;
 
         const beat = () => {
             api.post('/api/tutors/heartbeat').catch(() => {});

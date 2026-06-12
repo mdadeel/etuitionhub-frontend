@@ -200,7 +200,7 @@ const NotificationPage = () => {
                         <button
                             onClick={() => goToPage(pagination.page - 1)}
                             disabled={pagination.page <= 1}
-                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-lg active:scale-[0.98]"
+                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-lg active:scale-[0.98]"
                         >
                             <ChevronLeft size={14} />
                             Previous
@@ -208,7 +208,7 @@ const NotificationPage = () => {
                         <button
                             onClick={() => goToPage(pagination.page + 1)}
                             disabled={pagination.page >= pagination.totalPages}
-                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-lg active:scale-[0.98]"
+                            className="flex items-center gap-1 px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider border border-border hover:bg-muted/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-lg active:scale-[0.98]"
                         >
                             Next
                             <ChevronRight size={14} />

@@ -103,7 +103,7 @@ const TutorWithdraw = () => {
                 </div>
                 <button
                     onClick={() => navigate('/dashboard/wallet')}
-                    className="inline-flex items-center gap-2 h-10 px-6 rounded-lg border border-border text-foreground text-[10px] font-heading font-bold uppercase tracking-widest hover:bg-accent transition-all active:scale-[0.98]"
+                    className="inline-flex items-center gap-2 h-10 px-6 rounded-lg border border-border text-foreground text-[10px] font-heading font-bold uppercase tracking-widest hover:bg-muted/30 transition-all active:scale-[0.98]"
                 >
                     <Wallet size={14} /> Back to Wallet
                 </button>

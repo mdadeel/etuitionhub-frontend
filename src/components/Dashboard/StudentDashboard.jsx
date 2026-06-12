@@ -207,7 +207,7 @@ const StudentDashboard = () => {
                 "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap min-w-fit active:scale-[0.98]",
                 activeTab === tab.id
                   ? "bg-card text-primary shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-accent-foreground hover:bg-accent",
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30",
               )}
             >
               <tab.icon

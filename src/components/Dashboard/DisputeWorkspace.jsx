@@ -46,7 +46,7 @@ const DisputeRow = ({ dispute, isAdmin, onRefresh }) => {
         <div className="bg-card border border-border rounded-xl overflow-hidden transition-all">
             <button
                 onClick={() => setOpen(v => !v)}
-                className="w-full flex items-center justify-between px-6 py-4 hover:bg-accent transition-colors text-left"
+                className="w-full flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition-colors text-left"
             >
                 <div className="flex items-center gap-4 min-w-0">
                     <Scale size={16} className="text-muted-foreground shrink-0" />

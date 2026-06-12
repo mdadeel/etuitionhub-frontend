@@ -1,168 +1,311 @@
-import { Calculator, Languages, Palette, Code, BookOpen, GraduationCap, Award, ArrowRight, Flame, TrendingUp, Star } from "lucide-react";
-import { Link } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import {
+    Calculator,
+    Languages,
+    Palette,
+    Code,
+    BookOpen,
+    GraduationCap,
+    Award,
+    ArrowUpRight,
+    Flame,
+    TrendingUp,
+    Star,
+    Users,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
-const tagConfig = {
-    "Most popular": { icon: Flame, variant: "success" },
-    "Trending": { icon: TrendingUp, variant: "warning" },
-    "High demand": { icon: Star, variant: "primary" },
-};
+/* ---------- data ---------- */
 
 const categories = [
-    { icon: GraduationCap, label: "SSC", count: "850+", rating: "4.8", slug: "ssc", tag: "Most popular", context: "Class 9-10 Preparation", accent: "emerald" },
-    { icon: BookOpen, label: "HSC", count: "620+", rating: "4.7", slug: "hsc", tag: "Trending", context: "Higher Secondary Preparation", accent: "blue" },
-    { icon: Languages, label: "IELTS", count: "340+", rating: "4.6", slug: "ielts", tag: null, context: "International Exam Prep", accent: "orange" },
-    { icon: Languages, label: "English", count: "480+", rating: "4.7", slug: "english-medium", tag: null, context: "Language & Literature", accent: "cyan" },
-    { icon: Calculator, label: "University", count: "480+", rating: "4.6", slug: "university", tag: "High demand", context: "Admission Preparation", accent: "indigo" },
-    { icon: Code, label: "Programming", count: "290+", rating: "4.9", slug: "programming", tag: null, context: "Coding & Web Development", accent: "teal" },
-    { icon: Award, label: "Admission", count: "310+", rating: "4.5", slug: "admission", tag: null, context: "University Admission", accent: "pink" },
-    { icon: Palette, label: "Arts", count: "180+", rating: "4.6", slug: "arts", tag: null, context: "Creative Studies", accent: "rose" },
+    {
+        icon: GraduationCap,
+        label: "SSC",
+        count: "850+",
+        rating: "4.8",
+        slug: "ssc",
+        tag: "Most popular",
+        context: "Class 9–10 Preparation",
+        accent: "emerald",
+    },
+    {
+        icon: BookOpen,
+        label: "HSC",
+        count: "620+",
+        rating: "4.7",
+        slug: "hsc",
+        tag: "Trending",
+        context: "Higher Secondary Preparation",
+        accent: "blue",
+    },
+    {
+        icon: Languages,
+        label: "IELTS",
+        count: "340+",
+        rating: "4.6",
+        slug: "ielts",
+        tag: null,
+        context: "International Exam Prep",
+        accent: "orange",
+    },
+    {
+        icon: Languages,
+        label: "English",
+        count: "480+",
+        rating: "4.7",
+        slug: "english-medium",
+        tag: null,
+        context: "Language & Literature",
+        accent: "cyan",
+    },
+    {
+        icon: Calculator,
+        label: "University",
+        count: "480+",
+        rating: "4.6",
+        slug: "university",
+        tag: "High demand",
+        context: "Admission Preparation",
+        accent: "indigo",
+    },
+    {
+        icon: Code,
+        label: "Programming",
+        count: "290+",
+        rating: "4.9",
+        slug: "programming",
+        tag: null,
+        context: "Coding & Web Development",
+        accent: "teal",
+    },
+    {
+        icon: Award,
+        label: "Admission",
+        count: "310+",
+        rating: "4.5",
+        slug: "admission",
+        tag: null,
+        context: "University Admission",
+        accent: "pink",
+    },
+    {
+        icon: Palette,
+        label: "Arts",
+        count: "180+",
+        rating: "4.6",
+        slug: "arts",
+        tag: null,
+        context: "Creative Studies",
+        accent: "rose",
+    },
 ];
 
-const accentStyles = {
-    emerald: { iconColor: 'text-emerald-500', borderColor: 'border-emerald-500/20', hoverShadow: 'shadow-emerald-500/10' },
-    blue: { iconColor: 'text-blue-500', borderColor: 'border-blue-500/20', hoverShadow: 'shadow-blue-500/10' },
-    orange: { iconColor: 'text-orange-500', borderColor: 'border-orange-500/20', hoverShadow: 'shadow-orange-500/10' },
-    cyan: { iconColor: 'text-cyan-500', borderColor: 'border-cyan-500/20', hoverShadow: 'shadow-cyan-500/10' },
-    indigo: { iconColor: 'text-indigo-500', borderColor: 'border-indigo-500/20', hoverShadow: 'shadow-indigo-500/10' },
-    teal: { iconColor: 'text-teal-500', borderColor: 'border-teal-500/20', hoverShadow: 'shadow-teal-500/10' },
-    pink: { iconColor: 'text-pink-500', borderColor: 'border-pink-500/20', hoverShadow: 'shadow-pink-500/10' },
-    rose: { iconColor: 'text-rose-500', borderColor: 'border-rose-500/20', hoverShadow: 'shadow-rose-500/10' },
+const tagConfig = {
+    "Most popular": { icon: Flame, className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" },
+    Trending: { icon: TrendingUp, className: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" },
+    "High demand": { icon: Star, className: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20" },
 };
 
-const glowStyles = {
-    emerald: 'bg-emerald-500/10 dark:bg-emerald-500/5',
-    blue: 'bg-blue-500/10 dark:bg-blue-500/5',
-    orange: 'bg-orange-500/10 dark:bg-orange-500/5',
-    cyan: 'bg-cyan-500/10 dark:bg-cyan-500/5',
-    indigo: 'bg-indigo-500/10 dark:bg-indigo-500/5',
-    teal: 'bg-teal-500/10 dark:bg-teal-500/5',
-    pink: 'bg-pink-500/10 dark:bg-pink-500/5',
-    rose: 'bg-rose-500/10 dark:bg-rose-500/5',
+const accentStyles = {
+    emerald: { text: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", ring: "ring-emerald-500/20", gradient: "from-emerald-500/15 via-emerald-500/5 to-transparent" },
+    blue: { text: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", ring: "ring-blue-500/20", gradient: "from-blue-500/15 via-blue-500/5 to-transparent" },
+    orange: { text: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", ring: "ring-orange-500/20", gradient: "from-orange-500/15 via-orange-500/5 to-transparent" },
+    cyan: { text: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", ring: "ring-cyan-500/20", gradient: "from-cyan-500/15 via-cyan-500/5 to-transparent" },
+    indigo: { text: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", ring: "ring-indigo-500/20", gradient: "from-indigo-500/15 via-indigo-500/5 to-transparent" },
+    teal: { text: "text-teal-600 dark:text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20", ring: "ring-teal-500/20", gradient: "from-teal-500/15 via-teal-500/5 to-transparent" },
+    pink: { text: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20", ring: "ring-pink-500/20", gradient: "from-pink-500/15 via-pink-500/5 to-transparent" },
+    rose: { text: "text-rose-600 dark:text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", ring: "ring-rose-500/20", gradient: "from-rose-500/15 via-rose-500/5 to-transparent" },
 };
+
+/* ---------- card (3×3 grid, compact) ---------- */
+
+const CategoryCard = ({ cat, index }) => {
+    const a = accentStyles[cat.accent] || accentStyles.emerald;
+    const tag = cat.tag ? tagConfig[cat.tag] : null;
+    const TagIcon = tag?.icon;
+
+    return (
+        <Link
+            to={`/tutors?subjects=${cat.slug}`}
+            aria-label={`Browse ${cat.label} tutors`}
+            className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-2xl"
+            style={{ animationDelay: `${100 + index * 50}ms` }}
+        >
+            <div
+                className={cn(
+                    "relative h-full overflow-hidden rounded-2xl border border-border/70 bg-card",
+                    "transition-all duration-300 ease-out",
+                    "hover:-translate-y-1 hover:shadow-premium-md",
+                    "active:scale-[0.985]"
+                )}
+            >
+                {/* Soft accent gradient on hover */}
+                <div
+                    className={cn(
+                        "pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0",
+                        "transition-opacity duration-500 group-hover:opacity-100",
+                        a.gradient
+                    )}
+                />
+
+                {/* Border + ring accent on hover */}
+                <div
+                    className={cn(
+                        "pointer-events-none absolute inset-0 rounded-2xl border border-transparent",
+                        "transition-colors duration-300",
+                        "group-hover:[border-color:var(--tw-border)]",
+                        a.border
+                    )}
+                />
+                <div
+                    className={cn(
+                        "pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-transparent",
+                        "transition-all duration-300 group-hover:ring-2",
+                        a.ring
+                    )}
+                />
+
+                {/* Tag badge — top right */}
+                {tag && TagIcon && (
+                    <span
+                        className={cn(
+                            "absolute top-3 right-3 z-10 inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider backdrop-blur-sm",
+                            tag.className
+                        )}
+                    >
+                        <TagIcon className="size-2.5" />
+                        {cat.tag}
+                    </span>
+                )}
+
+                <div className="relative z-10 flex h-full flex-col gap-3 p-4 md:p-5">
+                    {/* Icon + label in same line */}
+                    <div className="flex items-center gap-3">
+                        <div
+                            className={cn(
+                                "flex shrink-0 items-center justify-center rounded-xl border",
+                                "transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-4deg]",
+                                "size-10 md:size-11",
+                                a.bg,
+                                a.border
+                            )}
+                        >
+                            <cat.icon className={cn("size-5", a.text)} strokeWidth={2} />
+                        </div>
+                        <div className="min-w-0 flex-1 pr-16">
+                            <h3 className="truncate font-heading font-black tracking-tight text-foreground leading-tight text-base md:text-lg">
+                                {cat.label}
+                            </h3>
+                            <p className="truncate text-[11px] text-muted-foreground leading-tight mt-0.5">
+                                {cat.context}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Footer: stats + view btn in same line */}
+                    <div className="mt-auto flex items-center justify-between border-t border-border/60 pt-3">
+                        <div className="flex items-center gap-2.5 text-[11px] font-bold text-foreground">
+                            <span className="flex items-center gap-1">
+                                <Users className={cn("size-3", a.text)} />
+                                {cat.count} tutors
+                            </span>
+                            <span className="flex items-center gap-0.5 text-amber-500">
+                                <Star className="size-3 fill-amber-400" />
+                                {cat.rating}
+                            </span>
+                        </div>
+                        <span
+                            className={cn(
+                                "inline-flex items-center gap-0.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider",
+                                "bg-foreground text-background",
+                                "transition-all duration-300 group-hover:gap-1"
+                            )}
+                        >
+                            View
+                            <ArrowUpRight className="size-3" strokeWidth={2.5} />
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </Link>
+    );
+};
+
+/* ---------- section ---------- */
 
 const FeaturedCategories = () => {
     return (
-        <section className="py-16 md:py-20 bg-card relative overflow-hidden">
-            {/* Background decorative elements */}
-            <div className="absolute top-0 right-0 size-80 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+        <section className="relative overflow-hidden bg-card py-12 md:py-16">
+            {/* Decorative blobs */}
+            <div className="pointer-events-none absolute -top-32 -right-32 size-96 rounded-full bg-primary/5 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-32 -left-32 size-96 rounded-full bg-primary/5 blur-3xl" />
 
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="mb-12 md:mb-16 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-                    <h2 className="text-3xl md:text-5xl font-heading text-foreground tracking-tight leading-[0.95] mb-4">Find your <span className="text-primary">subject</span></h2>
-                    <p className="text-lg text-muted-foreground leading-relaxed font-body">From school preparation to university-level coaching</p>
+            <div className="relative z-10 mx-auto max-w-7xl px-6">
+                {/* Compact header */}
+                <div className="mb-6 flex flex-col gap-3 md:mb-8 md:flex-row md:items-end md:justify-between">
+                    <div
+                        className="max-w-2xl opacity-0 animate-fade-in-up"
+                        style={{ animationDelay: "80ms" }}
+                    >
+                        <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1">
+                            <span className="relative flex size-1.5">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                                <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
+                            </span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                                Browse by subject
+                            </span>
+                        </div>
+                        <h2 className="text-2xl font-heading font-black leading-[0.95] tracking-tight text-foreground md:text-3xl lg:text-4xl">
+                            Find your <span className="text-primary">subject</span>
+                        </h2>
+                        <p className="mt-1.5 text-sm text-muted-foreground md:text-base">
+                            From school prep to university coaching — pick a category to start.
+                        </p>
+                    </div>
+
+                    <Link
+                        to="/tutors"
+                        className="group inline-flex items-center gap-1.5 self-start rounded-full border border-border bg-background px-4 py-2 text-xs font-bold text-foreground transition-all duration-300 hover:border-primary/40 hover:bg-primary hover:text-primary-foreground hover:shadow-premium md:self-end"
+                    >
+                        View all
+                        <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:rotate-[-8deg]" />
+                    </Link>
                 </div>
 
-                {/* Desktop Grid Layout */}
-                <div className="hidden md:grid grid-cols-4 gap-6">
-                    {categories.map((cat, idx) => {
-                        const a = accentStyles[cat.accent] || accentStyles.emerald;
-                        const tag = cat.tag ? tagConfig[cat.tag] : null;
-                        const TagIcon = tag?.icon;
-                        const glowBg = glowStyles[cat.accent] || glowStyles.emerald;
+                {/* 3×3 grid (8 cards fill 8 of 9 cells; last cell is a "view all" tile) */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                    {categories.map((cat, idx) => (
+                        <CategoryCard key={cat.slug} cat={cat} index={idx} />
+                    ))}
 
-                        return (
-                            <Link
-                                key={cat.slug}
-                                to={`/tutors?subjects=${cat.slug}`}
-                                className="block group opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
-                                style={{ animationDelay: `${150 + idx * 50}ms` }}
-                            >
-                                <Card variant="elevated" className="p-4 relative h-full transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98] overflow-hidden flex flex-col gap-2.5">
-                                    {/* Ambient Hover Glow Bubble */}
-                                    <div className={`absolute -top-12 -left-12 size-24 rounded-full ${glowBg} blur-xl group-hover:scale-150 transition-transform duration-500 pointer-events-none`}></div>
-
-                                    <div className="relative z-10">
-                                        {tag && TagIcon && (
-                                            <Badge variant={tag.variant} size="xs" className="gap-1 shadow-sm">
-                                                <TagIcon className="size-2.5" /> {cat.tag}
-                                            </Badge>
-                                        )}
-                                    </div>
-
-                                    <div className="relative z-10 flex items-start justify-between gap-3">
-                                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                                            <div className={`size-11 flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-muted to-background border ${a.borderColor} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                                                <cat.icon className={`size-5 ${a.iconColor}`} />
-                                            </div>
-                                            <div className="min-w-0">
-                                                <div className="font-heading text-sm text-foreground tracking-tight leading-tight">{cat.label}</div>
-                                                <div className="text-xs text-muted-foreground leading-tight mt-0.5">{cat.context}</div>
-                                            </div>
-                                        </div>
-                                        <Button variant="ghost" size="icon-xs" className="shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-white transition-all duration-300 group-hover:translate-x-0.5">
-                                            <ArrowRight className="size-3" />
-                                        </Button>
-                                    </div>
-
-                                    <div className="relative z-10 flex items-center gap-1.5 text-xs pt-2 border-t border-border/50">
-                                        <span className="font-semibold text-foreground">{cat.count}</span>
-                                        <span className="text-muted-foreground">Tutors</span>
-                                        <span className="text-border/50 mx-0.5">•</span>
-                                        <span className="font-semibold text-amber-500">{cat.rating}★</span>
-                                        <span className="text-muted-foreground">Rating</span>
-                                    </div>
-                                </Card>
-                            </Link>
-                        );
-                    })}
-                </div>
-
-                {/* Mobile Cards */}
-                <div className="flex flex-col gap-3 md:hidden">
-                    {categories.map((cat, idx) => {
-                        const a = accentStyles[cat.accent] || accentStyles.emerald;
-                        const tag = cat.tag ? tagConfig[cat.tag] : null;
-                        const TagIcon = tag?.icon;
-                        const glowBg = glowStyles[cat.accent] || glowStyles.emerald;
-
-                        return (
-                            <Link
-                                key={cat.slug}
-                                to={`/tutors?subjects=${cat.slug}`}
-                                className="block group opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
-                                style={{ animationDelay: `${150 + idx * 50}ms` }}
-                            >
-                                <Card variant="elevated" className="p-4 relative transition-all duration-300 hover:border-primary/30 hover:shadow-xl active:scale-[0.98] overflow-hidden flex flex-col gap-2.5">
-                                    {/* Ambient Hover Glow Bubble */}
-                                    <div className={`absolute -top-12 -left-12 size-24 rounded-full ${glowBg} blur-xl group-hover:scale-150 transition-transform duration-500 pointer-events-none`}></div>
-
-                                    <div className="relative z-10">
-                                        {tag && TagIcon && (
-                                            <Badge variant={tag.variant} size="xs" className="gap-1 shadow-sm">
-                                                <TagIcon className="size-2.5" /> {cat.tag}
-                                            </Badge>
-                                        )}
-                                    </div>
-
-                                    <div className="relative z-10 flex items-start justify-between gap-3">
-                                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                                            <div className={`size-11 flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-muted to-background border ${a.borderColor} shadow-sm`}>
-                                                <cat.icon className={`size-5 ${a.iconColor}`} />
-                                            </div>
-                                            <div className="min-w-0">
-                                                <div className="font-heading text-sm text-foreground tracking-tight leading-tight">{cat.label}</div>
-                                                <div className="text-xs text-muted-foreground leading-tight mt-0.5">{cat.context}</div>
-                                            </div>
-                                        </div>
-                                        <Button variant="ghost" size="icon-xs" className="shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                            <ArrowRight className="size-3" />
-                                        </Button>
-                                    </div>
-
-                                    <div className="relative z-10 flex items-center gap-1.5 text-xs pt-2 border-t border-border/50">
-                                        <span className="font-semibold text-foreground">{cat.count}</span>
-                                        <span className="text-muted-foreground">Tutors</span>
-                                        <span className="text-border/50 mx-0.5">•</span>
-                                        <span className="font-semibold text-amber-500">{cat.rating}★</span>
-                                        <span className="text-muted-foreground">Rating</span>
-                                    </div>
-                                </Card>
-                            </Link>
-                        );
-                    })}
+                    {/* 9th cell: "View all subjects" tile */}
+                    <Link
+                        to="/tutors"
+                        className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-2xl"
+                        style={{ animationDelay: `${100 + categories.length * 50}ms` }}
+                    >
+                        <div
+                            className={cn(
+                                "relative flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-dashed border-border bg-background/40 p-4 md:p-5",
+                                "transition-all duration-300 ease-out",
+                                "hover:-translate-y-1 hover:border-primary/40 hover:bg-primary/5 hover:shadow-premium-md",
+                                "active:scale-[0.985]"
+                            )}
+                        >
+                            <div className="flex size-10 md:size-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-8deg]">
+                                <ArrowUpRight className="size-5" strokeWidth={2.5} />
+                            </div>
+                            <div className="text-center">
+                                <h3 className="font-heading font-black tracking-tight text-foreground leading-tight text-base md:text-lg">
+                                    View all
+                                </h3>
+                                <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                                    See every subject
+                                </p>
+                            </div>
+                        </div>
+                    </Link>
                 </div>
             </div>
         </section>
