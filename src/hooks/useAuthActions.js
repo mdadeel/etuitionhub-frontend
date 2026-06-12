@@ -8,7 +8,6 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
     const googleProvider = new GoogleAuthProvider();
 
     const saveUserToDB = async (firebaseUser, role, mobileNumber = '') => {
-        const toastId = toast.loading("Saving user...");
         try {
             const userData = {
                 displayName: firebaseUser.displayName,
@@ -20,16 +19,10 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             };
 
             const res = await api.post('/api/users', userData);
-
-            toast.dismiss(toastId);
-
             setDbUser(res.data);
             setUserRole(res.data.role);
-
             return res.data;
         } catch (error) {
-            toast.dismiss(toastId);
-
             if (error.code === 'ERR_NETWORK') {
                 toast.error('Cannot connect to server. Is backend running?');
             } else {
@@ -37,6 +30,25 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             }
             throw error;
         }
+    };
+
+    // Fire-and-forget version: saves user in background without blocking auth flow.
+    // Sets optimistic state immediately so user can proceed to dashboard.
+    const saveUserToDBInBackground = (firebaseUser, role, mobileNumber = '') => {
+        const optimisticUser = {
+            _id: 'pending',
+            displayName: firebaseUser.displayName,
+            email: firebaseUser.email,
+            photoURL: firebaseUser.photoURL || '',
+            role: role,
+            mobileNumber: mobileNumber,
+            isVerified: false
+        };
+        setDbUser(optimisticUser);
+        setUserRole(role);
+
+        // Save in background — don't block the login flow
+        saveUserToDB(firebaseUser, role, mobileNumber).catch(() => {});
     };
 
     const register = async (email, password, name, role = 'student', phone = '') => {
@@ -63,13 +75,14 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
         try {
             let result = await createUserWithEmailAndPassword(auth, email, password);
-            // Parallelize: update profile + save to DB + create JWT
-            const [, savedUser] = await Promise.all([
+            // Update profile in parallel with JWT creation (both fast)
+            await Promise.all([
                 updateProfile(result.user, { displayName: name }),
-                saveUserToDB(result.user, role, phone),
+                setJWT(result.user.email, result.user),
             ]);
 
-            await setJWT(result.user.email, result.user);
+            // Save user to DB in background (non-blocking)
+            saveUserToDBInBackground(result.user, role, phone);
 
             setLoading(false);
             return result;
@@ -86,6 +99,10 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         try {
             const result = await signInWithEmailAndPassword(auth, email, password);
             await setJWT(result.user.email, result.user);
+
+            // Fetch user from DB in background (non-blocking)
+            refreshUserFromDB(email).catch(() => {});
+
             return result;
         } catch (error) {
             setLoading(false);
@@ -100,14 +117,11 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             let result = await signInWithPopup(auth, googleProvider);
             const email = result.user.email;
 
-            // Parallelize: save user to DB and create JWT at the same time
-            const [dbRecord] = await Promise.all([
-                saveUserToDB(result.user, selectedRole),
-                setJWT(email, result.user),
-            ]);
+            // Set JWT first (fast) — user can proceed to dashboard
+            await setJWT(email, result.user);
 
-            setDbUser(dbRecord);
-            setUserRole(dbRecord.role);
+            // Save user to DB in background (non-blocking)
+            saveUserToDBInBackground(result.user, selectedRole);
 
             return result;
         } catch (error) {
@@ -131,14 +145,11 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
                 throw error;
             }
 
-            // Parallelize: save user to DB and create JWT at the same time
-            const [dbRecord] = await Promise.all([
-                saveUserToDB(result.user, role),
-                setJWT(email, result.user),
-            ]);
+            // Set JWT first (fast) — user can proceed to dashboard
+            await setJWT(email, result.user);
 
-            setDbUser(dbRecord);
-            setUserRole(dbRecord.role);
+            // Save user to DB in background (non-blocking)
+            saveUserToDBInBackground(result.user, role);
 
             return result;
         } catch (error) {

@@ -202,8 +202,8 @@ const DashboardSidebar = ({ role }) => {
                       className={cn(
                         "flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 group border",
                         isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground border-transparent hover:bg-accent hover:text-accent-foreground",
+                          ? "bg-primary/10 text-primary border-primary/20"
+                          : "text-muted-foreground border-transparent hover:bg-muted hover:text-foreground",
                       )}
                     >
                       <div className="flex items-center gap-3">
