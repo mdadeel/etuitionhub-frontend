@@ -2,6 +2,7 @@
 // interceptors add kora ache for auth
 import axios from 'axios';
 import API_URL from '../config/api';
+import toast from 'react-hot-toast';
 
 const api = axios.create({
     baseURL: API_URL,
@@ -51,7 +52,8 @@ api.interceptors.response.use(
             } catch (refreshError) {
                 processQueue(refreshError);
                 if (!window.location.pathname.includes('/login')) {
-                    window.location.href = '/login?expired=true';
+                    toast.error('Session expired. Please login again.', { duration: 4000 });
+                    setTimeout(() => { window.location.href = '/login'; }, 1000);
                 }
                 return Promise.reject(refreshError);
             } finally {
@@ -62,14 +64,13 @@ api.interceptors.response.use(
         // Handle other errors
         if (status === 401) {
             if (!window.location.pathname.includes('/login')) {
-                window.location.href = '/login?expired=true';
+                toast.error('Session expired. Please login again.', { duration: 4000 });
+                setTimeout(() => { window.location.href = '/login'; }, 1000);
             }
         } else if (status === 403) {
-            console.warn('403 forbidden:', err.response?.data?.error);
+            toast.error('You do not have permission to perform this action.');
         } else if (status === 404) {
             // let component handle
-        } else {
-            console.log('api error:', err.message);
         }
 
         return Promise.reject(err);

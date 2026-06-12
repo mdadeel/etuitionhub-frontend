@@ -76,6 +76,16 @@ export default {
         'slide-up': 'slideUp 250ms ease-out',
         'scale-in': 'scaleIn 200ms ease-out',
       },
+      zIndex: {
+        'base': '0',
+        'dropdown': '50',
+        'sticky': '60',
+        'overlay': '70',
+        'modal': '80',
+        'popover': '90',
+        'toast': '100',
+        'tooltip': '110',
+      },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },

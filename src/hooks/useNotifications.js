@@ -3,6 +3,14 @@ import api from '../services/api';
 import { useRealtimeStore } from '../store/realtimeStore';
 import { getSocket } from './useSocketEvents';
 
+const isSafeRedirect = (url) => {
+    if (!url) return false;
+    if (url.startsWith('/') && !url.startsWith('//')) return true;
+    try {
+        return new URL(url, window.location.origin).origin === window.location.origin;
+    } catch { return false; }
+};
+
 // eslint-disable-next-line no-unused-vars
 const useNotifications = ({ userId, pageSize = 20 } = {}) => {
     const [notifications, setNotifications] = useState([]);
@@ -30,7 +38,7 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
                 setPagination({ page, totalPages: 1, total: 0 });
             }
         } catch (err) {
-            console.error('Error fetching notifications:', err);
+            if (import.meta.env.DEV) console.warn('Error fetching notifications:', err);
             setNotifications([]);
         } finally {
             setIsLoading(false);
@@ -69,7 +77,7 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
             ));
             decrementUnread();
         } catch (err) {
-            console.error('Error marking as read:', err);
+            if (import.meta.env.DEV) console.warn('Error marking as read:', err);
         }
     }, [decrementUnread]);
 
@@ -79,7 +87,7 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
             resetUnread();
         } catch (err) {
-            console.error('Error marking all as read:', err);
+            if (import.meta.env.DEV) console.warn('Error marking all as read:', err);
         }
     }, [resetUnread]);
 
@@ -88,7 +96,7 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
             await api.delete(`/api/notifications/${id}`);
             setNotifications(prev => prev.filter(n => n._id !== id));
         } catch (err) {
-            console.error('Error deleting:', err);
+            if (import.meta.env.DEV) console.warn('Error deleting:', err);
         }
     }, []);
 
@@ -97,18 +105,18 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
             await api.delete('/api/notifications/batch', { data: { ids } });
             setNotifications(prev => prev.filter(n => !ids.includes(n._id)));
         } catch (err) {
-            console.error('Error batch deleting:', err);
+            if (import.meta.env.DEV) console.warn('Error batch deleting:', err);
         }
     }, []);
 
     const handleAction = useCallback(async (id, action, link) => {
         try {
             await api.post(`/api/notifications/${id}/action`, { action, link });
-            if (link) {
+            if (link && isSafeRedirect(link)) {
                 window.location.href = link;
             }
         } catch (err) {
-            console.error('Error handling action:', err);
+            if (import.meta.env.DEV) console.warn('Notification action error:', err);
         }
     }, []);
 

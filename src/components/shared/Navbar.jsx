@@ -182,7 +182,7 @@ const Navbar = () => {
                 type="text"
                 placeholder="Search tutors by subject or location…"
                 autoComplete="off"
-                className="w-full pl-9 pr-4 h-10 rounded-lg text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 transition-all duration-300"
+                className="w-full pl-9 pr-4 h-10 rounded-lg text-sm bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -257,7 +257,7 @@ const Navbar = () => {
               type="text"
               placeholder="Search tutors by subject or location…"
               autoComplete="off"
-              className="w-full pl-10 pr-4 h-10 rounded-lg text-sm bg-muted border border-border !text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all duration-300 placeholder:text-muted-foreground"
+              className="w-full pl-10 pr-4 h-10 rounded-lg text-sm bg-muted border border-border !text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-300 placeholder:text-muted-foreground"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setShowDropdown(true)}
@@ -431,7 +431,7 @@ const Navbar = () => {
               <div ref={profileDropdownRef} className="relative hidden md:block">
                 <button
                   onClick={() => setIsProfileDropdownOpen((prev) => !prev)}
-                  className="size-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300 block focus:outline-none"
+                  className="size-9 bg-muted border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300 block focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-background"
                 >
                   <Avatar size="sm" className="size-9 rounded-lg">
                     <AvatarImage src={dbUser?.photoURL || user?.photoURL} alt={dbUser?.displayName || user?.displayName} />
@@ -484,13 +484,13 @@ const Navbar = () => {
             <div className="hidden sm:flex items-center gap-5">
               <Link
                 to="/login"
-                className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-label text-xs tracking-wide"
+                className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-label text-xs tracking-wide focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-background rounded px-2 py-1 -mx-2 -my-1"
               >
                 {t("nav.login", "Sign In")}
               </Link>
               <Link
                 to="/register"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-lg text-xs font-medium transition-all duration-300 hover:shadow-md"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-lg text-xs font-medium transition-all duration-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-background"
               >
                 {t("nav.get_started", "Get Started")}
               </Link>
@@ -523,7 +523,7 @@ const Navbar = () => {
                   type="text"
                   placeholder="Search tutors by subject or location…"
                   autoComplete="off"
-                  className="w-full pl-10 pr-4 h-11 rounded-lg bg-muted border border-border text-foreground text-sm placeholder:text-muted-foreground"
+                  className="w-full pl-10 pr-4 h-11 rounded-lg bg-muted border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
