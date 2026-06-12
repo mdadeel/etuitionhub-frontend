@@ -28,7 +28,7 @@ api.interceptors.response.use(
         const originalRequest = err.config;
         const status = err.response?.status;
 
-        if (status === 401 && !originalRequest._retry) {
+        if (status === 401 && !originalRequest._retry && !originalRequest._isRefresh) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
@@ -46,7 +46,12 @@ api.interceptors.response.use(
                 // current origin, which on a separate-frontend/backend
                 // deployment is the frontend host — and /auth/refresh isn't
                 // served there.
-                await api.post('/api/auth/refresh', {}, { withCredentials: true });
+                //
+                // Mark _isRefresh so the interceptor never tries to refresh
+                // the refresh request itself — that caused a deadlock when
+                // the refresh endpoint returned 401 (the queued promise
+                // could never be settled because processQueue was unreachable).
+                await api.post('/api/auth/refresh', {}, { withCredentials: true, _isRefresh: true });
                 processQueue(null);
                 return api(originalRequest);
             } catch (refreshError) {

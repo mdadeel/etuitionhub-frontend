@@ -114,8 +114,10 @@ const PaymentHistory = () => {
                                                 {(() => {
                                                     const statusMap = {
                                                         pending_verification: { label: 'PENDING', class: 'text-amber-500 border-amber-500/20 bg-amber-500/5' },
-                                                        verified: { label: 'VERIFIED', class: 'text-primary border-primary bg-primary/5' },
-                                                        completed: { label: 'COMPLETED', class: 'text-primary border-primary bg-primary/5' },
+                                                        confirmed: { label: 'CONFIRMED', class: 'text-primary border-primary bg-primary/5' },
+                                                        commission_applied: { label: 'COMMISSION SET', class: 'text-primary border-primary bg-primary/5' },
+                                                        available_for_withdrawal: { label: 'AVAILABLE', class: 'text-primary border-primary bg-primary/5' },
+                                                        withdrawn: { label: 'WITHDRAWN', class: 'text-primary border-primary bg-primary/5' },
                                                         rejected: { label: 'REJECTED', class: 'text-destructive border-destructive/20 bg-destructive/5' }
                                                     };
                                                     const s = statusMap[payment.status] || statusMap.pending_verification;

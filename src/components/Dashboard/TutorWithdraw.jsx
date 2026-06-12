@@ -1,19 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { ArrowDownToLine, Wallet, AlertCircle, ArrowRight } from 'lucide-react';
+import { ArrowDownToLine, Wallet, AlertCircle, ArrowRight, Phone } from 'lucide-react';
 import api from '../../services/api';
 import { useWalletQuery } from '../../hooks/useWalletQuery';
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormSkeleton, CardSkeleton } from "@/components/shared/skeletons";
 import { useWithdrawalsQuery } from '../../hooks/queries/useWithdrawalsQuery';
+import { useAuth } from '../../contexts/AuthContext';
+
+const BkashIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#D12053"/>
+        <path d="M7 7h3.5l2.5 5.5L15.5 7H19l-4.5 9h-3L7 7z" fill="white"/>
+    </svg>
+);
+
+const NagadIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#F7941D"/>
+        <path d="M7 7h4c2.5 0 4 1.5 4 3.5S13.5 14 11 14H7V7zm0 7h4.5c1.8 0 3-1 3-2.5S13.3 9 11.5 9H7v5z" fill="white"/>
+    </svg>
+);
+
+const RocketIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#8C3494"/>
+        <path d="M8 7l4 5-4 5M12 7l4 5-4 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
+const BankIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
+    </svg>
+);
+
+const METHOD_ICONS = {
+    bkash: BkashIcon,
+    nagad: NagadIcon,
+    rocket: RocketIcon,
+    bank: BankIcon,
+};
 
 const METHODS = [
-    { id: 'bkash', name: 'bKash', color: 'bg-[#D12053]' },
-    { id: 'nagad', name: 'Nagad', color: 'bg-[#F7941D]' },
-    { id: 'rocket', name: 'Rocket', color: 'bg-[#8C3494]' },
-    { id: 'bank', name: 'Bank Transfer', color: 'bg-primary' },
+    { id: 'bkash', name: 'bKash' },
+    { id: 'nagad', name: 'Nagad' },
+    { id: 'rocket', name: 'Rocket' },
+    { id: 'bank', name: 'Bank Transfer' },
 ];
 
 const STATUS_COLORS = {
@@ -26,6 +61,7 @@ const STATUS_COLORS = {
 const TutorWithdraw = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const { dbUser } = useAuth();
     const { data: walletData, isLoading: walletLoading } = useWalletQuery();
     const { data: withdrawals = [], isLoading: withdrawalsLoading } = useWithdrawalsQuery('me');
     const wallet = walletData?.wallet || null;
@@ -34,9 +70,15 @@ const TutorWithdraw = () => {
     const [form, setForm] = useState({
         amount: '',
         method: 'bkash',
-        accountNumber: '',
+        accountNumber: dbUser?.mobileNumber || '',
         accountName: '',
     });
+
+    useEffect(() => {
+        if (dbUser?.mobileNumber && !form.accountNumber) {
+            setForm(prev => ({ ...prev, accountNumber: dbUser.mobileNumber }));
+        }
+    }, [dbUser]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -57,6 +99,7 @@ const TutorWithdraw = () => {
                 method: form.method,
                 accountNumber: form.accountNumber.trim(),
                 accountName: form.accountName.trim(),
+                mobileNumber: dbUser?.mobileNumber || form.accountNumber.trim(),
             });
             toast.success('Withdrawal requested. Admin will process it shortly.');
             setForm({ amount: '', method: 'bkash', accountNumber: '', accountName: '' });
@@ -130,30 +173,39 @@ const TutorWithdraw = () => {
                     <div className="space-y-2">
                         <label className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Method</label>
                         <div className="grid grid-cols-2 gap-2">
-                            {METHODS.map((m) => (
-                                <button
-                                    key={m.id}
-                                    type="button"
-                                    onClick={() => setForm({ ...form, method: m.id })}
-                                    className={`h-12 px-4 rounded-lg border flex items-center gap-3 transition-all active:scale-[0.98] ${form.method === m.id ? 'border-emerald-500 bg-emerald-500/5' : 'border-border hover:border-foreground/20'}`}
-                                >
-                                    <div className={`size-2 ${m.color}`}></div>
-                                    <span className="text-xs font-heading font-bold uppercase tracking-widest">{m.name}</span>
-                                </button>
-                            ))}
+                            {METHODS.map((m) => {
+                                const Icon = METHOD_ICONS[m.id];
+                                return (
+                                    <button
+                                        key={m.id}
+                                        type="button"
+                                        onClick={() => setForm({ ...form, method: m.id })}
+                                        className={`h-12 px-4 rounded-lg border flex items-center gap-3 transition-all active:scale-[0.98] ${form.method === m.id ? 'border-emerald-500 bg-emerald-500/5' : 'border-border hover:border-foreground/20'}`}
+                                    >
+                                        <Icon />
+                                        <span className="text-xs font-heading font-bold uppercase tracking-widest">{m.name}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Account Number</label>
-                        <input
-                            type="text"
-                            value={form.accountNumber}
-                            onChange={(e) => setForm({ ...form, accountNumber: e.target.value })}
-                            className="w-full h-12 rounded-lg border border-border bg-background px-4 font-bold tabular-nums focus:outline-none focus:border-emerald-500"
-                            placeholder="01XXXXXXXXX"
-                            required
-                        />
+                        <label className="text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Account Number / Phone</label>
+                        <div className="relative">
+                            <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+                            <input
+                                type="text"
+                                value={form.accountNumber}
+                                onChange={(e) => setForm({ ...form, accountNumber: e.target.value })}
+                                className="w-full h-12 rounded-lg border border-border bg-background pl-9 pr-4 font-bold tabular-nums focus:outline-none focus:border-emerald-500"
+                                placeholder="01XXXXXXXXX"
+                                required
+                            />
+                        </div>
+                        {dbUser?.mobileNumber && form.accountNumber === dbUser.mobileNumber && (
+                            <p className="text-[10px] text-muted-foreground/60">Pre-filled from your profile. Edit if different.</p>
+                        )}
                     </div>
 
                     <div className="space-y-2">
@@ -204,7 +256,10 @@ const TutorWithdraw = () => {
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground/70">
-                                        <span className="uppercase tracking-widest">{w.method} · {w.accountNumber}</span>
+                                        <span className="uppercase tracking-widest flex items-center gap-1.5">
+                                            {(() => { const Icon = METHOD_ICONS[w.method]; return Icon ? <Icon /> : null; })()}
+                                            {w.method} · {w.accountNumber}
+                                        </span>
                                         <span className="tabular-nums">{new Date(w.createdAt).toLocaleDateString()}</span>
                                     </div>
                                     {w.rejectionReason && (

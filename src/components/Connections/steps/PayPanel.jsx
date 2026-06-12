@@ -50,7 +50,6 @@ const PayPanel = ({ connection, onMarked }) => {
             <option value="nagad">Nagad</option>
             <option value="rocket">Rocket</option>
             <option value="bank">Bank</option>
-            <option value="sslcommerz">SSLCommerz</option>
           </select>
         </div>
         <input

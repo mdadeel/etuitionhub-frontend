@@ -50,7 +50,7 @@ const HowItWorks = () => {
                                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                                 {/* Step Number - Gradient Circle */}
-                                <div className="w-13 h-13 rounded-full mb-6 flex items-center justify-center font-heading text-lg font-bold text-primary-foreground shadow-lg shadow-primary/25"
+                                <div className="rounded-full mb-6 flex items-center justify-center font-heading text-lg font-bold text-primary-foreground shadow-lg shadow-primary/25"
                                     style={{ width: '52px', height: '52px', background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))' }}
                                 >
                                     {idx + 1}

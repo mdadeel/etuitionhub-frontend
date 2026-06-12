@@ -81,9 +81,14 @@ const useSessionManager = () => {
                 }
                 // Token refresh or silent auth event — update user but don't show spinner
                 if (currentUser?.email) {
-                    // Silent JWT refresh + user refresh in background
-                    setJWT(currentUser.email, currentUser).catch(() => {});
-                    refreshUserFromDB(currentUser.email).catch(() => {});
+                    // Silent JWT refresh + user refresh in background.
+                    // Chain refreshUserFromDB AFTER setJWT completes so the
+                    // new access-token cookie is in place before the next
+                    // request — prevents a 401 race when the old token is
+                    // expired.
+                    setJWT(currentUser.email, currentUser)
+                        .then(() => refreshUserFromDB(currentUser.email).catch(() => {}))
+                        .catch(() => {});
                 } else {
                     setDbUser(null);
                     setUserRole(null);

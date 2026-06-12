@@ -12,7 +12,6 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
     const [availability, setAvailability] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedSlot, setSelectedSlot] = useState(null);
-    const [booking, setBooking] = useState(null);
 
     useEffect(() => {
         if (isOpen && tutorId) {
@@ -40,7 +39,6 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                 status: 'pending'
             });
 
-            setBooking(bookingRes.data);
             setStep(3);
             toast.success('Booking created! Complete payment from your dashboard.');
         } catch (err) {

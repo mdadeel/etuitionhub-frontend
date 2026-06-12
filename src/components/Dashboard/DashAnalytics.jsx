@@ -71,7 +71,7 @@ const DashAnalytics = () => {
             const admins = users.filter(u => u.role === 'admin').length;
             const pending = tuitions.filter(t => t.status === 'pending').length;
             const approved = tuitions.filter(t => t.status === 'approved').length;
-            const completed = payments.filter(p => p.status === 'verified');
+            const completed = payments.filter(p => p.status === 'confirmed');
             const revenue = completed.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
 
             setTransactions(payments);
@@ -287,7 +287,7 @@ const DashAnalytics = () => {
                                             <span className="text-xs md:text-sm font-heading font-black text-primary tabular-nums">৳{tx.amount?.toLocaleString()}</span>
                                         </td>
                                         <td className="px-4 md:px-6 py-4 text-right">
-                                            <span className={`px-2.5 py-1 text-[10px] font-label font-semibold uppercase tracking-wider rounded-lg border ${tx.status === 'verified'
+                                            <span className={`px-2.5 py-1 text-[10px] font-label font-semibold uppercase tracking-wider rounded-lg border ${tx.status === 'confirmed'
                                                 ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
                                                 : tx.status === 'rejected'
                                                 ? 'bg-red-500/10 text-red-700 border-red-500/20'

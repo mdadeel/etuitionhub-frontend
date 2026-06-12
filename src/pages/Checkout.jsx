@@ -11,7 +11,9 @@ import {
     Zap,
     Database,
     Send,
-    AlertCircle
+    AlertCircle,
+    Upload,
+    CheckCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +50,8 @@ const Checkout = () => {
         senderNumber: '',
         notes: ''
     });
+    const [screenshotFile, setScreenshotFile] = useState(null);
+    const [screenshotUploaded, setScreenshotUploaded] = useState(false);
 
     const fetchApplication = async () => {
         try {
@@ -80,6 +84,21 @@ const Checkout = () => {
         }));
     };
 
+    const handleScreenshotChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('Screenshot must be under 5MB');
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please select an image file');
+            return;
+        }
+        setScreenshotFile(file);
+        setScreenshotUploaded(false);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -110,8 +129,24 @@ const Checkout = () => {
             const response = await api.post('/api/payments/manual', paymentData);
 
             if (response.status === 201) {
-                toast.success('Payment submitted for verification');
                 const paymentId = response.data?._id || response.data?.id;
+
+                // Upload screenshot if selected
+                if (screenshotFile && paymentId) {
+                    try {
+                        const fd = new FormData();
+                        fd.append('screenshot', screenshotFile);
+                        fd.append('paymentId', paymentId);
+                        await api.post('/api/upload/payment-screenshot', fd, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                        });
+                        setScreenshotUploaded(true);
+                    } catch {
+                        // Screenshot upload failed — payment still submitted
+                    }
+                }
+
+                toast.success('Payment submitted for verification');
                 navigate(paymentId ? `/payment-success?payment_id=${paymentId}` : '/payment-success');
             }
         } catch (error) {
@@ -254,6 +289,30 @@ const Checkout = () => {
                                     className="min-h-[120px] rounded-none border-border bg-muted/20 font-medium focus-visible:ring-primary resize-none p-6 text-sm"
                                     placeholder="DETAIL_SPECIFIC_TRANSACTION_CONTEXT..."
                                 />
+                            </div>
+
+                            <div className="space-y-4">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Payment Screenshot (Optional)</Label>
+                                <div className="border border-border rounded-none bg-muted/20 p-6">
+                                    <label className="flex items-center gap-3 cursor-pointer">
+                                        <Upload size={16} className="text-muted-foreground" />
+                                        <span className="text-xs font-bold text-muted-foreground">
+                                            {screenshotFile ? screenshotFile.name : 'Click to upload payment screenshot'}
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleScreenshotChange}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                    {screenshotFile && (
+                                        <div className="mt-3 flex items-center gap-2 text-xs text-green-600">
+                                            <CheckCircle2 size={12} />
+                                            <span>{screenshotFile.name} ({(screenshotFile.size / 1024).toFixed(0)} KB)</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="pt-8 border-t border-border">

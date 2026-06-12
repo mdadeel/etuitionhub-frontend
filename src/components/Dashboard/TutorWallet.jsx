@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Wallet, TrendingUp, Clock, ArrowDownToLine, Banknote, ArrowUpRight } from 'lucide-react';
+import { Wallet, TrendingUp, Clock, ArrowDownToLine, Banknote, ArrowUpRight, Percent } from 'lucide-react';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import { useRealtimeStore } from '../../store/realtimeStore';
 import { useWalletQuery } from '../../hooks/useWalletQuery';
+import api from '../../services/api';
 
 const STATUS_COLORS = {
     pending_verification: 'bg-amber-500/10 text-amber-700 border-amber-500/20',
@@ -17,6 +18,13 @@ const STATUS_COLORS = {
 const TutorWallet = () => {
     const { data, isLoading, isError } = useWalletQuery();
     const walletSnapshot = useRealtimeStore((s) => s.walletSnapshot);
+    const [commissionPct, setCommissionPct] = useState(null);
+
+    useEffect(() => {
+        api.get('/api/settings/public').then(res => {
+            if (res.data?.commission_percentage) setCommissionPct(Number(res.data.commission_percentage));
+        }).catch(() => {});
+    }, []);
 
     // Live snapshot wins over the cached server value (covers the gap between
     // a socket event and the React Query refetch).
@@ -62,9 +70,18 @@ const TutorWallet = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <BalanceCard icon={Wallet} label="Available" amount={wallet.availableBalance} accent="emerald" subtitle="Ready to withdraw" />
                 <BalanceCard icon={Clock} label="Pending" amount={wallet.pendingBalance} accent="amber" subtitle="Withdrawal in progress" />
-                <BalanceCard icon={TrendingUp} label="Total Earned" amount={wallet.totalEarnings} accent="blue" subtitle="All time" />
+                <BalanceCard icon={TrendingUp} label="Total Earned" amount={wallet.totalEarnings} accent="blue" subtitle="All time (net)" />
                 <BalanceCard icon={Banknote} label="Total Withdrawn" amount={wallet.totalWithdrawn} accent="zinc" subtitle="Paid out" />
             </div>
+
+            {commissionPct !== null && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-muted/30 border border-border rounded-lg w-fit">
+                    <Percent size={12} className="text-muted-foreground" />
+                    <span className="text-[10px] font-label font-semibold text-muted-foreground uppercase tracking-wider">
+                        Platform commission: {commissionPct}%
+                    </span>
+                </div>
+            )}
 
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -84,7 +101,8 @@ const TutorWallet = () => {
                                 <tr className="bg-background border-b border-border">
                                     <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Student</th>
                                     <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Gross</th>
-                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Net</th>
+                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Commission</th>
+                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Net (You)</th>
                                     <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Status</th>
                                 </tr>
                             </thead>
@@ -93,6 +111,7 @@ const TutorWallet = () => {
                                     <tr key={p._id} className="hover:bg-muted/30 hover:text-foreground transition-colors">
                                         <td className="px-6 py-4 text-xs font-bold text-foreground">{(p.studentEmail || '').split('@')[0]}</td>
                                         <td className="px-6 py-4 text-xs font-heading font-bold text-foreground tabular-nums">৳{p.grossAmount}</td>
+                                        <td className="px-6 py-4 text-xs font-heading font-bold text-red-600 tabular-nums">-{p.commissionAmount ? `৳${p.commissionAmount}` : '—'}</td>
                                         <td className="px-6 py-4 text-xs font-heading font-bold text-emerald-700 tabular-nums">৳{p.netTutorAmount}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-0.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border ${STATUS_COLORS[p.status] || STATUS_COLORS.pending_verification}`}>

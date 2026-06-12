@@ -363,7 +363,7 @@ const TutorDashboard = () => {
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{payment.grossAmount}</td>
                                             <td className="px-8 py-6 text-right">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${payment.status === 'verified' ? 'bg-primary/10 text-primary' : 'bg-background text-muted-foreground'}`}>
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${payment.status === 'confirmed' ? 'bg-primary/10 text-primary' : 'bg-background text-muted-foreground'}`}>
                                                     {payment.status}
                                                 </span>
                                             </td>

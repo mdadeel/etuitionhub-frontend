@@ -20,7 +20,6 @@ import AdminAuditLogs from "./AdminAuditLogs";
 import DashSettings from "../components/Dashboard/DashSettings";
 import DisputeWorkspace from "../components/Dashboard/DisputeWorkspace";
 import Assignments from "../components/Dashboard/Assignments";
-import ChatInterface from "../components/Dashboard/ChatInterface";
 import { Menu, X, Home } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
 import HireRequests from "../components/Dashboard/HireRequests";
@@ -109,7 +108,7 @@ const Dashboard = () => {
         <DashboardSidebar role={role} />
       </div>
 
-      <main className="flex-1 h-full overflow-y-auto overflow-x-hidden relative flex flex-col safe-bottom">
+      <main className={`flex-1 h-full overflow-x-hidden relative flex flex-col safe-bottom ${location.pathname === '/dashboard/messages' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
         {/* Dashboard Top Navbar */}
         <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between h-16 px-6">
@@ -342,10 +341,6 @@ const Dashboard = () => {
                 element={<DisputeWorkspace />}
               />
 
-              <Route
-                path="messages"
-                element={<ChatInterface />}
-              />
               <Route
                 path="assignments"
                 element={<Assignments />}

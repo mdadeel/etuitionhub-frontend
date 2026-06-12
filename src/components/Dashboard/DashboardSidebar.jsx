@@ -18,7 +18,6 @@ import {
   DollarSign,
   Scale,
   BookOpen,
-  MessageSquare,
   BookmarkCheck,
   Mail,
   ClipboardCheck,
@@ -48,7 +47,6 @@ const DashboardSidebar = ({ role }) => {
   const menuItems = [
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { path: "/dashboard/profile", label: "My Profile", icon: User },
-    { path: "/dashboard/messages", label: "Messages", icon: MessageSquare },
     { path: "/dashboard/requests", label: "Requests", icon: Inbox },
     { path: "/dashboard/notifications", label: "Notifications", icon: Bell },
   ];

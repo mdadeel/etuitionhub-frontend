@@ -1,12 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../services/api';
 
 const useChatPolling = (user, dbUser, socket) => {
     const [conversations, setConversations] = useState([]);
     const [unreadTotal, setUnreadTotal] = useState(0);
     const [pollingIntervalId, setPollingIntervalId] = useState(null);
+    const retryCountRef = useRef(0);
+    const maxRetries = 5;
 
-    const fetchConversations = async () => {
+    const fetchConversations = async (isRetry = false) => {
         if (!user) return;
         try {
             const res = await api.get('/api/messages/conversations');
@@ -14,13 +16,22 @@ const useChatPolling = (user, dbUser, socket) => {
             setConversations(convs);
             const total = convs.reduce((acc, conv) => acc + (conv.unreadCount || 0), 0);
             setUnreadTotal(total);
+            retryCountRef.current = 0;
         } catch (error) {
-            if (import.meta.env.DEV) console.warn('Error fetching conversations:', error);
+            const status = error?.response?.status;
+            if (status === 401 && retryCountRef.current < maxRetries) {
+                retryCountRef.current++;
+                const delay = Math.min(1000 * Math.pow(2, retryCountRef.current - 1), 8000);
+                setTimeout(() => fetchConversations(true), delay);
+            } else if (import.meta.env.DEV) {
+                console.warn('Error fetching conversations:', error);
+            }
         }
     };
 
     useEffect(() => {
         if (user) {
+            retryCountRef.current = 0;
             fetchConversations();
         } else {
             setConversations([]);

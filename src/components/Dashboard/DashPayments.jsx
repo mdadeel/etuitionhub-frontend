@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
     ShieldCheck, 
     Database, 
@@ -9,16 +9,47 @@ import {
     CheckCircle2, 
     XCircle,
     Banknote,
-    Activity
+    Activity,
+    ChevronLeft,
+    ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+const BkashIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#D12053"/>
+        <path d="M7 7h3.5l2.5 5.5L15.5 7H19l-4.5 9h-3L7 7z" fill="white"/>
+    </svg>
+);
+const NagadIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#F7941D"/>
+        <path d="M7 7h4c2.5 0 4 1.5 4 3.5S13.5 14 11 14H7V7zm0 7h4.5c1.8 0 3-1 3-2.5S13.3 9 11.5 9H7v5z" fill="white"/>
+    </svg>
+);
+const RocketIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#8C3494"/>
+        <path d="M8 7l4 5-4 5M12 7l4 5-4 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+const BankTransferIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
+    </svg>
+);
+
+const METHOD_ICONS = { bkash: BkashIcon, nagad: NagadIcon, rocket: RocketIcon, bank: BankTransferIcon };
 
 const PAYMENT_METHOD_LABELS = {
-    bkash: { name: 'bKash', color: 'bg-[#D12053]' },
-    nagad: { name: 'Nagad', color: 'bg-[#F7941D]' },
-    rocket: { name: 'Rocket', color: 'bg-[#8C3494]' },
-    bank: { name: 'Bank Transfer', color: 'bg-primary' }
+    bkash: { name: 'bKash' },
+    nagad: { name: 'Nagad' },
+    rocket: { name: 'Rocket' },
+    bank: { name: 'Bank Transfer' }
 };
 
 const DashPayments = () => {
@@ -26,12 +57,32 @@ const DashPayments = () => {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('pending_verification');
     const [processingId, setProcessingId] = useState(null);
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const limit = 25;
 
-    const loadPayments = useCallback(async () => {
+    // Modal state for approve confirm
+    const [approveOpen, setApproveOpen] = useState(false);
+    const [approveId, setApproveId] = useState(null);
+
+    // Modal state for reject
+    const [rejectOpen, setRejectOpen] = useState(false);
+    const [rejectId, setRejectId] = useState(null);
+    const [rejectReason, setRejectReason] = useState('Invalid transaction ID');
+
+    const loadPayments = useCallback(async (pageNum = 1) => {
         setLoading(true);
         try {
-            const res = await api.get('/api/payments/all');
-            setPayments(res.data || []);
+            const res = await api.get(`/api/payments/all?page=${pageNum}&limit=${limit}`);
+            const data = res.data;
+            // Backend returns { payments, total, page, limit } or just array
+            if (Array.isArray(data)) {
+                setPayments(data);
+                setTotal(data.length);
+            } else {
+                setPayments(data.payments || []);
+                setTotal(data.total || 0);
+            }
         } catch {
             toast.error('Failed to load payments');
         } finally {
@@ -40,16 +91,26 @@ const DashPayments = () => {
     }, []);
 
     useEffect(() => {
-        loadPayments();
-    }, [loadPayments]);
+        loadPayments(page);
+    }, [loadPayments, page]);
+
+    // Reset to page 1 when filter changes
+    useEffect(() => {
+        setPage(1);
+    }, [filter]);
 
     const handleVerify = async (id) => {
-        if (!confirm('Verify and approve this payment?')) return;
-        setProcessingId(id);
+        setApproveId(id);
+        setApproveOpen(true);
+    };
+
+    const confirmApprove = async () => {
+        setProcessingId(approveId);
+        setApproveOpen(false);
         try {
-            await api.post(`/api/payments/${id}/approve`);
+            await api.post(`/api/payments/${approveId}/approve`);
             toast.success('Payment approved — wallet credited, notifications sent');
-            await loadPayments();
+            await loadPayments(page);
         } catch (err) {
             toast.error(err.response?.data?.error || 'Approval failed');
         } finally {
@@ -58,13 +119,19 @@ const DashPayments = () => {
     };
 
     const handleReject = async (id) => {
-        const reason = window.prompt('Reason for rejection (shown to student):', 'Invalid transaction ID');
-        if (!reason || !reason.trim()) return;
-        setProcessingId(id);
+        setRejectId(id);
+        setRejectReason('Invalid transaction ID');
+        setRejectOpen(true);
+    };
+
+    const confirmReject = async () => {
+        if (!rejectReason.trim()) return;
+        setProcessingId(rejectId);
+        setRejectOpen(false);
         try {
-            await api.post(`/api/payments/${id}/reject`, { reason: reason.trim() });
+            await api.post(`/api/payments/${rejectId}/reject`, { reason: rejectReason.trim() });
             toast.success('Payment rejected — student notified');
-            await loadPayments();
+            await loadPayments(page);
         } catch (err) {
             toast.error(err.response?.data?.error || 'Rejection failed');
         } finally {
@@ -78,7 +145,24 @@ const DashPayments = () => {
 
     const pendingCount = payments.filter(p => p.status === 'pending_verification').length;
 
-    if (loading) return <LoadingSpinner />;
+    const totalPages = Math.ceil(total / limit);
+
+    if (loading && payments.length === 0) {
+        return (
+            <div className="space-y-10">
+                <header className="border-b border-border pb-6">
+                    <Skeleton className="h-6 w-48 mb-2" />
+                    <Skeleton className="h-4 w-72" />
+                </header>
+                <div className="flex gap-2">
+                    {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-8 w-24 rounded-lg" />)}
+                </div>
+                <div className="space-y-3">
+                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-10 animate-in fade-in-up duration-700">
@@ -169,7 +253,7 @@ const DashPayments = () => {
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={`size-2 rounded-lg ${method.color}`}></div>
+                                                    {(() => { const Icon = METHOD_ICONS[payment.paymentMethod]; return Icon ? <Icon /> : null; })()}
                                                     <span className="text-[9px] md:text-[10px] font-label font-semibold text-foreground uppercase tracking-widest">{(method.name || '').split(' ')[0]}</span>
                                                 </div>
                                             </td>
@@ -222,6 +306,73 @@ const DashPayments = () => {
                     </div>
                 </div>
             )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-4">
+                    <p className="text-xs text-muted-foreground">
+                        Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            className="rounded-none h-8"
+                        >
+                            <ChevronLeft size={14} />
+                        </Button>
+                        <span className="text-xs font-bold text-muted-foreground px-2">{page}/{totalPages}</span>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
+                            className="rounded-none h-8"
+                        >
+                            <ChevronRight size={14} />
+                        </Button>
+                    </div>
+                </div>
+            )}
+
+            {/* Approve Payment Dialog */}
+            <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
+                <DialogContent className="sm:max-w-md bg-card">
+                    <DialogHeader>
+                        <DialogTitle className="text-sm font-heading font-bold uppercase tracking-wider">Approve Payment</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-muted-foreground py-4">This will apply commission and credit the tutor's wallet. Continue?</p>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setApproveOpen(false)} className="rounded-none">Cancel</Button>
+                        <Button onClick={confirmApprove} className="rounded-none">Approve</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Reject Payment Dialog */}
+            <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
+                <DialogContent className="sm:max-w-md bg-card">
+                    <DialogHeader>
+                        <DialogTitle className="text-sm font-heading font-bold uppercase tracking-wider">Reject Payment</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <Label className="text-xs font-bold text-muted-foreground">Reason (shown to student)</Label>
+                        <Input
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            className="h-12 rounded-none border-border"
+                            placeholder="Enter rejection reason..."
+                            autoFocus
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setRejectOpen(false)} className="rounded-none">Cancel</Button>
+                        <Button variant="destructive" onClick={confirmReject} className="rounded-none" disabled={!rejectReason.trim()}>Reject</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

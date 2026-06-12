@@ -12,6 +12,7 @@ import ChatInputBar from '../chat/ChatInputBar';
 import EditHistoryModal from '../chat/EditHistoryModal';
 import PollDisplay from '../chat/PollDisplay';
 import AssignmentCard from '../chat/AssignmentCard';
+import { Avatar } from '@/components/ui/avatar';
 
 import MilestoneTimeline from '../chat/MilestoneTimeline';
 import { cn } from '@/lib/utils';
@@ -477,7 +478,7 @@ const ChatInterface = () => {
     }, [conversations, activeConversation, handleSelectConversation]);
 
     return (
-        <div className="flex h-[calc(100vh_-_4rem)] w-full overflow-hidden bg-background">
+        <div className="flex h-full min-h-0 w-full overflow-hidden bg-background">
             {/* Sidebar */}
             <div className={cn(
                 "w-80 border-r border-border/40 shrink-0 md:flex flex-col bg-card/25 backdrop-blur-md transition-all duration-300",
@@ -581,9 +582,9 @@ const ChatInterface = () => {
                 "flex-1 flex flex-col relative bg-background",
                 activeConversation ? "flex" : "hidden md:flex"
             )}>
-                {/* 2026 Redesigned Sticky Header */}
+                {/* Header */}
                 {activeConversation && (
-                    <div className="px-4 py-3 bg-background/80 backdrop-blur-xl border-b border-border/40 sticky top-0 z-40">
+                    <div className="shrink-0 px-4 py-3 bg-background/80 backdrop-blur-xl border-b border-border/40 z-40">
                         <div className="flex items-center justify-between w-full gap-4">
                             {/* Left: User Avatar & Info */}
                             <div className="flex items-center gap-3 min-w-0">
@@ -758,7 +759,7 @@ const ChatInterface = () => {
                 )}
                 
                 {/* Chat Messages Area */}
-                <div className="flex-1 overflow-y-auto p-4">
+                <div className="flex-1 min-h-0 overflow-y-auto p-4">
                     {!activeConversation ? (
                         /* Empty state - Very premium */
                         <div className="h-full flex flex-col items-center justify-center text-center">
@@ -887,8 +888,8 @@ const ChatInterface = () => {
                     )}
                 </div>
 
-                {/* Input Bar with soft transition */}
-                <div className="sticky bottom-0 bg-background pt-2 z-40">
+                {/* Input Bar */}
+                <div className="shrink-0 bg-background border-t border-border/30 p-3">
                     <ChatInputBar
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}

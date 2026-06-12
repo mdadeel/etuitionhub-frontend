@@ -1,4 +1,4 @@
-import { Target, Bell, Headphones, User, CheckCircle, Mail, Eye, Zap, BarChart3, MessageCircle } from 'lucide-react';
+import { User, CheckCircle, Mail, Eye, Zap, BarChart3, MessageCircle } from 'lucide-react';
 
 const subjects = [
     { name: "Math", pct: 88, fill: "from-primary to-blue-400" },

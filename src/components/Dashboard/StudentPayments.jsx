@@ -18,11 +18,37 @@ import ReceiptModal from '../shared/ReceiptModal';
 import ProgressTracker from '../shared/ProgressTracker';
 import { cn } from '@/lib/utils';
 
+const BkashIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#D12053"/>
+        <path d="M7 7h3.5l2.5 5.5L15.5 7H19l-4.5 9h-3L7 7z" fill="white"/>
+    </svg>
+);
+const NagadIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#F7941D"/>
+        <path d="M7 7h4c2.5 0 4 1.5 4 3.5S13.5 14 11 14H7V7zm0 7h4.5c1.8 0 3-1 3-2.5S13.3 9 11.5 9H7v5z" fill="white"/>
+    </svg>
+);
+const RocketIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#8C3494"/>
+        <path d="M8 7l4 5-4 5M12 7l4 5-4 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+const BankTransferIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
+    </svg>
+);
+
+const METHOD_ICONS = { bkash: BkashIcon, nagad: NagadIcon, rocket: RocketIcon, bank: BankTransferIcon };
+
 const PAYMENT_METHOD_LABELS = {
-    bkash: { name: 'bKash', color: 'bg-[#D12053]' },
-    nagad: { name: 'Nagad', color: 'bg-[#F7941D]' },
-    rocket: { name: 'Rocket', color: 'bg-[#8C3494]' },
-    bank: { name: 'Bank Transfer', color: 'bg-primary' }
+    bkash: { name: 'bKash' },
+    nagad: { name: 'Nagad' },
+    rocket: { name: 'Rocket' },
+    bank: { name: 'Bank Transfer' }
 };
 
 const StudentPayments = ({ hideHeader }) => {
@@ -58,7 +84,7 @@ const StudentPayments = ({ hideHeader }) => {
         const total = payments.length;
         const totalSpent = payments.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
         const pending = payments.filter(p => p.status === 'pending_verification').length;
-        const completed = payments.filter(p => p.status === 'verified').length;
+        const completed = payments.filter(p => p.status === 'confirmed').length;
         return { total, totalSpent, pending, completed };
     }, [payments]);
 
@@ -70,7 +96,7 @@ const StudentPayments = ({ hideHeader }) => {
     const filterOptions = [
         { id: 'all', label: 'All', count: stats.total },
         { id: 'pending_verification', label: 'Pending', count: stats.pending },
-        { id: 'verified', label: 'Verified', count: payments.filter(p => p.status === 'verified').length },
+        { id: 'confirmed', label: 'Confirmed', count: payments.filter(p => p.status === 'confirmed').length },
         { id: 'rejected', label: 'Rejected', count: payments.filter(p => p.status === 'rejected').length }
     ];
 
@@ -94,7 +120,6 @@ const StudentPayments = ({ hideHeader }) => {
             commission_applied: { variant: 'success', label: 'Commission Set' },
             available_for_withdrawal: { variant: 'success', label: 'Available' },
             withdrawn: { variant: 'primary', label: 'Withdrawn' },
-            verified: { variant: 'primary', label: 'Verified' },
             rejected: { variant: 'error', label: 'Rejected' }
         };
         const { variant, label } = variants[status] || { variant: 'default', label: status };
@@ -159,7 +184,7 @@ const StudentPayments = ({ hideHeader }) => {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Completed</p>
                     <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-bold text-foreground tracking-tight tabular-nums">{stats.completed}</span>
-                        <span className="text-xs font-medium text-muted-foreground">verified</span>
+                        <span className="text-xs font-medium text-muted-foreground">confirmed</span>
                     </div>
                 </AppleCard>
             </div>
@@ -238,7 +263,7 @@ const StudentPayments = ({ hideHeader }) => {
                                             </td>
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={cn("size-2 rounded-full", method.color)}></div>
+                                                    {(() => { const Icon = METHOD_ICONS[payment.paymentMethod]; return Icon ? <Icon /> : null; })()}
                                                     <span className="text-xs font-semibold text-muted-foreground">{method.name}</span>
                                                 </div>
                                             </td>
