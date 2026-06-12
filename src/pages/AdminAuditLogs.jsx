@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, Fragment } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
@@ -166,7 +166,7 @@ const AdminAuditLogs = () => {
                         </thead>
                         <tbody className="divide-y divide-border/40">
                             {logs.map(log => (
-                                <>
+                                <Fragment key={log._id}>
                                     <tr
                                         key={log._id}
                                         onClick={() => setExpanded(expanded === log._id ? null : log._id)}
@@ -229,7 +229,7 @@ const AdminAuditLogs = () => {
                                             </td>
                                         </tr>
                                     )}
-                                </>
+                                </Fragment>
                             ))}
                         </tbody>
                     </table>

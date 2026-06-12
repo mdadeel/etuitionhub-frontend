@@ -146,8 +146,8 @@ const DashAnalytics = () => {
                         <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">Breakdown by user roles</p>
                     </div>
                     
-                    <div className="h-[220px] md:h-[260px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                    <div className="h-[220px] md:h-[260px] min-h-[200px]">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} aspect={undefined}>
                             <PieChart>
                                 <Pie
                                     data={userDist}
@@ -203,8 +203,8 @@ const DashAnalytics = () => {
                         <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">Current status of tuition postings</p>
                     </div>
                     
-                    <div className="h-[220px] md:h-[260px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                    <div className="h-[220px] md:h-[260px] min-h-[200px]">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} aspect={undefined}>
                             <BarChart data={tuitionStatus} barSize={32}>
                                 <CartesianGrid strokeDasharray="0" vertical={false} stroke={isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,46,0.06)"} />
                                 <XAxis
