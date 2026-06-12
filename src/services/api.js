@@ -12,7 +12,9 @@ const api = axios.create({
 
 // Response interceptor - error handling with token refresh
 let isRefreshing = false;
+let sessionDead = false;
 let failedQueue = [];
+let redirectPending = false;
 
 const processQueue = (error) => {
     failedQueue.forEach(prom => {
@@ -22,63 +24,63 @@ const processQueue = (error) => {
     failedQueue = [];
 };
 
+const redirectToLogin = () => {
+    if (redirectPending) return;
+    redirectPending = true;
+    if (!window.location.pathname.includes('/login')) {
+        toast.error('Session expired. Please login again.', { duration: 4000 });
+        setTimeout(() => { window.location.href = '/login'; }, 1000);
+    }
+};
+
 api.interceptors.response.use(
     res => res,
     async err => {
         const originalRequest = err.config;
         const status = err.response?.status;
 
-        if (status === 401 && !originalRequest._retry && !originalRequest._isRefresh) {
-            if (isRefreshing) {
-                return new Promise((resolve, reject) => {
-                    failedQueue.push({ resolve, reject });
-                }).then(() => {
-                    return api(originalRequest);
-                });
+        // Skip refresh logic entirely for non-401 errors, refresh requests,
+        // and requests that already failed once
+        if (status !== 401 || originalRequest._retry || originalRequest._isRefresh) {
+            if (status === 401 && !originalRequest._isRefresh) {
+                redirectToLogin();
+            } else if (status === 403) {
+                toast.error('You do not have permission to perform this action.');
             }
+            return Promise.reject(err);
+        }
 
-            originalRequest._retry = true;
-            isRefreshing = true;
+        // If we already know the session is dead (refresh failed earlier),
+        // don't try again — just redirect
+        if (sessionDead) {
+            redirectToLogin();
+            return Promise.reject(err);
+        }
 
-            try {
-                // Use the api instance so the configured baseURL (API_URL) is
-                // prepended. Raw axios.post with a relative URL would hit the
-                // current origin, which on a separate-frontend/backend
-                // deployment is the frontend host — and /auth/refresh isn't
-                // served there.
-                //
-                // Mark _isRefresh so the interceptor never tries to refresh
-                // the refresh request itself — that caused a deadlock when
-                // the refresh endpoint returned 401 (the queued promise
-                // could never be settled because processQueue was unreachable).
-                await api.post('/api/auth/refresh', {}, { withCredentials: true, _isRefresh: true });
-                processQueue(null);
+        // If a refresh is already in progress, queue this request
+        if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+                failedQueue.push({ resolve, reject });
+            }).then(() => {
                 return api(originalRequest);
-            } catch (refreshError) {
-                processQueue(refreshError);
-                if (!window.location.pathname.includes('/login')) {
-                    toast.error('Session expired. Please login again.', { duration: 4000 });
-                    setTimeout(() => { window.location.href = '/login'; }, 1000);
-                }
-                return Promise.reject(refreshError);
-            } finally {
-                isRefreshing = false;
-            }
+            });
         }
 
-        // Handle other errors
-        if (status === 401) {
-            if (!window.location.pathname.includes('/login')) {
-                toast.error('Session expired. Please login again.', { duration: 4000 });
-                setTimeout(() => { window.location.href = '/login'; }, 1000);
-            }
-        } else if (status === 403) {
-            toast.error('You do not have permission to perform this action.');
-        } else if (status === 404) {
-            // let component handle
-        }
+        originalRequest._retry = true;
+        isRefreshing = true;
 
-        return Promise.reject(err);
+        try {
+            await api.post('/api/auth/refresh', {}, { withCredentials: true, _isRefresh: true });
+            processQueue(null);
+            return api(originalRequest);
+        } catch (refreshError) {
+            sessionDead = true;
+            processQueue(refreshError);
+            redirectToLogin();
+            return Promise.reject(refreshError);
+        } finally {
+            isRefreshing = false;
+        }
     }
 );
 
