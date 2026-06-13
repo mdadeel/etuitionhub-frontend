@@ -84,19 +84,27 @@ const Statistics = () => {
 
   useGSAP(() => {
     const ctx = gsap.context(() => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top 80%",
         onEnter: () => {
-          gsap.fromTo(headingRef.current,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
-          );
-          const items = gsap.utils.toArray('.stat-item');
-          gsap.fromTo(items,
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power3.out", delay: 0.15 }
-          );
+          if (prefersReducedMotion) {
+            gsap.set(headingRef.current, { opacity: 1, y: 0 });
+            const items = gsap.utils.toArray('.stat-item');
+            gsap.set(items, { opacity: 1, y: 0 });
+          } else {
+            gsap.fromTo(headingRef.current,
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
+            );
+            const items = gsap.utils.toArray('.stat-item');
+            gsap.fromTo(items,
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power3.out", delay: 0.15 }
+            );
+          }
         },
         once: true,
       });
@@ -111,8 +119,7 @@ const Statistics = () => {
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div ref={headingRef} className="text-center mb-12 md:mb-16">
-          <span className="text-xs font-medium text-primary/70 uppercase tracking-[0.18em]">Making an Impact</span>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading text-foreground tracking-tight leading-tight mt-3">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading text-foreground tracking-tight leading-tight text-wrap-balance">
             Our platform has connected thousands of students with perfect tutors
           </h2>
         </div>
