@@ -1,82 +1,128 @@
+import { useRef } from 'react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Search, Star, Users } from 'lucide-react';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const steps = [
-    {
-        id: "step1",
-        icon: Search,
-        title: "Find",
-        description: "Search tutors by subject, class, and location with our simple search filters."
-    },
-    {
-        id: "step2",
-        icon: Star,
-        title: "Compare",
-        description: "Review profiles, ratings, and teaching experience to find the perfect teacher."
-    },
-    {
-        id: "step3",
-        icon: Users,
-        title: "Connect",
-        description: "Contact tutors directly through our platform and start learning immediately."
-    }
+  {
+    icon: Search,
+    title: "Find",
+    description: "Search tutors by subject, class, and location with our simple search filters.",
+  },
+  {
+    icon: Star,
+    title: "Compare",
+    description: "Review profiles, ratings, and teaching experience to find the perfect teacher.",
+  },
+  {
+    icon: Users,
+    title: "Connect",
+    description: "Contact tutors directly through our platform and start learning immediately.",
+  },
 ];
 
 const HowItWorks = () => {
-    return (
-        <section className="py-24 bg-background relative overflow-hidden border-b border-border/50">
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="text-center mb-16 md:mb-24 space-y-4 animate-in fade-in zoom-in-95 duration-700 ease-out">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 border border-primary/10 rounded-full">
-                        <div className="size-2 rounded-full bg-primary animate-pulse"></div>
-                        <span className="text-xs font-bold text-primary tracking-widest uppercase">How It Works</span>
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-display font-black text-foreground tracking-tight mb-4">
-                        How It <span className="text-primary">Works</span>
-                    </h2>
-                    <p className="text-muted-foreground text-lg max-w-xl mx-auto font-body leading-relaxed">
-                        Three simple steps to find your perfect tutor. No paperwork, no middlemen, just learning.
-                    </p>
+  const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+  const trackRef = useRef(null);
+
+  useGSAP(() => {
+    const ctx = gsap.context(() => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top 80%",
+        onEnter: () => {
+          if (prefersReducedMotion) {
+            gsap.set(headingRef.current, { opacity: 1, y: 0 });
+            const items = gsap.utils.toArray('.step-item');
+            gsap.set(items, { opacity: 1, y: 0 });
+          } else {
+            gsap.fromTo(headingRef.current,
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
+            );
+
+            const items = gsap.utils.toArray('.step-item');
+            gsap.fromTo(items,
+              { opacity: 0, y: 40 },
+              { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power3.out", delay: 0.2 }
+            );
+          }
+        },
+        once: true,
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="relative overflow-hidden bg-background py-20 md:py-28">
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <div ref={headingRef} className="text-center mb-20">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-foreground tracking-tight leading-[0.95] text-wrap-balance">
+            Three simple steps to find your perfect tutor
+          </h2>
+          <p className="text-base md:text-lg text-muted-foreground mt-4 max-w-xl mx-auto">
+            No paperwork, no middlemen, just learning.
+          </p>
+        </div>
+
+        {/* Mobile step indicator: dots showing progression */}
+        <div className="flex md:hidden justify-center gap-2 mt-6">
+          {steps.map((_, idx) => (
+            <div
+              key={idx}
+              className="size-2 rounded-full transition-colors"
+              style={{
+                backgroundColor: idx === 0 ? 'hsl(var(--primary))' : 'hsl(var(--primary) / 0.3)',
+              }}
+            />
+          ))}
+        </div>
+
+        <div ref={trackRef} className="relative">
+          <div className="hidden md:block absolute top-16 left-[calc(16.66%+20px)] right-[calc(16.66%+20px)] h-px bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 pointer-events-none" />
+
+          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+            {steps.map((step, idx) => (
+              <div key={idx} className="step-item relative flex flex-col items-center text-center">
+                <div className="relative mb-8">
+                  <span className="text-[100px] md:text-[160px] font-heading text-primary/[0.06] md:text-primary/[0.04] leading-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <div className="size-16 md:size-20 rounded-full bg-primary/[0.06] border border-primary/10 flex items-center justify-center relative">
+                    <step.icon size={32} className="text-primary" />
+                  </div>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-                    {steps.map((step, idx) => (
-                        <div
-                            key={step.id}
-                            className="relative group animate-in fade-in zoom-in-95 duration-700 ease-out"
-                            style={{ animationDelay: `${150 + idx * 150}ms` }}
-                        >
-                            <div className="relative bg-card/40 border border-border/40 rounded-2xl p-8 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:-translate-y-1 hover:shadow-xl overflow-hidden">
-                                {/* Top gradient line on hover */}
-                                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <h3 className="text-xl md:text-2xl font-heading text-foreground tracking-tight mb-3">
+                  {step.title}
+                </h3>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-xs">
+                  {step.description}
+                </p>
 
-                                {/* Step Number - Gradient Circle */}
-                                <div className="rounded-full mb-6 flex items-center justify-center font-heading text-lg font-bold text-primary-foreground shadow-lg shadow-primary/25"
-                                    style={{ width: '52px', height: '52px', background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))' }}
-                                >
-                                    {idx + 1}
-                                </div>
-
-                                {/* Icon */}
-                                <div className="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                                    <step.icon size={24} />
-                                </div>
-
-                                {/* Content */}
-                                <div className="space-y-3 relative z-10">
-                                    <h3 className="text-2xl font-heading font-black text-foreground tracking-tight">
-                                        {step.title}
-                                    </h3>
-                                    <p className="text-base text-muted-foreground leading-relaxed font-body">
-                                        {step.description}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
+                {idx < steps.length - 1 && (
+                  <div className="hidden md:block absolute -right-[calc(24px+1.5rem)] top-16 text-primary/20">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M13 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default HowItWorks;
