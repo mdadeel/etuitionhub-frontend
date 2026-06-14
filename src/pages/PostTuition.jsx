@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -16,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import { Send, ArrowLeft, GraduationCap, Plus, RefreshCw } from "lucide-react";
 import LoginRequiredModal from "../components/shared/LoginRequiredModal";
 import SEO from '../components/shared/SEO';
-import { AppleCard, AppleButton } from "../components/shared/AppleUI";
 import { cn } from "@/lib/utils";
 
 const PostTuition = ({ isDashboard = false, onSuccess }) => {
@@ -68,17 +68,29 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
       return;
     }
 
+    const parsedSalary = parseInt(salary, 10);
+    if (isNaN(parsedSalary) || parsedSalary <= 0) {
+      toast.error("Monthly budget must be a valid positive number.");
+      return;
+    }
+
+    const parsedDays = parseInt(daysPerWeek, 10);
+    if (isNaN(parsedDays) || parsedDays < 1 || parsedDays > 7) {
+      toast.error("Days per week must be between 1 and 7.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       await api.post("/api/tuitions", {
         subject,
         class_name: className,
-        salary: parseInt(salary),
+        salary: parsedSalary,
         medium,
         location,
         student_email: user.email,
         gender,
-        days_per_week: parseInt(daysPerWeek),
+        days_per_week: parsedDays,
         available_days: availableDays,
         description: description || undefined,
         status: "pending",
@@ -310,7 +322,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
       <div className="flex items-center gap-4 pt-2">
         {isDashboard ? (
-          <AppleButton
+          <Button
             type="submit"
             disabled={submitting}
             className="w-full h-12 rounded-lg"
@@ -323,7 +335,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
             ) : (
               "Publish Request"
             )}
-          </AppleButton>
+          </Button>
         ) : (
           <>
             <Button
@@ -349,7 +361,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
   if (isDashboard) {
     return (
-      <AppleCard className="p-8 md:p-12 max-w-4xl mx-auto relative overflow-hidden group">
+      <Card className="p-8 md:p-12 max-w-4xl mx-auto relative overflow-hidden group">
         <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-lg -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-4 mb-10">
@@ -367,7 +379,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
           </div>
           {formContent}
         </div>
-      </AppleCard>
+      </Card>
     );
   }
 

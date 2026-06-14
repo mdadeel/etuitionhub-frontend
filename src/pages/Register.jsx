@@ -45,6 +45,11 @@ const Register = () => {
             toast.error('Password must be at least 6 characters')
             return
         }
+        
+        if (phone && !/^(?:\+8801|8801|01)[3-9]\d{8}$/.test(phone.trim())) {
+            toast.error('Please enter a valid Bangladeshi phone number (e.g. 01XXXXXXXXX)')
+            return
+        }
 
         setLoading(true)
         const toastId = toast.loading("Creating account...")
