@@ -6,18 +6,27 @@ import api from '../../services/api';
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableSkeleton } from "@/components/shared/skeletons";
 import useDebouncedValue from '../../hooks/useDebouncedValue';
-import { AppleButton } from '../shared/AppleUI';
+import { Button } from '@/components/ui/button';
 import { UserX, Edit2, ShieldAlert, UserCog, Search } from 'lucide-react';
 import FilterSelect from '../shared/FilterSelect';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditModal from './EditModal';
+import Pagination from '../shared/Pagination';
 
 const DashUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalUsers, setTotalUsers] = useState(0);
     const debouncedSearch = useDebouncedValue(search, 300);
+
+    // Reset page when search or filter changes
+    useEffect(() => {
+        setPage(1);
+    }, [debouncedSearch, filter]);
 
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -34,15 +43,24 @@ const DashUsers = () => {
         setLoading(true);
         try {
             const res = await api.get('/api/users', {
-                params: { search: debouncedSearch },
+                params: { 
+                    search: debouncedSearch,
+                    page: page,
+                    // If filter is specific, we should ideally pass it to backend. 
+                    // But for now, we'll fetch paginated data.
+                },
             });
             setUsers(res.data?.data || res.data || []);
+            if (res.data?.pagination) {
+                setTotalPages(res.data.pagination.pages);
+                setTotalUsers(res.data.pagination.total);
+            }
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to load users');
         } finally {
             setLoading(false);
         }
-    }, [debouncedSearch]);
+    }, [debouncedSearch, page]);
 
     useEffect(() => {
         loadUsers();
@@ -159,7 +177,7 @@ const DashUsers = () => {
                     </div>
                     <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Users</h2>
                     <p className="text-xs text-muted-foreground mt-1">
-                        Total of {filtered.length} users found.
+                        Total of {totalUsers || filtered.length} users found.
                     </p>
                 </div>
 
@@ -272,22 +290,22 @@ const DashUsers = () => {
                                 </td>
                                 <td className="px-4 md:px-6 py-4 text-right">
                                     <div className="flex justify-end gap-2">
-                                        <AppleButton
+                                        <Button
                                             variant="ghost"
                                             size="sm"
                                             className="size-8 p-0 text-muted-foreground/60 hover:text-primary hover:bg-primary/10 rounded-lg border border-transparent hover:border-primary/20 active:scale-[0.98]"
                                             onClick={() => handleEditClick(user)}
                                         >
                                             <Edit2 size={12} />
-                                        </AppleButton>
-                                        <AppleButton
+                                        </Button>
+                                        <Button
                                             variant="ghost"
                                             size="sm"
                                             className="size-8 p-0 text-muted-foreground/60 hover:text-red-600 hover:bg-red-600/10 rounded-lg border border-transparent hover:border-red-200 active:scale-[0.98]"
                                             onClick={() => handleDelete(user._id)}
                                         >
                                             <UserX size={14} />
-                                        </AppleButton>
+                                        </Button>
                                     </div>
                                 </td>
                             </tr>
@@ -295,6 +313,16 @@ const DashUsers = () => {
                     </tbody>
                 </table>
             </div>
+
+            {totalPages > 1 && (
+                <div className="mt-6 flex justify-center">
+                    <Pagination 
+                        currentPage={page} 
+                        totalPages={totalPages} 
+                        onPageChange={setPage} 
+                    />
+                </div>
+            )}
 
             <EditModal 
                 isOpen={isEditModalOpen}

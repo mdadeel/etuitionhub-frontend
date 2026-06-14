@@ -1,3 +1,6 @@
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContext";
@@ -19,7 +22,6 @@ import {
     Calendar,
     BookOpen
 } from "lucide-react";
-import { AppleCard, AppleHeader, AppleButton, AppleBadge } from '../shared/AppleUI';
 import { cn } from '@/lib/utils';
 import SessionStatsCard from './SessionStatsCard';
  
@@ -160,7 +162,7 @@ const TutorDashboard = () => {
                 <div className="space-y-10">
                     <SessionStatsCard />
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-                        <AppleCard className="p-6 md:p-10 group" hover={false}>
+                        <Card className="p-6 md:p-10 group" >
                             <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
                                 <FileText size={24} />
                             </div>
@@ -169,9 +171,9 @@ const TutorDashboard = () => {
                                 <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">{apps.length}</span>
                                 <span className="text-xs font-semibold text-muted-foreground">Sent</span>
                             </div>
-                        </AppleCard>
+                        </Card>
 
-                        <AppleCard className="p-6 md:p-10 group" hover={false}>
+                        <Card className="p-6 md:p-10 group" >
                             <div className="size-12 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                                 <UserCheck size={24} />
                             </div>
@@ -180,9 +182,9 @@ const TutorDashboard = () => {
                                 <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">{activeEngagements}</span>
                                 <span className="text-xs font-semibold text-muted-foreground">Jobs</span>
                             </div>
-                        </AppleCard>
+                        </Card>
 
-                        <AppleCard className="p-6 md:p-10 group col-span-2 lg:col-span-1" hover={false}>
+                        <Card className="p-6 md:p-10 group col-span-2 lg:col-span-1" >
                             <div className="size-12 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
                                 <TrendingUp size={24} />
                             </div>
@@ -191,10 +193,10 @@ const TutorDashboard = () => {
                                 <span className="text-2xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">৳{totalEarnings}</span>
                                 <span className="text-xs font-semibold text-muted-foreground">BDT</span>
                             </div>
-                        </AppleCard>
+                        </Card>
                     </div>
 
-                    <AppleCard className="p-8 overflow-hidden relative">
+                    <Card className="p-8 overflow-hidden relative">
                         <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         <div className="relative z-10">
                             <h3 className="text-lg font-bold text-foreground tracking-tight mb-6">Recent Activity</h3>
@@ -221,13 +223,13 @@ const TutorDashboard = () => {
                                 </div>
                             )}
                         </div>
-                    </AppleCard>
+                    </Card>
                 </div>
             )}
 
             {/* Applications Tab Content */}
             {activeTab === 'applications' && (
-                <AppleCard className="overflow-hidden">
+                <Card className="overflow-hidden">
                     {apps.length === 0 ? (
                         <div className="p-32 text-center">
                             <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
@@ -253,12 +255,12 @@ const TutorDashboard = () => {
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary}</td>
                                             <td className="px-8 py-6 text-center">
-                                                <AppleBadge 
+                                                <Badge 
                                                     variant={app.status === 'approved' ? 'success' : app.status === 'rejected' ? 'error' : 'warning'} 
                                                     className="rounded-lg"
                                                 >
                                                     {app.status}
-                                                </AppleBadge>
+                                                </Badge>
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 {app.status === 'pending' ? (
@@ -276,20 +278,20 @@ const TutorDashboard = () => {
                             </table>
                         </div>
                     )}
-                </AppleCard>
+                </Card>
             )}
 
             {/* ongoing engagements */}
             {activeTab === 'ongoing' && (
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-6">
                     {apps.filter(a => a.status === 'approved').length === 0 ? (
-                        <AppleCard className="md:col-span-2 p-32 text-center border-dashed">
+                        <Card className="md:col-span-2 p-32 text-center border-dashed">
                              <UserCheck size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
                             <p className="text-sm font-medium text-muted-foreground italic">No active engagements identified.</p>
-                        </AppleCard>
+                        </Card>
                     ) : (
                         apps.filter(a => a.status === 'approved').map(app => (
-                            <AppleCard key={app._id} className="p-4 md:p-8 group relative overflow-hidden">
+                            <Card key={app._id} className="p-4 md:p-8 group relative overflow-hidden">
                                 <div className="absolute top-0 right-0 size-32 bg-primary/5 rounded-lg -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
                                 <div className="relative z-10">
                                     <div className="flex items-center gap-2 mb-6">
@@ -309,13 +311,13 @@ const TutorDashboard = () => {
                                         </div>
                                     </div>
                                     
-                                    <AppleButton asChild variant="outline" className="w-full h-11 rounded-lg active:scale-[0.98]">
+                                    <Button asChild variant="outline" className="w-full h-11 rounded-lg active:scale-[0.98]">
                                         <a href={`mailto:${app.studentEmail}`} className="flex items-center justify-center gap-2">
                                             Send Message <ArrowUpRight size={14} />
                                         </a>
-                                    </AppleButton>
+                                    </Button>
                                 </div>
-                            </AppleCard>
+                            </Card>
                         ))
                     )}
                 </div>
@@ -323,7 +325,7 @@ const TutorDashboard = () => {
 
             {/* revenue tab */}
             {activeTab === 'revenue' && (
-                <AppleCard className="overflow-hidden">
+                <Card className="overflow-hidden">
                     <div className="p-8 border-b border-border bg-background/50 flex flex-col md:flex-row justify-between items-center gap-6">
                         <div>
                              <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
@@ -366,12 +368,12 @@ const TutorDashboard = () => {
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{payment.grossAmount}</td>
                                             <td className="px-8 py-6 text-right">
-                                                <AppleBadge 
+                                                <Badge 
                                                     variant={payment.status === 'confirmed' ? 'success' : 'default'} 
                                                     className="rounded-lg"
                                                 >
                                                     {payment.status}
-                                                </AppleBadge>
+                                                </Badge>
                                             </td>
                                         </tr>
                                     ))}
@@ -379,7 +381,7 @@ const TutorDashboard = () => {
                             </table>
                         </div>
                     )}
-                </AppleCard>
+                </Card>
             )}
             {activeTab === 'availability' && <TutorAvailability />}
             {activeTab === 'assignments' && <Assignments />}

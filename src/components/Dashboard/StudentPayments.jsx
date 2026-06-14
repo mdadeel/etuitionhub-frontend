@@ -1,3 +1,5 @@
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
@@ -13,7 +15,6 @@ import {
     TrendingUp,
     Receipt
 } from "lucide-react";
-import { AppleCard, AppleHeader, AppleBadge } from '../shared/AppleUI';
 import ReceiptModal from '../shared/ReceiptModal';
 import ProgressTracker from '../shared/ProgressTracker';
 import { cn } from '@/lib/utils';
@@ -124,9 +125,9 @@ const StudentPayments = ({ hideHeader }) => {
         };
         const { variant, label } = variants[status] || { variant: 'default', label: status };
         return (
-            <AppleBadge variant={variant} className="rounded-lg text-[9px] py-1 font-bold">
+            <Badge variant={variant} className="rounded-lg text-[9px] py-1 font-bold">
                 {label}
-            </AppleBadge>
+            </Badge>
         );
     };
 
@@ -148,7 +149,7 @@ const StudentPayments = ({ hideHeader }) => {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-                <AppleCard className="p-6 group">
+                <Card className="p-6 group">
                     <div className="size-10 rounded-none bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <Banknote size={20} />
                     </div>
@@ -157,9 +158,9 @@ const StudentPayments = ({ hideHeader }) => {
                         <span className="text-3xl font-bold text-foreground tracking-tight tabular-nums">{stats.total}</span>
                         <span className="text-xs font-medium text-muted-foreground">payments</span>
                     </div>
-                </AppleCard>
+                </Card>
 
-                <AppleCard className="p-6 group">
+                <Card className="p-6 group">
                     <div className="size-10 rounded-none bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <TrendingUp size={20} />
                     </div>
@@ -168,9 +169,9 @@ const StudentPayments = ({ hideHeader }) => {
                         <span className="text-3xl font-bold text-foreground tracking-tight tabular-nums">৳{stats.totalSpent.toLocaleString()}</span>
                         <span className="text-xs font-medium text-muted-foreground">BDT</span>
                     </div>
-                </AppleCard>
+                </Card>
 
-                <AppleCard className="p-6 group">
+                <Card className="p-6 group">
                     <div className="size-10 rounded-none bg-orange-500/10 text-orange-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <AlertCircle size={20} />
                     </div>
@@ -179,9 +180,9 @@ const StudentPayments = ({ hideHeader }) => {
                         <span className="text-3xl font-bold text-foreground tracking-tight tabular-nums">{stats.pending}</span>
                         <span className="text-xs font-medium text-muted-foreground">awaiting</span>
                     </div>
-                </AppleCard>
+                </Card>
 
-                <AppleCard className="p-6 group">
+                <Card className="p-6 group">
                     <div className="size-10 rounded-none bg-green-500/10 text-green-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                         <CheckCircle2 size={20} />
                     </div>
@@ -190,7 +191,7 @@ const StudentPayments = ({ hideHeader }) => {
                         <span className="text-3xl font-bold text-foreground tracking-tight tabular-nums">{stats.completed}</span>
                         <span className="text-xs font-medium text-muted-foreground">confirmed</span>
                     </div>
-                </AppleCard>
+                </Card>
             </div>
 
             {/* Filters */}
@@ -219,12 +220,12 @@ const StudentPayments = ({ hideHeader }) => {
 
             {/* Payment Table */}
             {filteredPayments.length === 0 ? (
-                <AppleCard className="p-16 text-center border-dashed">
+                <Card className="p-16 text-center border-dashed">
                     <Database size={48} className="text-muted-foreground/20 mx-auto mb-6" strokeWidth={1} />
                     <p className="text-sm font-medium text-muted-foreground">No payment records found.</p>
-                </AppleCard>
+                </Card>
             ) : (
-                <AppleCard className="overflow-hidden" hover={false}>
+                <Card className="overflow-hidden" >
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-muted/30 border-b border-border/40">
@@ -302,7 +303,7 @@ const StudentPayments = ({ hideHeader }) => {
                             </tbody>
                         </table>
                     </div>
-                </AppleCard>
+                </Card>
             )}
 
             {receiptFor && <ReceiptModal paymentId={receiptFor} onClose={() => setReceiptFor(null)} />}

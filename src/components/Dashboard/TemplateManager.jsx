@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 
 const TemplateManager = () => {
     const [templates, setTemplates] = useState([]);
@@ -99,9 +101,32 @@ const TemplateManager = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-48">
-                <div className="size-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            </div>
+            <CardSkeleton className="p-6 md:p-8 space-y-6">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                        <Skeleton className="h-5 w-40 rounded-lg" />
+                        <Skeleton className="h-3 w-48 rounded-lg" />
+                    </div>
+                    <Skeleton className="h-10 w-28 rounded-lg" />
+                </div>
+                <div className="space-y-3">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="flex items-center justify-between p-4 border border-border/50 rounded-2xl">
+                            <div className="flex items-center gap-3">
+                                <Skeleton className="size-8 rounded-lg shrink-0" />
+                                <div className="space-y-1.5">
+                                    <LineSkeleton width="32" className="h-4" />
+                                    <LineSkeleton width="48" className="h-3" />
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <Skeleton className="size-8 rounded-lg" />
+                                <Skeleton className="size-8 rounded-lg" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </CardSkeleton>
         );
     }
 

@@ -95,8 +95,8 @@ const TutorWallet = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="bg-card border border-border rounded-xl overflow-hidden">
-                        <table className="w-full text-left">
+                    <div className="bg-card border border-border rounded-xl overflow-x-auto">
+                        <table className="w-full text-left whitespace-nowrap">
                             <thead>
                                 <tr className="bg-background border-b border-border">
                                     <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Student</th>

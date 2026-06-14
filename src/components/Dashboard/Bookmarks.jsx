@@ -1,9 +1,9 @@
+import { Card } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { Bookmark, Trash2, ExternalLink, Users, BookOpen } from "lucide-react";
-import { AppleCard, AppleHeader } from "../shared/AppleUI";
 import { cn } from "@/lib/utils";
 import { TutorCardGridSkeleton, TuitionCardGridSkeleton } from "@/components/shared/skeletons";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -122,7 +122,7 @@ const Bookmarks = () => {
         )
       ) : activeTab === "tutors" ? (
         savedTutors.length === 0 ? (
-          <AppleCard className="p-16 text-center border-dashed" hover={false}>
+          <Card className="p-16 text-center border-dashed" >
             <Bookmark size={40} className="mx-auto text-muted-foreground/30 mb-5" strokeWidth={1.5} />
             <h3 className="text-sm font-heading font-bold uppercase tracking-wider text-foreground mb-2">
               No saved tutors yet
@@ -136,11 +136,11 @@ const Bookmarks = () => {
             >
               Browse Tutors
             </button>
-          </AppleCard>
+          </Card>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {savedTutors.map((tutor) => (
-              <AppleCard
+              <Card
                 key={tutor._id}
                 className="p-5 flex flex-col justify-between"
                 moveOnHover
@@ -207,12 +207,12 @@ const Bookmarks = () => {
                     </button>
                   </div>
                 </div>
-              </AppleCard>
+              </Card>
             ))}
           </div>
         )
       ) : savedTuitions.length === 0 ? (
-        <AppleCard className="p-16 text-center border-dashed" hover={false}>
+        <Card className="p-16 text-center border-dashed" >
           <Bookmark size={40} className="mx-auto text-muted-foreground/30 mb-5" strokeWidth={1.5} />
           <h3 className="text-sm font-heading font-bold uppercase tracking-wider text-foreground mb-2">
             No saved tuitions yet
@@ -226,11 +226,11 @@ const Bookmarks = () => {
           >
             Browse Tuitions
           </button>
-        </AppleCard>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {savedTuitions.map((tuition) => (
-            <AppleCard
+            <Card
               key={tuition._id}
               className="p-5 flex flex-col justify-between"
               moveOnHover
@@ -281,7 +281,7 @@ const Bookmarks = () => {
                   </button>
                 </div>
               </div>
-            </AppleCard>
+            </Card>
           ))}
         </div>
       )}

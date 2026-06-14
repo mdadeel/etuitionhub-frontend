@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 
 const SessionConfirmationList = () => {
     const [sessions, setSessions] = useState([]);
@@ -80,9 +82,28 @@ const SessionConfirmationList = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-48">
-                <div className="size-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            </div>
+            <CardSkeleton className="p-6 md:p-8 space-y-6">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                        <Skeleton className="h-5 w-44 rounded-lg" />
+                        <Skeleton className="h-3 w-56 rounded-lg" />
+                    </div>
+                    <Skeleton className="h-8 w-32 rounded-lg" />
+                </div>
+                <div className="space-y-3">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="flex items-center gap-4 p-4 border border-border/50 rounded-2xl">
+                            <Skeleton className="size-10 rounded-full shrink-0" />
+                            <div className="flex-1 space-y-1.5">
+                                <LineSkeleton width="1/2" className="h-4" />
+                                <LineSkeleton width="1/3" className="h-3" />
+                            </div>
+                            <Skeleton className="h-9 w-20 rounded-lg" />
+                            <Skeleton className="h-9 w-20 rounded-lg" />
+                        </div>
+                    ))}
+                </div>
+            </CardSkeleton>
         );
     }
 

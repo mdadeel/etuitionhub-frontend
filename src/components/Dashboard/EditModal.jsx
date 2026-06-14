@@ -64,7 +64,7 @@ const EditModal = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[80vh] overflow-y-auto">
                     <div className="space-y-4">
                         {fields.map(field => (
                             <div key={field.name} className="space-y-1.5">

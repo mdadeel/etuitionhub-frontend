@@ -29,6 +29,7 @@ import SavedSearchAlerts from "../components/Dashboard/SavedSearchAlerts";
 import AdminContacts from "../components/Dashboard/AdminContacts";
 import SessionConfirmationList from "../components/Dashboard/SessionConfirmationList";
 import TemplateManager from "../components/Dashboard/TemplateManager";
+import { DashboardSkeleton } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
 /**
@@ -62,19 +63,9 @@ const Dashboard = () => {
     return <Navigate to="/login" />;
   }
 
-  // Inline loading state - no spinner page
+  // Inline loading state - show dashboard skeleton
   if (loading || (user && !dbUser)) {
-    return (
-      <div className="flex h-screen bg-background">
-        <div className="w-72 bg-card border-r border-border hidden lg:flex" />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="flex items-center gap-3">
-            <div className="size-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            <span className="text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">{t("dashboard_loading", "Loading dashboard...")}</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AppleBadge } from "../shared/AppleUI";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -267,7 +266,7 @@ const DashPayments = () => {
                                                 <p className="text-xs md:text-sm font-heading font-black text-foreground tabular-nums italic">৳{payment.grossAmount}</p>
                                             </td>
                                             <td className="px-4 md:px-8 py-6">
-                                                <AppleBadge 
+                                                <Badge 
                                                     variant={
                                                         payment.status === 'confirmed' || payment.status === 'available_for_withdrawal' || payment.status === 'withdrawn' || payment.status === 'commission_applied' ? 'success' :
                                                         payment.status === 'rejected' ? 'error' : 'warning'
@@ -277,7 +276,7 @@ const DashPayments = () => {
                                                     {payment.status === 'pending_verification' ? 'Verify' :
                                                      payment.status === 'commission_applied' ? 'Commission' :
                                                      payment.status.toUpperCase().replace('_', ' ')}
-                                                </AppleBadge>
+                                                </Badge>
                                             </td>
                                             <td className="px-4 md:px-8 py-6 text-right">
                                                 {payment.status === 'pending_verification' ? (

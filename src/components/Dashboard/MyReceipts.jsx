@@ -49,8 +49,8 @@ const MyReceipts = ({ hideHeader }) => {
                     <p className="text-xs text-muted-foreground">No receipts yet. Receipts are generated once an admin verifies a payment.</p>
                 </div>
             ) : (
-                <div className="bg-card border border-border">
-                    <table className="w-full">
+                <div className="bg-card border border-border overflow-x-auto">
+                    <table className="w-full whitespace-nowrap">
                         <thead>
                             <tr className="border-b border-border text-left text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                                 <th className="px-6 py-4">Receipt #</th>

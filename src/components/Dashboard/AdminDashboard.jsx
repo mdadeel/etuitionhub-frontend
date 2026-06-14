@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { useState } from 'react';
 import DashUsers from './DashUsers';
 import DashTuitions from './DashTuitions';
@@ -7,9 +8,6 @@ import DashSettings from './DashSettings';
 import AdminVerifications from './AdminVerifications';
 import DisputeWorkspace from './DisputeWorkspace';
 import AdminTutors from './AdminTutors';
-import { 
-    AppleCard
-} from '../shared/AppleUI';
 import { cn } from '@/lib/utils';
 
 const AdminDashboard = () => {
@@ -48,7 +46,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Content Area */}
-            <AppleCard className="p-4 md:p-6 min-h-fit" hover={false}>
+            <Card className="p-4 md:p-6 min-h-fit" >
                 <div className="space-y-4">
                     {activeTab === 'analytics' && <DashAnalytics />}
                     {activeTab === 'payments' && <DashPayments />}
@@ -59,7 +57,7 @@ const AdminDashboard = () => {
                     {activeTab === 'disputes' && <DisputeWorkspace isAdminView />}
                     {activeTab === 'settings' && <DashSettings />}
                 </div>
-            </AppleCard>
+            </Card>
         </div>
     );
 };

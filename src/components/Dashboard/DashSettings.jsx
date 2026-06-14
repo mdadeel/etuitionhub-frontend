@@ -1,7 +1,8 @@
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
-import { AppleButton, AppleInput } from '../shared/AppleUI';
 import { FormSkeleton } from "@/components/shared/skeletons";
 import { Save, RefreshCw, Info, Globe, Phone, Banknote, Layout } from 'lucide-react';
 

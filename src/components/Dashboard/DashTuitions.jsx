@@ -3,14 +3,22 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
-import { AppleButton, AppleBadge } from '../shared/AppleUI';
 import { Check, X, ShieldAlert, Edit2 } from 'lucide-react';
 import EditModal from './EditModal';
+import Pagination from '../shared/Pagination';
 
 const DashTuitions = () => {
     const [tuitions, setTuitions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalTuitions, setTotalTuitions] = useState(0);
+
+    // Reset page when filter changes
+    useEffect(() => {
+        setPage(1);
+    }, [filter]);
     
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -27,15 +35,21 @@ const DashTuitions = () => {
     const loadTuitions = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await api.get('/api/tuitions');
+            const res = await api.get('/api/tuitions', {
+                params: { page }
+            });
             const data = res.data;
             setTuitions(Array.isArray(data) ? data : (data?.data || []));
+            if (data?.pagination) {
+                setTotalPages(data.pagination.pages);
+                setTotalTuitions(data.pagination.total);
+            }
         } catch (err) {
             toast.error(err?.response?.data?.error || 'Failed to load tuitions');
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [page]);
 
     useEffect(() => {
         loadTuitions();
@@ -116,7 +130,7 @@ const DashTuitions = () => {
                     </div>
                     <h2 className="text-lg md:text-xl font-heading font-bold uppercase tracking-tight text-foreground">Tuition Streams</h2>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                        {tuitions.length} active metadata nodes detected.
+                        {totalTuitions || tuitions.length} active metadata nodes detected.
                     </p>
                 </div>
 
@@ -171,12 +185,13 @@ const DashTuitions = () => {
                                         <span className="text-xs md:text-sm font-heading font-bold text-primary tabular-nums">৳{t.salary}</span>
                                     </td>
                                     <td className="px-4 md:px-5 py-3 text-center">
-                                        <AppleBadge 
-                                            variant={t.status === 'approved' ? 'success' : t.status === 'rejected' ? 'error' : 'primary'}
-                                            className="rounded-lg"
-                                        >
+                                        <span className={`px-2.5 py-1 text-[9px] font-label font-semibold uppercase tracking-wider rounded-lg border w-fit ${
+                                            t.status === 'approved' ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20' :
+                                            t.status === 'rejected' ? 'bg-red-500/10 text-red-700 border-red-500/20' :
+                                            'bg-amber-500/10 text-amber-700 border-amber-500/20'
+                                        }`}>
                                             {t.status}
-                                        </AppleBadge>
+                                        </span>
                                     </td>
                                     <td className="px-4 md:px-5 py-3 text-right">
                                         <div className="flex justify-end gap-2 md:gap-3 items-center">
@@ -214,6 +229,16 @@ const DashTuitions = () => {
                     </tbody>
                 </table>
             </div>
+
+            {totalPages > 1 && (
+                <div className="mt-6 flex justify-center">
+                    <Pagination 
+                        currentPage={page} 
+                        totalPages={totalPages} 
+                        onPageChange={setPage} 
+                    />
+                </div>
+            )}
 
             <EditModal 
                 isOpen={isEditModalOpen}

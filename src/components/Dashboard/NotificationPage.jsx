@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Bell, Check, Trash2, Calendar, CreditCard, MessageSquare, Star, FileText, Bookmark, ShieldCheck, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Bell, Check, Trash2, Calendar, CreditCard, MessageSquare, Star, FileText, ShieldCheck, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import useNotifications from '@/hooks/useNotifications';
 import { formatRelativeTime } from '@/utils/dateUtils';
@@ -16,7 +16,7 @@ const getTypeIcon = (type, size = 18) => {
         case 'message': return <MessageSquare {...props} />;
         case 'review': return <Star {...props} />;
         case 'application': return <FileText {...props} />;
-        case 'save': return <Bookmark {...props} />;
+
         case 'verification': return <ShieldCheck {...props} />;
         default: return <Bell {...props} />;
     }

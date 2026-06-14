@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 
 const AdminContacts = () => {
     const [contacts, setContacts] = useState([]);
@@ -72,8 +74,31 @@ const AdminContacts = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-48">
-                <div className="size-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <div className="space-y-4 animate-pulse">
+                <div className="flex items-center justify-between border-b border-border pb-6">
+                    <div className="space-y-2">
+                        <Skeleton className="h-3 w-20 rounded-lg" />
+                        <Skeleton className="h-6 w-36 rounded-lg" />
+                        <Skeleton className="h-3 w-48 rounded-lg" />
+                    </div>
+                    <Skeleton className="h-8 w-24 rounded-lg" />
+                </div>
+                {[...Array(5)].map((_, i) => (
+                    <CardSkeleton key={i} className="p-4 space-y-3">
+                        <div className="flex items-center gap-3">
+                            <Skeleton className="size-6 rounded-lg shrink-0" />
+                            <div className="flex-1 space-y-1.5">
+                                <LineSkeleton width="1/2" className="h-4" />
+                                <LineSkeleton width="1/4" className="h-3" />
+                            </div>
+                            <div className="flex gap-2">
+                                <Skeleton className="size-8 rounded-lg" />
+                                <Skeleton className="size-8 rounded-lg" />
+                            </div>
+                        </div>
+                        <LineSkeleton width="full" className="h-3" />
+                    </CardSkeleton>
+                ))}
             </div>
         );
     }

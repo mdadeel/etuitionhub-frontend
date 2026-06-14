@@ -1,3 +1,6 @@
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
@@ -18,7 +21,6 @@ import {
   Search,
   Banknote,
 } from "lucide-react";
-import { AppleCard, AppleHeader, AppleButton, AppleBadge } from "../shared/AppleUI";
 import { cn } from "@/lib/utils";
 import SessionStatsCard from "./SessionStatsCard";
 import PostTuition from "../../pages/PostTuition";
@@ -208,7 +210,7 @@ const StudentDashboard = () => {
           <div className="space-y-6">
             <SessionStatsCard />
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-            <AppleCard className="p-6 md:p-10 group" hover={false}>
+            <Card className="p-6 md:p-10 group" >
               <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
                 <Database size={24} />
               </div>
@@ -223,9 +225,9 @@ const StudentDashboard = () => {
                   Requests
                 </span>
               </div>
-            </AppleCard>
+            </Card>
  
-            <AppleCard className="p-6 md:p-10 group" hover={false}>
+            <Card className="p-6 md:p-10 group" >
               <div className="size-12 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
                 <FileText size={24} />
               </div>
@@ -240,11 +242,11 @@ const StudentDashboard = () => {
                   Applications
                 </span>
               </div>
-            </AppleCard>
+            </Card>
  
-            <AppleCard
+            <Card
               className="p-6 md:p-10 group col-span-2 lg:col-span-1"
-              hover={false}
+              
             >
               <div className="size-12 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
                 <UserCheck size={24} />
@@ -260,7 +262,7 @@ const StudentDashboard = () => {
                   Sessions
                 </span>
               </div>
-            </AppleCard>
+            </Card>
           </div>
           </div>
         ))}
@@ -277,7 +279,7 @@ const StudentDashboard = () => {
  
       {/* My Jobs Tab */}
       {activeTab === "my-jobs" && (
-        <AppleCard className="overflow-hidden">
+        <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-background border-b border-border">
@@ -324,12 +326,12 @@ const StudentDashboard = () => {
                         ৳{job.salary}
                       </td>
                       <td className="px-8 py-6">
-                        <AppleBadge
+                        <Badge
                           variant={job.status === "approved" ? "success" : "default"}
                           className="rounded-lg"
                         >
                           {job.status === "approved" ? "Active" : "Pending"}
-                        </AppleBadge>
+                        </Badge>
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="flex justify-end gap-3">
@@ -353,14 +355,14 @@ const StudentDashboard = () => {
               </tbody>
             </table>
           </div>
-        </AppleCard>
+        </Card>
       )}
  
       {/* Applications Tab */}
       {activeTab === "applications" && (
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-6">
           {applications.length === 0 ? (
-            <AppleCard className="col-span-full p-32 text-center border-dashed">
+            <Card className="col-span-full p-32 text-center border-dashed">
               <Search
                 size={48}
                 className="text-muted-foreground/20 mx-auto mb-8"
@@ -369,10 +371,10 @@ const StudentDashboard = () => {
               <p className="text-sm font-medium text-muted-foreground italic">
                 No incoming applications yet.
               </p>
-            </AppleCard>
+            </Card>
           ) : (
             applications.map((app) => (
-              <AppleCard
+              <Card
                 key={app._id}
                 className="p-4 md:p-8 group relative overflow-hidden"
               >
@@ -387,12 +389,12 @@ const StudentDashboard = () => {
                         {app.tutorEmail}
                       </p>
                     </div>
-                    <AppleBadge
+                    <Badge
                       variant={app.status === "approved" ? "success" : app.status === "rejected" ? "error" : "warning"}
                       className="rounded-lg"
                     >
                       {app.status}
-                    </AppleBadge>
+                    </Badge>
                   </div>
  
                   <div className="space-y-4 mb-8">
@@ -411,23 +413,23 @@ const StudentDashboard = () => {
  
                   {app.status === "pending" && (
                     <div className="flex gap-3">
-                      <AppleButton
+                      <Button
                         variant="outline"
                         className="flex-1 h-10 rounded-lg text-xs active:scale-[0.98]"
                         onClick={() => handleReject(app._id)}
                       >
                         Decline
-                      </AppleButton>
-                      <AppleButton
+                      </Button>
+                      <Button
                         className="flex-1 h-10 rounded-lg text-xs active:scale-[0.98]"
                         onClick={() => handleApprove(app._id)}
                       >
                         Approve
-                      </AppleButton>
+                      </Button>
                     </div>
                   )}
                 </div>
-              </AppleCard>
+              </Card>
             ))
           )}
         </div>
@@ -435,7 +437,7 @@ const StudentDashboard = () => {
  
       {/* Booked / Engagements Tab */}
       {activeTab === "booked" && (
-        <AppleCard className="overflow-hidden">
+        <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-background border-b border-border">
@@ -488,11 +490,11 @@ const StudentDashboard = () => {
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="flex flex-col items-end gap-2">
-                          <AppleBadge variant="success" className="rounded-lg">
+                          <Badge variant="success" className="rounded-lg">
                             Active
-                          </AppleBadge>
+                          </Badge>
                           {booking.isAccepted && (
-                            <AppleButton
+                            <Button
                               size="sm"
                               className="h-7 px-3 text-xs rounded-lg active:scale-[0.98]"
                               onClick={() =>
@@ -500,7 +502,7 @@ const StudentDashboard = () => {
                               }
                             >
                               Join Room
-                            </AppleButton>
+                            </Button>
                           )}
                         </div>
                       </td>
@@ -510,7 +512,7 @@ const StudentDashboard = () => {
               </tbody>
             </table>
           </div>
-        </AppleCard>
+        </Card>
       )}
 
       {/* Payments Tab */}

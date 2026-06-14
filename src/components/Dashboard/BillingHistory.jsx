@@ -1,7 +1,6 @@
 import { useState } from "react";
 import StudentPayments from "./StudentPayments";
 import MyReceipts from "./MyReceipts";
-import { AppleHeader } from "../shared/AppleUI";
 import { CreditCard, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +51,7 @@ const BillingHistory = () => {
           // If StudentPayments has a header inside it, does it duplicate the main header we just put in BillingHistory?
           // Ah! Let's check StudentPayments.jsx code:
           // Yes: it has:
-          // <AppleHeader title="Payment History" subtitle="Track all your transactions and payment activities." ... />
+          // <div className="mb-8"><div className="flex items-center gap-3"><h2 className="text-2xl font-bold tracking-tight text-foreground">Payment History</h2></div><p className="text-muted-foreground mt-2">Track all your transactions and payment activities.</p></div>
           // Wait, if it has a header, then having two headers (one in BillingHistory and one in StudentPayments) would look redundant!
           // Same for MyReceipts: it has:
           // <header className="border-b border-border pb-6"> ... <h2>My Receipts</h2> ... </header>

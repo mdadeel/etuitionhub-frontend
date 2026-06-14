@@ -1,8 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
-import { AppleButton, AppleBadge } from '../shared/AppleUI';
 import { Plus, UserX, ShieldAlert, ShieldCheck, Clock } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -82,10 +83,10 @@ const AdminTutors = () => {
                     <h2 className="text-lg md:text-xl font-heading font-bold uppercase tracking-tight text-foreground">All Tutors</h2>
                     <p className="text-xs text-muted-foreground mt-0.5">{tutors.length} registered tutors</p>
                 </div>
-                <AppleButton size="sm" onClick={() => setAddOpen(true)}>
+                <Button size="sm" onClick={() => setAddOpen(true)}>
                     <Plus size={12} />
                     Add Tutor
-                </AppleButton>
+                </Button>
             </header>
  
             <div className="overflow-x-auto border border-border bg-card">
@@ -107,9 +108,9 @@ const AdminTutors = () => {
                                     <div className="flex flex-col items-center gap-3">
                                         <ShieldAlert size={40} className="text-muted-foreground" strokeWidth={1} />
                                         <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">No tutors found</p>
-                                        <AppleButton size="sm" variant="secondary" onClick={() => setAddOpen(true)}>
+                                        <Button size="sm" variant="secondary" onClick={() => setAddOpen(true)}>
                                             Add your first tutor
-                                        </AppleButton>
+                                        </Button>
                                     </div>
                                 </td>
                             </tr>
@@ -147,7 +148,7 @@ const AdminTutors = () => {
                                         </div>
                                     </td>
                                     <td className="px-4 md:px-5 py-3 text-center">
-                                        <AppleBadge 
+                                        <Badge 
                                             variant={
                                                 t.verificationStatus === 'verified_premium' ? 'success' :
                                                 t.verificationStatus === 'verified_basic' ? 'primary' :
@@ -159,7 +160,7 @@ const AdminTutors = () => {
                                             {t.verificationStatus === 'verified_premium' ? 'Premium' :
                                              t.verificationStatus === 'verified_basic' ? 'Basic' :
                                              t.verificationStatus?.replace('_', ' ') || 'Unverified'}
-                                        </AppleBadge>
+                                        </Badge>
                                     </td>
                                     <td className="px-4 md:px-5 py-3 text-center">
                                         <div className="flex items-center justify-center gap-1.5">

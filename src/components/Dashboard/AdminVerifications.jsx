@@ -3,6 +3,8 @@ import api from '../../services/api';
 import { CheckCircle, XCircle, ExternalLink, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 // eslint-disable-next-line no-unused-vars
 import { cn } from '@/lib/utils';
 
@@ -56,8 +58,37 @@ const AdminVerifications = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-48">
-                <div className="size-6 border-2 border-primary/20 border-t-primary rounded-none animate-spin"></div>
+            <div className="space-y-6 animate-pulse">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                        <Skeleton className="h-3 w-20 rounded-lg" />
+                        <Skeleton className="h-6 w-48 rounded-lg" />
+                        <Skeleton className="h-3 w-40 rounded-lg" />
+                    </div>
+                    <Skeleton className="h-6 w-24 rounded-lg" />
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {[...Array(4)].map((_, i) => (
+                        <CardSkeleton key={i} className="p-6 space-y-4">
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="size-10 rounded-none shrink-0" />
+                                <div className="space-y-2 flex-1">
+                                    <LineSkeleton width="3/4" className="h-4" />
+                                    <LineSkeleton width="1/2" className="h-3" />
+                                </div>
+                            </div>
+                            <div className="space-y-3 bg-background/50 p-4 rounded-lg">
+                                <LineSkeleton width="1/3" className="h-3" />
+                                <LineSkeleton width="full" className="h-3" />
+                                <LineSkeleton width="2/3" className="h-3" />
+                            </div>
+                            <div className="flex gap-3">
+                                <Skeleton className="h-10 flex-1 rounded-lg" />
+                                <Skeleton className="h-10 flex-1 rounded-lg" />
+                            </div>
+                        </CardSkeleton>
+                    ))}
+                </div>
             </div>
         );
     }
