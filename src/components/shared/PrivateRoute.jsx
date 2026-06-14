@@ -2,19 +2,16 @@
 // Redirects to login if user is not authenticated
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { DashboardSkeleton } from '@/components/shared/skeletons';
 
 // Simple private route wrapper
 const PrivateRoute = ({ children }) => {
     const { user, loading } = useAuth();
     const location = useLocation();
 
-    // Show loading spinner while checking auth
+    // Show dashboard skeleton while checking auth
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="size-8 border-2 border-t-primary border-muted rounded-full animate-spin"></div>
-            </div>
-        );
+        return <DashboardSkeleton />;
     }
 
     // Redirect to login if not authenticated

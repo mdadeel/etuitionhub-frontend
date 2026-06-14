@@ -1,6 +1,6 @@
+import { Button } from "@/components/ui/button";
 import React from 'react';
 import { SearchX, RefreshCw } from "lucide-react";
-import { AppleButton } from "./AppleUI";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,9 +21,9 @@ const EmptyState = ({
                 <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
                 <p className="text-sm text-muted-foreground mb-8 max-w-xs">{message}</p>
                 {onAction && (
-                    <AppleButton variant="secondary" size="md" onClick={onAction}>
+                    <Button variant="secondary" size="md" onClick={onAction}>
                         {actionLabel}
-                    </AppleButton>
+                    </Button>
                 )}
             </div>
         );
@@ -51,7 +51,7 @@ const EmptyState = ({
                 </p>
                 
                 {onAction && (
-                    <AppleButton
+                    <Button
                         variant="secondary"
                         size="md"
                         className="shadow-apple-sm h-11 px-8 rounded-xl"
@@ -59,7 +59,7 @@ const EmptyState = ({
                     >
                         <RefreshCw size={14} className="mr-2 opacity-50 group-hover:rotate-180 transition-transform duration-700" />
                         {actionLabel}
-                    </AppleButton>
+                    </Button>
                 )}
             </div>
         </div>

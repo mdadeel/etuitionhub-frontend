@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
 import { DynamicIslandProvider } from "./contexts/DynamicIslandProvider";
 import { DynamicIsland } from "./components/shared/DynamicIsland";
+import { PageSkeleton } from "@/components/shared/skeletons";
 
 // Lazy-loaded page components for code splitting
 const Home = lazy(() => import("./pages/Home"));
@@ -60,11 +61,7 @@ const SavedNotes = lazy(() => import("./pages/AiAssistant/SavedNotes"));
 const AiAssistantSettings = lazy(() => import("./pages/AiAssistant/AiAssistantSettings"));
 
 // Loading fallback component
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-  </div>
-);
+const PageLoader = () => <PageSkeleton />;
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();

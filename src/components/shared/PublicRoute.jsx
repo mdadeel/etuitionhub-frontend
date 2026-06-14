@@ -2,16 +2,30 @@
 // Used for login/register pages
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CardSkeleton } from '@/components/shared/skeletons';
+import { LineSkeleton } from '@/components/shared/skeletons';
 
 function PublicRoute({ children }) {
     const { user, loading } = useAuth();
     const location = useLocation();
 
-    // Show loading while checking auth
+    // Show skeleton while checking auth
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="size-8 border-2 border-t-primary border-muted rounded-full animate-spin"></div>
+            <div className="min-h-screen flex items-center justify-center bg-background px-4">
+                <div className="w-full max-w-md space-y-6">
+                    <div className="text-center space-y-3">
+                        <Skeleton className="size-14 rounded-2xl mx-auto" />
+                        <Skeleton className="h-7 w-44 rounded-lg mx-auto" />
+                        <LineSkeleton width="2/3" className="h-4 mx-auto" />
+                    </div>
+                    <CardSkeleton className="p-6 space-y-4">
+                        <Skeleton className="h-12 w-full rounded-xl" />
+                        <Skeleton className="h-12 w-full rounded-xl" />
+                        <Skeleton className="h-12 w-full rounded-xl" />
+                    </CardSkeleton>
+                </div>
             </div>
         );
     }

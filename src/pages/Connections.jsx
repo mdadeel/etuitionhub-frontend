@@ -6,7 +6,6 @@ import ConnectionRequestCard from '../components/Connections/ConnectionRequestCa
 import OnboardingWizard from '../components/Connections/OnboardingWizard';
 import ConnectionStatusBadge from '../components/Connections/ConnectionStatusBadge';
 import { Mail, UserPlus } from 'lucide-react';
-import { AppleHeader } from '../shared/AppleUI';
 
 const ConnectionsPage = () => {
   const [activeTab, setActiveTab] = useState('requests'); // requests, connections

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bell, Check, Trash2, Calendar, CreditCard, MessageSquare, Star, FileText, Bookmark, ShieldCheck, ExternalLink } from 'lucide-react';
+import { Bell, Check, Trash2, Calendar, CreditCard, MessageSquare, Star, FileText, ShieldCheck, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import useNotifications from '@/hooks/useNotifications';
 import { formatRelativeTime } from '@/utils/dateUtils';
@@ -37,7 +37,7 @@ const NotificationBell = () => {
             case 'message': return <MessageSquare {...iconProps} />;
             case 'review': return <Star {...iconProps} />;
             case 'application': return <FileText {...iconProps} />;
-            case 'save': return <Bookmark {...iconProps} />;
+
             case 'verification': return <ShieldCheck {...iconProps} />;
             default: return <Bell {...iconProps} />;
         }
