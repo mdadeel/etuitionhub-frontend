@@ -8,3 +8,5 @@ export { TutorCardSkeleton, TutorCardGridSkeleton } from "./TutorCardSkeleton";
 export { TuitionCardSkeleton, TuitionCardGridSkeleton } from "./TuitionCardSkeleton";
 export { NotificationSkeleton, NotificationListSkeleton } from "./NotificationSkeleton";
 export { LessonPlanSkeleton, AssignmentSkeleton } from "./TutorToolsSkeleton";
+export { DashboardSkeleton } from "./DashboardSkeleton";
+export { PageSkeleton } from "./PageSkeleton";
