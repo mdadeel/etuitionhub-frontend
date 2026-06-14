@@ -32,7 +32,8 @@ const Tutors = () => {
   const [allAreas, setAllAreas] = useState(["All"]);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const searchQuery = searchParams.get("q") || "";
-  const debouncedSearch = useDebouncedValue(searchQuery, 300);
+  const [localSearch, setLocalSearch] = useState(searchQuery);
+  const debouncedSearch = useDebouncedValue(localSearch, 300);
   const [page, setPage] = useState(1);
   const [_pagination, setPagination] = useState(null);
   const [hasMore, setHasMore] = useState(true);
@@ -76,7 +77,7 @@ const Tutors = () => {
   // Sync filters to URL
   useEffect(() => {
     const params = {};
-    if (searchQuery) params.q = searchQuery;
+    if (debouncedSearch) params.q = debouncedSearch;
     if (selectedSubjects.length > 0)
       params.subjects = selectedSubjects.join(",");
     if (selectedArea && selectedArea !== "All") params.area = selectedArea;
@@ -85,7 +86,7 @@ const Tutors = () => {
     if (sortBy && sortBy !== "ratings") params.sort = sortBy;
     setSearchParams(params, { replace: true });
   }, [
-    searchQuery,
+    debouncedSearch,
     selectedSubjects,
     selectedArea,
     selectedLanguage,
@@ -221,6 +222,7 @@ const Tutors = () => {
 
   const handleClear = () => {
     setSearchParams({});
+    setLocalSearch("");
     setSortBy("ratings");
     setSelectedSubjects([]);
     setSelectedArea("All");
@@ -304,8 +306,8 @@ const Tutors = () => {
               type="text"
               placeholder="Search tutors..."
               className="w-full pl-10 pr-4 h-12 bg-card border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm transition-all text-foreground placeholder:text-muted-foreground"
-              value={searchQuery}
-              onChange={(e) => setSearchParams({ q: e.target.value })}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
             />
           </div>
         </div>
@@ -441,8 +443,8 @@ const Tutors = () => {
               <input
                 type="search"
                 placeholder="Search tutors..."
-                value={searchQuery}
-                onChange={(e) => setSearchParams(e.target.value ? { q: e.target.value } : {})}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
                 className="w-full pl-9 pr-4 h-10 rounded-xl text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
               />
             </div>

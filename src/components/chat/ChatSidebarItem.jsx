@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useChat } from '../../contexts/ChatContext';
 import { useTranslation } from 'react-i18next';
 import { Check, CheckCheck } from 'lucide-react';
 
-const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
+const ChatSidebarItem = memo(({ conv, user, isActive, onClick }) => {
     const { t } = useTranslation();
     const { onlineUsers, typingUsers } = useChat();
 
@@ -121,6 +121,6 @@ const ChatSidebarItem = ({ conv, user, isActive, onClick }) => {
             </div>
         </button>
     );
-};
+});
 
 export default ChatSidebarItem;

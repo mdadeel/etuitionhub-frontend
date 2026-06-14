@@ -26,10 +26,15 @@ const Tuitions = () => {
 
   const [page, setPage] = useState(1);
 
-  const { filters, updateFilter, clearFilters, hasActiveFilters } =
-    useTuitionFilters();
-  const searchQuery = filters.search;
-  const debouncedSearch = useDebouncedValue(searchQuery, 300);
+  const { filters, updateFilter, clearFilters, hasActiveFilters } = useTuitionFilters();
+  const [localSearch, setLocalSearch] = useState(filters.search || "");
+  const debouncedSearch = useDebouncedValue(localSearch, 300);
+
+  useEffect(() => {
+    if (debouncedSearch !== filters.search) {
+      updateFilter("search", debouncedSearch);
+    }
+  }, [debouncedSearch, filters.search, updateFilter]);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -108,6 +113,7 @@ const Tuitions = () => {
   const handleClearAll = () => {
     setSearchParams({});
     clearFilters();
+    setLocalSearch("");
     setPage(1);
   };
 
@@ -176,8 +182,8 @@ const Tuitions = () => {
               type="text"
               placeholder="Search tuitions..."
               className="w-full pl-9 pr-4 h-11 bg-card border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm text-foreground placeholder:text-muted-foreground"
-              value={searchQuery}
-              onChange={(e) => updateFilter("search", e.target.value)}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
             />
           </div>
         </div>
@@ -318,8 +324,8 @@ const Tuitions = () => {
               <input
                 type="search"
                 placeholder="Search tuitions..."
-                value={filters.search || ""}
-                onChange={(e) => updateFilter("search", e.target.value)}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
                 className="w-full pl-9 pr-4 h-10 rounded-xl text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
               />
             </div>
@@ -349,7 +355,7 @@ const Tuitions = () => {
             ) : tuitions.length === 0 && !loading ? (
               <div className="bg-card border border-border rounded-xl">
                 <SearchEmptyState
-                  query={searchQuery}
+                  query={filters.search}
                   type="tuitions"
                   suggestions={
                     filters.subjects.length === 0
