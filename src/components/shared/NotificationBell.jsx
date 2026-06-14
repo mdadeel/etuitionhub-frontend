@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const { user } = useAuth();
+    const { user, dbUser } = useAuth();
     const {
         notifications,
         unreadCount,
@@ -17,7 +17,7 @@ const NotificationBell = () => {
         markAllAsRead,
         deleteNotification,
         handleAction,
-    } = useNotifications({ userId: user?.uid });
+    } = useNotifications({ userId: user?.uid, enabled: !!dbUser });
 
     useEffect(() => {
         const handleClickOutside = (event) => {

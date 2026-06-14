@@ -98,11 +98,11 @@ export const AppleInput = ({ label, error, className, ...props }) => (
 export const AppleBadge = ({ children, className, variant = 'default' }) => {
     const variants = {
         default: "bg-muted text-foreground border-border",
-        success: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
-        warning: "bg-orange-500/10 text-orange-700 border-orange-500/20",
-        error: "bg-red-500/10 text-red-700 border-red-500/20",
-        primary: "bg-primary/10 text-primary border-primary/20",
-        muted: "bg-background text-muted-foreground border-border",
+        success: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30",
+        warning: "bg-orange-500/10 text-orange-700 border-orange-500/20 dark:bg-orange-500/25 dark:text-orange-400 dark:border-orange-500/30",
+        error: "bg-red-500/10 text-red-700 border-red-500/20 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30",
+        primary: "bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary dark:border-primary/30",
+        muted: "bg-background text-muted-foreground border-border dark:bg-slate-900/40 dark:text-slate-400",
         glass: "bg-card/10 backdrop-blur-md border border-white/20 text-white"
     };
 

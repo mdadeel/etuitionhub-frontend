@@ -11,10 +11,12 @@
 //   • A hover-faded HH:mm timestamp (§5.14). User: left of bubble.
 //     AI: below the MessageActions row.
 //   • A MessageActions bar that fades in on parent hover (§5.13).
+import { useEffect, useRef, useState } from 'react';
 import { User as UserIcon, Send, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AiResponseCard from './AiResponseCard';
 import TutorRecommendationCard from './TutorRecommendationCard';
+import TuitionRecommendationCard from './TuitionRecommendationCard';
 import ConversationalBubble from './ConversationalBubble';
 import MessageActions from './MessageActions';
 import PoruaLogo from './PoruaLogo';
@@ -39,9 +41,30 @@ function formatTimestamp(dateLike) {
 }
 
 function UserBubble({
-    content, user, createdAt
+    content, user, createdAt, onEdit, isEditing, onCancelEdit, onResend,
 }) {
     const timestamp = formatTimestamp(createdAt);
+
+    if (isEditing) {
+        return (
+            <div className="flex items-start justify-end gap-1.5 animate-fade-in-up">
+                <div className="flex flex-col items-end gap-1 max-w-[85%]">
+                    <EditInput
+                        initialValue={content}
+                        onSave={onResend}
+                        onCancel={onCancelEdit}
+                    />
+                </div>
+                <div className="shrink-0 size-7 rounded-lg bg-muted border border-border flex items-center justify-center overflow-hidden">
+                    {user?.photoURL ? (
+                        <img src={user.photoURL} alt={user.displayName || 'You'} className="size-full object-cover" />
+                    ) : (
+                        <UserIcon size={13} className="text-muted-foreground" />
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="group flex items-start justify-end gap-1.5 animate-fade-in-up">
@@ -60,6 +83,16 @@ function UserBubble({
                             {timestamp}
                         </span>
                     )}
+                    {onEdit && (
+                        <button
+                            type="button"
+                            onClick={onEdit}
+                            className="text-[10px] font-label text-muted-foreground/40 hover:text-primary transition-colors opacity-0 group-hover:opacity-60"
+                            title="Edit message"
+                        >
+                            Edit
+                        </button>
+                    )}
                 </div>
             </div>
             <div className="shrink-0 size-7 rounded-lg bg-muted border border-border flex items-center justify-center overflow-hidden">
@@ -72,6 +105,55 @@ function UserBubble({
                 ) : (
                     <UserIcon size={13} className="text-muted-foreground" />
                 )}
+            </div>
+        </div>
+    );
+}
+
+function EditInput({ initialValue, onSave, onCancel }) {
+    const [value, setValue] = useState(initialValue);
+    const taRef = useRef(null);
+
+    useEffect(() => {
+        taRef.current?.focus();
+        taRef.current?.setSelectionRange(initialValue.length, initialValue.length);
+    }, [initialValue]);
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (value.trim()) onSave?.(value.trim());
+        }
+        if (e.key === 'Escape') onCancel?.();
+    };
+
+    return (
+        <div className="flex flex-col items-end gap-1.5 w-full">
+            <label htmlFor="edit-message-textarea" className="sr-only">Edit message</label>
+            <textarea
+                id="edit-message-textarea"
+                ref={taRef}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full min-w-[260px] rounded-xl border border-primary/30 bg-background px-3 py-2 text-sm text-foreground resize-none outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                rows={2}
+            />
+            <div className="flex items-center gap-2">
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    className="px-3 py-1 text-[11px] font-label text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    onClick={() => { if (value.trim()) onSave?.(value.trim()); }}
+                    className="px-3 py-1 text-[11px] font-label bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                >
+                    Save
+                </button>
             </div>
         </div>
     );
@@ -114,6 +196,7 @@ function AssistantMessage({
 }) {
     const structured = message.structured;
     const tutors = message.recommendedTutors || [];
+    const tuitions = message.recommendedTuitions || [];
     const timestamp = formatTimestamp(message.createdAt);
     const isConversational = structured?.templateType === 'conversational';
 
@@ -194,6 +277,12 @@ function AssistantMessage({
                     <TutorRecommendationCard
                         tutors={tutors}
                         onTrackClick={onTrackTutorClick}
+                        subject={structured?.recommendedSubject}
+                    />
+                )}
+                {tuitions.length > 0 && (
+                    <TuitionRecommendationCard
+                        tuitions={tuitions}
                         subject={structured?.recommendedSubject}
                     />
                 )}

@@ -73,12 +73,12 @@ const AdminVerifications = () => {
                     <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Pending Verifications</h2>
                     <p className="text-xs text-muted-foreground mt-1">Review tutor documents to grant the verified badge.</p>
                 </div>
-                <div className="px-4 py-2 bg-amber-500/10 text-amber-700 border border-amber-500/20 rounded-lg text-[10px] font-label font-semibold uppercase tracking-widest flex items-center gap-2 w-fit">
+                <div className="px-4 py-2 bg-amber-500/10 text-amber-700 border border-amber-500/20 dark:bg-amber-500/25 dark:text-amber-400 dark:border-amber-500/30 rounded-lg text-[10px] font-label font-semibold uppercase tracking-widest flex items-center gap-2 w-fit">
                     <ShieldAlert size={12} />
                     {pendingUsers.length} Pending
                 </div>
             </header>
-
+ 
             {pendingUsers.length === 0 ? (
                 <div className="border border-border p-12 text-center bg-background rounded-lg relative overflow-hidden group">
                     <CheckCircle size={40} className="mx-auto mb-4 text-emerald-500/30" strokeWidth={1} />
@@ -89,20 +89,20 @@ const AdminVerifications = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {pendingUsers.map(user => (
                         <div key={user._id} className="border border-border rounded-lg bg-card p-6 shadow-none flex flex-col justify-between">
-                            <div>
-                                <div className="flex items-center gap-4 mb-6">
-                                    <Avatar className="size-10 rounded-none border border-border shadow-none">
-                                        <AvatarImage src={user.photoURL} alt={user.displayName} gender={user.gender} className="object-cover rounded-none" />
-                                        <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
-                                    </Avatar>
-                                    <div>
-                                        <h3 className="font-bold text-foreground text-sm">{user.displayName}</h3>
-                                        <p className="text-xs text-muted-foreground lowercase tracking-tight">{user.email}</p>
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-3 mb-6 bg-background p-4 rounded-lg border border-[rgba(15,23,46,0.06)]">
-                                    <h4 className="text-[9px] font-label font-semibold text-foreground uppercase tracking-widest">Uploaded Documents</h4>
+                             <div>
+                                 <div className="flex items-center gap-4 mb-6">
+                                     <Avatar className="size-10 rounded-none border border-border shadow-none">
+                                         <AvatarImage src={user.photoURL} alt={user.displayName} gender={user.gender} className="object-cover rounded-none" />
+                                         <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
+                                     </Avatar>
+                                     <div>
+                                         <h3 className="font-bold text-foreground text-sm">{user.displayName}</h3>
+                                         <p className="text-xs text-muted-foreground lowercase tracking-tight">{user.email}</p>
+                                     </div>
+                                 </div>
+                                 
+                                 <div className="space-y-3 mb-6 bg-background p-4 rounded-lg border border-border/50">
+                                     <h4 className="text-[9px] font-label font-semibold text-foreground uppercase tracking-widest">Uploaded Documents</h4>
                                     {user.verificationDocuments && user.verificationDocuments.length > 0 ? (
                                         user.verificationDocuments.map((doc, idx) => (
                                             <div key={idx} className="flex items-center justify-between">

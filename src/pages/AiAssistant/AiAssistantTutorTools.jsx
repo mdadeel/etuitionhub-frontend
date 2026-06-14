@@ -7,6 +7,7 @@ import { Copy, Check, BookOpen, ClipboardList, Sparkles, Lock, BookmarkPlus, Arr
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import api from '../../services/api';
 import aiService from '../../services/aiService';
 import AiAssistantLayout from '../../components/AiAssistant/AiAssistantLayout';
 import SubjectSelector from '../../components/AiAssistant/SubjectSelector';
@@ -104,24 +105,26 @@ export default function AiAssistantTutorTools() {
         }
     };
 
-    const handleSaveNote = () => {
+    const handleSaveNote = async () => {
         if (!output) return;
+        const noteData = {
+            title: output.title || output.topic || `${tab === 'lesson' ? 'Lesson Plan' : 'Assignment'} - ${topic}`,
+            subject,
+            grade: tab === 'lesson' ? grade : '',
+            content: output,
+        };
+        // Save locally (immediate, offline-safe).
         let notes = [];
         try {
             notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]');
         } catch { /* ignore */ }
-        const newNote = {
-            id: Date.now().toString(),
-            title: output.title || output.topic || `${tab === 'lesson' ? 'Lesson Plan' : 'Assignment'} - ${topic}`,
-            subject,
-            grade: tab === 'lesson' ? grade : undefined,
-            content: output,
-            createdAt: new Date().toISOString(),
-        };
-        notes.unshift(newNote);
+        const localNote = { ...noteData, id: Date.now().toString(), createdAt: new Date().toISOString() };
+        notes.unshift(localNote);
+        try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch { /* ignore */ }
+        // Also persist server-side.
         try {
-            localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
-        } catch { /* ignore */ }
+            await api.post('/api/ai/notes', noteData);
+        } catch { /* silent — local save is enough */ }
         setSaved(true);
         toast.success('Saved to notes!', {
             action: {

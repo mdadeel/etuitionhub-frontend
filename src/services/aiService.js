@@ -43,15 +43,23 @@ export const aiService = {
         if (typeof window === 'undefined' || typeof window.fetch !== 'function') {
             throw new Error('Streaming is not supported in this environment.');
         }
-        // The api helper already attaches the auth token. We bypass it
-        // here because we need a streaming response body, not JSON.
-        const token = localStorage.getItem('token') || '';
+        // We can't use the axios `api` instance here because we need the raw
+        // streaming response body, not a parsed JSON payload. So we replicate
+        // what the instance does for auth: send the httpOnly auth cookie via
+        // `credentials: 'include'` and echo the readable csrf-token cookie in
+        // the X-CSRF-Token header. (The old Bearer token read from localStorage
+        // was dead code — the app never stores a token there.)
+        const csrfMatch = typeof document !== 'undefined'
+            ? document.cookie.match(/(?:^|;\s*)csrf-token=([^;]*)/)
+            : null;
+        const csrfToken = csrfMatch ? decodeURIComponent(csrfMatch[1]) : null;
         const baseURL = api.defaults?.baseURL || '';
         const res = await fetch(`${baseURL}/api/ai/chat/stream`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
             },
             body: JSON.stringify({ userMessage, subject, sessionId, forceTemplate, attachment }),
             signal,

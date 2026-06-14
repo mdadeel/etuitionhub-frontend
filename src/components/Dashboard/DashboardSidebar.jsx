@@ -157,9 +157,9 @@ const DashboardSidebar = ({ role }) => {
 
   return (
     <aside className="w-72 h-full hidden lg:flex flex-col flex-shrink-0 relative border-r border-border bg-card rounded-r-xl">
-      <div className="flex flex-col h-full py-8 px-6">
+      <div className="flex flex-col h-full py-6 px-4">
         {/* User Identity Section */}
-        <div className="mb-10 px-2 relative">
+        <div className="mb-6 px-2 relative">
           <div className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border transition-all hover:bg-muted">
             <div className="relative">
               <Avatar className="size-12 rounded-none border-2 border-white shadow-none">
@@ -187,10 +187,10 @@ const DashboardSidebar = ({ role }) => {
         {/* Navigation Section */}
         <div className="flex-grow space-y-8">
           <div>
-            <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mb-5 px-4">
+            <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-4">
               {t("sidebar.main_menu", "Main Menu")}
             </p>
-            <ul className="space-y-2">
+            <ul className="space-y-0.5">
               {menuItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 return (
@@ -198,7 +198,7 @@ const DashboardSidebar = ({ role }) => {
                     <Link
                       to={item.path}
                       className={cn(
-                        "flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 group border",
+                        "flex items-center justify-between px-4 py-2 rounded-lg transition-all duration-300 group border",
                         isActive
                           ? "bg-primary/10 text-primary border-primary/20"
                           : "text-muted-foreground border-transparent hover:bg-muted hover:text-foreground",

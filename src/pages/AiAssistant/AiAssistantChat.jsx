@@ -34,6 +34,10 @@ export default function AiAssistantChat() {
     const { user } = useAuth();
     const subject = useAiStore((s) => s.subject);
     const setActiveSessionId = useAiStore((s) => s.setActiveSessionId);
+    const attachmentFile = useAiStore((s) => s.attachmentFile);
+    const setAttachmentFile = useAiStore((s) => s.setAttachmentFile);
+    const editingMessageId = useAiStore((s) => s.editingMessageId);
+    const setEditingMessageId = useAiStore((s) => s.setEditingMessageId);
     const [text, setText] = useState('');
     const [sending, setSending] = useState(false);
     const [thinking, setThinking] = useState(false);
@@ -67,9 +71,12 @@ export default function AiAssistantChat() {
         if (el) el.scrollTop = el.scrollHeight;
     }, [data?.messages?.length, thinking, streamingAssistantMessage, inlineQuizzes]);
 
-    const handleSend = async (msg) => {
+    const handleSend = async (msg, forceTemplate = undefined) => {
         const trimmed = (msg || '').trim();
         if (!trimmed || sending) return;
+
+        const attach = attachmentFile;
+        if (attach) setAttachmentFile(null);
 
         // Optimistic UI update
         const tempId = `temp-${Date.now()}`;
@@ -78,7 +85,8 @@ export default function AiAssistantChat() {
             role: 'user',
             content: trimmed,
             createdAt: new Date().toISOString(),
-            status: 'sent'
+            status: 'sent',
+            ...(attach ? { attachment: { type: attach.type, name: attach.name, data: attach.data, size: attach.size } } : {}),
         };
 
         queryClient.setQueryData(['ai-session', sessionId], (old) => {
@@ -91,8 +99,9 @@ export default function AiAssistantChat() {
 
         setSending(true);
         setThinking(true);
-        setText(''); // Clear input instantly
-        
+        setText('');
+        setEditingMessageId(null);
+
         const controller = new AbortController();
         abortControllerRef.current = controller;
 
@@ -104,6 +113,8 @@ export default function AiAssistantChat() {
                 sessionId,
                 userMessage: trimmed,
                 subject,
+                forceTemplate,
+                attachment: attach || undefined,
                 signal: controller.signal,
                 onChunk: (chunk) => {
                     setThinking(false);
@@ -144,6 +155,27 @@ export default function AiAssistantChat() {
         }
     };
 
+    // §5.13 — Edit user message. When called with just messageId, enter edit mode.
+    // When called with newText, save and resend, discarding subsequent messages.
+    const handleEditResend = (messageId, newText) => {
+        if (!newText) {
+            setEditingMessageId(messageId);
+            return;
+        }
+        setEditingMessageId(null);
+        if (!data?.messages) return;
+        const idx = data.messages.findIndex((m) => m._id === messageId);
+        if (idx >= 0) {
+            queryClient.setQueryData(['ai-session', sessionId], (old) => {
+                if (!old) return old;
+                return { ...old, messages: old.messages.slice(0, idx) };
+            });
+        }
+        handleSend(newText);
+    };
+
+    const handleCancelEdit = () => setEditingMessageId(null);
+
     const handleStop = () => {
         abortControllerRef.current?.abort();
     };
@@ -163,6 +195,7 @@ export default function AiAssistantChat() {
                 subject,
                 topic,
                 numQuestions: 5,
+                difficulty: 'mixed',
             });
             setInlineQuizzes((q) => {
                 const next = { ...q };
@@ -270,6 +303,10 @@ export default function AiAssistantChat() {
         }
     };
 
+    const handleTrackTutorClick = (tutorId) => {
+        aiService.trackTutorRecommendationClick(tutorId).catch(() => {});
+    };
+
     // §5.13 — Follow-up chips pre-fill the chat input.
     const handleFollowUpClick = (text) => {
         if (!text) return;
@@ -346,6 +383,10 @@ export default function AiAssistantChat() {
                                     onRegenerate={handleRegenerate}
                                     onFollowUpClick={handleFollowUpClick}
                                     onRetry={(originalInput) => handleSend(originalInput)}
+                                    onTrackTutorClick={handleTrackTutorClick}
+                                    onEditMessage={handleEditResend}
+                                    onCancelEdit={handleCancelEdit}
+                                    editingMessageId={editingMessageId}
                                     copiedMessageId={copiedMessageId}
                                     feedbackMap={feedbackMap}
                                 />

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { useForm, Controller } from "react-hook-form";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
@@ -19,14 +18,11 @@ import {
   Search,
   Banknote,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { AppleCard, AppleHeader, AppleButton } from "../shared/AppleUI";
-import FilterSelect from "../shared/FilterSelect";
+import { AppleCard, AppleHeader, AppleButton, AppleBadge } from "../shared/AppleUI";
 import { cn } from "@/lib/utils";
 import SessionStatsCard from "./SessionStatsCard";
-import { BANGLADESH_DIVISIONS, MEDIUM_OPTIONS } from "../../utils/constants";
-
+import PostTuition from "../../pages/PostTuition";
+ 
 const tabs = [
   { id: "overview", label: "Overview", icon: Activity },
   { id: "post-job", label: "Post Job", icon: Plus },
@@ -36,7 +32,7 @@ const tabs = [
   { id: "payments", label: "Payments", icon: Banknote },
   { id: "assignments", label: "Assignments", icon: Search },
 ];
-
+ 
 /**
  * StudentDashboard Component — Refined Apple Aesthetic
  */
@@ -47,7 +43,7 @@ const StudentDashboard = () => {
   const { pathname } = useLocation();
   const initialTab = pathname.includes('/applications') ? 'applications' : (searchParams.get("tab") || "overview");
   const [activeTab, setActiveTab] = useState(initialTab);
-
+ 
   useEffect(() => {
     if (pathname.includes('/applications')) {
       setActiveTab('applications');
@@ -59,16 +55,9 @@ const StudentDashboard = () => {
   const [myTuitions, setMyTuitions] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm();
-
+ 
+  // react-hook-form initialization removed, handled in PostTuition component
+ 
   // Fetch tuitions for this student
   const fetchMyTuitions = useCallback(async () => {
     if (!user?.email) return;
@@ -81,7 +70,7 @@ const StudentDashboard = () => {
       setMyTuitions([]);
     }
   }, [user?.email]);
-
+ 
   // Fetch bookings for this student
   const fetchBookings = useCallback(async () => {
     if (!user?.email) return;
@@ -94,7 +83,7 @@ const StudentDashboard = () => {
       setBookings([]);
     }
   }, [user?.email]);
-
+ 
   // Fetch applications for student's tuitions
   const fetchApplications = useCallback(async () => {
     if (!user?.email) return;
@@ -107,11 +96,11 @@ const StudentDashboard = () => {
       setApplications([]);
     }
   }, [user?.email]);
-
+ 
   // Initial data fetch
   useEffect(() => {
     if (!user?.email) return;
-
+ 
     const loadData = async () => {
       setLoading(true);
       try {
@@ -124,10 +113,10 @@ const StudentDashboard = () => {
         setLoading(false);
       }
     };
-
+ 
     loadData();
   }, [user?.email, fetchMyTuitions, fetchBookings, fetchApplications]);
-
+ 
   // Refresh data after any mutation
   const refreshData = useCallback(async () => {
     await Promise.all([
@@ -136,31 +125,11 @@ const StudentDashboard = () => {
       fetchApplications(),
     ]);
   }, [fetchMyTuitions, fetchBookings, fetchApplications]);
-
-  const onPostTuition = async (data) => {
-    setSubmitting(true);
-    const postData = {
-      ...data,
-      student_email: user?.email,
-      status: "pending",
-    };
-
-    try {
-      await api.post("/api/tuitions", postData);
-      toast.success("Request posted successfully!");
-      reset();
-      await refreshData();
-      setActiveTab("my-jobs");
-    } catch (err) {
-      const errorMsg = err.response?.data?.error || "Failed to post request";
-      toast.error(errorMsg);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
+ 
+  // onPostTuition removed, handled in PostTuition component
+ 
   const handleApprove = (id) => navigate(`/checkout/${id}`);
-
+ 
   const handleReject = async (id) => {
     if (!confirm("Reject this application?")) return;
     try {
@@ -173,7 +142,7 @@ const StudentDashboard = () => {
       toast.error("Failed to reject application");
     }
   };
-
+ 
   const handleDeleteTuition = async (tid) => {
     if (!confirm("Delete this request?")) return;
     try {
@@ -184,7 +153,7 @@ const StudentDashboard = () => {
       toast.error("Failed to delete request");
     }
   };
-
+ 
   return (
     <div className="space-y-10 animate-in fade-in duration-700 animate-fade-in-up">
       <AppleHeader
@@ -196,7 +165,7 @@ const StudentDashboard = () => {
           </span>
         }
       />
-
+ 
       {/* Tab Navigation */}
       <div className="w-full overflow-hidden">
         <div className="flex items-center gap-1 bg-muted p-1 rounded-lg border border-border w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
@@ -223,7 +192,7 @@ const StudentDashboard = () => {
           ))}
         </div>
       </div>
-
+ 
       {/* Overview Content */}
       {activeTab === "overview" &&
         (loading ? (
@@ -255,7 +224,7 @@ const StudentDashboard = () => {
                 </span>
               </div>
             </AppleCard>
-
+ 
             <AppleCard className="p-6 md:p-10 group" hover={false}>
               <div className="size-12 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
                 <FileText size={24} />
@@ -272,7 +241,7 @@ const StudentDashboard = () => {
                 </span>
               </div>
             </AppleCard>
-
+ 
             <AppleCard
               className="p-6 md:p-10 group col-span-2 lg:col-span-1"
               hover={false}
@@ -295,162 +264,17 @@ const StudentDashboard = () => {
           </div>
           </div>
         ))}
-
       {/* Post Job Tab */}
       {activeTab === "post-job" && (
-        <AppleCard className="p-8 md:p-12 max-w-4xl mx-auto relative overflow-hidden group">
-          <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-lg -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
-          <div className="relative z-10">
-            <div className="flex items-center gap-4 mb-10">
-              <div className="size-12 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
-                <Plus size={24} />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-foreground tracking-tight">
-                  Post a New Request
-                </h2>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Define your academic requirements to find the best tutor.
-                </p>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit(onPostTuition)} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-muted-foreground ml-1">
-                    Subject / Topic *
-                  </Label>
-                  <Input
-                    {...register("subject", {
-                      required: "Subject is required",
-                    })}
-                    placeholder="e.g. Higher Mathematics"
-                    className="h-11 rounded-lg bg-background border-border"
-                  />
-                  {errors.subject && (
-                    <p className="text-xs text-red-600 ml-1">
-                      {errors.subject.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-muted-foreground ml-1">
-                    Class Level *
-                  </Label>
-                  <Controller
-                    name="class_name"
-                    control={control}
-                    rules={{ required: "Class level is required" }}
-                    render={({ field }) => (
-                      <FilterSelect
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder="Select Class"
-                        options={[
-                          "Class 6",
-                          "Class 7",
-                          "Class 8",
-                          "Class 9",
-                          "Class 10",
-                          "HSC",
-                        ]}
-                      />
-                    )}
-                  />
-                  {errors.class_name && (
-                    <p className="text-xs text-red-600 ml-1">
-                      {errors.class_name.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-muted-foreground ml-1">
-                    Monthly Budget (BDT) *
-                  </Label>
-                  <Input
-                    {...register("salary", { required: "Budget is required" })}
-                    type="number"
-                    placeholder="5000"
-                    className="h-11 rounded-lg bg-background border-border"
-                  />
-                  {errors.salary && (
-                    <p className="text-xs text-red-600 ml-1">
-                      {errors.salary.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-muted-foreground ml-1">
-                    Curriculum *
-                  </Label>
-                  <Controller
-                    name="medium"
-                    control={control}
-                    rules={{ required: "Curriculum is required" }}
-                    render={({ field }) => (
-                      <FilterSelect
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder="Select Medium"
-                        options={MEDIUM_OPTIONS}
-                      />
-                    )}
-                  />
-                  {errors.medium && (
-                    <p className="text-xs text-red-600 ml-1">
-                      {errors.medium.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-muted-foreground ml-1">
-                  Division *
-                </Label>
-                <Controller
-                  name="location"
-                  control={control}
-                  rules={{ required: "Division is required" }}
-                  render={({ field }) => (
-                    <FilterSelect
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      placeholder="Select Division"
-                      options={BANGLADESH_DIVISIONS}
-                    />
-                  )}
-                />
-                {errors.location && (
-                  <p className="text-xs text-red-600 ml-1">
-                    {errors.location.message}
-                  </p>
-                )}
-              </div>
-
-              <AppleButton
-                type="submit"
-                className="w-full h-12 rounded-lg shadow-lg shadow-primary/20 active:scale-[0.98]"
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <>
-                    <RefreshCw className="size-4 animate-spin mr-2" />
-                    Publishing...
-                  </>
-                ) : (
-                  "Publish Request"
-                )}
-              </AppleButton>
-            </form>
-          </div>
-        </AppleCard>
+        <PostTuition
+          isDashboard={true}
+          onSuccess={async () => {
+            await refreshData();
+            setActiveTab("my-jobs");
+          }}
+        />
       )}
-
+ 
       {/* My Jobs Tab */}
       {activeTab === "my-jobs" && (
         <AppleCard className="overflow-hidden">
@@ -472,7 +296,7 @@ const StudentDashboard = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(15,23,46,0.08)]">
+              <tbody className="divide-y divide-border/50">
                 {myTuitions.length === 0 ? (
                   <tr>
                     <td
@@ -500,11 +324,12 @@ const StudentDashboard = () => {
                         ৳{job.salary}
                       </td>
                       <td className="px-8 py-6">
-                        <span
-                          className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${job.status === "approved" ? "bg-primary/10 text-primary" : "bg-background text-muted-foreground"}`}
+                        <AppleBadge
+                          variant={job.status === "approved" ? "success" : "default"}
+                          className="rounded-lg"
                         >
                           {job.status === "approved" ? "Active" : "Pending"}
-                        </span>
+                        </AppleBadge>
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="flex justify-end gap-3">
@@ -530,7 +355,7 @@ const StudentDashboard = () => {
           </div>
         </AppleCard>
       )}
-
+ 
       {/* Applications Tab */}
       {activeTab === "applications" && (
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-6">
@@ -562,13 +387,14 @@ const StudentDashboard = () => {
                         {app.tutorEmail}
                       </p>
                     </div>
-                    <span
-                      className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${app.status === "approved" ? "bg-primary/10 text-primary" : app.status === "rejected" ? "bg-red-500/10 text-red-600" : "bg-background text-muted-foreground"}`}
+                    <AppleBadge
+                      variant={app.status === "approved" ? "success" : app.status === "rejected" ? "error" : "warning"}
+                      className="rounded-lg"
                     >
                       {app.status}
-                    </span>
+                    </AppleBadge>
                   </div>
-
+ 
                   <div className="space-y-4 mb-8">
                     <div className="p-4 rounded-lg bg-background border border-border text-xs text-muted-foreground leading-relaxed italic">
                       "{app.qualifications}"
@@ -582,7 +408,7 @@ const StudentDashboard = () => {
                       </span>
                     </div>
                   </div>
-
+ 
                   {app.status === "pending" && (
                     <div className="flex gap-3">
                       <AppleButton
@@ -606,7 +432,7 @@ const StudentDashboard = () => {
           )}
         </div>
       )}
-
+ 
       {/* Booked / Engagements Tab */}
       {activeTab === "booked" && (
         <AppleCard className="overflow-hidden">
@@ -628,7 +454,7 @@ const StudentDashboard = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(15,23,46,0.08)]">
+              <tbody className="divide-y divide-border/50">
                 {bookings.length === 0 ? (
                   <tr>
                     <td
@@ -654,17 +480,17 @@ const StudentDashboard = () => {
                       </td>
                       <td className="px-8 py-6 text-center">
                         <a
-                          href={`tel:${booking.mobile}`}
-                          className="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1.5"
+                           href={`tel:${booking.mobile}`}
+                           className="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1.5"
                         >
                           <Phone size={12} /> {booking.mobile}
                         </a>
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="flex flex-col items-end gap-2">
-                          <span className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-primary/10 text-primary">
+                          <AppleBadge variant="success" className="rounded-lg">
                             Active
-                          </span>
+                          </AppleBadge>
                           {booking.isAccepted && (
                             <AppleButton
                               size="sm"

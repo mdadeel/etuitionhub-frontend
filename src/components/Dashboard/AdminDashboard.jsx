@@ -6,10 +6,9 @@ import DashPayments from './DashPayments';
 import DashSettings from './DashSettings';
 import AdminVerifications from './AdminVerifications';
 import DisputeWorkspace from './DisputeWorkspace';
+import AdminTutors from './AdminTutors';
 import { 
-    AppleCard, 
-    AppleBadge,
-    AppleHeader 
+    AppleCard
 } from '../shared/AppleUI';
 import { cn } from '@/lib/utils';
 
@@ -19,6 +18,7 @@ const AdminDashboard = () => {
         { id: 'analytics', label: 'Overview' },
         { id: 'payments', label: 'Payments' },
         { id: 'users', label: 'Users' },
+        { id: 'tutors', label: 'Tutors' },
         { id: 'tuitions', label: 'Tuitions' },
         { id: 'verifications', label: 'Verifications' },
         { id: 'disputes', label: 'Disputes' },
@@ -26,28 +26,16 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="space-y-10 max-w-full pb-10">
-            <AppleHeader 
-                title="Management" 
-                subtitle="High-precision monitoring and strategic platform administration."
-                badge={<AppleBadge variant="primary">System Command</AppleBadge>}
-                action={
-                    <div className="flex items-center gap-2.5 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg shadow-none">
-                        <span className="size-2 bg-emerald-500 animate-pulse rounded-lg"></span>
-                        <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Protocol Active</span>
-                    </div>
-                }
-            />
-
+        <div className="space-y-6 max-w-full pb-6">
             {/* Navigation Tabs */}
             <div className="w-full overflow-hidden">
-                <div className="flex bg-background p-1.5 rounded-lg gap-2 overflow-x-auto border border-border w-full max-w-full backdrop-blur-md scrollbar-hide flex-nowrap">
+                <div className="flex bg-background p-1 rounded-lg gap-1 overflow-x-auto border border-border w-full max-w-full backdrop-blur-md scrollbar-hide flex-nowrap">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "px-6 py-3 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground rounded-lg transition-all duration-300 flex items-center gap-2 whitespace-nowrap min-w-fit border active:scale-[0.98]",
+                                "px-4 py-2.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground rounded-lg transition-all duration-300 flex items-center gap-2 whitespace-nowrap min-w-fit border active:scale-[0.98]",
                                 activeTab === tab.id
                                     ? "bg-primary text-primary-foreground border-primary"
                                     : "border-transparent hover:text-foreground hover:bg-muted/50"
@@ -60,11 +48,12 @@ const AdminDashboard = () => {
             </div>
 
             {/* Content Area */}
-            <AppleCard className="p-4 md:p-10 min-h-fit" hover={false}>
+            <AppleCard className="p-4 md:p-6 min-h-fit" hover={false}>
                 <div className="space-y-4">
                     {activeTab === 'analytics' && <DashAnalytics />}
                     {activeTab === 'payments' && <DashPayments />}
                     {activeTab === 'users' && <DashUsers />}
+                    {activeTab === 'tutors' && <AdminTutors />}
                     {activeTab === 'tuitions' && <DashTuitions />}
                     {activeTab === 'verifications' && <AdminVerifications />}
                     {activeTab === 'disputes' && <DisputeWorkspace isAdminView />}

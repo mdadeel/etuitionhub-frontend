@@ -3,7 +3,6 @@ import Highlight from "./Highlight";
 import {
   Star,
   MapPin,
-  BookOpen,
   Clock,
   Bookmark,
   Briefcase,
@@ -11,7 +10,6 @@ import {
   Check,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { memo, useState, useEffect } from "react";
@@ -30,20 +28,8 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
-    // If parent passed the saved state (grid fetched via /check-many), trust it.
-    if (initialIsSaved !== null) {
-      setIsSaved(initialIsSaved === true);
-      return;
-    }
-    // Only check bookmark status for real MongoDB ObjectIDs (24 hex chars)
-    const isRealId = /^[a-f\d]{24}$/i.test(tutor._id);
-    if (user && isRealId) {
-      api
-        .get(`/api/bookmarks/check/${tutor._id}`)
-        .then((res) => setIsSaved(res.data.isSaved))
-        .catch(() => {});
-    }
-  }, [user, tutor._id, initialIsSaved]);
+    setIsSaved(initialIsSaved === true);
+  }, [initialIsSaved]);
 
   const handleBookmark = async (e) => {
     e.stopPropagation();
@@ -87,10 +73,10 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
   return (
     <>
     <Card
-      hover={!isBannerPreview}
+      hover={false}
       className={cn(
-        "group h-full flex flex-col border border-border/80 bg-card rounded-2xl overflow-hidden hover:shadow-premium hover:border-primary/30 transition-all duration-300 relative",
-        isBannerPreview ? "" : "cursor-pointer"
+        "group h-full flex flex-col border border-border/80 bg-card rounded-2xl overflow-hidden shadow-premium transition-all duration-300 relative",
+        isBannerPreview ? "" : "cursor-pointer hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)] hover:border-primary/30"
       )}
       onClick={isBannerPreview ? undefined : () => navigate(`/tutor/${_id}`)}
       onKeyDown={isBannerPreview ? undefined : (e) => {
@@ -129,77 +115,77 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
                   alt={displayName}
                   size="lg"
                   gender={tutor.gender}
-                  verified={false}
-                  className="ring-2 ring-border group-hover:ring-primary/30 transition-all rounded-xl overflow-hidden h-14 w-14"
+                  className="ring-2 ring-border/60 group-hover:ring-primary/40 transition-all rounded-xl h-14 w-14"
                 />
                 {isVerified && (
-                  <span 
-                    className="absolute -bottom-1 -right-1 size-4 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card select-none"
-                    title="Verified Profile"
-                  >
+                  <span className="absolute -bottom-0.5 -right-0.5 size-4 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card" title="Verified Profile">
                     <Check className="size-2.5 stroke-[3]" />
                   </span>
                 )}
               </div>
-              <div className="text-[10px] text-yellow-500 flex items-center justify-center gap-0.5 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded-md w-full">
-                ★ {rating.toFixed(1)}
+              <div className="flex items-center gap-0.5 text-[10px] font-bold text-amber-500">
+                <Star size={10} className="fill-amber-500 text-amber-500" />
+                {rating.toFixed(1)}
               </div>
-              <span className="text-[10px] text-muted-foreground font-medium text-center truncate w-full" title={experience}>
-                {experience}
-              </span>
             </div>
 
             {/* Right Column: Info details */}
-            <div className="flex-grow min-w-0 space-y-1.5">
-              <h3 className="font-bold text-base text-foreground tracking-tight truncate leading-tight group-hover:text-primary transition-colors">
+            <div className="flex-grow min-w-0 space-y-1">
+              <h3 className="font-bold text-sm text-foreground tracking-tight truncate leading-tight group-hover:text-primary transition-colors">
                 <Highlight text={displayName} query={searchQuery} />
               </h3>
-              <p className="text-[11px] text-blue-400 font-semibold truncate leading-tight" title={qualification}>
+              <p className="text-[10px] text-muted-foreground truncate" title={qualification}>
                 {qualification || "Experienced Tutor"}
               </p>
-              
+
               <div className="flex flex-wrap gap-1 pt-0.5">
                 {subjects.slice(0, 2).map((sub) => (
-                  <Badge
+                  <span
                     key={`sub-mob-${sub}`}
-                    variant="subtle"
-                    className="shrink-0 text-[8px] font-semibold px-1.5 py-0.5 rounded-md hover:bg-primary/10 hover:text-primary transition-colors max-w-[80px] truncate"
+                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-muted/50 text-muted-foreground border border-border/40 truncate max-w-[72px]"
                     title={sub}
                   >
                     <Highlight text={sub} query={searchQuery} />
-                  </Badge>
+                  </span>
                 ))}
                 {subjects.length > 2 && (
-                  <span className="text-[9px] text-muted-foreground font-bold pl-0.5 pt-0.5">+{subjects.length - 2}</span>
+                  <span className="text-[9px] text-muted-foreground font-bold pl-0.5">+{subjects.length - 2}</span>
                 )}
               </div>
 
-              <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                <MapPin size={12} className="text-red-500 flex-shrink-0" />
-                <span className="truncate">{(location || "N/A").split(",")[0]}</span>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground pt-0.5">
+                <span className="flex items-center gap-1">
+                  <Briefcase size={11} className="text-primary shrink-0" />
+                  {experience}
+                </span>
+                <span className="flex items-center gap-1">
+                  <MapPin size={11} className="text-primary shrink-0" />
+                  {(location || "N/A").split(",")[0]}
+                </span>
               </div>
             </div>
           </div>
-          <div className="mt-2.5 space-y-1">
+          <div className="mt-2 space-y-1">
             <TrustBadges tutor={tutor} />
           </div>
         </div>
 
         {/* Mobile Pricing & Actions */}
-        <div className="border-t border-border pt-3 mt-3 flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between border-t border-border pt-3 mt-3">
           <div>
+            <div className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">Salary</div>
             <div className="flex items-baseline gap-0.5">
-              <span className="text-base font-bold text-foreground tracking-tight">
+              <span className="text-sm font-bold text-foreground tracking-tight">
                 ৳{salary.toLocaleString()}
               </span>
-              <span className="text-[9px] text-muted-foreground font-semibold">/mo</span>
+              <span className="text-[8px] text-muted-foreground font-semibold">/mo</span>
             </div>
           </div>
           <Button
             type="button"
             size="sm"
             variant="primary"
-            className="font-semibold text-[10px] h-8 tracking-wider pointer-events-auto flex items-center gap-1 group/btn px-3 rounded-lg"
+            className="font-semibold text-[10px] h-8 tracking-wider pointer-events-auto flex items-center gap-1 group/btn px-3 rounded-xl shadow-sm"
             onClick={(e) => {
               if (isBannerPreview) {
                 e.stopPropagation();
@@ -219,19 +205,17 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           {/* Avatar & Main Credentials Header */}
           <div className="flex items-center gap-4">
             <div className="relative shrink-0">
-              <Avatar
-                src={photoURL}
-                alt={displayName}
-                size="xl"
-                gender={tutor.gender}
-                verified={false}
-                className="ring-2 ring-border group-hover:ring-primary/30 transition-all rounded-xl overflow-hidden"
-              />
+              <div className="size-16">
+                <Avatar
+                  src={photoURL}
+                  alt={displayName}
+                  size="xl"
+                  gender={tutor.gender}
+                  className="size-full ring-2 ring-border/60 group-hover:ring-primary/40 transition-all rounded-xl"
+                />
+              </div>
               {isVerified && (
-                <span 
-                  className="absolute -bottom-1 -right-1 size-5 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card select-none"
-                  title="Verified Profile"
-                >
+                <span className="absolute -bottom-0.5 -right-0.5 size-5 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card" title="Verified Profile">
                   <Check className="size-3 stroke-[3]" />
                 </span>
               )}
@@ -253,52 +237,37 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 mt-4 pt-4 border-t border-border overflow-hidden w-full">
-            <div className="flex items-center gap-1.5 overflow-hidden flex-1">
-              {subjects.slice(0, 3).map((sub) => (
-                <Badge
-                  key={`sub-${sub}`}
-                  variant="subtle"
-                  className="shrink-0 text-[9px] font-semibold px-2 py-0.5 rounded-md hover:bg-primary/10 hover:text-primary transition-colors max-w-[85px] truncate"
-                  title={sub}
-                >
-                  <Highlight text={sub} query={searchQuery} />
-                </Badge>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-1.5 mt-4 pt-4 border-t border-border">
+            {subjects.slice(0, 3).map((sub) => (
+              <span
+                key={`sub-${sub}`}
+                className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-muted/50 text-muted-foreground border border-border/40 transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary/20"
+              >
+                <Highlight text={sub} query={searchQuery} />
+              </span>
+            ))}
             {subjects.length > 3 && (
               <span
-                className="text-[10px] text-muted-foreground font-bold shrink-0 ml-auto cursor-help"
+                className="text-[10px] text-muted-foreground font-bold px-2 py-0.5 cursor-help"
                 title={subjects.slice(3).join(", ")}
               >
-                ...
+                +{subjects.length - 3}
               </span>
             )}
           </div>
 
-          {/* Cleaned 3-item metadata info grid */}
+          {/* Key Metrics Info Bar */}
           <div className="grid grid-cols-2 gap-y-2 gap-x-4 mt-4 pt-4 border-t border-border text-xs text-muted-foreground">
             <span className="flex items-center gap-2">
-              <Briefcase
-                size={14}
-                className="text-primary"
-              />
+              <Briefcase size={14} className="text-primary shrink-0" />
               <span className="truncate">{experience}</span>
             </span>
             <span className="flex items-center gap-2">
-              <MapPin
-                size={14}
-                className="text-primary"
-              />
-              <span className="truncate">
-                {(location || "N/A").split(",")[0]}
-              </span>
+              <MapPin size={14} className="text-primary shrink-0" />
+              <span className="truncate">{(location || "N/A").split(",")[0]}</span>
             </span>
             <span className="flex items-center gap-2 col-span-2">
-              <Clock
-                size={14}
-                className="text-primary"
-              />
+              <Clock size={14} className="text-primary shrink-0" />
               <span className="truncate">Responds in 15 mins</span>
             </span>
           </div>
@@ -308,7 +277,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/10">
+        <div className="flex items-center justify-between px-6 py-4 bg-muted/10 border-t border-border">
           <div>
             <div className="flex items-baseline gap-0.5">
               <span className="text-xl font-bold text-foreground tracking-tight">
@@ -321,7 +290,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             type="button"
             size="sm"
             variant="primary"
-            className="font-semibold text-xs tracking-wider pointer-events-auto flex items-center gap-1 group/btn"
+            className="font-semibold text-xs tracking-wider pointer-events-auto flex items-center gap-1 group/btn rounded-xl shadow-sm hover:shadow-[0_0_12px_hsl(var(--primary)/0.25)]"
             onClick={(e) => {
               if (isBannerPreview) {
                 e.stopPropagation();

@@ -57,10 +57,17 @@ export default function TutorRecommendationCard({ tutors = [], subject, onTrackC
                                 </Avatar>
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                                    {tutor.displayName}
-                                </p>
-                                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                                <div className="flex items-center gap-1.5 max-w-full">
+                                    <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                                        {tutor.displayName}
+                                    </p>
+                                    {tutor.isRisingStar && (
+                                        <span className="shrink-0 text-[8px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-1 py-0.5 rounded">
+                                            Rising Star
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
                                     <span className="flex items-center gap-0.5 text-amber-500 font-semibold">
                                         <Star size={10} className="fill-current" />
                                         {rating.toFixed(1)}

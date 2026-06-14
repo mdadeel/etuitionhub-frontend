@@ -103,6 +103,11 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             // Fetch user from DB in background (non-blocking)
             refreshUserFromDB(email).catch(() => {});
 
+            // Clear the loading spinner now that the JWT cookie is set. The
+            // post-initial onAuthStateChanged branch returns early without
+            // touching `loading`, so the action MUST clear it itself — otherwise
+            // the spinner hangs until a manual refresh (mirrors register()).
+            setLoading(false);
             return result;
         } catch (error) {
             setLoading(false);
@@ -123,6 +128,8 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             // Save user to DB in background (non-blocking)
             saveUserToDBInBackground(result.user, selectedRole);
 
+            // Clear the spinner now that the JWT cookie is set (see login()).
+            setLoading(false);
             return result;
         } catch (error) {
             setLoading(false);
@@ -151,6 +158,8 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             // Save user to DB in background (non-blocking)
             saveUserToDBInBackground(result.user, role);
 
+            // Clear the spinner now that the JWT cookie is set (see login()).
+            setLoading(false);
             return result;
         } catch (error) {
             setLoading(false);
@@ -162,16 +171,20 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         setLoading(true);
         // Reset initial auth state so next login shows loading spinner
         resetAuthState();
-        // Fire-and-forget: revoke server-side token, but don't block logout.
-        // If backend is cold-starting on Vercel, this would delay the whole flow.
-        api.post('/api/auth/logout').catch(() => {});
-        Cookies.remove('token', { path: '/' });
-        Cookies.remove('refreshToken', { path: '/' });
-        try { await signOut(auth); } catch (_) { /* ignore */ }
-        setDbUser(null);
-        setUserRole(null);
-        setUser(null);
-        setLoading(false);
+        try {
+            await api.post('/api/auth/logout');
+            // Auth cookies are httpOnly, so the backend must clear them.
+            Cookies.remove('token', { path: '/' });
+            Cookies.remove('refreshToken', { path: '/' });
+            await signOut(auth);
+            setDbUser(null);
+            setUserRole(null);
+            setUser(null);
+        } catch (error) {
+            toast.error('Logout failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const resetPassword = (email) => {

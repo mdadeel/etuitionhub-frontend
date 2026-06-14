@@ -22,7 +22,6 @@ import {
 } from 'lucide-react';
 import SEO from '../components/shared/SEO';
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
-import ResponseTimeIndicator from '../components/shared/ResponseTimeIndicator';
 import WhatsAppShareButton from '../components/shared/WhatsAppShareButton';
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton, CircleSkeleton } from "@/components/shared/skeletons";
@@ -322,20 +321,20 @@ const TutorDetails = () => {
             <div className="max-w-6xl mx-auto px-4">
                 {/* Back Link */}
                 <div className="mb-6">
-                    <Link to="/tutors" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#2563EB] transition-colors">
-                        <ArrowLeft size={16} />
+                    <Link to="/tutors" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 rounded-md px-1 py-0.5">
+                        <ArrowLeft size={16} aria-hidden="true" />
                         Back to Tutors
                     </Link>
                 </div>
 
                 <div className="space-y-4">
                     {/* Identity Card */}
-                    <div className="bg-card p-6 rounded-lg border border-border">
-                        <div className="flex flex-col lg:flex-row gap-6 lg:justify-between lg:items-stretch">
-                            {/* Left Column: Avatar & Basic Stats */}
+                    <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+                        <div className="flex flex-col lg:flex-row gap-6 lg:justify-between lg:items-center">
+                            {/* Left Column: Avatar & Primary Content */}
                             <div className="flex flex-col sm:flex-row gap-6 flex-grow">
                                 <div className="relative shrink-0 mx-auto sm:mx-0">
-                                    <div className="size-28 rounded-lg overflow-hidden border border-border">
+                                    <div className="size-28 rounded-2xl overflow-hidden border border-border">
                                         <Avatar
                                             src={tutor.photoURL}
                                             alt={tutor.displayName || 'Tutor'}
@@ -346,25 +345,17 @@ const TutorDetails = () => {
                                 </div>
 
                                 <div className="flex-grow flex flex-col justify-between">
-                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-3">
+                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                                         <div className="text-center sm:text-left">
                                             <h1 className="text-xl sm:text-2xl font-heading text-foreground mb-1">
                                                 {tutor.displayName || 'Tutor'}
                                             </h1>
                                             <p className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-2">
-                                                <GraduationCap size={16} className="text-[#2563EB]" />
+                                                <GraduationCap size={16} className="text-[#2563EB]" aria-hidden="true" />
                                                 {tutor.qualification || 'Verified Educator'}
                                             </p>
                                         </div>
 
-                                        {tutor.isVerified && tutor._id !== 'tutor_001' && (
-                                            <div className="flex justify-center sm:justify-end shrink-0">
-                                                <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-medium rounded-lg flex items-center gap-1 shadow-sm">
-                                                    <ShieldCheck size={14} className="text-emerald-600" />
-                                                    Verified
-                                                </span>
-                                            </div>
-                                        )}
                                         <CredibilityBadge 
                                             requestsReceived={tutor.requestsReceived || 0}
                                             requestsRespondedCount={tutor.requestsRespondedCount || 0}
@@ -374,101 +365,86 @@ const TutorDetails = () => {
                                         />
                                     </div>
 
-                                    <div className="flex flex-wrap items-center justify-around sm:justify-start gap-4 sm:gap-6 pt-4 border-t border-border">
-                                        <div>
-                                            <p className="text-xs text-muted-foreground mb-1">Monthly Fee</p>
-                                            <p className="text-base sm:text-lg font-heading text-foreground">৳{tutor.expectedSalary || 'Negotiable'}</p>
-                                        </div>
-                                        <div className="w-px h-8 bg-[#E2E8F0] hidden sm:block"></div>
-                                        <div>
-                                            <p className="text-xs text-muted-foreground mb-1">Experience</p>
-                                            <p className="text-base sm:text-lg font-heading text-foreground">{tutor.experience || 'Verified'}</p>
-                                        </div>
-                                        <div className="w-px h-8 bg-[#E2E8F0] hidden sm:block"></div>
-                                        <div>
-                                            <p className="text-xs text-muted-foreground mb-1">Rating</p>
-                                            <div className="flex items-center gap-1">
-                                                <p className="text-base sm:text-lg font-heading text-foreground">{tutor.ratings || '4.9'}</p>
-                                                <Star size={14} className="fill-amber-400 text-amber-400" />
+                                    {/* CTA section */}
+                                    <div className="pt-4 border-t border-border">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <div className="flex-1 min-w-[120px]">
+                                                {!user ? (
+                                                    <Link to="/login" className="block w-full px-4 py-2 bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-semibold rounded-xl text-xs sm:text-sm transition-all text-center shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-98">
+                                                        Login to Message
+                                                    </Link>
+                                                ) : (
+                                                    <button
+                                                        id="contact-tutor-btn"
+                                                        onClick={handleContact}
+                                                        className="w-full px-4 py-2 bg-[#2563EB] text-white font-semibold rounded-xl hover:bg-[#1D4ED8] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
+                                                    >
+                                                        <Send size={14} aria-hidden="true" /> Message
+                                                    </button>
+                                                )}
                                             </div>
-                                        </div>
-                                        <div className="w-px h-8 bg-[#E2E8F0] hidden sm:block"></div>
-                                        <div>
-                                            <p className="text-xs text-muted-foreground mb-1">Location</p>
-                                            <p className="text-base sm:text-lg font-heading text-foreground flex items-center gap-1">
-                                                <MapPin size={14} className="text-[#2563EB]" /> {tutor.location || 'N/A'}
-                                            </p>
+                                            <div className="flex-1 min-w-[120px]">
+                                                {!user ? (
+                                                    <button onClick={() => setShowLoginModal(true)} className="w-full px-4 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950">
+                                                        Request to Hire
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => setIsHireModalOpen(true)}
+                                                        className="w-full px-4 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
+                                                    >
+                                                        Request to Hire
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={handleSave}
+                                                title={isSaved ? 'Remove from saved' : 'Save Profile'}
+                                                aria-label={isSaved ? 'Remove from saved' : 'Save Profile'}
+                                                className={`p-2 border rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 ${
+                                                    isSaved
+                                                        ? 'border-red-200 text-red-500 bg-red-50 hover:bg-red-100 dark:bg-rose-950/30 dark:border-rose-900/50 dark:text-rose-400 dark:hover:bg-rose-900/50 dark:hover:text-rose-300'
+                                                        : 'border-border text-muted-foreground hover:bg-muted/50 dark:hover:bg-muted/20 dark:hover:text-foreground'
+                                                }`}
+                                            >
+                                                <Heart size={16} className={isSaved ? 'fill-red-500 text-red-500' : ''} aria-hidden="true" />
+                                            </button>
+                                            <WhatsAppShareButton 
+                                                tutor={tutor} 
+                                                className="p-2 border rounded-xl shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 hover:bg-muted/50 dark:hover:bg-muted/20 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-600/30 dark:hover:border-emerald-500/30" 
+                                                variant="outline" 
+                                                iconOnly={true} 
+                                            />
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Vertical separator on desktop screens */}
-                            <div className="hidden lg:block w-px bg-border self-stretch my-2"></div>
-
-                            {/* Right Column: CTA card */}
-                            <div className="flex flex-col justify-between lg:w-80 lg:shrink-0 pt-6 lg:pt-0 border-t lg:border-t-0 border-border">
-                                <div className="space-y-2 mb-4 lg:mb-0">
-                                    <div className="flex flex-wrap items-center justify-between gap-2">
-                                        <h3 className="text-sm font-semibold text-foreground">Learn with {firstName}</h3>
-                                        <ResponseTimeIndicator tutor={tutor} />
+                            {/* stats Column with 2x2 grid */}
+                            <div className="lg:w-80 lg:shrink-0 pt-6 lg:pt-0 border-t lg:border-t-0 border-border lg:pl-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Monthly Fee</p>
+                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold">৳{tutor.expectedSalary || 'Negotiable'}</p>
                                     </div>
-                                    <p className="text-xs text-muted-foreground">
-                                        Book a trial class and experience quality academic support.
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center gap-2 mt-auto">
-                                    <div className="flex-grow">
-                                        {!user ? (
-                                            <Link to="/login" className="block w-full px-4 py-2 bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-medium rounded-lg text-xs sm:text-sm transition-colors text-center shadow-sm cursor-pointer">
-                                                Login to Message
-                                            </Link>
-                                        ) : (
-                                            <button
-                                                id="contact-tutor-btn"
-                                                onClick={handleContact}
-                                                className="w-full px-4 py-2 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#1D4ED8] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-colors shadow-sm active:scale-95 cursor-pointer"
-                                            >
-                                                <Send size={14} /> Message
-                                            </button>
-                                        )}
+                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Experience</p>
+                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold truncate" title={tutor.experience}>{tutor.experience || 'Verified'}</p>
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <div className="flex-grow">
-                                        {!user ? (
-                                            <button onClick={() => setShowLoginModal(true)} className="w-full px-4 py-2 bg-[#10b981] text-white font-medium rounded-lg hover:bg-[#059669] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-colors shadow-sm active:scale-95 cursor-pointer">
-                                                Request to Hire
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={() => setIsHireModalOpen(true)}
-                                                className="w-full px-4 py-2 bg-[#10b981] text-white font-medium rounded-lg hover:bg-[#059669] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-colors shadow-sm active:scale-95 cursor-pointer"
-                                            >
-                                                Request to Hire
-                                            </button>
-                                        )}
+                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Rating</p>
+                                        <div className="flex items-center gap-1">
+                                            <p className="text-base sm:text-lg font-heading text-foreground font-bold">{tutor.ratings || '4.9'}</p>
+                                            <Star size={14} className="fill-amber-400 text-amber-400" aria-hidden="true" />
+                                        </div>
                                     </div>
-
-                                    <button
-                                        onClick={handleSave}
-                                        title={isSaved ? 'Remove from saved' : 'Save Profile'}
-                                        className={`p-2 border rounded-lg flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
-                                            isSaved
-                                                ? 'border-red-200 text-red-500 bg-red-50 hover:bg-red-100'
-                                                : 'border-border text-muted-foreground hover:bg-muted/50'
-                                        }`}
-                                    >
-                                        <Heart size={16} className={isSaved ? 'fill-red-500 text-red-500' : ''} />
-                                    </button>
-
-                                    <WhatsAppShareButton 
-                                        tutor={tutor} 
-                                        className="p-2 border rounded-lg shrink-0 cursor-pointer" 
-                                        variant="outline" 
-                                        iconOnly={true} 
-                                    />
+                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Location</p>
+                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold truncate flex items-center gap-1" title={tutor.location || 'N/A'}>
+                                            <MapPin size={14} className="text-[#2563EB] shrink-0" aria-hidden="true" />
+                                            <span>{(tutor.location || 'N/A').split(',')[0]}</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -476,13 +452,13 @@ const TutorDetails = () => {
 
                     {/* Subjects & Availability */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-card p-4 rounded-lg border border-border">
-                            <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
-                                <Award size={14} className="text-[#2563EB]" /> Subjects
+                        <div className="bg-card p-6 rounded-2xl border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
+                            <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
+                                <Award size={14} className="text-[#2563EB]" aria-hidden="true" /> Subjects
                             </h2>
                             <div className="flex flex-wrap gap-2">
                                 {Array.isArray(tutor.subjects) ? tutor.subjects.map((subject, idx) => (
-                                    <span key={idx} className="bg-muted text-[#374151] px-3 py-1 rounded-lg text-xs">
+                                    <span key={idx} className="bg-neutral-100 dark:bg-neutral-950 text-neutral-700 dark:text-neutral-100 border border-border/40 dark:border-neutral-800 px-3 py-1 rounded-lg text-xs font-medium">
                                         {subject}
                                     </span>
                                 )) : (
@@ -491,13 +467,13 @@ const TutorDetails = () => {
                             </div>
                         </div>
 
-                        <div className="bg-card p-4 rounded-lg border border-border">
-                            <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
-                                <Calendar size={14} className="text-[#2563EB]" /> Availability
+                        <div className="bg-card p-6 rounded-2xl border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
+                            <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
+                                <Calendar size={14} className="text-[#2563EB]" aria-hidden="true" /> Availability
                             </h2>
                             <div className="flex flex-wrap gap-2">
                                 {Array.isArray(tutor.availableDays) ? tutor.availableDays.map((day, idx) => (
-                                    <span key={idx} className="bg-muted text-[#374151] px-3 py-1 rounded-lg text-xs">
+                                    <span key={idx} className="bg-neutral-100 dark:bg-neutral-950 text-neutral-700 dark:text-neutral-100 border border-border/40 dark:border-neutral-800 px-3 py-1 rounded-lg text-xs font-medium">
                                         {day}
                                     </span>
                                 )) : (
@@ -508,8 +484,8 @@ const TutorDetails = () => {
                     </div>
 
                     {/* About Section */}
-                    <div className="bg-card p-4 rounded-lg border border-border">
-                        <h2 className="text-sm font-medium text-[#374151] mb-3">About the Tutor</h2>
+                    <div className="bg-card p-6 rounded-2xl border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
+                        <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">About the Tutor</h2>
                         <p className="text-sm text-muted-foreground leading-relaxed">
                             {tutor.displayName} is a qualified educator specialized in {Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'their field'}.
                             With {tutor.experience || 'years'} of experience, they provide structured learning for students in {tutor.location || 'their area'}.
@@ -520,7 +496,7 @@ const TutorDetails = () => {
                     </div>
 
                     {/* Reviews Section */}
-                    <div className="bg-card p-4 rounded-lg border border-border">
+                    <div className="bg-card p-6 rounded-2xl border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
                         <h3 className="text-lg font-heading mb-4 flex items-center gap-2">
                             Reviews ({reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : '0'})
                         </h3>
@@ -528,10 +504,10 @@ const TutorDetails = () => {
                         {reviews.length > 0 ? (
                             <div className="space-y-4">
                                 {reviews.map(review => (
-                                    <div key={review._id} className="p-4 border border-border rounded-lg">
+                                    <div key={review._id} className="p-4 border border-border/60 rounded-xl bg-muted/20">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-medium text-foreground">{review.studentEmail}</span>
-                                            <span className="text-amber-500">{'★'.repeat(review.rating)}</span>
+                                            <span className="font-medium text-foreground truncate max-w-[140px] sm:max-w-none" title={review.studentEmail}>{review.studentEmail}</span>
+                                            <span className="text-amber-500" aria-label={`${review.rating} out of 5 stars`}>{'★'.repeat(review.rating)}</span>
                                         </div>
                                         <p className="text-muted-foreground mt-2 text-sm">{review.comment}</p>
                                     </div>
@@ -543,13 +519,14 @@ const TutorDetails = () => {
 
                         {user && canReview ? (
                             <form onSubmit={handleSubmitReview} className="mt-6 pt-4 border-t border-border">
-                                <h4 className="text-sm font-medium text-[#374151] mb-3">Write a Review</h4>
+                                <h4 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">Write a Review</h4>
                                 <div className="flex items-center gap-2 mb-3">
-                                    <label className="text-sm text-muted-foreground">Rating:</label>
+                                    <label className="text-sm text-muted-foreground" htmlFor="review-rating-select">Rating:</label>
                                     <select 
+                                        id="review-rating-select"
                                         value={newReview.rating} 
                                         onChange={(e) => setNewReview({...newReview, rating: parseInt(e.target.value)})}
-                                        className="border border-border rounded-lg px-2 py-1 text-sm bg-background text-foreground"
+                                        className="border border-border rounded-lg px-2 py-1 text-sm bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 cursor-pointer"
                                     >
                                         {[1,2,3,4,5].map(n => (
                                             <option key={n} value={n}>{n} ★</option>
@@ -558,17 +535,18 @@ const TutorDetails = () => {
                                 </div>
                                 <textarea
                                     value={newReview.comment}
+                                    aria-label="Review Comments"
                                     onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
-                                    placeholder="Write your review..."
-                                    className="w-full border border-border rounded-lg p-3 text-sm mb-3 bg-background text-foreground placeholder:text-muted-foreground"
+                                    placeholder="Write your review…"
+                                    className="w-full border border-border rounded-xl p-3 text-sm mb-3 bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
                                     rows={3}
                                 />
                                 <button 
                                     type="submit" 
                                     disabled={submitting}
-                                    className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#1D4ED8] disabled:opacity-50 transition-colors"
+                                    className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary/95 disabled:opacity-50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer"
                                 >
-                                    {submitting ? 'Submitting...' : 'Submit Review'}
+                                    {submitting ? 'Submitting…' : 'Submit Review'}
                                 </button>
                             </form>
                         ) : user && (
@@ -604,34 +582,35 @@ const TutorDetails = () => {
             {/* Message Modal */}
             {isMessageModalOpen && (
                 <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-card w-full max-w-md rounded-lg border border-border shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                    <div className="bg-card w-full max-w-md rounded-2xl border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-heading text-foreground">Message {firstName}</h3>
-                            <button onClick={() => setIsMessageModalOpen(false)} className="text-muted-foreground hover:text-foreground text-xl leading-none">
+                            <button onClick={() => setIsMessageModalOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
                                 &times;
                             </button>
                         </div>
                         <form onSubmit={handleSendMessage}>
                             <textarea
                                 value={messageText}
+                                aria-label={`Message to ${firstName}`}
                                 onChange={(e) => setMessageText(e.target.value)}
-                                placeholder={`Hi ${firstName}, I'd like to talk about...`}
-                                className="w-full h-32 bg-background border border-border rounded-lg p-3 text-sm text-foreground mb-4 focus:outline-none focus:border-[#2563EB]/50 resize-none transition-colors"
+                                placeholder={`Hi ${firstName}, I'd like to talk about…`}
+                                className="w-full h-32 bg-background border border-border rounded-xl p-3 text-sm text-foreground mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 resize-none transition-all"
                             />
                             <div className="flex gap-3 justify-end">
                                 <button
                                     type="button"
                                     onClick={() => setIsMessageModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+                                    className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={sendingMessage || !messageText.trim()}
-                                    className="px-4 py-2 bg-[#2563EB] text-white text-sm font-medium rounded-lg hover:bg-[#1D4ED8] disabled:opacity-50 flex items-center gap-2 transition-colors shadow-sm"
+                                    className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary/95 disabled:opacity-50 flex items-center gap-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 shadow-sm cursor-pointer"
                                 >
-                                    {sendingMessage ? 'Sending...' : <><Send size={14} /> Send Message</>}
+                                    {sendingMessage ? 'Sending…' : <><Send size={14} aria-hidden="true" /> Send Message</>}
                                 </button>
                             </div>
                         </form>
@@ -642,32 +621,34 @@ const TutorDetails = () => {
             {/* Hire Request Modal */}
             {isHireModalOpen && (
                 <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-card w-full max-w-md rounded-lg border border-border shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                    <div className="bg-card w-full max-w-md rounded-2xl border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-heading text-foreground">Request to Hire {firstName}</h3>
-                            <button onClick={() => setIsHireModalOpen(false)} className="text-muted-foreground hover:text-foreground text-xl leading-none">
+                            <button onClick={() => setIsHireModalOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
                                 &times;
                             </button>
                         </div>
                         <form onSubmit={handleHireRequest}>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-muted-foreground mb-1">Message</label>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="hire-message-textarea">Message</label>
                                     <textarea
+                                        id="hire-message-textarea"
                                         value={hireMessage}
                                         onChange={(e) => setHireMessage(e.target.value)}
-                                        placeholder={`Hi ${firstName}, I'd like to hire you for...`}
-                                        className="w-full h-24 bg-background border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-[#2563EB]/50 resize-none transition-colors"
+                                        placeholder={`Hi ${firstName}, I'd like to hire you for…`}
+                                        className="w-full h-24 bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 resize-none transition-all"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-muted-foreground mb-1">Proposed Monthly Rate (৳) (Optional)</label>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="proposed-rate-input">Proposed Monthly Rate (৳) (Optional)</label>
                                     <input
+                                        id="proposed-rate-input"
                                         type="number"
                                         value={hireRate}
                                         onChange={(e) => setHireRate(e.target.value)}
                                         placeholder={tutor.expectedSalary ? `e.g. ${tutor.expectedSalary}` : 'e.g. 5000'}
-                                        className="w-full bg-background border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+                                        className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 transition-all"
                                     />
                                 </div>
                             </div>
@@ -675,16 +656,16 @@ const TutorDetails = () => {
                                 <button
                                     type="button"
                                     onClick={() => setIsHireModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+                                    className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submittingHire || !hireMessage.trim()}
-                                    className="px-4 py-2 bg-[#10b981] text-white text-sm font-medium rounded-lg hover:bg-[#059669] disabled:opacity-50 flex items-center gap-2 transition-colors shadow-sm"
+                                    className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 shadow-sm cursor-pointer"
                                 >
-                                    {submittingHire ? 'Sending...' : 'Send Request'}
+                                    {submittingHire ? 'Sending…' : 'Send Request'}
                                 </button>
                             </div>
                         </form>

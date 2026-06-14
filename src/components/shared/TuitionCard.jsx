@@ -16,22 +16,8 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
-    if (initialIsSaved !== null) {
-      setIsSaved(initialIsSaved === true);
-      return;
-    }
-    const checkSaved = async () => {
-      try {
-        const res = await api.get(
-          `/api/bookmarks/tuitions/check/${tuition._id}`,
-        );
-        setIsSaved(res.data.isSaved);
-      } catch {
-        /* ignore */
-      }
-    };
-    if (tuition?._id) checkSaved();
-  }, [tuition._id, initialIsSaved]);
+    setIsSaved(initialIsSaved === true);
+  }, [initialIsSaved]);
 
   const handleBookmark = async (e) => {
     e.stopPropagation();

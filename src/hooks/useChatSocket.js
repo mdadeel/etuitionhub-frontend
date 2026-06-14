@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
+let moduleSocketRef = null;
+
 const useChatSocket = (user, dbUser, fetchConversations) => {
     const [socket, setSocket] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState(new Set());
@@ -41,20 +43,23 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
             return;
         }
 
-        socketRef.current = io(backendUrl, {
+        const s = io(backendUrl, {
             withCredentials: true,
-            // Start with polling so the connection at least establishes on serverless hosts;
-            // upgrade to websocket only on platforms that support it (Railway, Render, etc.)
             transports: ['polling', 'websocket'],
             reconnectionAttempts: 3,
             reconnectionDelay: 1000,
             timeout: 5000,
         });
+        socketRef.current = s;
+        moduleSocketRef = s;
 
-        const s = socketRef.current;
-
-        s.on('connect', () => {
-            // Socket connected
+        s.on('connect_error', (err) => {
+            const msg = (err?.message || '').toLowerCase();
+            if (msg.includes('auth') || msg.includes('401') || msg.includes('unauthorized') || msg.includes('forbidden')) {
+                s.io.opts.reconnection = false;
+                s.disconnect();
+                socketRef.current = null;
+            }
         });
 
         // --- Typing Indicators ---
@@ -85,6 +90,7 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
 
         return () => {
             if (s) {
+                s.off('connect_error');
                 s.off('connect');
                 s.off('typing');
                 s.off('stop-typing');
@@ -92,6 +98,7 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
                 s.off('messages-read');
                 s.disconnect();
                 socketRef.current = null;
+                if (moduleSocketRef === s) moduleSocketRef = null;
                 setSocket(null);
             }
         };
@@ -99,6 +106,12 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
     }, [user]);
 
     return { socket, socketRef, onlineUsers, typingUsers };
+};
+
+export const reconnectChatSocket = () => {
+    if (moduleSocketRef) {
+        moduleSocketRef.connect();
+    }
 };
 
 export default useChatSocket;

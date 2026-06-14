@@ -285,7 +285,7 @@ const FloatingChat = () => {
                         <div className="shrink-0 px-4 py-3 bg-white dark:bg-slate-800 border-b border-slate-200/60 dark:border-slate-700/80 flex items-center gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                             <button
                                 onClick={() => { setFloatingActiveConv(null); setMessages([]); }}
-                                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-all duration-205 text-slate-550 dark:text-slate-400 active:scale-95"
+                                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-550 dark:text-slate-400"
                                 title="Back to conversations"
                             >
                                 <ArrowLeft size={18} strokeWidth={2.5} />
@@ -310,7 +310,7 @@ const FloatingChat = () => {
                             </div>
                             <button
                                 onClick={() => setIsFloatingOpen(false)}
-                                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-all duration-200 text-slate-500 dark:text-slate-400 active:scale-95"
+                                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400"
                                 title="Close chat"
                             >
                                 <X size={18} strokeWidth={2.5} />
@@ -321,12 +321,12 @@ const FloatingChat = () => {
                         <div className="shrink-0 px-4 py-3.5 bg-white dark:bg-slate-800 border-b border-slate-200/60 dark:border-slate-700/80 flex items-center justify-between shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                             <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 tracking-tight">{STRINGS.messages}</h3>
                             <div className="flex items-center gap-1.5">
-                                <button className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-all duration-200 text-slate-500 dark:text-slate-400 active:scale-95" title="New message">
+                                <button className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400" title="New message">
                                     <Edit size={16} strokeWidth={2.5} />
                                 </button>
                                 <button
                                     onClick={() => setIsFloatingOpen(false)}
-                                    className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-all duration-200 text-slate-500 dark:text-slate-400 active:scale-95"
+                                    className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400"
                                     title="Close chat"
                                 >
                                     <X size={18} strokeWidth={2.5} />
@@ -492,7 +492,7 @@ const FloatingChat = () => {
             {/* ── Floating Trigger Button ── */}
             <button
                 onClick={() => setIsFloatingOpen(!isFloatingOpen)}
-                className="size-14 bg-gradient-to-tr from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.45)] flex items-center justify-center relative hover:scale-105 active:scale-95 transition-all duration-200"
+                className="size-14 bg-gradient-to-tr from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.45)] flex items-center justify-center relative"
                 title={isFloatingOpen ? "Close messages" : "Open messages"}
             >
                 {isFloatingOpen ? <X size={22} strokeWidth={2.5} /> : <MessageCircle size={24} strokeWidth={2} />}

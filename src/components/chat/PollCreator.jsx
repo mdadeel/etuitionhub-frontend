@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, X, BarChart3, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
+import api from '@/services/api';
 
 const PollCreator = ({ messageId, onCreated, onCancel }) => {
     const [question, setQuestion] = useState('');
@@ -47,34 +48,21 @@ const PollCreator = ({ messageId, onCreated, onCancel }) => {
 
         setSaving(true);
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_URL}/api/messages/polls`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    question: question.trim(),
-                    options: validOptions,
-                    messageId,
-                    isAnonymous,
-                    allowMultipleSelection: allowMultiple,
-                }),
+            // Use the shared axios instance so auth (httpOnly cookie via
+            // withCredentials) and the CSRF header are handled automatically.
+            const res = await api.post('/api/messages/polls', {
+                question: question.trim(),
+                options: validOptions,
+                messageId,
+                isAnonymous,
+                allowMultipleSelection: allowMultiple,
             });
 
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.error || 'Failed to create poll');
-            }
-
-            const poll = await res.json();
+            const poll = res.data;
             toast.success('Poll created');
             onCreated?.(poll);
         } catch (error) {
-            console.error(error);
-            toast.error(error.message || 'Failed to create poll');
+            toast.error(error.response?.data?.error || error.message || 'Failed to create poll');
         } finally {
             setSaving(false);
         }

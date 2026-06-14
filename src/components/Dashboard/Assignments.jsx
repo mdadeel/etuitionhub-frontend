@@ -10,10 +10,10 @@ import {
 import { cn } from '@/lib/utils';
 
 const STATUS_COLORS = {
-    pending: 'text-amber-700 bg-amber-500/10 border-amber-500/20',
-    submitted: 'text-blue-700 bg-blue-500/10 border-blue-500/20',
-    graded: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20',
-    returned: 'text-teal-700 bg-teal-500/10 border-teal-500/20',
+    pending: 'text-amber-700 bg-amber-500/10 border-amber-500/20 dark:text-amber-400 dark:bg-amber-500/20 dark:border-amber-500/30',
+    submitted: 'text-blue-700 bg-blue-500/10 border-blue-500/20 dark:text-blue-400 dark:bg-blue-500/20 dark:border-blue-500/30',
+    graded: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20 dark:text-emerald-400 dark:bg-emerald-500/20 dark:border-emerald-500/30',
+    returned: 'text-teal-700 bg-teal-500/10 border-teal-500/20 dark:text-teal-400 dark:bg-teal-500/20 dark:border-teal-500/30',
 };
 
 /** Card that expands to show assignment details and actions */
@@ -65,7 +65,7 @@ const AssignmentCard = ({ assignment, role, onRefresh }) => {
     const isOverdue = dueDate && dueDate < new Date() && assignment.status === 'pending';
 
     return (
-        <div className={cn('bg-card border rounded-xl overflow-hidden transition-all', isOverdue ? 'border-red-300' : 'border-border')}>
+        <div className={cn('bg-card border rounded-xl overflow-hidden transition-all', isOverdue ? 'border-red-300 dark:border-red-900/60' : 'border-border')}>
             <button
                 onClick={() => setOpen(v => !v)}
                 className="w-full flex items-start justify-between px-6 py-4 hover:bg-muted/30 transition-colors text-left gap-4"
@@ -78,7 +78,7 @@ const AssignmentCard = ({ assignment, role, onRefresh }) => {
                         <p className="text-sm font-bold text-foreground">{assignment.title}</p>
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{assignment.description}</p>
                         {dueDate && (
-                            <p className={cn('text-[10px] font-semibold mt-1', isOverdue ? 'text-red-600' : 'text-muted-foreground')}>
+                            <p className={cn('text-[10px] font-semibold mt-1', isOverdue ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground')}>
                                 <Clock size={10} className="inline mr-1" />
                                 Due: {dueDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                                 {isOverdue && ' (Overdue)'}
@@ -89,7 +89,7 @@ const AssignmentCard = ({ assignment, role, onRefresh }) => {
 
                 <div className="flex items-center gap-3 shrink-0">
                     {assignment.grade != null && (
-                        <span className="flex items-center gap-1 text-xs font-bold text-amber-600">
+                        <span className="flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400">
                             <Star size={12} fill="currentColor" />
                             {assignment.grade}/{assignment.maxGrade || 100}
                         </span>
@@ -102,7 +102,7 @@ const AssignmentCard = ({ assignment, role, onRefresh }) => {
             </button>
 
             {open && (
-                <div className="border-t border-border px-6 py-5 space-y-4 bg-background/50 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="border-t border-border px-6 py-5 space-y-4 bg-background/50 dark:bg-slate-900/10 animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* Description */}
                     {assignment.description && (
                         <div>

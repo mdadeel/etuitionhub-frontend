@@ -9,7 +9,7 @@ import { Button } from '../components/ui/button';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function SessionRoom() {
-    const { bookingId } = useParams();
+    const { id: bookingId } = useParams();
     const navigate = useNavigate();
     const { user, dbUser } = useAuth();
 

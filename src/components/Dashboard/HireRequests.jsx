@@ -25,6 +25,7 @@ const HireRequests = () => {
   }, []);
 
   useEffect(() => {
+    if (tab === 'important') return; // ImportantMails handles its own data
     setLoading(true);
     api.get(`/api/hire-requests/${tab}`)
       .then(res => setRequests(res.data?.data || res.data || []))

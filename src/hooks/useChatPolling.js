@@ -7,7 +7,10 @@ const useChatPolling = (user, dbUser, socket) => {
     const [pollingIntervalId, setPollingIntervalId] = useState(null);
 
     const fetchConversations = async () => {
-        if (!user) return;
+        // Gate on dbUser, not the raw Firebase user: dbUser only resolves after
+        // the backend session cookies are minted, so this avoids firing an
+        // authenticated request before the token cookie exists (which 401s).
+        if (!dbUser) return;
         try {
             const res = await api.get('/api/messages/conversations');
             const convs = Array.isArray(res.data) ? res.data : (res.data.conversations || []);
@@ -22,14 +25,14 @@ const useChatPolling = (user, dbUser, socket) => {
     };
 
     useEffect(() => {
-        if (user) {
+        if (dbUser) {
             fetchConversations();
         } else {
             setConversations([]);
             setUnreadTotal(0);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
+    }, [dbUser]);
 
     // Listen for socket-dispatched message events
     useEffect(() => {

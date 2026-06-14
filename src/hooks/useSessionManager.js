@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../utils/firebase';
-import api from '../services/api';
+import api, { resetSession } from '../services/api';
 import Cookies from 'js-cookie';
 import { AUTH_COOKIE_OPTIONS } from '../utils/cookieOptions';
 import toast from 'react-hot-toast';
@@ -26,9 +26,16 @@ const useSessionManager = () => {
         if (!email) return;
         try {
             const idToken = firebaseUser ? await firebaseUser.getIdToken() : null;
-            let res = await api.post('/api/auth/jwt', { email, idToken });
+            // Server sets httpOnly cookie via Set-Cookie header — no client-side cookie needed.
+            let res = await api.post('/api/auth/jwt', { 
+                email, 
+                idToken,
+                displayName: firebaseUser?.displayName || '',
+                photoURL: firebaseUser?.photoURL || ''
+            });
             if (res.data.token) {
-                Cookies.set('token', res.data.token, AUTH_COOKIE_OPTIONS);
+                // SECURITY: Do NOT set Cookies here — the server's httpOnly Set-Cookie handles auth.
+                // Client-side js-cookie cannot set httpOnly, so this was creating an XSS-vulnerable cookie.
                 return res.data.token;
             }
         } catch (error) {
@@ -43,7 +50,7 @@ const useSessionManager = () => {
             setDbUser(res.data);
             setUserRole(res.data.role);
             return res.data;
-        } catch (error) {
+        } catch {
             return null;
         }
     }, []);
@@ -52,7 +59,7 @@ const useSessionManager = () => {
         try {
             const res = await api.get(`/api/users/check/${email.toLowerCase()}`);
             return res.data.exists;
-        } catch (error) {
+        } catch {
             return false;
         }
     }, []);
@@ -87,7 +94,10 @@ const useSessionManager = () => {
                     // request — prevents a 401 race when the old token is
                     // expired.
                     setJWT(currentUser.email, currentUser)
-                        .then(() => refreshUserFromDB(currentUser.email).catch(() => {}))
+                        .then(() => {
+                            resetSession();
+                            refreshUserFromDB(currentUser.email).catch(() => {});
+                        })
                         .catch(() => {});
                 } else {
                     setDbUser(null);
@@ -111,6 +121,7 @@ const useSessionManager = () => {
 
             if (currentUser?.email) {
                 await setJWT(currentUser.email, currentUser);
+                resetSession();
 
                 try {
                     let res = await api.get(`/api/users/${currentUser.email}`);

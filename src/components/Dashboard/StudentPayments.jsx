@@ -13,11 +13,11 @@ import {
     TrendingUp,
     Receipt
 } from "lucide-react";
-import { AppleCard, AppleHeader } from '../shared/AppleUI';
+import { AppleCard, AppleHeader, AppleBadge } from '../shared/AppleUI';
 import ReceiptModal from '../shared/ReceiptModal';
 import ProgressTracker from '../shared/ProgressTracker';
 import { cn } from '@/lib/utils';
-
+ 
 const BkashIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
         <rect width="24" height="24" rx="4" fill="#D12053"/>
@@ -41,23 +41,23 @@ const BankTransferIcon = () => (
         <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
     </svg>
 );
-
+ 
 const METHOD_ICONS = { bkash: BkashIcon, nagad: NagadIcon, rocket: RocketIcon, bank: BankTransferIcon };
-
+ 
 const PAYMENT_METHOD_LABELS = {
     bkash: { name: 'bKash' },
     nagad: { name: 'Nagad' },
     rocket: { name: 'Rocket' },
     bank: { name: 'Bank Transfer' }
 };
-
+ 
 const StudentPayments = ({ hideHeader }) => {
     const { user } = useAuth();
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
     const [receiptFor, setReceiptFor] = useState(null);
-
+ 
     const fetchPayments = useCallback(async () => {
         if (!user?.email) return;
         try {
@@ -69,17 +69,17 @@ const StudentPayments = ({ hideHeader }) => {
             setLoading(false);
         }
     }, [user]);
-
+ 
     useEffect(() => {
         fetchPayments();
     }, [fetchPayments]);
-
+ 
     const lastPayment = useRealtimeStore((s) => s.lastPayment);
     useEffect(() => {
         if (lastPayment) fetchPayments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastPayment]);
-
+ 
     const stats = useMemo(() => {
         const total = payments.length;
         const totalSpent = payments.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
@@ -87,19 +87,19 @@ const StudentPayments = ({ hideHeader }) => {
         const completed = payments.filter(p => p.status === 'confirmed').length;
         return { total, totalSpent, pending, completed };
     }, [payments]);
-
+ 
     const filteredPayments = useMemo(() => {
         if (filter === 'all') return payments;
         return payments.filter(p => p.status === filter);
     }, [payments, filter]);
-
+ 
     const filterOptions = [
         { id: 'all', label: 'All', count: stats.total },
         { id: 'pending_verification', label: 'Pending', count: stats.pending },
         { id: 'confirmed', label: 'Confirmed', count: payments.filter(p => p.status === 'confirmed').length },
         { id: 'rejected', label: 'Rejected', count: payments.filter(p => p.status === 'rejected').length }
     ];
-
+ 
     if (loading) {
         return (
             <div className="space-y-6">
@@ -112,7 +112,7 @@ const StudentPayments = ({ hideHeader }) => {
             </div>
         );
     }
-
+ 
     const getStatusBadge = (status) => {
         const variants = {
             pending_verification: { variant: 'warning', label: 'Pending' },
@@ -123,7 +123,11 @@ const StudentPayments = ({ hideHeader }) => {
             rejected: { variant: 'error', label: 'Rejected' }
         };
         const { variant, label } = variants[status] || { variant: 'default', label: status };
-        return <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-lg ${variant === 'warning' ? 'bg-amber-500/10 text-amber-600' : variant === 'primary' ? 'bg-primary/10 text-primary' : variant === 'success' ? 'bg-green-500/10 text-green-600' : variant === 'error' ? 'bg-red-500/10 text-red-600' : 'bg-muted text-muted-foreground'}`}>{label}</span>;
+        return (
+            <AppleBadge variant={variant} className="rounded-lg text-[9px] py-1 font-bold">
+                {label}
+            </AppleBadge>
+        );
     };
 
     return (

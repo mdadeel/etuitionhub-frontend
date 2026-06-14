@@ -135,7 +135,7 @@ const CategoryCard = ({ cat, index }) => {
                 className={cn(
                     "relative h-full overflow-hidden rounded-2xl border border-border/70 bg-card",
                     "transition-all duration-300 ease-out",
-                    "hover:-translate-y-1 hover:shadow-premium-md",
+                    "hover:shadow-premium-md",
                     "active:scale-[0.985]"
                 )}
             >
@@ -289,7 +289,7 @@ const FeaturedCategories = () => {
                             className={cn(
                                 "relative flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-dashed border-border bg-background/40 p-4 md:p-5",
                                 "transition-all duration-300 ease-out",
-                                "hover:-translate-y-1 hover:border-primary/40 hover:bg-primary/5 hover:shadow-premium-md",
+                                "hover:border-primary/40 hover:bg-primary/5 hover:shadow-premium-md",
                                 "active:scale-[0.985]"
                             )}
                         >

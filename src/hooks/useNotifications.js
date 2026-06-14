@@ -12,7 +12,7 @@ const isSafeRedirect = (url) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const useNotifications = ({ userId, pageSize = 20 } = {}) => {
+const useNotifications = ({ userId, pageSize = 20, enabled = true } = {}) => {
     const [notifications, setNotifications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
@@ -50,11 +50,17 @@ const useNotifications = ({ userId, pageSize = 20 } = {}) => {
     // markAsRead, reset on markAllAsRead). On Vercel (no socket) the badge
     // simply doesn't update — same as the pre-3.1 behavior for new events.
     useEffect(() => {
+        // Wait until the backend session is ready (enabled = !!dbUser). Firing
+        // before the token cookie is minted just produces a 401 cascade.
+        if (!enabled) {
+            setIsLoading(false);
+            return;
+        }
         refetch(1);
         api.get('/api/notifications/unread-count')
             .then((res) => setUnreadCount(res.data.count || 0))
             .catch(() => {});
-    }, [refetch, setUnreadCount]);
+    }, [enabled, refetch, setUnreadCount]);
 
     // Prepend new notifications from socket events for instant display
     useEffect(() => {

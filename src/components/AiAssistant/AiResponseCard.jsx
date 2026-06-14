@@ -246,6 +246,59 @@ function ProgrammingTemplate({ data }) {
     );
 }
 
+function RefusedMessage({ data }) {
+    const category = data._meta?.category || 'off-topic';
+    const heading = {
+        'politics': 'Politics',
+        'religion-debate': 'Religious Debate',
+        'adult-content': 'Adult Content',
+        'violence': 'Violence',
+        'illegal-activity': 'Illegal Activity',
+        'medical-advice': 'Medical Advice',
+        'legal-advice': 'Legal Advice',
+        'financial-advice': 'Financial Advice',
+        'personal-relationship': 'Personal Relationship',
+    }[category] || 'Off-Topic';
+
+    return (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+                <div className="size-7 rounded-lg bg-amber-500/15 flex items-center justify-center">
+                    <AlertTriangle size={14} className="text-amber-500" />
+                </div>
+                <div>
+                    <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider">
+                        {heading}
+                    </p>
+                    <p className="text-[11px] text-amber-500/60">This topic is outside Porua&apos;s scope</p>
+                </div>
+            </div>
+            <p className="text-sm leading-relaxed text-foreground/80">
+                {data.answer}
+            </p>
+            {data.keyPoints?.length > 0 && (
+                <div className="pt-2 border-t border-amber-500/10">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                        I can help with:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                        {data.keyPoints.map((point, i) => (
+                            <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-muted/50 text-muted-foreground border border-border/50">
+                                {point}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {data.followUpSuggestion && (
+                <p className="text-xs text-muted-foreground italic">
+                    {data.followUpSuggestion}
+                </p>
+            )}
+        </div>
+    );
+}
+
 function GeneralTemplate({ data }) {
     return (
         <div>
@@ -399,6 +452,13 @@ export default function AiResponseCard({
     className = '',
 }) {
     if (!structured) return null;
+
+    // Scope-guard refusal: render a compact warning card instead of the
+    // normal template. The structured payload has _meta.refused: true
+    // with a category and a pre-written answer listing supported topics.
+    if (structured._meta?.refused) {
+        return <RefusedMessage data={structured} />;
+    }
 
     if (structured.templateType === 'conversational') {
         return <ConversationalBubble structured={structured} onFollowUpClick={onFollowUpClick} className={className} />;

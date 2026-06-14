@@ -6,23 +6,15 @@ import { queryClient } from '../lib/queryClient';
 
 let socketRef = null;
 
-/**
- * useSocketEvents — connects a single Socket.IO instance for the app lifetime
- * and dispatches inbound events into the realtimeStore. Call ONCE at app top
- * level (e.g. App.jsx). Returns the live socket for any caller that needs to
- * emit (chat, typing, etc).
- *
- * On Vercel this is a no-op (serverless can't keep the WebSocket open); events
- * simply never arrive, which is the same as the pre-3.1 polling-based behavior.
- */
+const CONNECT_ERROR_AUTH = 'connect_error_auth';
+
 const useSocketEvents = () => {
     const ref = useRef(null);
-    // eslint-disable-next-line react-hooks/refs
-    ref.current = socketRef;
 
     useEffect(() => {
+        ref.current = socketRef;
 
-        if (socketRef) return undefined;
+        if (socketRef) return;
 
         const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         if (backendUrl.includes('vercel')) return undefined;
@@ -37,6 +29,15 @@ const useSocketEvents = () => {
         socketRef = s;
 
         const store = useRealtimeStore.getState();
+
+        s.on('connect_error', (err) => {
+            const msg = (err?.message || '').toLowerCase();
+            if (msg.includes('auth') || msg.includes('401') || msg.includes('unauthorized') || msg.includes('forbidden')) {
+                s.io.opts.reconnection = false;
+                s.disconnect();
+                socketRef = null;
+            }
+        });
 
         s.on('payment:approved', (data) => {
             store.applyPayment('payment:approved', data);
@@ -71,6 +72,7 @@ const useSocketEvents = () => {
 
         return () => {
             if (socketRef === s) socketRef = null;
+            s.off('connect_error');
             s.off('payment:approved');
             s.off('payment:rejected');
             s.off('wallet:updated');
@@ -79,6 +81,12 @@ const useSocketEvents = () => {
             s.disconnect();
         };
     }, []);
+};
+
+export const reconnectSocket = () => {
+    if (socketRef) {
+        socketRef.connect();
+    }
 };
 
 export const getSocket = () => socketRef;

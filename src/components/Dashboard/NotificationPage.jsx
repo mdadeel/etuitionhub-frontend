@@ -23,7 +23,7 @@ const getTypeIcon = (type, size = 18) => {
 };
 
 const NotificationPage = () => {
-    const { user } = useAuth();
+    const { user, dbUser } = useAuth();
     const {
         notifications,
         unreadCount,
@@ -35,7 +35,7 @@ const NotificationPage = () => {
         deleteNotification,
         deleteBatch,
         handleAction,
-    } = useNotifications({ userId: user?.uid, pageSize: PAGE_SIZE });
+    } = useNotifications({ userId: user?.uid, pageSize: PAGE_SIZE, enabled: !!dbUser });
 
     const [selectedIds, setSelectedIds] = useState(new Set());
 

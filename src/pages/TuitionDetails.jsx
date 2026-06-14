@@ -248,11 +248,11 @@ const TuitionDetails = () => {
                         {/* Summary & Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-card p-4 rounded-lg border border-border">
-                                <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
+                                <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
                                     <Target size={14} className="text-[#2563EB]" /> Student Profile
                                 </h2>
                                 <div className="space-y-3">
-                                    <div className="flex justify-between items-center py-2 border-b border-[rgba(15,23,46,0.04)]">
+                                    <div className="flex justify-between items-center py-2 border-b border-border/40">
                                         <span className="text-xs text-muted-foreground">Tutor Gender</span>
                                         <span className="text-sm font-medium text-foreground">{tuition.gender || 'Any'}</span>
                                     </div>
@@ -260,7 +260,7 @@ const TuitionDetails = () => {
                                         <span className="text-xs text-muted-foreground">Preferred Days</span>
                                         <div className="flex gap-1">
                                             {tuition.available_days?.slice(0, 3).map((day, idx) => (
-                                                <span key={idx} className="bg-muted px-2 py-0.5 rounded text-xs text-muted-foreground">{day.slice(0, 3)}</span>
+                                                <span key={idx} className="bg-neutral-100 dark:bg-neutral-950 text-neutral-700 dark:text-neutral-100 border border-border/40 dark:border-neutral-800 px-2 py-0.5 rounded text-xs font-medium">{day.slice(0, 3)}</span>
                                             ))}
                                         </div>
                                     </div>
@@ -268,7 +268,7 @@ const TuitionDetails = () => {
                             </div>
 
                             <div className="bg-card p-4 rounded-lg border border-border">
-                                <h2 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
+                                <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
                                     <BookOpen size={14} className="text-[#2563EB]" /> Job Description
                                 </h2>
                                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -315,7 +315,7 @@ const TuitionDetails = () => {
 
                                 <div className="space-y-2">
                                     {!user ? (
-                                        <Link to="/login" className="block w-full px-4 py-2.5 bg-muted text-[#374151] font-medium rounded-lg hover:bg-[#E2E8F0] text-sm text-center transition-colors">
+                                        <Link to="/login" className="block w-full px-4 py-2.5 bg-muted hover:bg-muted/80 text-neutral-800 dark:text-neutral-200 font-semibold rounded-lg text-sm text-center transition-colors border border-border/50">
                                             Login to Apply
                                         </Link>
                                     ) : !dbUser ? (
@@ -404,7 +404,7 @@ const TuitionDetails = () => {
 
                         {/* Safety Tips */}
                         <div className="bg-card p-4 rounded-lg border border-border">
-                            <h4 className="text-sm font-medium text-[#374151] mb-3 flex items-center gap-2">
+                            <h4 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
                                 <ShieldAlert size={14} className="text-[#D97706]" /> Safety Tips
                             </h4>
                             <ul className="space-y-2">

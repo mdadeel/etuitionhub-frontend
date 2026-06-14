@@ -19,10 +19,10 @@ import {
     Calendar,
     BookOpen
 } from "lucide-react";
-import { AppleCard, AppleHeader, AppleButton } from '../shared/AppleUI';
+import { AppleCard, AppleHeader, AppleButton, AppleBadge } from '../shared/AppleUI';
 import { cn } from '@/lib/utils';
 import SessionStatsCard from './SessionStatsCard';
-
+ 
 /**
  * TutorDashboard Component — Refined Apple Aesthetic
  */
@@ -244,7 +244,7 @@ const TutorDashboard = () => {
                                         <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[rgba(15,23,46,0.08)]">
+                                <tbody className="divide-y divide-border/50">
                                     {apps.map((app) => (
                                         <tr key={app._id} className="hover:bg-background/50 transition-colors">
                                             <td className="px-8 py-6">
@@ -253,9 +253,12 @@ const TutorDashboard = () => {
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary}</td>
                                             <td className="px-8 py-6 text-center">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${app.status === 'approved' ? 'bg-primary/10 text-primary' : app.status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-background text-muted-foreground'}`}>
+                                                <AppleBadge 
+                                                    variant={app.status === 'approved' ? 'success' : app.status === 'rejected' ? 'error' : 'warning'} 
+                                                    className="rounded-lg"
+                                                >
                                                     {app.status}
-                                                </span>
+                                                </AppleBadge>
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 {app.status === 'pending' ? (
@@ -351,7 +354,7 @@ const TutorDashboard = () => {
                                         <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[rgba(15,23,46,0.08)]">
+                                <tbody className="divide-y divide-border/50">
                                     {revenue.map((payment) => (
                                         <tr key={payment._id} className="hover:bg-background/50 transition-colors">
                                             <td className="px-8 py-6 text-xs font-bold text-muted-foreground uppercase tabular-nums tracking-widest">
@@ -363,9 +366,12 @@ const TutorDashboard = () => {
                                             </td>
                                             <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{payment.grossAmount}</td>
                                             <td className="px-8 py-6 text-right">
-                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${payment.status === 'confirmed' ? 'bg-primary/10 text-primary' : 'bg-background text-muted-foreground'}`}>
+                                                <AppleBadge 
+                                                    variant={payment.status === 'confirmed' ? 'success' : 'default'} 
+                                                    className="rounded-lg"
+                                                >
                                                     {payment.status}
-                                                </span>
+                                                </AppleBadge>
                                             </td>
                                         </tr>
                                     ))}

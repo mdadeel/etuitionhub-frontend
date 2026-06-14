@@ -1,137 +1,218 @@
-import { ShieldCheck, MessageCircle, Wallet, Monitor, CheckCircle, Users, Clock, Heart } from 'lucide-react';
-import SectionHeader from '@/components/ui/SectionHeader';
+import { useRef } from 'react';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// eslint-disable-next-line no-unused-vars
-const FeatureBlock = ({ icon: Icon, title, description, features, delay = '100ms', reversed = false }) => (
-    <div className="grid lg:grid-cols-12 gap-12 items-center animate-in fade-in zoom-in-95 duration-700 ease-out" style={{ animationDelay: delay }}>
-        <div className={`lg:col-span-5 ${reversed ? 'order-2 lg:order-1' : 'order-1 lg:order-2'}`}>
-            <div className="flex items-start gap-4">
-                <div className="size-14 rounded-2xl bg-muted border border-border text-primary flex items-center justify-center shrink-0 shadow-sm">
-                    <Icon className="size-7" />
-                </div>
-                <div>
-                    <h3 className="text-xl md:text-2xl font-heading font-black text-foreground mb-3 tracking-tight">{title}</h3>
-                    <p className="text-base text-muted-foreground leading-relaxed font-body">{description}</p>
-                </div>
-            </div>
-        </div>
-        <div className={`lg:col-span-7 ${reversed ? 'order-1 lg:order-2' : 'order-2 lg:order-1'}`}>
-            <div className="p-8 bg-card rounded-2xl border border-border/60 transition-all duration-300 hover:border-primary/30 hover:shadow-xl active:scale-[0.98] cursor-default">
-                <div className="grid grid-cols-2 gap-6">
-                    {features.map((feature, idx) => (
-                        <div key={`${title}-feature-${idx}`} className="flex items-start gap-3 group">
-                            <div className="mt-0.5 min-w-[18px]">
-                                <CheckCircle className="size-5 text-primary transition-colors" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-bold text-foreground mb-1 transition-colors">{feature.title}</p>
-                                <p className="text-xs text-muted-foreground">{feature.desc}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    </div>
+gsap.registerPlugin(ScrollTrigger);
+
+const ShieldIllus = () => (
+  <svg viewBox="0 0 180 160" className="w-full h-full" fill="none">
+    <path d="M90 20 L145 45 L145 90 C145 125 90 145 90 145 C90 145 35 125 35 90 L35 45 Z"
+      stroke="hsl(221 83% 53% / 0.25)" strokeWidth="2" />
+    <path d="M90 30 L135 50 L135 88 C135 118 90 135 90 135 C90 135 45 118 45 88 L45 50 Z"
+      stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5" />
+    <path d="M72 90 L84 102 L110 76" stroke="hsl(221 83% 53%)" strokeWidth="3"
+      strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+    <rect x="65" y="30" width="8" height="10" rx="1" fill="hsl(221 83% 53% / 0.12)" />
+    <rect x="80" y="30" width="8" height="10" rx="1" fill="hsl(221 83% 53% / 0.12)" />
+    <rect x="95" y="30" width="8" height="10" rx="1" fill="hsl(221 83% 53% / 0.12)" />
+    <circle cx="40" cy="110" r="3" fill="hsl(221 83% 53% / 0.08)" />
+    <circle cx="140" cy="110" r="3" fill="hsl(221 83% 53% / 0.08)" />
+    <circle cx="50" cy="130" r="2" fill="hsl(221 83% 53% / 0.05)" />
+    <circle cx="130" cy="130" r="2" fill="hsl(221 83% 53% / 0.05)" />
+  </svg>
 );
 
+const ChatIllus = () => (
+  <svg viewBox="0 0 180 160" className="w-full h-full" fill="none">
+    <rect x="15" y="30" width="100" height="55" rx="10"
+      stroke="hsl(38 95% 52% / 0.25)" strokeWidth="2" fill="hsl(38 95% 52% / 0.04)" />
+    <path d="M40 85 L25 110 L55 85" stroke="hsl(38 95% 52% / 0.2)" strokeWidth="1.5"
+      fill="hsl(38 95% 52% / 0.04)" />
+    <circle cx="42" cy="50" r="4" fill="hsl(38 95% 52% / 0.35)" />
+    <circle cx="65" cy="50" r="4" fill="hsl(38 95% 52% / 0.35)" />
+    <circle cx="88" cy="50" r="4" fill="hsl(38 95% 52% / 0.35)" />
+    <circle cx="42" cy="68" r="4" fill="hsl(38 95% 52% / 0.15)" />
+    <circle cx="65" cy="68" r="4" fill="hsl(38 95% 52% / 0.15)" />
+
+    <rect x="100" y="60" width="65" height="45" rx="10"
+      stroke="hsl(221 83% 53% / 0.2)" strokeWidth="2" fill="hsl(221 83% 53% / 0.04)" />
+    <path d="M125 105 L115 125 L140 105" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5"
+      fill="hsl(221 83% 53% / 0.04)" />
+    <circle cx="118" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
+    <circle cx="135" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
+    <circle cx="152" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
+
+    <path d="M90 75 Q 95 65 100 75" stroke="hsl(38 95% 52% / 0.3)" strokeWidth="1.5"
+      strokeDasharray="3 3" />
+  </svg>
+);
+
+const DeviceIllus = () => (
+  <svg viewBox="0 0 180 160" className="w-full h-full" fill="none">
+    <rect x="20" y="20" width="85" height="60" rx="4"
+      stroke="hsl(221 83% 53% / 0.25)" strokeWidth="2" fill="hsl(221 83% 53% / 0.04)" />
+    <rect x="24" y="28" width="77" height="38" rx="2"
+      stroke="hsl(221 83% 53% / 0.1)" strokeWidth="1" fill="hsl(221 83% 53% / 0.04)" />
+    <line x1="45" y1="72" x2="80" y2="72" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5" />
+    <rect x="58" y="16" width="9" height="4" rx="2" fill="hsl(221 83% 53% / 0.15)" />
+
+    <rect x="110" y="50" width="40" height="75" rx="6"
+      stroke="hsl(38 95% 52% / 0.25)" strokeWidth="2" fill="hsl(38 95% 52% / 0.04)" />
+    <rect x="115" y="60" width="30" height="42" rx="3"
+      stroke="hsl(38 95% 52% / 0.1)" strokeWidth="1" fill="hsl(38 95% 52% / 0.04)" />
+    <line x1="122" y1="113" x2="138" y2="113" stroke="hsl(38 95% 52% / 0.3)" strokeWidth="2" strokeLinecap="round" />
+    <line x1="127" y1="120" x2="133" y2="120" stroke="hsl(38 95% 52% / 0.15)" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="130" cy="125" r="3" stroke="hsl(38 95% 52% / 0.2)" strokeWidth="1.5" />
+
+    <path d="M62 50 Q 72 45 80 50 Q 88 55 95 50" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5" fill="none" />
+    <circle cx="10" cy="90" r="2" fill="hsl(221 83% 53% / 0.08)" />
+    <circle cx="170" cy="30" r="2" fill="hsl(38 95% 52% / 0.08)" />
+    <circle cx="165" cy="130" r="3" fill="hsl(221 83% 53% / 0.05)" />
+    <circle cx="15" cy="140" r="2" fill="hsl(38 95% 52% / 0.05)" />
+  </svg>
+);
+
+const illustrations = [ShieldIllus, ChatIllus, DeviceIllus];
+
+const blocks = [
+  {
+    title: "Verified Credentials",
+    description: "Every tutor's academic documents are manually checked. We verify qualifications, experience, and background to ensure your child learns from genuine educators.",
+    features: [
+      "Document Verification — Academic credentials checked",
+      "Background Check — Identity verification complete",
+      "Experience Validated — Teaching history confirmed",
+      "Reference Checks — Past employer verification",
+    ],
+  },
+  {
+    title: "Direct Connection",
+    description: "No middlemen, no agents. Message tutors directly, discuss your child's needs, and build a relationship based on trust and transparency.",
+    features: [
+      "Direct Messaging — Communicate without intermediaries",
+      "Transparent Fees — No hidden charges or commissions",
+      "Parent-Tutor Match — Find the right fit for your child",
+      "Quick Response — Average 18-minute reply time",
+    ],
+  },
+  {
+    title: "Online & Offline",
+    description: "Choose the learning mode that works best for your family. Whether it's in-person sessions at home or online classes, we support your preference.",
+    features: [
+      "Online Classes — Learn from anywhere",
+      "In-Person Sessions — Home tutoring available",
+      "Flexible Budget — ৳2,000 to ৳15,000/month",
+      "Personalized Care — Tailored to your child",
+    ],
+  },
+];
+
+const trustStats = [
+  { value: "100%", label: "Verified Tutors" },
+  { value: "4.8/5", label: "Parent Satisfaction" },
+  { value: "<24h", label: "Response Time" },
+  { value: "95%", label: "Success Rate" },
+];
+
 const WhyChooseUs = () => {
-    return (
-        <section className="py-24 bg-background relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="text-center mb-20 animate-in fade-in zoom-in-95 duration-700 ease-out">
-                    <h2 className="text-4xl md:text-5xl font-display font-black text-foreground tracking-tight mb-4">
-                        Why parents <span className="text-primary">trust us</span> with their children's education
-                    </h2>
-                    <p className="text-lg text-muted-foreground font-body max-w-3xl mx-auto">
-                        We've heard the stories - tutors who don't show up, fake credentials, and hidden fees. That's why we built a platform where every tutor is verified, every fee is transparent, and every parent can communicate directly.
-                    </p>
+  const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+  const statsRef = useRef(null);
+
+  useGSAP(() => {
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top 80%",
+        onEnter: () => {
+          gsap.fromTo(headingRef.current,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
+          );
+          const items = gsap.utils.toArray('.feature-block');
+          gsap.fromTo(items,
+            { opacity: 0, y: 50 },
+            { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power3.out", delay: 0.2 }
+          );
+          gsap.fromTo(statsRef.current,
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", delay: 0.8 }
+          );
+        },
+        once: true,
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="relative overflow-hidden py-14 md:py-20 bg-background">
+      <div ref={headingRef} className="max-w-6xl mx-auto px-6 mb-12">
+        <span className="text-xs font-medium text-primary/70 uppercase tracking-[0.18em]">Why Trust Us</span>
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading text-foreground tracking-tight leading-[0.95] mt-2 max-w-4xl">
+          Why parents trust us with their children's education
+        </h2>
+        <p className="text-sm md:text-base text-muted-foreground leading-relaxed mt-2 max-w-2xl">
+          We've heard the stories — tutors who don't show up, fake credentials, and hidden fees.
+          That's why we built a platform where every tutor is verified, every fee is transparent,
+          and every parent can communicate directly.
+        </p>
+      </div>
+
+      {blocks.map((block, idx) => {
+        const Illus = illustrations[idx];
+        return (
+          <div key={idx} className={`feature-block relative ${idx % 2 === 0 ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-primary/[0.02] via-primary/[0.01] to-transparent`}>
+            <div className="max-w-6xl mx-auto px-6 py-12 md:py-14">
+              <div className={`flex flex-col ${idx % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 md:gap-10 items-center`}>
+                <div className="w-[160px] shrink-0">
+                  <div className="w-full aspect-[180/160]">
+                    <Illus />
+                  </div>
                 </div>
-
-                <div className="space-y-16">
-                    <FeatureBlock
-                        icon={ShieldCheck}
-                        title="Verified Credentials"
-                        description="Every tutor's academic documents are manually checked. We verify qualifications, experience, and background to ensure your child learns from genuine educators."
-                        delay="200ms"
-                        features={[
-                            { title: "Document Verification", desc: "Academic credentials checked" },
-                            { title: "Background Check", desc: "Identity verification complete" },
-                            { title: "Experience Validated", desc: "Teaching history confirmed" },
-                            { title: "Reference Checks", desc: "Past employer verification" }
-                        ]}
-                    />
-
-                    <div className="grid lg:grid-cols-12 gap-12 items-center animate-in fade-in zoom-in-95 duration-700 ease-out" style={{ animationDelay: '350ms' }}>
-                        <div className="lg:col-span-7">
-                            <div className="p-8 bg-card rounded-2xl border border-border/60 transition-all duration-300 hover:border-primary/30 hover:shadow-xl active:scale-[0.98] cursor-default">
-                                <div className="grid grid-cols-2 gap-6 relative z-10">
-                                    {[
-                                        { id: "f1", icon: MessageCircle, title: "Direct Messaging", desc: "Communicate without intermediaries" },
-                                        { id: "f2", icon: Wallet, title: "Transparent Fees", desc: "No hidden charges or commissions" },
-                                        { id: "f3", icon: Users, title: "Parent-Tutor Match", desc: "Find the right fit for your child" },
-                                        { id: "f4", icon: Clock, title: "Quick Response", desc: "Average 18-minute reply time" }
-                                    ].map((feature) => (
-                                        <div key={feature.id} className="flex items-start gap-3 group">
-                                            <div className="mt-0.5 text-primary transition-colors">
-                                                <feature.icon className="size-5" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-foreground mb-1 transition-colors">{feature.title}</p>
-                                                <p className="text-xs text-muted-foreground">{feature.desc}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="lg:col-span-5">
-                            <div className="flex items-start gap-4">
-                                <div className="size-14 rounded-2xl bg-muted border border-border text-amber-500 flex items-center justify-center shrink-0 shadow-sm">
-                                    <MessageCircle className="size-7" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl md:text-2xl font-heading font-black text-foreground mb-3 tracking-tight">Direct Connection</h3>
-                                    <p className="text-base text-muted-foreground leading-relaxed font-body">
-                                        No middlemen, no agents. Message tutors directly, discuss your child's needs, and build a relationship based on trust and transparency.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <FeatureBlock
-                        icon={Monitor}
-                        title="Online & Offline"
-                        description="Choose the learning mode that works best for your family. Whether it's in-person sessions at home or online classes, we support your preference."
-                        delay="550ms"
-                        reversed={true}
-                        features={[
-                            { title: "Online Classes", desc: "Learn from anywhere" },
-                            { title: "In-Person Sessions", desc: "Home tutoring available" },
-                            { title: "Flexible Budget", desc: "৳2,000 to ৳15,000/month" },
-                            { title: "Personalized Care", desc: "Tailored to your child" }
-                        ]}
-                    />
-                </div>
-
-                {/* Trust Stats */}
-                <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-border/60 animate-in fade-in zoom-in-95 duration-700 ease-out" style={{ animationDelay: '700ms' }}>
-                    {[
-                        { id: "s1", label: "Verified Tutors", value: "100%" },
-                        { id: "s2", label: "Parent Satisfaction", value: "4.8/5" },
-                        { id: "s3", label: "Response Time", value: "<24h" },
-                        { id: "s4", label: "Success Rate", value: "95%" }
-                    ].map((stat) => (
-                        <div key={stat.id} className="text-center space-y-1">
-                            <div className="text-3xl md:text-4xl font-heading font-black text-foreground tracking-tight">{stat.value}</div>
-                            <div className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-wider">{stat.label}</div>
-                        </div>
+                <div className="flex-1 space-y-3">
+                  <h3 className="text-lg md:text-xl font-heading text-foreground tracking-tight">
+                    {block.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {block.description}
+                  </p>
+                  <div className="space-y-1.5 pt-1">
+                    {block.features.map((feature, fi) => (
+                      <div key={fi} className="flex items-center gap-3">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
+                          <circle cx="7" cy="7" r="6" stroke={`hsl(${idx % 2 === 1 ? '38 95% 52%' : '221 83% 53%'} / 0.3)`} strokeWidth="1.5" />
+                          <path d="M4.5 7 L6.5 9 L9.5 5" stroke={`hsl(${idx % 2 === 1 ? '38 95% 52%' : '221 83% 53%'})`}
+                            strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+                        </svg>
+                        <span className="text-sm text-muted-foreground">{feature}</span>
+                      </div>
                     ))}
+                  </div>
                 </div>
+              </div>
             </div>
-        </section>
-    );
+          </div>
+        );
+      })}
+
+      <div ref={statsRef} className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-border/30">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
+          {trustStats.map((stat, idx) => (
+            <div key={idx}>
+              <span className="text-2xl md:text-3xl font-heading text-foreground tracking-tight block">
+                {stat.value}
+              </span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mt-0.5 block">
+                {stat.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default WhyChooseUs;
