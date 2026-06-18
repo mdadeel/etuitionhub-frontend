@@ -600,7 +600,7 @@ function getMetadataLabel(type, topic) {
 }
 
 export default function AiResponseCard({
-    structured,
+    structured: structuredProp,
     // eslint-disable-next-line no-unused-vars
     provider,
     // eslint-disable-next-line no-unused-vars
@@ -611,7 +611,12 @@ export default function AiResponseCard({
     children,
     className = '',
 }) {
-    if (!structured) return null;
+    // Defensive: if structured is a JSON string, parse it
+    let structured = structuredProp;
+    if (typeof structured === 'string') {
+        try { structured = JSON.parse(structured); } catch { structured = null; }
+    }
+    if (!structured || typeof structured !== 'object') return null;
 
     // Scope-guard refusal: render a compact warning card instead of the
     // normal template. The structured payload has _meta.refused: true

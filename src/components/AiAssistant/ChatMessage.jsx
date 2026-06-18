@@ -195,7 +195,11 @@ function AssistantMessage({
     onCopy, onRegenerate, onFeedback, onFollowUpClick,
     feedback, isCopied
 }) {
-    const structured = message.structured;
+    // Defensive: if structured is a JSON string, parse it
+    let structured = message.structured;
+    if (typeof structured === 'string') {
+        try { structured = JSON.parse(structured); } catch { structured = null; }
+    }
     const tutors = message.recommendedTutors || [];
     const tuitions = message.recommendedTuitions || [];
     const timestamp = formatTimestamp(message.createdAt);
