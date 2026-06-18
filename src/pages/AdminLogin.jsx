@@ -83,6 +83,7 @@ const AdminLogin = () => {
                         </button>
                     </form>
 
+                    {import.meta.env.VITE_SHOW_DEMO_ACCOUNTS === 'true' && (
                     <div className="mt-6 pt-6 border-t border-gray-700">
                         <button
                             type="button"
@@ -95,6 +96,7 @@ const AdminLogin = () => {
                             Use Demo Admin Account
                         </button>
                     </div>
+                    )}
 
                     <p className="text-center mt-6 text-sm text-muted-foreground">
                         Not an admin? <Link to="/login" className="text-teal-400 hover:underline">Return to User Login</Link>

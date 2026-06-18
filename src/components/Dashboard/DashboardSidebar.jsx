@@ -1,149 +1,53 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard,
-  User,
-  FileText,
-  Users,
-  ChevronRight,
   LogOut,
   ShieldCheck,
-  Banknote,
-  Bookmark,
-  Bell,
-  Inbox,
-  Wallet,
-  ArrowDownToLine,
-  Settings,
-  History,
-  DollarSign,
-  Scale,
-  BookOpen,
-  BookmarkCheck,
-  Mail,
-  ClipboardCheck,
-  FileStack,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { getDashboardMenuItems } from "./getDashboardMenuItems";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Cookies from "js-cookie";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
 
-const DashboardSidebar = ({ role }) => {
-  const { t } = useTranslation();
+const DashboardSidebar = () => {
   const location = useLocation();
-  const { user, dbUser, logout } = useAuth();
+  const { user, dbUser, logout, orgContext, orgRole, myOrgs, switchOrg, hasPermission } = useAuth();
+  const globalRole = dbUser?.globalRole;
+  const legacyRole = dbUser?.role?.toLowerCase() || 'student';
+  const effectiveRole = orgContext ? orgRole : legacyRole;
 
   const getRoleInfo = () => {
-    const r = role?.toLowerCase();
-    if (r === "admin") return { label: "Administrator", variant: "error" };
-    if (r === "tutor") return { label: "Verified Tutor", variant: "primary" };
-    return { label: "Student Member", variant: "secondary" };
+    if (globalRole === 'super_admin') return { label: "Super Admin", variant: "error" };
+    if (orgContext) {
+      if (orgRole === 'org_admin') return { label: "Org Admin", variant: "primary" };
+      if (orgRole === 'teacher') return { label: "Org Teacher", variant: "primary" };
+      return { label: "Org Student", variant: "secondary" };
+    }
+    const r = legacyRole;
+    if (r === "admin") return { label: "Admin", variant: "error" };
+    if (r === "tutor") return { label: "Tutor", variant: "primary" };
+    return { label: "Student", variant: "secondary" };
   };
 
   const roleInfo = getRoleInfo();
 
-  const menuItems = [
-    { path: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    { path: "/dashboard/profile", label: "My Profile", icon: User },
-    { path: "/dashboard/requests", label: "Requests", icon: Inbox },
-    { path: "/dashboard/notifications", label: "Notifications", icon: Bell },
-  ];
+  const baseItems = getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyRole, hasPermission });
 
-  if (role?.toLowerCase() === "admin") {
-    menuItems.push({
-      path: "/dashboard/users",
-      label: "User Directory",
-      icon: Users,
-    });
-    menuItems.push({
-      path: "/dashboard/admin/withdrawals",
-      label: "Withdrawals",
-      icon: ArrowDownToLine,
-    });
-    menuItems.push({
-      path: "/dashboard/admin/settings",
-      label: "Settings",
-      icon: Settings,
-    });
-    menuItems.push({
-      path: "/dashboard/admin/audit-logs",
-      label: "Audit Logs",
-      icon: History,
-    });
-    menuItems.push({
-      path: "/dashboard/admin/payments",
-      label: "Payment Queue",
-      icon: DollarSign,
-    });
-    menuItems.push({
-      path: "/dashboard/admin/contacts",
-      label: "Contact Submissions",
-      icon: Mail,
-    });
-    menuItems.push({
-      path: "/dashboard/disputes",
-      label: "Disputes",
-      icon: Scale,
-    });
-  } else if (role?.toLowerCase() === "tutor") {
-    menuItems.push({
-      path: "/dashboard/wallet",
-      label: "Wallet",
-      icon: Wallet,
-    });
-    menuItems.push({
-      path: "/dashboard/withdraw",
-      label: "Withdraw",
-      icon: ArrowDownToLine,
-    });
-    menuItems.push({
-      path: "/dashboard/assignments",
-      label: "Assignments",
-      icon: BookOpen,
-    });
-    menuItems.push({
-      path: "/dashboard/templates",
-      label: "Templates",
-      icon: FileStack,
-    });
+  let menuItems = [];
+
+  if (globalRole === 'super_admin') {
+    menuItems = [
+      { group: "Platform" },
+      ...baseItems.filter(i => ["/dashboard/super-admin", "/dashboard/super-admin/organizations", "/dashboard/super-admin/analytics", "/dashboard/super-admin/subscriptions"].includes(i.path)),
+      { group: "Users & Content" },
+      ...baseItems.filter(i => ["/dashboard/super-admin/users", "/dashboard/super-admin/tutors", "/dashboard/super-admin/tuitions", "/dashboard/super-admin/verifications"].includes(i.path)),
+      { group: "Finance" },
+      ...baseItems.filter(i => ["/dashboard/admin/withdrawals", "/dashboard/admin/payments"].includes(i.path)),
+      { group: "Operations" },
+      ...baseItems.filter(i => ["/dashboard/admin/contacts", "/dashboard/super-admin/audit-logs", "/dashboard/disputes", "/dashboard/requests"].includes(i.path)),
+    ];
   } else {
-    menuItems.push({
-      path: "/dashboard/billing",
-      label: "Billing & Receipts",
-      icon: Banknote,
-    });
-    menuItems.push({
-      path: "/dashboard/relationships",
-      label: "My Relationships",
-      icon: Users,
-    });
-    menuItems.push({
-      path: "/dashboard/bookmarks",
-      label: "Bookmarks",
-      icon: Bookmark,
-    });
-    menuItems.push({
-      path: "/dashboard/saved-searches",
-      label: "Saved Searches",
-      icon: BookmarkCheck,
-    });
-    menuItems.push({
-      path: "/dashboard/session-confirmations",
-      label: "Confirm Sessions",
-      icon: ClipboardCheck,
-    });
-    menuItems.push({
-      path: "/dashboard/assignments",
-      label: "Assignments",
-      icon: BookOpen,
-    });
-    menuItems.push({
-      path: "/dashboard/disputes",
-      label: "My Disputes",
-      icon: Scale,
-    });
+    menuItems = baseItems;
   }
 
   const handleLogout = async () => {
@@ -155,95 +59,122 @@ const DashboardSidebar = ({ role }) => {
     }
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <aside className="w-72 h-full hidden lg:flex flex-col flex-shrink-0 relative border-r border-border bg-card rounded-r-xl">
-      <div className="flex flex-col h-full py-6 px-4">
-        {/* User Identity Section */}
-        <div className="mb-6 px-2 relative">
-          <div className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border transition-all hover:bg-muted">
-            <div className="relative">
-              <Avatar className="size-12 rounded-none border-2 border-white shadow-none">
-                <AvatarImage src={dbUser?.photoURL || user?.photoURL} alt={dbUser?.displayName || user?.displayName} gender={dbUser?.gender} className="object-cover rounded-none" />
-                <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-none animate-none" />
-              </Avatar>
-              {role?.toLowerCase() !== "student" &&
-                dbUser?._id !== "tutor_001" && (
-                  <div className="absolute -top-1 -right-1 size-4 bg-primary rounded-none border-2 border-white flex items-center justify-center">
-                    <ShieldCheck size={10} className="text-primary-foreground" />
-                  </div>
-                )}
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-label font-semibold text-foreground truncate uppercase tracking-wider">
-                {user?.displayName || "User"}
-              </span>
-              <span className="text-[9px] font-heading font-bold text-muted-foreground/60 uppercase tracking-widest mt-0.5">
-                {roleInfo.label}
-              </span>
-            </div>
+    <aside className="w-64 h-full hidden lg:flex flex-col flex-shrink-0 border-r border-border bg-card">
+      {/* Brand */}
+      <div className="px-5 pt-5 pb-4 border-b border-border flex-shrink-0">
+        <Link to="/dashboard" className="flex items-center gap-2.5">
+          <div className="size-8 bg-primary rounded-lg flex items-center justify-center">
+            <span className="text-sm font-heading font-bold text-white">E</span>
           </div>
-        </div>
-
-        {/* Navigation Section */}
-        <div className="flex-grow space-y-8">
-          <div>
-            <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-4">
-              {t("sidebar.main_menu", "Main Menu")}
-            </p>
-            <ul className="space-y-0.5">
-              {menuItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                  <li key={item.path}>
-                    <Link
-                      to={item.path}
-                      className={cn(
-                        "flex items-center justify-between px-4 py-2 rounded-lg transition-all duration-300 group border",
-                        isActive
-                          ? "bg-primary/10 text-primary border-primary/20"
-                          : "text-muted-foreground border-transparent hover:bg-muted hover:text-foreground",
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <item.icon
-                          size={16}
-                          className={cn(
-                            "transition-transform duration-300",
-                            isActive
-                              ? "scale-110"
-                              : "opacity-55 group-hover:opacity-100",
-                          )}
-                        />
-                        <span className="text-[10px] font-label font-semibold tracking-widest uppercase mt-0.5">
-                          {item.label}
-                        </span>
-                      </div>
-                      {isActive && (
-                        <ChevronRight size={12} className="opacity-60" />
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
-
-        {/* Bottom Actions */}
-        <div className="space-y-3 mt-auto pt-6 border-t border-border px-2">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 transition-all group"
-          >
-            <LogOut
-              size={16}
-              className="opacity-60 group-hover:opacity-100 group-hover:-translate-x-0.5 transition-transform"
-            />
-            <span className="text-[10px] font-label font-semibold tracking-widest uppercase mt-0.5">
-              {t("sidebar.sign_out", "Sign Out")}
+          <span className="text-sm font-heading font-bold text-foreground tracking-tight">eTuitionBD</span>
+          {globalRole === 'super_admin' && (
+            <span className="text-[8px] font-semibold uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded">
+              Admin
             </span>
-          </button>
+          )}
+        </Link>
+      </div>
+
+      {/* User Identity */}
+      <div className="px-4 py-4 flex-shrink-0">
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-background border border-border transition-all hover:bg-muted">
+          <div className="relative shrink-0">
+            <Avatar className="size-9 rounded-lg border border-border shadow-none">
+              <AvatarImage src={dbUser?.photoURL || user?.photoURL} alt={dbUser?.displayName || user?.displayName} gender={dbUser?.gender} className="object-cover rounded-lg" />
+              <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-lg animate-none" />
+            </Avatar>
+            {effectiveRole !== "student" && dbUser?._id !== "tutor_001" && (
+              <div className="absolute -top-1 -right-1 size-3.5 bg-primary rounded-full border-2 border-card flex items-center justify-center">
+                <ShieldCheck size={8} className="text-white" />
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col min-w-0">
+            <span className="text-[11px] font-semibold text-foreground truncate">
+              {user?.displayName || "User"}
+            </span>
+            <span className="text-[10px] text-muted-foreground mt-0.5">
+              {roleInfo.label}
+            </span>
+          </div>
         </div>
+
+        {myOrgs?.length > 0 && (
+          <div className="mt-3">
+            <select
+              className="w-full text-[11px] p-2 bg-background border border-border rounded-lg outline-none focus:ring-1 focus:ring-primary"
+              value={orgContext?.orgId || ''}
+              onChange={(e) => switchOrg(e.target.value)}
+            >
+              <option value="" disabled>Select Organization</option>
+              {myOrgs.map(org => (
+                <option key={org.orgId} value={org.orgId}>
+                  {org.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto px-3 pb-4 min-h-0">
+        <ul>
+          {menuItems.map((item, idx) => {
+            if (item.group) {
+              return (
+                <li key={`group-${item.group}-${idx}`} className="pt-5 pb-1.5 px-3 first:pt-0">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/50">
+                    {item.group}
+                  </p>
+                </li>
+              );
+            }
+            const Icon = item.icon;
+            const active = isActive(item.path);
+            return (
+              <li key={item.path || `item-${idx}`}>
+                <Link
+                  to={item.path}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 relative text-[12px] font-medium",
+                    active
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {active && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] bg-primary rounded-r" />
+                  )}
+                  {Icon && (
+                    <Icon
+                      size={16}
+                      className={cn(
+                        "transition-opacity duration-200 shrink-0",
+                        active ? "opacity-100" : "opacity-50 group-hover:opacity-100",
+                      )}
+                    />
+                  )}
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      {/* Sign Out */}
+      <div className="flex-shrink-0 px-3 py-3 border-t border-border">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-all group"
+        >
+          <LogOut size={16} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+          <span className="text-[12px] font-medium">Sign Out</span>
+        </button>
       </div>
     </aside>
   );

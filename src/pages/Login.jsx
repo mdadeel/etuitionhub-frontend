@@ -3,13 +3,13 @@ import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from '../contexts/AuthContext'
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { Mail, Lock, ArrowRight, Shield, User } from 'lucide-react'
+import { Mail, Lock, ArrowRight } from 'lucide-react'
 import Logo from '../components/shared/Logo'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 const Login = () => {
-    const { register, handleSubmit, setValue } = useForm()
+    const { register, handleSubmit } = useForm()
     const { login, googleLogin } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
@@ -52,33 +52,23 @@ const Login = () => {
         }
     }
 
-    const fillDemo = (role) => {
-        const creds = role === 'admin'
-            ? { email: 'demoadmin@etuition.com', password: 'password123' }
-            : { email: 'student1@email.com', password: 'password123' };
-
-        setValue('email', creds.email);
-        setValue('password', creds.password);
-        toast.success(`Demo ${role} credentials loaded`);
-    };
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden bg-pattern-academic">
             {/* Header Accent Line */}
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
             
             <div className="w-full max-w-md z-10">
-                <div className="bg-card border border-border rounded-xl shadow-editorial overflow-hidden p-6 sm:p-8">
+                <div className="bg-card border border-border rounded-xl shadow-premium overflow-hidden p-5 sm:p-6">
                     
                     {/* Header */}
-                    <div className="text-center mb-6">
-                        <div className="flex justify-center mb-4">
+                    <div className="text-center mb-4">
+                        <div className="flex justify-center mb-3">
                             <Logo textSize="text-xl" boxSize="size-12" iconSize="size-8" />
                         </div>
-                        <h1 className="text-2xl font-heading font-bold text-foreground">
+                        <h1 className="text-2xl font-heading font-bold text-foreground tracking-tight">
                             Welcome Back
                         </h1>
-                        <p className="text-xs text-muted-foreground font-body mt-1">
+                        <p className="text-sm text-muted-foreground font-body mt-1">
                             Sign in to manage your learning or tutoring sessions.
                         </p>
                     </div>
@@ -88,7 +78,7 @@ const Login = () => {
                         type="button"
                         variant="outline"
                         onClick={handleGoogleLogin}
-                        className="w-full h-11 rounded-xl border border-border hover:bg-muted text-foreground text-sm transition-smooth mb-4"
+                        className="w-full h-11 rounded-xl border border-border hover:bg-muted text-foreground text-sm transition-smooth mb-3"
                     >
                         <svg className="size-4 mr-2.5 inline-block" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -99,17 +89,17 @@ const Login = () => {
                         Continue with Google
                     </Button>
 
-                    <div className="relative mb-5 flex items-center justify-center">
+                    <div className="relative mb-4 flex items-center justify-center">
                         <span className="absolute inset-x-0 h-px bg-border"></span>
                         <span className="relative bg-card px-3 text-xs font-medium text-muted-foreground">
                             Or Email Login
                         </span>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="space-y-3">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+                        <div className="space-y-2.5">
                             <div className="space-y-1">
-                                <label className="text-sm font-medium text-muted-foreground block">
+                                <label className="text-xs font-medium text-muted-foreground block font-label uppercase tracking-wider">
                                     Email Address
                                 </label>
                                 <div className="relative">
@@ -125,12 +115,12 @@ const Login = () => {
 
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-sm font-medium text-muted-foreground block">
+                                    <label className="text-xs font-medium text-muted-foreground block font-label uppercase tracking-wider">
                                         Password
                                     </label>
                                     <Link 
                                         to="/password-reset" 
-                                        className="text-sm font-medium text-primary hover:underline"
+                                        className="text-xs font-medium text-primary hover:underline"
                                     >
                                         Forgot?
                                     </Link>
@@ -147,7 +137,7 @@ const Login = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between py-1">
+                        <div className="flex items-center justify-between">
                             <label className="flex items-center gap-2 cursor-pointer select-none">
                                 <input 
                                     type="checkbox" 
@@ -160,41 +150,14 @@ const Login = () => {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-smooth active:scale-[0.99] text-sm"
+                            className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-smooth active:scale-[0.98] text-sm shadow-sm"
                         >
                             {loading ? 'Authenticating...' : 'Sign In'}
                         </Button>
                     </form>
 
-                    {/* Demo/Sandbox Credentials & Register Link */}
-                    <div className="mt-6 pt-5 border-t border-border space-y-4">
-                        <div className="bg-muted/40 p-3 border border-border">
-                            <div className="flex items-center justify-between mb-2">
-                                <h4 className="text-sm font-medium text-foreground">
-                                    Test Accounts
-                                </h4>
-                                <span className="text-xs text-muted-foreground">click to load</span>
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => fillDemo('user')}
-                                    className="flex-1 h-9 rounded-xl border border-border hover:border-foreground bg-card text-foreground text-sm font-medium transition-smooth flex items-center justify-center gap-1"
-                                >
-                                    <User size={14} />
-                                    Student
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => navigate('/admin-login')}
-                                    className="flex-1 h-9 rounded-xl border border-border hover:border-foreground bg-card text-foreground text-sm font-medium transition-smooth flex items-center justify-center gap-1"
-                                >
-                                    <Shield size={14} />
-                                    Admin
-                                </button>
-                            </div>
-                        </div>
-
+                    {/* Register Link */}
+                    <div className="mt-4 pt-4 border-t border-border">
                         <p className="text-center text-xs font-body text-muted-foreground">
                             New to e-TuitionBD?{' '}
                             <Link

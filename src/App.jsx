@@ -13,7 +13,7 @@ import Navbar from "./components/shared/Navbar";
 import MobileBottomNav from "./components/shared/MobileBottomNav";
 import toast, { Toaster } from "react-hot-toast";
 import Footer from "./components/shared/Footer";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChatProvider } from "./contexts/ChatContext";
 import useSocketEvents from "./hooks/useSocketEvents";
@@ -22,7 +22,6 @@ import ToastViewport from "./components/shared/ToastViewport";
 import PrivateRoute from "./components/shared/PrivateRoute";
 import PublicRoute from "./components/shared/PublicRoute";
 import FloatingChat from "./components/shared/FloatingChat";
-import VercelAlert from "./components/shared/VercelAlert";
 import { cn } from "@/lib/utils";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
 import { DynamicIslandProvider } from "./contexts/DynamicIslandProvider";
@@ -59,6 +58,8 @@ const AiAssistantHistory = lazy(() => import("./pages/AiAssistant/AiAssistantHis
 const AiAssistantTutorTools = lazy(() => import("./pages/AiAssistant/AiAssistantTutorTools"));
 const SavedNotes = lazy(() => import("./pages/AiAssistant/SavedNotes"));
 const AiAssistantSettings = lazy(() => import("./pages/AiAssistant/AiAssistantSettings"));
+const OrganizationDirectory = lazy(() => import("./pages/OrganizationDirectory"));
+const OrganizationDetails = lazy(() => import("./pages/OrganizationDetails"));
 
 // Loading fallback component
 const PageLoader = () => <PageSkeleton />;
@@ -86,23 +87,28 @@ const ConditionalFooter = () => {
   const isTutors = pathname.startsWith("/tutors");
   const isTuitions = pathname.startsWith("/tuitions");
   const isAiAssistant = pathname.startsWith("/ai-assistant");
-  if (isDashboard || isSession || isTutors || isTuitions || isAiAssistant) return null;
+  const isAuth = pathname === "/login" || pathname === "/register";
+  if (isDashboard || isSession || isTutors || isTuitions || isAiAssistant || isAuth) return null;
   return <Footer />;
 };
 
 const ConditionalMobileBottomNav = () => {
   const { pathname } = useLocation();
+  const { dbUser } = useAuth();
   const isSession = pathname.startsWith("/session");
   const isCheckout = pathname.startsWith("/checkout");
   if (isSession || isCheckout) return null;
+  if (!dbUser) return null;
   return <MobileBottomNav />;
 };
 
 const ConditionalFloatingChat = () => {
   const { pathname } = useLocation();
+  const { dbUser } = useAuth();
   const isSession = pathname.startsWith("/session");
   const isAiAssistant = pathname.startsWith("/ai-assistant");
   if (isSession || isAiAssistant) return null;
+  if (!dbUser) return null;
   return <FloatingChat />;
 };
 
@@ -160,7 +166,6 @@ let App = () => {
             <ScrollToTop />
             <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
               <DynamicIsland />
-              <VercelAlert />
               <ConditionalNavbar />
               <MainContent>
                 <ErrorBoundary>
@@ -177,6 +182,8 @@ let App = () => {
                   <Route path="/post-tuition" element={<PostTuition />} />
                   <Route path="/become-tutor" element={<BecomeTutor />} />
                   <Route path="/blog" element={<Blog />} />
+                  <Route path="/organizations" element={<OrganizationDirectory />} />
+                  <Route path="/organizations/:slug" element={<OrganizationDetails />} />
                   <Route
                     path="/login"
                     element={
