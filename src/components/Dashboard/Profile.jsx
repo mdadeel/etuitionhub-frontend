@@ -144,7 +144,7 @@ const Profile = () => {
     };
 
     return (
-        <div className="animate-fade-in-up animate-in fade-in duration-700 max-w-5xl mx-auto pb-20 px-4 md:px-6 lg:px-0">
+        <div className="animate-fade-in-up animate-in fade-in duration-700 space-y-8">
             {isTutor ? (
                 <>
                     <div className="mb-10">
