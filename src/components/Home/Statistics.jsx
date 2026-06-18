@@ -124,11 +124,12 @@ const Statistics = () => {
           </h2>
         </div>
 
-        <div className="bg-background border border-border/10 rounded-xl divide-y md:divide-y-0 md:divide-x divide-border/10 md:flex md:flex-row overflow-hidden">
+        <div className="bg-border/10 border border-border/10 rounded-xl grid grid-cols-2 gap-px overflow-hidden md:flex md:flex-row md:gap-0 md:bg-background md:divide-x md:divide-border/10">
           {statData.map((stat, i) => {
             const Icon = icons[i];
+            const isLast = i === 4;
             return (
-              <div key={i} className="stat-item flex-1 flex flex-col p-5 md:p-6 gap-3">
+              <div key={i} className={`stat-item flex-1 flex flex-col p-5 md:p-6 gap-3 bg-background ${isLast ? 'col-span-2' : ''}`}>
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
                   <Icon color={stat.color} />
                   <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2">

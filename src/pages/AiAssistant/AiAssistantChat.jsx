@@ -14,7 +14,7 @@
 //   • Edited user messages discard the messages that followed
 //     them and re-send the user message (§5.13 Edit).
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -30,6 +30,7 @@ import ConfirmModal from '../../components/shared/ConfirmModal';
 export default function AiAssistantChat() {
     const { sessionId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const queryClient = useQueryClient();
     const { user } = useAuth();
     const subject = useAiStore((s) => s.subject);
@@ -48,54 +49,97 @@ export default function AiAssistantChat() {
     const [inlineQuizzes, setInlineQuizzes] = useState({}); // { [quizKey]: { quiz, results } }
     const [quizSubmitting, setQuizSubmitting] = useState({}); // { [quizKey]: boolean }
     const [streamingAssistantMessage, setStreamingAssistantMessage] = useState('');
+    const [localMessages, setLocalMessages] = useState([]);
     const abortControllerRef = useRef(null);
     const scrollRef = useRef(null);
+    const initialMessageProcessed = useRef(false);
 
     // Load session + messages.
     const { data, isLoading, refetch } = useQuery({
         queryKey: ['ai-session', sessionId],
         queryFn: () => aiService.getChatSession(sessionId),
-        enabled: !!sessionId,
+        enabled: !!sessionId && sessionId !== 'new',
         staleTime: 0,
     });
 
     // Sync store on mount.
     useEffect(() => {
-        if (sessionId) setActiveSessionId(sessionId);
+        if (sessionId && sessionId !== 'new') setActiveSessionId(sessionId);
         return () => setActiveSessionId(null);
     }, [sessionId, setActiveSessionId]);
+
+
+    // Reset localMessages and processed ref if sessionId changes
+    useEffect(() => {
+        setLocalMessages([]);
+        initialMessageProcessed.current = false;
+    }, [sessionId]);
 
     // Auto-scroll to bottom on new messages / thinking / inline quiz.
     useEffect(() => {
         const el = scrollRef.current;
         if (el) el.scrollTop = el.scrollHeight;
-    }, [data?.messages?.length, thinking, streamingAssistantMessage, inlineQuizzes]);
+    }, [data?.messages?.length, localMessages.length, thinking, streamingAssistantMessage, inlineQuizzes]);
 
-    const handleSend = async (msg, forceTemplate = undefined) => {
+    const handleSend = async (msg, forceTemplate = undefined, editMessageId = undefined, regenerateMessageId = undefined) => {
         const trimmed = (msg || '').trim();
         if (!trimmed || sending) return;
+
+        // Quiz-intent detection: "generate a quiz on X", "quiz me on X", etc.
+        const quizIntentMatch = trimmed.match(/(?:generate|create|make|give|start|begin)\s+(?:a\s+)?quiz\s+(?:on|about|for)\s+(.+)/i)
+            || trimmed.match(/quiz\s+(?:me\s+)?(?:on|about)\s+(.+)/i)
+            || trimmed.match(/(?:test|assess)\s+(?:me\s+)?(?:on|about)\s+(.+)/i);
+        if (quizIntentMatch) {
+            const topic = quizIntentMatch[1].trim().replace(/[.?!]+$/, '');
+            setSending(true);
+            setThinking(true);
+            setText('');
+            const tempKey = `temp-quiz-${Date.now()}`;
+            setInlineQuizzes((q) => ({ ...q, [tempKey]: { quiz: null, submitting: true, results: null, topic } }));
+            try {
+                const quiz = await aiService.generateQuiz({ subject, topic, numQuestions: 5, difficulty: 'mixed' });
+                setInlineQuizzes((q) => {
+                    const next = { ...q };
+                    delete next[tempKey];
+                    return { ...next, [quiz._id]: { quiz, submitting: false, results: null, topic } };
+                });
+            } catch (err) {
+                toast.error(err?.response?.data?.error || err?.message || 'Failed to generate quiz');
+                setInlineQuizzes((q) => { const next = { ...q }; delete next[tempKey]; return next; });
+            } finally {
+                setSending(false);
+                setThinking(false);
+            }
+            return;
+        }
 
         const attach = attachmentFile;
         if (attach) setAttachmentFile(null);
 
-        // Optimistic UI update
-        const tempId = `temp-${Date.now()}`;
-        const optimisticMessage = {
-            _id: tempId,
-            role: 'user',
-            content: trimmed,
-            createdAt: new Date().toISOString(),
-            status: 'sent',
-            ...(attach ? { attachment: { type: attach.type, name: attach.name, data: attach.data, size: attach.size } } : {}),
-        };
-
-        queryClient.setQueryData(['ai-session', sessionId], (old) => {
-            if (!old) return old;
-            return {
-                ...old,
-                messages: [...(old.messages || []), optimisticMessage]
+        if (!regenerateMessageId) {
+            // Optimistic UI update
+            const tempId = `temp-${Date.now()}`;
+            const optimisticMessage = {
+                _id: tempId,
+                role: 'user',
+                content: trimmed,
+                createdAt: new Date().toISOString(),
+                status: 'sent',
+                ...(attach ? { attachment: { type: attach.type, name: attach.name, data: attach.data, size: attach.size } } : {}),
             };
-        });
+
+            if (sessionId === 'new') {
+                setLocalMessages((prev) => [...prev, optimisticMessage]);
+            } else {
+                queryClient.setQueryData(['ai-session', sessionId], (old) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        messages: [...(old.messages || []), optimisticMessage]
+                    };
+                });
+            }
+        }
 
         setSending(true);
         setThinking(true);
@@ -107,23 +151,44 @@ export default function AiAssistantChat() {
 
         setStreamingAssistantMessage('');
         let localStreamData = '';
+        let newSessionId = null;
 
         try {
             await aiService.sendChatMessageStream({
-                sessionId,
+                sessionId: sessionId === 'new' ? undefined : sessionId,
                 userMessage: trimmed,
                 subject,
                 forceTemplate,
                 attachment: attach || undefined,
+                editMessageId,
+                regenerateMessageId,
                 signal: controller.signal,
                 onChunk: (chunk) => {
                     setThinking(false);
-                    localStreamData += chunk;
+                    try {
+                        const parsed = JSON.parse(chunk);
+                        if (parsed.type === 'done') {
+                            if (parsed.session?._id) {
+                                newSessionId = parsed.session._id;
+                            }
+                            return;
+                        }
+                        if (parsed.text) {
+                            localStreamData += parsed.text;
+                        }
+                    } catch {
+                        localStreamData += chunk;
+                    }
                     setStreamingAssistantMessage(localStreamData);
                 }
             });
             setStreamingAssistantMessage('');
-            await refetch();
+            
+            if (sessionId === 'new' && newSessionId) {
+                navigate(`/ai-assistant/chat/${newSessionId}`, { replace: true });
+            } else {
+                await refetch();
+            }
         } catch (err) {
             if (err?.name === 'AbortError') {
                 // User cancelled — no toast, no error.
@@ -131,21 +196,23 @@ export default function AiAssistantChat() {
                 const m = err?.response?.data?.error || err?.message || 'Failed to send';
                 toast.error(m);
                 // Append error message, keep user message
-                queryClient.setQueryData(['ai-session', sessionId], (old) => {
-                    if (!old) return old;
-                    return {
-                        ...old,
-                        messages: [
-                            ...old.messages,
-                            {
-                                _id: `err-${Date.now()}`,
-                                role: 'assistant',
-                                isError: true,
-                                originalInput: trimmed
-                            }
-                        ]
-                    };
-                });
+                const errorMessage = {
+                    _id: `err-${Date.now()}`,
+                    role: 'assistant',
+                    isError: true,
+                    originalInput: trimmed
+                };
+                if (sessionId === 'new') {
+                    setLocalMessages((prev) => [...prev, errorMessage]);
+                } else {
+                    queryClient.setQueryData(['ai-session', sessionId], (old) => {
+                        if (!old) return old;
+                        return {
+                            ...old,
+                            messages: [...old.messages, errorMessage]
+                        };
+                    });
+                }
             }
         } finally {
             setSending(false);
@@ -154,6 +221,17 @@ export default function AiAssistantChat() {
             abortControllerRef.current = null;
         }
     };
+
+    // Handle initial message passed via location state
+    useEffect(() => {
+        if (sessionId === 'new' && location.state?.initialMessage && !initialMessageProcessed.current) {
+            initialMessageProcessed.current = true;
+            const msg = location.state.initialMessage;
+            window.history.replaceState({}, document.title);
+            handleSend(msg);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sessionId, location.state]);
 
     // §5.13 — Edit user message. When called with just messageId, enter edit mode.
     // When called with newText, save and resend, discarding subsequent messages.
@@ -171,7 +249,7 @@ export default function AiAssistantChat() {
                 return { ...old, messages: old.messages.slice(0, idx) };
             });
         }
-        handleSend(newText);
+        handleSend(newText, undefined, messageId);
     };
 
     const handleCancelEdit = () => setEditingMessageId(null);
@@ -297,7 +375,11 @@ export default function AiAssistantChat() {
         for (let i = idx - 1; i >= 0; i--) {
             const m = data.messages[i];
             if (m.role === 'user') {
-                await handleSend(m.content);
+                queryClient.setQueryData(['ai-session', sessionId], (old) => {
+                    if (!old) return old;
+                    return { ...old, messages: old.messages.slice(0, i + 1) };
+                });
+                await handleSend(m.content, undefined, undefined, messageId);
                 return;
             }
         }
@@ -314,8 +396,9 @@ export default function AiAssistantChat() {
         document.querySelector('textarea')?.focus();
     };
 
-    const messages = data?.messages || [];
+    const messages = sessionId === 'new' ? localMessages : (data?.messages || []);
     const session = data?.session;
+    const isChatLoading = sessionId === 'new' ? false : isLoading;
 
     return (
         <AiAssistantLayout
@@ -345,7 +428,7 @@ export default function AiAssistantChat() {
             <div className="flex flex-col h-full w-full relative">
                 {/* Session header (title) */}
                 {session && (
-                    <div className="px-6 py-4 flex items-center justify-center gap-2 shrink-0 border-b border-border/10">
+                    <div className="px-6 py-3 flex items-center justify-center gap-2 shrink-0 border-b border-border/10">
                         <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                             {session.subject}
                         </span>
@@ -361,7 +444,7 @@ export default function AiAssistantChat() {
                     className="flex-1 overflow-y-auto px-4 sm:px-6 pt-6 w-full pb-36"
                 >
                     <div className="space-y-4">
-                        {isLoading ? (
+                        {isChatLoading ? (
                             <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
                                 Loading chat...
                             </div>

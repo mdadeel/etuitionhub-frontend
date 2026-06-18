@@ -14,12 +14,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { User as UserIcon, Send, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import AiResponseCard from './AiResponseCard';
+import AiResponseCard, { parseInlineCode } from './AiResponseCard';
 import TutorRecommendationCard from './TutorRecommendationCard';
 import TuitionRecommendationCard from './TuitionRecommendationCard';
 import ConversationalBubble from './ConversationalBubble';
 import MessageActions from './MessageActions';
 import PoruaLogo from './PoruaLogo';
+import IntentBadge from './IntentBadge';
 
 /**
  * Format a timestamp per §5.14. HH:mm if same day, otherwise "MMM D, HH:mm".
@@ -255,9 +256,12 @@ function AssistantMessage({
             </div>
         );
     }
-
     return (
         <div className="group space-y-2 max-w-full">
+            {/* Intent badge — shows what mode Porua AI used for this response */}
+            {structured?.templateType && structured.templateType !== 'conversational' && (
+                <IntentBadge templateType={structured.templateType} className="mb-1" />
+            )}
             <AiResponseCard
                 structured={structured}
                 provider={message.provider}
@@ -386,7 +390,7 @@ export default function ChatMessage({
                 </div>
                 <div className="flex-1 min-w-0 pt-1.5">
                     <p className="text-[15px] leading-[1.6] text-foreground/90 whitespace-pre-wrap break-words">
-                        {display}<span className="inline-block w-1.5 h-3.5 ml-1 bg-primary animate-pulse align-middle" />
+                        {parseInlineCode(display)}<span className="inline-block w-1.5 h-3.5 ml-1 bg-primary animate-pulse align-middle" />
                     </p>
                 </div>
             </div>

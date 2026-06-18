@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import AiAssistantLayout from '../../components/AiAssistant/AiAssistantLayout';
 import { Card } from '@/components/ui/card';
-import { useAiStore } from '../../store/aiStore';
+import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../services/api';
 
 const THEME_OPTIONS = [
@@ -27,7 +27,7 @@ const AI_MODEL_OPTIONS = [
 ];
 
 export default function AiAssistantSettings() {
-    const { theme, setTheme } = useAiStore();
+    const { theme, setTheme } = useTheme();
     const [language, setLanguage] = useState('en');
     const [aiModel, setAiModel] = useState('default');
     const [saved, setSaved] = useState(false);

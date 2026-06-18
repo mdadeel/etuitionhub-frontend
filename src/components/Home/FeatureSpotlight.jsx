@@ -276,41 +276,41 @@ const FeatureSpotlight = () => {
   const renderActivitySection = () => {
     const activities = role === 'tutor' ? tutorActivities : studentActivities;
     return (
-      <div className="grid md:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 mb-8">
         <div className="bg-background/40 border border-border/30 rounded-2xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-border/20 font-heading text-sm font-semibold flex items-center gap-2">
+          <div className="px-3 py-2.5 md:px-5 md:py-3.5 border-b border-border/20 font-heading text-xs md:text-sm font-semibold flex items-center gap-1.5 md:gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Recent Activity
           </div>
           {activities.map((a, i) => (
-            <div key={i} className={`flex items-center gap-3 px-5 py-3.5 ${i < activities.length - 1 ? 'border-b border-border/20' : ''}`}>
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${a.color.replace('text-', 'bg-').replace('emerald-500', 'emerald-500/10').replace('primary', 'primary/10').replace('accent', 'accent/10').replace('amber-500', 'amber-500/10')}`}>
-                <a.icon size={14} className={a.color} />
+            <div key={i} className={`flex items-center gap-2 md:gap-3 px-3 py-2.5 md:px-5 md:py-3.5 ${i < activities.length - 1 ? 'border-b border-border/20' : ''}`}>
+              <div className={`w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 ${a.color.replace('text-', 'bg-').replace('emerald-500', 'emerald-500/10').replace('primary', 'primary/10').replace('accent', 'accent/10').replace('amber-500', 'amber-500/10')}`}>
+                <a.icon className={`size-3.5 md:size-4 ${a.color}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-foreground truncate">{a.text}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">{a.time}</p>
+                <p className="text-xs md:text-sm text-foreground truncate">{a.text}</p>
+                <p className="text-[10px] md:text-[11px] text-muted-foreground mt-0.5">{a.time}</p>
               </div>
             </div>
           ))}
         </div>
 
         <div className="bg-background/40 border border-border/30 rounded-2xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-border/20 font-heading text-sm font-semibold flex items-center gap-2">
+          <div className="px-3 py-2.5 md:px-5 md:py-3.5 border-b border-border/20 font-heading text-xs md:text-sm font-semibold flex items-center gap-1.5 md:gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Live Updates
           </div>
-          <div className="flex items-center gap-3 px-5 py-3.5 border-b border-border/20">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10">
-              <Zap size={14} className="text-emerald-500" />
+          <div className="flex items-center gap-2 md:gap-3 px-3 py-2.5 md:px-5 md:py-3.5 border-b border-border/20">
+            <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10">
+              <Zap className="size-3.5 md:size-4 text-emerald-500" />
             </div>
-            <span className="text-sm text-foreground">New update</span>
+            <span className="text-xs md:text-sm text-foreground truncate">New update</span>
           </div>
-          <div className="flex items-center gap-3 px-5 py-3.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-primary/10">
-              <CheckCircle size={14} className="text-primary" />
+          <div className="flex items-center gap-2 md:gap-3 px-3 py-2.5 md:px-5 md:py-3.5">
+            <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 bg-primary/10">
+              <CheckCircle className="size-3.5 md:size-4 text-primary" />
             </div>
-            <span className="text-sm text-foreground">Session completed</span>
+            <span className="text-xs md:text-sm text-foreground truncate">Session completed</span>
           </div>
         </div>
       </div>

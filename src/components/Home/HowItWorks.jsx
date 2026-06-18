@@ -74,8 +74,8 @@ const HowItWorks = () => {
           </p>
         </div>
 
-        {/* Mobile step indicator: dots showing progression */}
-        <div className="flex md:hidden justify-center gap-2 mt-6">
+        {/* Mobile step indicator: dots showing progression - Hidden since all steps fit inline now */}
+        <div className="hidden justify-center gap-2 mt-6">
           {steps.map((_, idx) => (
             <div
               key={idx}
@@ -90,22 +90,22 @@ const HowItWorks = () => {
         <div ref={trackRef} className="relative">
           <div className="hidden md:block absolute top-16 left-[calc(16.66%+20px)] right-[calc(16.66%+20px)] h-px bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 pointer-events-none" />
 
-          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+          <div className="grid grid-cols-3 gap-3 md:gap-12">
             {steps.map((step, idx) => (
               <div key={idx} className="step-item relative flex flex-col items-center text-center">
-                <div className="relative mb-8">
-                  <span className="text-[100px] md:text-[160px] font-heading text-primary/[0.06] md:text-primary/[0.04] leading-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
+                <div className="relative mb-4 md:mb-8">
+                  <span className="text-[60px] md:text-[160px] font-heading text-primary/[0.06] md:text-primary/[0.04] leading-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
-                  <div className="size-16 md:size-20 rounded-full bg-primary/[0.06] border border-primary/10 flex items-center justify-center relative">
-                    <step.icon size={32} className="text-primary" />
+                  <div className="size-12 md:size-20 rounded-full bg-primary/[0.06] border border-primary/10 flex items-center justify-center relative">
+                    <step.icon className="size-5 md:size-8 text-primary" />
                   </div>
                 </div>
 
-                <h3 className="text-xl md:text-2xl font-heading text-foreground tracking-tight mb-3">
+                <h3 className="text-sm md:text-2xl font-heading text-foreground tracking-tight mb-1 md:mb-3">
                   {step.title}
                 </h3>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-xs">
+                <p className="text-[11px] md:text-base text-muted-foreground leading-normal md:leading-relaxed max-w-xs">
                   {step.description}
                 </p>
 

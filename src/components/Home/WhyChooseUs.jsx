@@ -160,42 +160,47 @@ const WhyChooseUs = () => {
         </p>
       </div>
 
-      {blocks.map((block, idx) => {
-        const Illus = illustrations[idx];
-        return (
-          <div key={idx} className={`feature-block relative ${idx % 2 === 0 ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-primary/[0.02] via-primary/[0.01] to-transparent`}>
-            <div className="max-w-6xl mx-auto px-6 py-12 md:py-14">
-              <div className={`flex flex-col ${idx % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 md:gap-10 items-center`}>
-                <div className="w-[160px] shrink-0">
-                  <div className="w-full aspect-[180/160]">
-                    <Illus />
-                  </div>
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 gap-6">
+        {blocks.map((block, idx) => {
+          const Illus = illustrations[idx];
+          const isLast = idx === 2;
+          return (
+            <div key={idx} className={`feature-block p-5 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm shadow-sm flex flex-col justify-between ${isLast ? 'col-span-2 md:col-span-1' : ''}`}>
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="w-[120px] h-[100px] shrink-0">
+                  <Illus />
                 </div>
-                <div className="flex-1 space-y-3">
-                  <h3 className="text-lg md:text-xl font-heading text-foreground tracking-tight">
+                <div className="space-y-1.5">
+                  <h3 className="text-base font-heading text-foreground tracking-tight">
                     {block.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {block.description}
                   </p>
-                  <div className="space-y-1.5 pt-1">
-                    {block.features.map((feature, fi) => (
-                      <div key={fi} className="flex items-center gap-3">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
-                          <circle cx="7" cy="7" r="6" stroke={`hsl(${idx % 2 === 1 ? '38 95% 52%' : '221 83% 53%'} / 0.3)`} strokeWidth="1.5" />
-                          <path d="M4.5 7 L6.5 9 L9.5 5" stroke={`hsl(${idx % 2 === 1 ? '38 95% 52%' : '221 83% 53%'})`}
-                            strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
-                        </svg>
-                        <span className="text-sm text-muted-foreground">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
+              <div className="space-y-2 pt-3 border-t border-border/10 mt-4">
+                {block.features.map((feature, fi) => {
+                  const parts = feature.split(' — ');
+                  return (
+                    <div key={fi} className="flex items-start gap-2 text-left">
+                      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" className="shrink-0 mt-0.5">
+                        <circle cx="7" cy="7" r="6" stroke={`hsl(${idx % 2 === 1 ? '38 95% 52%' : '221 83% 53%'} / 0.3)`} strokeWidth="1.5" />
+                        <path d="M4.5 7 L6.5 9 L9.5 5" stroke={`hsl(${idx % 2 === 1 ? '38 95% 52%' : '221 83% 53%'})`}
+                          strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+                      </svg>
+                      <div className="text-[11px] text-muted-foreground leading-normal">
+                        <span className="font-semibold text-foreground">{parts[0]}</span>
+                        {parts[1] && <span className="block text-[10px] opacity-75">{parts[1]}</span>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
       <div ref={statsRef} className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-border/30">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">

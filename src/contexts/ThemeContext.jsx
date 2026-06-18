@@ -6,39 +6,51 @@ export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
         const stored = localStorage.getItem('theme');
         if (stored) return stored;
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        return 'system';
     });
 
     useEffect(() => {
         const root = window.document.documentElement;
-        if (theme === 'dark') {
-            root.classList.add('dark');
-            root.classList.remove('light');
-        } else {
-            root.classList.remove('dark');
-            root.classList.add('light');
-        }
-        localStorage.setItem('theme', theme);
-    }, [theme]);
-
-    // Listen for system changes
-    useEffect(() => {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const handleChange = (e) => {
-            if (!localStorage.getItem('theme')) {
-                setTheme(e.matches ? 'dark' : 'light');
+        
+        const applyTheme = (themeValue) => {
+            const resolved = themeValue === 'system'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : themeValue;
+            
+            if (resolved === 'dark') {
+                root.classList.add('dark');
+                root.classList.remove('light');
+            } else {
+                root.classList.remove('dark');
+                root.classList.add('light');
             }
         };
-        mediaQuery.addEventListener('change', handleChange);
-        return () => mediaQuery.removeEventListener('change', handleChange);
-    }, []);
+
+        applyTheme(theme);
+        localStorage.setItem('theme', theme);
+
+        if (theme === 'system') {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            const handleChange = () => {
+                applyTheme('system');
+            };
+            mediaQuery.addEventListener('change', handleChange);
+            return () => mediaQuery.removeEventListener('change', handleChange);
+        }
+        return undefined;
+    }, [theme]);
 
     const toggleTheme = () => {
-        setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+        setTheme(prev => {
+            if (prev === 'system') {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark';
+            }
+            return prev === 'light' ? 'dark' : 'light';
+        });
     };
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
             {children}
         </ThemeContext.Provider>
     );

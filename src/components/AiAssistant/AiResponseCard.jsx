@@ -3,7 +3,7 @@ import {
     BookOpen, Target, Brain, Globe, AlertTriangle, ClipboardList,
     Sigma, ListChecks, FileText, CheckCircle2, Sparkles, ChevronDown,
     Calculator, Lightbulb, Code2, Languages, FileEdit, Clock, Zap,
-    XCircle, Compass, Lightbulb as Idea,
+    XCircle, Compass, Lightbulb as Idea, GraduationCap, BookMarked, Flame,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ConversationalBubble from './ConversationalBubble';
@@ -28,6 +28,26 @@ class RendererBoundary extends Component {
     }
 }
 
+export function parseInlineCode(text) {
+    if (!text || typeof text !== 'string') return text;
+    if (!text.includes('`')) return text;
+
+    const parts = text.split(/`([^`]+)`/g);
+    return parts.map((part, index) => {
+        if (index % 2 === 1) {
+            return (
+                <code
+                    key={index}
+                    className="px-1.5 py-0.5 mx-0.5 rounded bg-muted text-primary border border-border/40 font-mono text-[13px]"
+                >
+                    {part}
+                </code>
+            );
+        }
+        return part;
+    });
+}
+
 // Flat V2 Section Header
 function SectionTitle({ icon: Icon, title }) {
     return (
@@ -38,12 +58,134 @@ function SectionTitle({ icon: Icon, title }) {
     );
 }
 
+// ─── New student-friendly components ────────────────────────────────────────
+
+// Difficulty badge shown in the card header
+function DifficultyBadge({ level }) {
+    if (!level) return null;
+    const map = {
+        beginner:     { label: 'Beginner',     color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
+        intermediate: { label: 'Intermediate', color: 'bg-amber-500/10   text-amber-600   dark:text-amber-400   border-amber-500/20'   },
+        advanced:     { label: 'Advanced',     color: 'bg-rose-500/10    text-rose-600    dark:text-rose-400    border-rose-500/20'    },
+    };
+    const m = map[level] || map.beginner;
+    return (
+        <span className={cn(
+            'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em]',
+            m.color,
+        )}>
+            <Flame size={9} strokeWidth={2.5} />
+            {m.label}
+        </span>
+    );
+}
+
+// Analogy-first story card — rendered BEFORE the technical explanation
+function AnalogyCard({ text }) {
+    if (!text) return null;
+    return (
+        <div className="relative mb-5 rounded-xl border border-amber-200/50 dark:border-amber-500/20 bg-amber-50/60 dark:bg-amber-950/20 p-4 pl-12">
+            {/* Speech bubble icon */}
+            <div className="absolute left-3 top-3.5 size-7 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-base">
+                💬
+            </div>
+            <p className="text-[15px] leading-[1.65] text-foreground/90 italic">
+                {parseInlineCode(text)}
+            </p>
+            <span className="mt-1.5 block text-[10px] font-semibold uppercase tracking-[0.1em] text-amber-600/60 dark:text-amber-400/50">
+                Analogy · Think of it this way
+            </span>
+        </div>
+    );
+}
+
+// Bilingual key terms table — English | বাংলা | Definition
+function BilingualKeyTerms({ terms }) {
+    if (!Array.isArray(terms) || terms.length === 0) return null;
+    return (
+        <div className="mt-5">
+            <div className="flex items-center gap-2 mb-2">
+                <Languages size={15} className="text-primary/70" />
+                <span className="text-[13px] font-semibold text-foreground/70 uppercase tracking-wider">Key Terms</span>
+            </div>
+            <div className="overflow-hidden rounded-lg border border-border/60">
+                <table className="w-full text-[13px]">
+                    <thead>
+                        <tr className="bg-muted/40 border-b border-border/40">
+                            <th className="text-left px-3 py-2 font-semibold text-foreground/60 w-1/4">English</th>
+                            <th className="text-left px-3 py-2 font-semibold text-foreground/60 w-1/4">বাংলা</th>
+                            <th className="text-left px-3 py-2 font-semibold text-foreground/60">Definition</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {terms.map((t, i) => (
+                            <tr
+                                key={i}
+                                className={cn(
+                                    'border-b border-border/30 last:border-0',
+                                    i % 2 === 0 ? 'bg-transparent' : 'bg-muted/20',
+                                )}
+                            >
+                                <td className="px-3 py-2 font-medium text-foreground">{t.term}</td>
+                                <td className="px-3 py-2 font-medium text-primary">{t.bangla}</td>
+                                <td className="px-3 py-2 text-foreground/70 leading-relaxed">{parseInlineCode(t.definition)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
+
+// Memory hook — mnemonic or trick
+function MemoryHook({ text }) {
+    if (!text) return null;
+    return (
+        <div className="mt-4 rounded-xl border border-sky-400/20 dark:border-sky-500/20 bg-sky-50/60 dark:bg-sky-950/20 p-3.5 flex items-start gap-3">
+            <div className="shrink-0 size-7 rounded-lg bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center text-sm">
+                🧠
+            </div>
+            <div>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.1em] text-sky-600 dark:text-sky-400 mb-1">
+                    Memory Hook
+                </span>
+                <p className="text-[14px] leading-relaxed text-foreground/90 font-medium">
+                    {parseInlineCode(text)}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// Exam spotlight — board-exam specific tip
+function ExamSpotlight({ text }) {
+    if (!text) return null;
+    return (
+        <div className="mt-4 rounded-xl border border-emerald-400/25 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-950/20 p-3.5 flex items-start gap-3">
+            <div className="shrink-0 size-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
+                <GraduationCap size={14} className="text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-600 dark:text-emerald-400 mb-1">
+                    📝 Exam Spotlight · SSC / HSC / Admission
+                </span>
+                <p className="text-[14px] leading-relaxed text-foreground/90">
+                    {parseInlineCode(text)}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// ─── Existing shared components ──────────────────────────────────────────────
+
 // V2 Educational Highlight Block (compact, minimal border)
 function Highlight({ type, title, children }) {
     const config = {
-        key: { icon: Idea, color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', defaultTitle: 'Key Point' },
+        key:     { icon: Idea,          color: 'text-blue-500',  bg: 'bg-blue-500/10',  border: 'border-blue-500/20',  defaultTitle: 'Key Point' },
         mistake: { icon: AlertTriangle, color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20', defaultTitle: 'Common Mistake' },
-        tip: { icon: Sparkles, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', defaultTitle: 'Exam Tip' },
+        tip:     { icon: Sparkles,      color: 'text-primary',   bg: 'bg-primary/10',   border: 'border-primary/20',   defaultTitle: 'Exam Tip' },
     };
     const c = config[type] || config.key;
     const Icon = c.icon;
@@ -70,7 +212,7 @@ function BulletList({ items }) {
             {items.map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-[15px] leading-[1.6] text-foreground/90">
                     <span className="mt-2 size-1.5 rounded-full bg-primary/60 shrink-0" />
-                    <span className="flex-1">{item}</span>
+                    <span className="flex-1">{parseInlineCode(item)}</span>
                 </li>
             ))}
         </ul>
@@ -107,7 +249,7 @@ function DirectAnswer({ text }) {
     if (!text) return null;
     return (
         <p className="text-[15px] sm:text-[16px] text-foreground leading-[1.6] mb-4">
-            {text}
+            {parseInlineCode(text)}
         </p>
     );
 }
@@ -136,24 +278,40 @@ function FollowUpChips({ suggestions, onClick }) {
 function ConceptTemplate({ data }) {
     return (
         <div>
+            {/* 1. Analogy-first — story BEFORE the technical explanation */}
+            <AnalogyCard text={data.analogyFirst} />
+
+            {/* 2. Technical explanation */}
             <DirectAnswer text={data.easyExplanation} />
-            
+
+            {/* 3. Key concepts */}
             {data.keyConcepts?.length > 0 && (
                 <div>
                     <SectionTitle icon={Brain} title="Key Concepts" />
                     <BulletList items={data.keyConcepts} />
                 </div>
             )}
-            
-            {data.realLifeExample && (
-                <Highlight type="key" title="Real-Life Example">
-                    {data.realLifeExample}
-                </Highlight>
-            )}
-            
+
+            {/* 4. Bilingual key terms */}
+            <BilingualKeyTerms terms={data.bilingualKeyTerms} />
+
+            {/* 5. Memory hook */}
+            <MemoryHook text={data.memoryHook} />
+
+            {/* 6. Common mistakes */}
             {data.commonMistakes?.length > 0 && (
                 <Highlight type="mistake" title="Common Mistakes">
                     <BulletList items={data.commonMistakes} />
+                </Highlight>
+            )}
+
+            {/* 7. Exam spotlight */}
+            <ExamSpotlight text={data.examSpotlight} />
+
+            {/* Legacy: realLifeExample from old schema */}
+            {!data.analogyFirst && data.realLifeExample && (
+                <Highlight type="key" title="Real-Life Example">
+                    {data.realLifeExample}
                 </Highlight>
             )}
         </div>
@@ -165,44 +323,50 @@ function MathTemplate({ data }) {
         <div>
             {data.problem && (
                 <div className="bg-muted/30 border-l-4 border-primary/40 pl-4 py-2 mb-4 text-[15px] font-mono text-foreground/80">
-                    {data.problem}
+                    {parseInlineCode(data.problem)}
                 </div>
             )}
-            
+
             {data.given && (
                 <div className="mb-4 text-[15px] leading-[1.6]">
-                    <strong>Given:</strong> {data.given}
+                    <strong>Given:</strong> {parseInlineCode(data.given)}
                 </div>
             )}
-            
+
             {data.stepByStep?.length > 0 && (
                 <div>
                     <SectionTitle icon={Calculator} title="Step-by-Step Solution" />
                     <ol className="space-y-2 list-decimal list-inside marker:text-primary marker:font-semibold text-[15px] leading-[1.6] text-foreground/90">
                         {data.stepByStep.map((step, i) => (
-                            <li key={i} className="pl-1">{step}</li>
+                            <li key={i} className="pl-1">{parseInlineCode(step)}</li>
                         ))}
                     </ol>
                 </div>
             )}
-            
+
             {data.finalAnswer && (
                 <div className="mt-6 mb-4">
                     <span className="inline-block bg-primary/10 text-primary border border-primary/20 rounded-md px-4 py-2 font-mono font-semibold text-base">
-                        Answer: {data.finalAnswer}
+                        Answer: {parseInlineCode(data.finalAnswer)}
                     </span>
                 </div>
             )}
-            
+
             {data.whyThisWorks && (
                 <Highlight type="key" title="Why This Works">
-                    {data.whyThisWorks}
+                    {parseInlineCode(data.whyThisWorks)}
                 </Highlight>
             )}
-            
+
+            {/* Memory hook for formulas/tricks */}
+            <MemoryHook text={data.memoryHook} />
+
+            {/* Exam tip */}
+            <ExamSpotlight text={data.examSpotlight} />
+
             {data.similarPractice && (
-                <Highlight type="tip" title="Practice Idea">
-                    {data.similarPractice}
+                <Highlight type="tip" title="Practice Problem">
+                    {parseInlineCode(data.similarPractice)}
                 </Highlight>
             )}
         </div>
@@ -235,8 +399,8 @@ function ProgrammingTemplate({ data }) {
                     <div className="space-y-2">
                         {data.testCases.map((tc, i) => (
                             <div key={i} className="bg-muted/20 border border-border/50 rounded-md p-3 text-[14px] font-mono text-foreground/80">
-                                <div className="mb-1"><span className="text-muted-foreground">Input:</span> {tc.input}</div>
-                                <div><span className="text-muted-foreground">Output:</span> {tc.expectedOutput}</div>
+                                <div className="mb-1"><span className="text-muted-foreground">Input:</span> {parseInlineCode(tc.input)}</div>
+                                <div><span className="text-muted-foreground">Output:</span> {parseInlineCode(tc.expectedOutput)}</div>
                             </div>
                         ))}
                     </div>
@@ -313,7 +477,7 @@ function GeneralTemplate({ data }) {
             
             {data.didYouKnow && (
                 <Highlight type="tip" title="Did you know?">
-                    {data.didYouKnow}
+                    {parseInlineCode(data.didYouKnow)}
                 </Highlight>
             )}
         </div>
@@ -345,7 +509,7 @@ function IeltsTemplate({ data }) {
                 <div>
                     <SectionTitle icon={FileEdit} title="Improved Version" />
                     <div className="bg-muted/20 border-l-4 border-primary/40 pl-4 py-3 text-[15px] leading-[1.6] whitespace-pre-wrap italic">
-                        {data.improvedVersion}
+                        {parseInlineCode(data.improvedVersion)}
                     </div>
                 </div>
             )}
@@ -384,7 +548,7 @@ function SrijonshilTemplate({ data }) {
         <div>
             {data.stimulus && (
                 <div className="bg-muted/10 border-l-4 border-primary/40 pl-4 py-3 mb-6 text-[15px] italic text-foreground/80 leading-[1.6] rounded-r-lg">
-                    {data.stimulus}
+                    {parseInlineCode(data.stimulus)}
                 </div>
             )}
 
@@ -399,7 +563,7 @@ function SrijonshilTemplate({ data }) {
                             <span className="ml-auto text-[13px] font-medium text-muted-foreground">{part.marks} mark{part.marks > '1' ? 's' : ''}</span>
                         </div>
                         <p className="text-[15px] leading-[1.6] whitespace-pre-wrap pl-8 text-foreground/90">
-                            {data[part.key]}
+                            {parseInlineCode(data[part.key])}
                         </p>
                     </div>
                 ))}
@@ -424,18 +588,14 @@ const TEMPLATE_RENDERERS = {
 };
 
 function getMetadataLabel(type, topic) {
-    // Generate a simple metadata string, e.g., "Programming • Beginner • 2 min read"
-    let cat = "General";
-    if (type === 'concept') cat = "Education";
-    if (type === 'math') cat = "Mathematics";
-    if (type === 'programming') cat = "Programming";
-    if (type === 'ielts') cat = "IELTS";
-    if (type === 'srijonshil') cat = "Srijonshil";
-    
-    // Very naive read time estimation
-    const words = JSON.stringify(topic || "").split(/\s+/).length * 10; // rough proxy
+    let cat = 'General';
+    if (type === 'concept')     cat = 'Education';
+    if (type === 'math')        cat = 'Mathematics';
+    if (type === 'programming') cat = 'Programming';
+    if (type === 'ielts')       cat = 'IELTS';
+    if (type === 'srijonshil')  cat = 'Srijonshil';
+    const words = JSON.stringify(topic || '').split(/\s+/).length * 10;
     const time = Math.max(1, Math.ceil(words / 200));
-    
     return `${cat} • ${time} min read`;
 }
 
@@ -470,14 +630,21 @@ export default function AiResponseCard({
 
     return (
         <article className={cn('animate-fade-in-up w-full max-w-[850px] bg-card/60 border border-border/60 shadow-sm rounded-2xl p-5', className)}>
-            {/* Header: Small metadata row */}
-            <div className="flex items-center gap-3 text-[13px] text-muted-foreground mb-3 font-medium">
+            {/* Header: metadata row with difficulty badge */}
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-3 font-medium flex-wrap">
                 <div className="flex items-center gap-2">
                     <span className="flex items-center justify-center size-5 rounded-md bg-primary/10 text-primary">
                         <Sparkles size={12} />
                     </span>
                     <span>{metadataStr}</span>
                 </div>
+                {/* Difficulty badge — from new schema field */}
+                {structured.difficultyLevel && (
+                    <>
+                        <span className="text-border/60">·</span>
+                        <DifficultyBadge level={structured.difficultyLevel} />
+                    </>
+                )}
             </div>
 
             {/* Main Title: Large clear title */}

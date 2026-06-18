@@ -14,13 +14,15 @@ export const aiService = {
      * `EventSource` or the backend hasn't enabled the streaming
      * endpoint in this environment).
      */
-    sendChatMessage: async ({ userMessage, subject, forceTemplate, sessionId, attachment }) => {
+    sendChatMessage: async ({ userMessage, subject, forceTemplate, sessionId, attachment, editMessageId, regenerateMessageId }) => {
         const response = await api.post('/api/ai/chat', {
             userMessage,
             subject,
             forceTemplate,
             sessionId,
             attachment,
+            editMessageId,
+            regenerateMessageId,
         });
         return response.data;
     },
@@ -39,7 +41,7 @@ export const aiService = {
      * @param {AbortSignal} opts.signal   for cancellation via the Stop button
      * @param {(chunk: string) => void} opts.onChunk  optional progress callback
      */
-    sendChatMessageStream: async ({ userMessage, subject, sessionId, forceTemplate, attachment, signal, onChunk }) => {
+    sendChatMessageStream: async ({ userMessage, subject, sessionId, forceTemplate, attachment, editMessageId, regenerateMessageId, signal, onChunk }) => {
         if (typeof window === 'undefined' || typeof window.fetch !== 'function') {
             throw new Error('Streaming is not supported in this environment.');
         }
@@ -61,7 +63,7 @@ export const aiService = {
                 'Content-Type': 'application/json',
                 ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
             },
-            body: JSON.stringify({ userMessage, subject, sessionId, forceTemplate, attachment }),
+            body: JSON.stringify({ userMessage, subject, sessionId, forceTemplate, attachment, editMessageId, regenerateMessageId }),
             signal,
         });
         if (!res.ok || !res.body) {

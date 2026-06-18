@@ -37,7 +37,7 @@ const SPEECH_SUPPORTED =
 
 const SUBJECT_LABELS = {
     ssc: 'SSC', hsc: 'HSC', admission: 'Admission',
-    ielts: 'IELTS', english: 'English', programming: 'Programming', general: 'General',
+    math: 'Math', ielts: 'IELTS', english: 'English', programming: 'Programming', general: 'General',
 };
 
 function subjectLabel(s) {
@@ -185,11 +185,11 @@ function pickRecognitionLang() {
     return (
         <div
             className={cn(
-                'group relative w-full rounded-2xl border border-border/60 bg-background/80 backdrop-blur-xl transition-all duration-300',
+                'group relative w-full rounded-2xl border bg-background/80 backdrop-blur-xl transition-all duration-200',
                 focused
-                    ? 'border-primary/50 shadow-lg shadow-primary/10 ring-2 ring-primary/10'
-                    : 'border-border/80 shadow-sm',
-                overLimit && 'border-destructive/60 ring-2 ring-destructive/10',
+                    ? 'border-primary/40 shadow-sm'
+                    : 'border-border/60 shadow-sm',
+                overLimit && 'border-destructive/50',
                 className,
             )}
         >
@@ -222,7 +222,7 @@ function pickRecognitionLang() {
                 disabled={disabled}
                 className={cn(
                     'w-full resize-none bg-transparent px-4 pt-3.5 pb-2 text-sm leading-[22px] text-foreground',
-                    'placeholder:text-muted-foreground/60 focus:outline-none',
+                    'placeholder:text-muted-foreground/60 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
                     'disabled:opacity-60 disabled:cursor-not-allowed',
                 )}
                 style={{ minHeight: 44, maxHeight: 152 }}

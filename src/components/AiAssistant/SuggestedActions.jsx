@@ -8,14 +8,20 @@
 // the actual onAction (which usually means "fill the input and send").
 import {
     Lightbulb, ClipboardList, Calculator, FileEdit, Search,
+    Map, BookMarked, Code2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAiStore } from '../../store/aiStore';
 
+// Each action maps to one of the 8 intents from the Porua AI spec.
+// intent:       the spec's intent label (used for analytics + IntentBadge)
+// forceTemplate: tells the backend which response schema to use
 const ACTIONS = [
     {
         id: 'explain',
         label: 'Explain a topic',
+        intent: 'Explain Topic',
+        mode: 'Interactive lesson',
         icon: Lightbulb,
         prompt: 'Explain ',
         forceTemplate: 'concept',
@@ -24,6 +30,8 @@ const ACTIONS = [
     {
         id: 'quiz',
         label: 'Generate a quiz',
+        intent: 'Generate Quiz',
+        mode: 'Quiz Builder',
         icon: ClipboardList,
         prompt: 'Generate a quiz on ',
         forceTemplate: 'general',
@@ -31,7 +39,9 @@ const ACTIONS = [
     },
     {
         id: 'math',
-        label: 'Solve a math problem',
+        label: 'Solve a problem',
+        intent: 'Solve Problem',
+        mode: 'Step-by-step solution',
         icon: Calculator,
         prompt: 'Solve: ',
         forceTemplate: 'math',
@@ -40,18 +50,52 @@ const ACTIONS = [
     {
         id: 'ielts',
         label: 'Review my IELTS',
+        intent: 'Review IELTS',
+        mode: 'Band score + corrections',
         icon: FileEdit,
-        prompt: 'Review this IELTS response: ',
+        prompt: 'Review this IELTS Writing Task 2 response: ',
         forceTemplate: 'ielts',
         color: 'from-amber-500/20 to-amber-500/0',
     },
     {
         id: 'tutor',
         label: 'Find a tutor',
+        intent: 'Find Tutor',
+        mode: 'Tutor recommendations',
         icon: Search,
         prompt: 'Help me find a tutor for ',
         forceTemplate: 'general',
         color: 'from-pink-500/20 to-pink-500/0',
+    },
+    {
+        id: 'study-plan',
+        label: 'Study plan',
+        intent: 'Study Plan',
+        mode: 'Roadmap generator',
+        icon: Map,
+        prompt: 'Create a study plan for ',
+        forceTemplate: 'general',
+        color: 'from-cyan-500/20 to-cyan-500/0',
+    },
+    {
+        id: 'homework',
+        label: 'Homework help',
+        intent: 'Homework Help',
+        mode: 'Guided solution',
+        icon: BookMarked,
+        prompt: 'Help me with this homework problem: ',
+        forceTemplate: 'concept',
+        color: 'from-orange-500/20 to-orange-500/0',
+    },
+    {
+        id: 'programming',
+        label: 'Programming',
+        intent: 'Academic Question',
+        mode: 'Code + explanation',
+        icon: Code2,
+        prompt: 'Write a program that ',
+        forceTemplate: 'programming',
+        color: 'from-indigo-500/20 to-indigo-500/0',
     },
 ];
 

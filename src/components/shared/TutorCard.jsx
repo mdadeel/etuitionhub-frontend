@@ -87,105 +87,111 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
       role={isBannerPreview ? undefined : "button"}
       tabIndex={isBannerPreview ? -1 : 0}
     >
-      {/* Corner Bookmark (Absolute Overlay) */}
+      {/* Corner Bookmark (Absolute Overlay) - Updated for 44px minimum touch target */}
       <button
         type="button"
         onClick={handleBookmark}
         disabled={saving}
-        className="absolute top-4 right-4 z-10 size-8 flex items-center justify-center rounded-full bg-slate-100/80 hover:bg-primary/10 hover:text-primary dark:bg-slate-900/80 dark:hover:bg-primary/20 text-muted-foreground transition-all duration-200"
+        className="absolute top-2 right-2 z-10 size-11 flex items-center justify-center rounded-full text-muted-foreground transition-all duration-200"
         title={isSaved ? "Unsave" : "Save"}
+        aria-label={isSaved ? "Unsave tutor" : "Save tutor"}
       >
-        <Bookmark
-          size={16}
-          className={cn(
-            isSaved ? "fill-primary text-primary" : "transition-colors"
-          )}
-        />
+        <div className={cn("size-8 flex items-center justify-center rounded-full bg-slate-100/80 hover:bg-primary/10 hover:text-primary dark:bg-slate-900/80 dark:hover:bg-primary/20 transition-colors", isSaved ? "text-primary" : "")}>
+          <Bookmark
+            size={16}
+            className={cn(isSaved ? "fill-primary" : "")}
+          />
+        </div>
       </button>
 
-      {/* MOBILE COMPACT SPLIT LAYOUT (sm:hidden) */}
-      <div className="p-4 flex-grow flex flex-col justify-between sm:hidden">
+      {/* MOBILE COMPACT LAYOUT (sm:hidden) */}
+      <div className="p-3 flex-grow flex flex-col justify-between sm:hidden">
         <div>
           <div className="flex gap-3">
-            {/* Left Column: Media & Ratings */}
-            <div className="flex flex-col items-center gap-1.5 flex-shrink-0 w-[68px]">
-              <div className="relative shrink-0">
+            {/* Left Column: Compact Avatar & Rating */}
+            <div className="flex flex-col items-center gap-1 shrink-0 w-12">
+              <div className="relative">
                 <Avatar
                   src={photoURL}
                   alt={displayName}
                   size="lg"
                   gender={tutor.gender}
-                  className="ring-2 ring-border/60 group-hover:ring-primary/40 transition-all rounded-xl h-14 w-14"
+                  className="ring-2 ring-border/60 group-hover:ring-primary/40 transition-all rounded-xl size-12"
                 />
                 {isVerified && (
-                  <span className="absolute -bottom-0.5 -right-0.5 size-4 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card" title="Verified Profile">
+                  <span className="absolute -bottom-1 -right-1 size-4 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-card" title="Verified Profile">
                     <Check className="size-2.5 stroke-[3]" />
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-0.5 text-[10px] font-bold text-amber-500">
+              <div className="flex items-center gap-0.5 text-[10px] font-bold text-amber-500 mt-0.5">
                 <Star size={10} className="fill-amber-500 text-amber-500" />
-                {rating.toFixed(1)}
+                <span>{rating.toFixed(1)}</span>
               </div>
             </div>
 
             {/* Right Column: Info details */}
-            <div className="flex-grow min-w-0 space-y-1">
-              <h3 className="font-bold text-sm text-foreground tracking-tight truncate leading-tight group-hover:text-primary transition-colors">
+            <div className="flex-grow min-w-0 pr-6 space-y-1">
+              {/* Header: Name */}
+              <h3 className="font-bold text-[13px] text-foreground tracking-tight truncate leading-tight group-hover:text-primary transition-colors">
                 <Highlight text={displayName} query={searchQuery} />
               </h3>
-              <p className="text-[10px] text-muted-foreground truncate" title={qualification}>
+
+              {/* Education */}
+              <p className="text-[10px] text-muted-foreground truncate leading-tight" title={qualification}>
                 {qualification || "Experienced Tutor"}
               </p>
 
-              <div className="flex flex-wrap gap-1 pt-0.5">
+              {/* Subject Chips (Compact) */}
+              <div className="flex flex-nowrap items-center gap-1 pt-0.5 overflow-hidden">
                 {subjects.slice(0, 2).map((sub) => (
                   <span
                     key={`sub-mob-${sub}`}
-                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-muted/50 text-muted-foreground border border-border/40 truncate max-w-[72px]"
+                    className="text-[9px] font-semibold px-1.5 py-[2px] rounded bg-muted/60 text-muted-foreground border border-border/40 whitespace-nowrap truncate max-w-[65px]"
                     title={sub}
                   >
                     <Highlight text={sub} query={searchQuery} />
                   </span>
                 ))}
                 {subjects.length > 2 && (
-                  <span className="text-[9px] text-muted-foreground font-bold pl-0.5">+{subjects.length - 2}</span>
+                  <span className="text-[9px] text-muted-foreground font-bold whitespace-nowrap pl-0.5">
+                    +{subjects.length - 2}
+                  </span>
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground pt-0.5">
-                <span className="flex items-center gap-1">
-                  <Briefcase size={11} className="text-primary shrink-0" />
+              {/* Combined Experience & Location Row */}
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground pt-0.5 truncate">
+                <span className="flex items-center gap-1 whitespace-nowrap">
+                  <Briefcase size={10} className="text-primary shrink-0" />
                   {experience}
                 </span>
-                <span className="flex items-center gap-1">
-                  <MapPin size={11} className="text-primary shrink-0" />
+                <span className="text-border/60">•</span>
+                <span className="flex items-center gap-1 truncate">
+                  <MapPin size={10} className="text-primary shrink-0" />
                   {(location || "N/A").split(",")[0]}
                 </span>
               </div>
             </div>
           </div>
-          <div className="mt-2 space-y-1">
+          
+          <div className="mt-2.5">
             <TrustBadges tutor={tutor} />
           </div>
         </div>
 
         {/* Mobile Pricing & Actions */}
-        <div className="flex items-center justify-between border-t border-border pt-3 mt-3">
-          <div>
-            <div className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">Salary</div>
-            <div className="flex items-baseline gap-0.5">
-              <span className="text-sm font-bold text-foreground tracking-tight">
-                ৳{salary.toLocaleString()}
-              </span>
-              <span className="text-[8px] text-muted-foreground font-semibold">/mo</span>
-            </div>
+        <div className="flex items-center justify-between border-t border-border pt-2.5 mt-2.5">
+          <div className="flex items-baseline gap-0.5">
+            <span className="text-[15px] font-bold text-foreground tracking-tight leading-none">
+              ৳{salary.toLocaleString()}
+            </span>
+            <span className="text-[9px] text-muted-foreground font-semibold">/mo</span>
           </div>
           <Button
             type="button"
-            size="sm"
             variant="primary"
-            className="font-semibold text-[10px] h-8 tracking-wider pointer-events-auto flex items-center gap-1 group/btn px-3 rounded-xl shadow-sm"
+            className="font-semibold text-[11px] h-8 pointer-events-auto flex items-center justify-center gap-0.5 px-3 rounded-lg shadow-sm hover:shadow-md transition-all active:scale-95"
             onClick={(e) => {
               if (isBannerPreview) {
                 e.stopPropagation();
@@ -194,7 +200,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             }}
           >
             View
-            <ChevronRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
+            <ChevronRight size={12} className="transition-transform" />
           </Button>
         </div>
       </div>

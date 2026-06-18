@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   ChevronLeft,
@@ -438,7 +437,7 @@ const ModernSidebar = ({ className }) => {
 
     {/* Bottom Utility Section */}
     <div className="p-3 border-t-[0.5px] border-border/50 shrink-0">
-      <div className={cn("grid gap-1.5", isCollapsed ? "grid-cols-1" : (!location.pathname.startsWith('/dashboard') ? "grid-cols-4" : "grid-cols-2"))}>
+      <div className={cn("grid grid-cols-4 gap-1.5", isCollapsed && "grid-cols-1")}>
         {!location.pathname.startsWith('/dashboard') && (
           <>
             <TooltipProvider delayDuration={0}>

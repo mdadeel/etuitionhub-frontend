@@ -1,26 +1,36 @@
-// components/AiAssistant/SubjectSelector.jsx
-// Vertical list of subject chips on the left of the chat. Clicking a
-// chip updates the global aiStore; the new subject is sent with the
-// NEXT chat message (we don't re-route an in-flight message).
 import { useAiStore } from '../../store/aiStore';
 import { cn } from '@/lib/utils';
 import {
-    AcademicCapIcon, BookOpenIcon, MapIcon, LanguageIcon, 
-    CodeBracketIcon, SparklesIcon, CalculatorIcon
-} from '@heroicons/react/24/outline';
+    GraduationCap, BookOpen, FileSearch, Globe,
+    Code2, Sparkles, Calculator, Atom, FlaskConical,
+    Dna, Monitor, Languages, PenTool, Award
+} from 'lucide-react';
 
 const SUBJECT_META = {
-    ssc: { label: 'SSC', icon: AcademicCapIcon, hint: 'Secondary School' },
-    hsc: { label: 'HSC', icon: AcademicCapIcon, hint: 'Higher Secondary' },
-    admission: { label: 'Admission', icon: MapIcon, hint: 'University Entrance' },
-    math: { label: 'Math', icon: CalculatorIcon, hint: 'SSC/HSC/Admission Math' },
-    ielts: { label: 'IELTS', icon: LanguageIcon, hint: 'English Proficiency' },
-    english: { label: 'English', icon: BookOpenIcon, hint: 'General English' },
-    programming: { label: 'Programming', icon: CodeBracketIcon, hint: 'Code & Software' },
-    general: { label: 'General', icon: SparklesIcon, hint: 'Anything else' },
+    ssc:         { label: 'SSC',         icon: GraduationCap,  hint: 'Class 9-10 (NCTB)' },
+    hsc:         { label: 'HSC',         icon: BookOpen,        hint: 'Class 11-12 (NCTB)' },
+    admission:   { label: 'Admission',   icon: FileSearch,      hint: 'BUET, DU, Medical' },
+    math:        { label: 'Math',        icon: Calculator,      hint: 'SSC/HSC/Admission Math' },
+    physics:     { label: 'Physics',     icon: Atom,            hint: 'SSC/HSC/Admission Physics' },
+    chemistry:   { label: 'Chemistry',   icon: FlaskConical,    hint: 'SSC/HSC/Admission Chemistry' },
+    biology:     { label: 'Biology',     icon: Dna,             hint: 'SSC/HSC/Medical Admission' },
+    ict:         { label: 'ICT',         icon: Monitor,         hint: 'Information & Communication Technology' },
+    english:     { label: 'English',     icon: Globe,           hint: 'Grammar, Vocabulary, Writing' },
+    bangla:      { label: 'Bangla',      icon: Languages,       hint: 'SSC/HSC Bangla Literature & Grammar' },
+    ielts:       { label: 'IELTS',       icon: PenTool,         hint: 'Band scoring (0-9)' },
+    toefl:       { label: 'TOEFL',       icon: Award,           hint: 'TOEFL iBT (0-120)' },
+    sat:         { label: 'SAT',         icon: Award,           hint: 'Math + Reading & Writing' },
+    programming: { label: 'Programming', icon: Code2,           hint: 'Code & Software' },
+    general:     { label: 'General',     icon: Sparkles,        hint: 'Anything else' },
 };
 
-const ORDER = ['ssc', 'hsc', 'admission', 'math', 'ielts', 'english', 'programming', 'general'];
+const ORDER = [
+    'ssc', 'hsc', 'admission',
+    'math', 'physics', 'chemistry', 'biology', 'ict',
+    'english', 'bangla',
+    'ielts', 'toefl', 'sat',
+    'programming', 'general',
+];
 
 export default function SubjectSelector({ className = '', compact = false }) {
     const subject = useAiStore((s) => s.subject);
