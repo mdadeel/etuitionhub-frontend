@@ -152,6 +152,7 @@ export default function AiAssistantChat() {
         setStreamingAssistantMessage('');
         let localStreamData = '';
         let newSessionId = null;
+        let streamError = null;
 
         try {
             await aiService.sendChatMessageStream({
@@ -167,6 +168,11 @@ export default function AiAssistantChat() {
                     setThinking(false);
                     try {
                         const parsed = JSON.parse(chunk);
+                        if (parsed.type === 'error') {
+                            // Backend error frame — surface it as an error message
+                            streamError = parsed.error || 'The AI assistant encountered an error.';
+                            return;
+                        }
                         if (parsed.type === 'done') {
                             if (parsed.session?._id) {
                                 newSessionId = parsed.session._id;
@@ -182,6 +188,27 @@ export default function AiAssistantChat() {
                     setStreamingAssistantMessage(localStreamData);
                 }
             });
+
+            // Handle error frames received during streaming
+            if (streamError) {
+                toast.error(streamError);
+                const errorMessage = {
+                    _id: `err-${Date.now()}`,
+                    role: 'assistant',
+                    content: streamError,
+                    isError: true,
+                    originalInput: trimmed,
+                };
+                if (sessionId === 'new') {
+                    setLocalMessages((prev) => [...prev, errorMessage]);
+                } else {
+                    queryClient.setQueryData(['ai-session', sessionId], (old) => {
+                        if (!old) return old;
+                        return { ...old, messages: [...(old.messages || []), errorMessage] };
+                    });
+                }
+            }
+
             setStreamingAssistantMessage('');
             
             if (sessionId === 'new' && newSessionId) {
