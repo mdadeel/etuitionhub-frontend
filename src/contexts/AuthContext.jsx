@@ -1,15 +1,39 @@
-
 import { createContext, useContext } from 'react';
 import useSessionManager from '../hooks/useSessionManager';
-import useAuthActions from '../hooks/useAuthActions';
+import useAuthActionsHook from '../hooks/useAuthActions';
+import { AuthUserContext, AuthActionsContext } from './AuthSplitContexts';
 
-// Export auth context for app-wide access
+// Legacy context — kept for backward compatibility. New code should use
+// useAuthUser() or useAuthActions() instead.
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
 
 /**
- * Custom hook for easy auth access
- * @returns {Object} Auth context value
+ * Read-only hook — returns user state only. Preferred for components that
+ * only read auth data (avoids re-renders from mutation functions).
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuthUser = () => {
+    const ctx = useContext(AuthUserContext);
+    if (!ctx) throw new Error("useAuthUser must be used within AuthProvider.");
+    return ctx;
+};
+
+/**
+ * Write-only hook — returns mutation functions only. Preferred for components
+ * that only perform auth actions (avoids re-renders from state changes).
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuthActions = () => {
+    const ctx = useContext(AuthActionsContext);
+    if (!ctx) throw new Error("useAuthActions must be used within AuthProvider.");
+    return ctx;
+};
+
+/**
+ * Backward-compatible hook — returns everything. Existing components can
+ * continue using this without changes. New code should prefer useAuthUser()
+ * or useAuthActions() for better performance.
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
@@ -24,19 +48,39 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const session = useSessionManager();
-    const actions = useAuthActions(session);
+    const actions = useAuthActionsHook(session);
 
-    let authInfo = {
+    // Read-only values — only change when auth state changes, not on mutations
+    const userValue = {
         user: session.user,
         dbUser: session.dbUser,
         userRole: session.userRole,
+        myOrgs: session.myOrgs,
+        orgContext: session.orgContext,
+        orgMember: session.orgMember,
+        orgRole: session.orgRole,
+        switchOrg: session.switchOrg,
+        hasPermission: session.hasPermission,
         loading: session.loading,
-        ...actions,
     };
 
+    // Write-only values — only change when mutation functions are recreated
+    const actionsValue = {
+        ...actions,
+        refreshUserFromDB: session.refreshUserFromDB,
+        checkUserExists: session.checkUserExists,
+    };
+
+    // Legacy combined value — kept for backward compatibility
+    const legacyValue = { ...userValue, ...actionsValue };
+
     return (
-        <AuthContext.Provider value={authInfo}>
-            {children}
-        </AuthContext.Provider>
+        <AuthUserContext.Provider value={userValue}>
+            <AuthActionsContext.Provider value={actionsValue}>
+                <AuthContext.Provider value={legacyValue}>
+                    {children}
+                </AuthContext.Provider>
+            </AuthActionsContext.Provider>
+        </AuthUserContext.Provider>
     );
 };
