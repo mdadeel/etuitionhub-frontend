@@ -21,10 +21,14 @@ const PopularTutors = () => {
     return (
         <section className="py-16 bg-card relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="flex items-center justify-between mb-8 border-l-2 border-primary pl-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                <div className="flex items-center justify-between mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                     <div>
-                        <h2 className="text-2xl font-semibold text-foreground mb-1">Featured tutors</h2>
-                        <p className="text-muted-foreground">High-rated tutors actively taking new students</p>
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-5 h-1 bg-primary rounded-full" />
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Featured Tutors</span>
+                        </div>
+                        <h2 className="text-2xl font-heading font-bold tracking-tight text-foreground">Featured tutors</h2>
+                        <p className="text-sm text-muted-foreground mt-1">High-rated tutors actively taking new students</p>
                     </div>
                     <Link to="/tutors" className="text-sm text-primary font-medium hover:underline">
                         Browse all →

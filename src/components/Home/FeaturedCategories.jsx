@@ -193,7 +193,7 @@ const CategoryCard = ({ cat, index }) => {
                             <cat.icon className={cn("size-5", a.text)} strokeWidth={2} />
                         </div>
                         <div className="min-w-0 flex-1 pr-16">
-                            <h3 className="truncate font-heading font-black tracking-tight text-foreground leading-tight text-base md:text-lg">
+                            <h3 className="truncate font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
                                 {cat.label}
                             </h3>
                             <p className="truncate text-[11px] text-muted-foreground leading-tight mt-0.5">
@@ -256,7 +256,7 @@ const FeaturedCategories = () => {
                                 Browse by subject
                             </span>
                         </div>
-                        <h2 className="text-2xl font-heading font-black leading-[0.95] tracking-tight text-foreground md:text-3xl lg:text-4xl">
+                        <h2 className="text-2xl md:text-3xl font-heading font-bold leading-tight tracking-tight text-foreground">
                             Find your <span className="text-primary">subject</span>
                         </h2>
                         <p className="mt-1.5 text-sm text-muted-foreground md:text-base">
@@ -297,7 +297,7 @@ const FeaturedCategories = () => {
                                 <ArrowUpRight className="size-5" strokeWidth={2.5} />
                             </div>
                             <div className="text-center">
-                                <h3 className="font-heading font-black tracking-tight text-foreground leading-tight text-base md:text-lg">
+                                <h3 className="font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
                                     View all
                                 </h3>
                                 <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">

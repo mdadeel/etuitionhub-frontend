@@ -101,7 +101,7 @@ const HomeBanner = () => {
                 <div className="absolute bottom-[5%] right-[-5%] size-[40%] rounded-full bg-primary/5 blur-[120px]" />
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 relative z-10 py-20">
+            <div className="max-w-7xl mx-auto px-6 relative z-10 py-8 lg:py-20">
                 <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
                     {/* LEFT - Content & Search */}
@@ -132,8 +132,8 @@ const HomeBanner = () => {
 
                         {/* Search Block */}
                         <div>
-                            <Card className="p-6 bg-card/90 backdrop-blur-md border-border shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-3xl overflow-visible">
-                                <div className="flex flex-col md:flex-row items-end gap-6 mb-4">
+                            <Card className="p-6 bg-card/90 backdrop-blur-md border-border shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-xl overflow-visible">
+                                <div className="flex flex-col md:flex-row items-stretch md:items-end gap-4 md:gap-6 mb-4">
                                     <div className="flex-1 w-full">
                                         <FilterSelect 
                                             label="Subject"
@@ -170,7 +170,7 @@ const HomeBanner = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="w-full md:w-auto">
+                                    <div className="w-full md:w-auto mt-2 md:mt-0">
                                         <Button 
                                             type="button"
                                             onClick={handleSearch}
@@ -201,8 +201,8 @@ const HomeBanner = () => {
                     </div>
 
                     {/* RIGHT - Layered tutor card stack */}
-                    <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
-                        <div className="relative w-full max-w-[380px] h-[310px] sm:h-[330px] select-none">
+                    <div className="lg:col-span-5 relative flex justify-center lg:justify-end mt-8 lg:mt-0">
+                        <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] h-[260px] sm:h-[310px] md:h-[330px] select-none">
                             {/* Decorative Background Elements for Depth */}
                             <div className="absolute -top-10 -right-10 size-48 bg-primary/10 rounded-full blur-[100px] -z-10" />
                             <div className="absolute -bottom-10 -left-10 size-64 bg-primary/5 rounded-full blur-[100px] -z-10" />
@@ -215,8 +215,8 @@ const HomeBanner = () => {
                                 
                                 const zIndex = 30 - relativeIndex;
                                 const scale = 1 - relativeIndex * 0.05;
-                                const translateY = relativeIndex * 24; 
-                                const translateX = relativeIndex * 24; 
+                                const translateY = relativeIndex * 16; 
+                                const translateX = relativeIndex * 16; 
                                 const opacity = 1 - relativeIndex * 0.35;
                                 
                                 return (
@@ -250,7 +250,7 @@ const HomeBanner = () => {
                     ].map((stat, idx) => (
                         <div key={idx} className="flex flex-col items-center md:items-start space-y-2">
                             <div className="flex items-center gap-3">
-                                <div className="size-10 rounded-2xl bg-card border border-border shadow-sm flex items-center justify-center">
+                                <div className="size-10 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center">
                                     <stat.icon size={18} className="text-primary" />
                                 </div>
                                 <div>
