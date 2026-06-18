@@ -18,6 +18,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import DataTable from "@/components/ui/data-table";
+import StatusBadge from '../shared/StatusBadge';
+import DashboardPageHeader from '../shared/DashboardPageHeader';
+import EmptyState from '../shared/EmptyState';
 
 const BkashIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -165,30 +169,23 @@ const DashPayments = () => {
     }
 
     return (
-        <div className="space-y-10 animate-in fade-in-up duration-700">
-            {/* Header Protocol */}
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-6">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-<div className="w-6 h-1.5 bg-primary rounded-lg"></div>
-                            <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Financial Stream</span>
-                    </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Payment Verification</h2>
-                    <p className="text-xs text-muted-foreground mt-1">Systems audit interface for secure financial orchestration.</p>
-                </div>
-                
-                {pendingCount > 0 && (
-                    <div className="flex items-center gap-4 px-6 py-4 bg-amber-500/10 border border-amber-500/20 rounded-lg shadow-sm">
-                        <div className="relative flex size-2.5">
+        <div className="space-y-8 animate-in fade-in-up duration-700">
+            <DashboardPageHeader
+                category="Financial Operations"
+                title="Payment Verification"
+                subtitle="Review and verify student payment submissions."
+                action={pendingCount > 0 && (
+                    <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                        <div className="relative flex size-2">
                             <span className="animate-ping absolute inline-flex size-full rounded-full bg-amber-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full size-2.5 bg-amber-500"></span>
+                            <span className="relative inline-flex rounded-full size-2 bg-amber-500"></span>
                         </div>
-                        <span className="text-[10px] font-label font-semibold uppercase tracking-widest text-amber-700">
-                            {pendingCount} Critical Action{pendingCount > 1 ? 's' : ''} Required
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-700">
+                            {pendingCount} Action{pendingCount > 1 ? 's' : ''} Required
                         </span>
                     </div>
                 )}
-            </header>
+            />
 
             {/* Matrix Filters */}
             <div className="flex flex-wrap bg-background p-1.5 rounded-lg gap-2 border border-border w-fit backdrop-blur-md">
@@ -211,103 +208,101 @@ const DashPayments = () => {
                 ))}
             </div>
 
-            {/* Technical Table Matrix */}
-            {filteredPayments.length === 0 ? (
-                <div className="py-40 text-center bg-background border border-border rounded-xl relative overflow-hidden group">
-                    <Database size={48} className="text-muted-foreground/30 mx-auto mb-8 transition-colors duration-700" strokeWidth={1} />
-                    <p className="text-[10px] font-label font-semibold text-muted-foreground/60 uppercase tracking-[0.25em]">
-                        No transaction nodes identified in selected matrix.
-                    </p>
-                </div>
-            ) : (
-                <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden relative">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-background border-b border-border text-muted-foreground">
-                                    <th className="hidden lg:table-cell px-8 py-5 text-[9px] font-label font-semibold uppercase tracking-widest text-muted-foreground/60">Timestamp</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-label font-semibold uppercase tracking-widest text-muted-foreground/60">Source</th>
-                                    <th className="hidden md:table-cell px-8 py-5 text-[9px] font-label font-semibold uppercase tracking-widest text-muted-foreground/60">Tutor</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-label font-semibold uppercase tracking-widest text-muted-foreground/60">Method</th>
-                                    <th className="hidden xl:table-cell px-8 py-5 text-[9px] font-label font-semibold uppercase tracking-widest text-muted-foreground/60 text-center">Reference</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-label font-semibold uppercase tracking-widest text-muted-foreground/60">Yield</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-label font-semibold uppercase tracking-widest text-muted-foreground/60">Status</th>
-                                    <th className="px-4 md:px-8 py-5 text-[9px] font-label font-semibold uppercase tracking-widest text-muted-foreground/60 text-right">Ops</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border/40">
-                                {filteredPayments.map((payment) => {
-                                    const method = PAYMENT_METHOD_LABELS[payment.paymentMethod] || { name: payment.paymentMethod, color: 'bg-muted-foreground/30' };
-                                    
-                                    return (
-                                        <tr key={payment._id} className="hover:bg-background transition-colors group">
-                                            <td className="hidden lg:table-cell px-8 py-6 text-xs font-mono font-bold text-muted-foreground/60 tabular-nums">
-                                                {new Date(payment.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                                            </td>
-                                            <td className="px-4 md:px-8 py-6">
-                                                <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{(payment.studentEmail || '').split('@')[0]}</p>
-                                                <p className="text-[9px] md:text-[10px] text-muted-foreground/40 font-bold mt-1 tabular-nums tracking-widest">{payment.senderNumber}</p>
-                                            </td>
-                                            <td className="hidden md:table-cell px-8 py-6">
-                                                <p className="text-sm font-bold text-foreground">{payment.tutorName || '—'}</p>
-                                            </td>
-                                            <td className="px-4 md:px-8 py-6">
-                                                <div className="flex items-center gap-2">
-                                                    {(() => { const Icon = METHOD_ICONS[payment.paymentMethod]; return Icon ? <Icon /> : null; })()}
-                                                    <span className="text-[9px] md:text-[10px] font-label font-semibold text-foreground uppercase tracking-widest">{(method.name || '').split(' ')[0]}</span>
-                                                </div>
-                                            </td>
-                                            <td className="hidden xl:table-cell px-8 py-6 text-center">
-                                                <span className="rounded-lg border border-primary/20 text-primary bg-primary/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest">
-                                                    {payment.transactionId}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 md:px-8 py-6">
-                                                <p className="text-xs md:text-sm font-heading font-black text-foreground tabular-nums italic">৳{payment.grossAmount}</p>
-                                            </td>
-                                            <td className="px-4 md:px-8 py-6">
-                                                <Badge 
-                                                    variant={
-                                                        payment.status === 'confirmed' || payment.status === 'available_for_withdrawal' || payment.status === 'withdrawn' || payment.status === 'commission_applied' ? 'success' :
-                                                        payment.status === 'rejected' ? 'error' : 'warning'
-                                                    }
-                                                    className="rounded-lg text-[9px] font-bold py-1"
-                                                >
-                                                    {payment.status === 'pending_verification' ? 'Verify' :
-                                                     payment.status === 'commission_applied' ? 'Commission' :
-                                                     payment.status.toUpperCase().replace('_', ' ')}
-                                                </Badge>
-                                            </td>
-                                            <td className="px-4 md:px-8 py-6 text-right">
-                                                {payment.status === 'pending_verification' ? (
-                                                    <div className="flex items-center justify-end gap-2 md:gap-3">
-                                                        <button
-                                                            onClick={() => handleVerify(payment._id)}
-                                                            disabled={processingId === payment._id}
-                                                            className="h-8 px-4 rounded-lg border border-primary bg-primary text-primary-foreground text-[9px] font-heading font-bold uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 active:scale-[0.98]"
-                                                        >
-                                                            Verify
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleReject(payment._id)}
-                                                            disabled={processingId === payment._id}
-                                                            className="h-8 px-4 rounded-lg text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 text-[9px] font-heading font-bold uppercase tracking-widest transition-all disabled:opacity-50 active:scale-[0.98]"
-                                                        >
-                                                            Drop
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-[9px] font-label font-semibold text-muted-foreground/30 uppercase tracking-[0.2em] italic">Done</span>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
+            <DataTable
+                rowKey={(p) => p._id}
+                data={filteredPayments}
+                emptyState={
+                    <EmptyState title="No transactions found" />
+                }
+                columns={[
+                    {
+                        key: 'createdAt',
+                        label: 'Timestamp',
+                        hideOn: 'lg',
+                        render: (v) => new Date(v).toLocaleDateString([], { month: 'short', day: 'numeric' }),
+                    },
+                    {
+                        key: 'studentEmail',
+                        label: 'Source',
+                        render: (v, row) => (
+                            <>
+                                <p className="text-xs md:text-sm font-bold text-foreground leading-tight">{(v || '').split('@')[0]}</p>
+                                <p className="text-[9px] md:text-[10px] text-muted-foreground/40 font-bold mt-1 tabular-nums tracking-widest">{row.senderNumber}</p>
+                            </>
+                        ),
+                    },
+                    {
+                        key: 'tutorName',
+                        label: 'Tutor',
+                        hideOn: 'md',
+                        render: (v) => <p className="text-sm font-bold text-foreground">{v || '—'}</p>,
+                    },
+                    {
+                        key: 'paymentMethod',
+                        label: 'Method',
+                        render: (v) => {
+                            const method = PAYMENT_METHOD_LABELS[v] || { name: v };
+                            const Icon = METHOD_ICONS[v];
+                            return (
+                                <div className="flex items-center gap-2">
+                                    {Icon ? <Icon /> : null}
+                                    <span className="text-[9px] md:text-[10px] font-label font-semibold text-foreground uppercase tracking-widest">{(method.name || '').split(' ')[0]}</span>
+                                </div>
+                            );
+                        },
+                    },
+                    {
+                        key: 'transactionId',
+                        label: 'Reference',
+                        hideOn: 'xl',
+                        align: 'center',
+                        render: (v) => (
+                            <span className="rounded-lg border border-primary/20 text-primary bg-primary/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest">
+                                {v}
+                            </span>
+                        ),
+                    },
+                    {
+                        key: 'grossAmount',
+                        label: 'Yield',
+                        render: (v) => <p className="text-xs md:text-sm font-heading font-black text-foreground tabular-nums italic">৳{v}</p>,
+                    },
+                    {
+                        key: 'status',
+                        label: 'Status',
+                        render: (v) => (
+                                <StatusBadge status={v} />
+                        ),
+                    },
+                    {
+                        key: '_id',
+                        label: 'Ops',
+                        align: 'right',
+                        render: (v, payment) => (
+                            payment.status === 'pending_verification' ? (
+                                <div className="flex items-center justify-end gap-2 md:gap-3">
+                                    <button
+                                        onClick={() => handleVerify(payment._id)}
+                                        disabled={processingId === payment._id}
+                                        className="h-8 px-4 rounded-lg border border-primary bg-primary text-primary-foreground text-[9px] font-heading font-bold uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 active:scale-[0.98]"
+                                    >
+                                        Verify
+                                    </button>
+                                    <button
+                                        onClick={() => handleReject(payment._id)}
+                                        disabled={processingId === payment._id}
+                                        className="h-8 px-4 rounded-lg text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 text-[9px] font-heading font-bold uppercase tracking-widest transition-all disabled:opacity-50 active:scale-[0.98]"
+                                    >
+                                        Drop
+                                    </button>
+                                </div>
+                            ) : (
+                                <span className="text-[9px] font-label font-semibold text-muted-foreground/30 uppercase tracking-[0.2em] italic">Done</span>
+                            )
+                        ),
+                    },
+                ]}
+            />
 
             {/* Pagination */}
             {totalPages > 1 && (

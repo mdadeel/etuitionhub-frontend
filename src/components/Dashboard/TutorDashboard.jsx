@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import DataTable from "@/components/ui/data-table";
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContext";
@@ -229,56 +230,64 @@ const TutorDashboard = () => {
 
             {/* Applications Tab Content */}
             {activeTab === 'applications' && (
-                <Card className="overflow-hidden">
-                    {apps.length === 0 ? (
+                <DataTable
+                    rowKey={(row) => row._id}
+                    data={apps}
+                    emptyState={
                         <div className="p-32 text-center">
                             <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
                             <p className="text-sm font-medium text-muted-foreground italic">No applications in the pipeline.</p>
                         </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-background border-b border-border">
-                                    <tr>
-                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">Subject</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-center">Expected Fee</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-center">Status</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-border/50">
-                                    {apps.map((app) => (
-                                        <tr key={app._id} className="hover:bg-background/50 transition-colors">
-                                            <td className="px-8 py-6">
-                                                <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
-                                                <p className="text-xs text-muted-foreground font-medium mt-1">{app.studentEmail}</p>
-                                            </td>
-                                            <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary}</td>
-                                            <td className="px-8 py-6 text-center">
-                                                <Badge 
-                                                    variant={app.status === 'approved' ? 'success' : app.status === 'rejected' ? 'error' : 'warning'} 
-                                                    className="rounded-lg"
-                                                >
-                                                    {app.status}
-                                                </Badge>
-                                            </td>
-                                            <td className="px-8 py-6 text-right">
-                                                {app.status === 'pending' ? (
-                                                    <button 
-                                                        onClick={() => handleDelete(app._id)}
-                                                        className="text-xs font-bold text-red-600 hover:underline active:scale-[0.98]"
-                                                    >
-                                                        Recall Application
-                                                    </button>
-                                                ) : <span className="text-xs text-muted-foreground/40 italic">Locked</span>}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </Card>
+                    }
+                    columns={[
+                        {
+                            key: 'tuitionId',
+                            label: 'Subject',
+                            render: (_, app) => (
+                                <>
+                                    <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
+                                    <p className="text-xs text-muted-foreground font-medium mt-1">{app.studentEmail}</p>
+                                </>
+                            ),
+                        },
+                        {
+                            key: 'expectedSalary',
+                            label: 'Expected Fee',
+                            align: 'center',
+                            render: (val) => (
+                                <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
+                            ),
+                        },
+                        {
+                            key: 'status',
+                            label: 'Status',
+                            align: 'center',
+                            render: (val) => (
+                                <Badge
+                                    variant={val === 'approved' ? 'success' : val === 'rejected' ? 'error' : 'warning'}
+                                    className="rounded-lg"
+                                >
+                                    {val}
+                                </Badge>
+                            ),
+                        },
+                        {
+                            key: '_id',
+                            label: 'Action',
+                            align: 'right',
+                            render: (_, app) => (
+                                app.status === 'pending' ? (
+                                    <button
+                                        onClick={() => handleDelete(app._id)}
+                                        className="text-xs font-bold text-red-600 hover:underline active:scale-[0.98]"
+                                    >
+                                        Recall Application
+                                    </button>
+                                ) : <span className="text-xs text-muted-foreground/40 italic">Locked</span>
+                            ),
+                        },
+                    ]}
+                />
             )}
 
             {/* ongoing engagements */}
@@ -340,47 +349,58 @@ const TutorDashboard = () => {
                         </div>
                     </div>
 
-                    {revenue.length === 0 ? (
-                        <div className="p-32 text-center">
-                            <Banknote size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-muted-foreground italic">No payment history found.</p>
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-background border-b border-border">
-                                    <tr>
-                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">Date</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">Subject / Student</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-center">Amount</th>
-                                        <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-border/50">
-                                    {revenue.map((payment) => (
-                                        <tr key={payment._id} className="hover:bg-background/50 transition-colors">
-                                            <td className="px-8 py-6 text-xs font-bold text-muted-foreground uppercase tabular-nums tracking-widest">
-                                                {new Date(payment.createdAt).toLocaleDateString()}
-                                            </td>
-                                            <td className="px-8 py-6">
-                                                <p className="text-sm font-bold text-foreground">{payment.tuitionId?.subject || 'Tutoring Fee'}</p>
-                                                <p className="text-xs text-muted-foreground font-medium mt-1">{payment.studentEmail}</p>
-                                            </td>
-                                            <td className="px-8 py-6 text-center text-sm font-bold text-primary tabular-nums">৳{payment.grossAmount}</td>
-                                            <td className="px-8 py-6 text-right">
-                                                <Badge 
-                                                    variant={payment.status === 'confirmed' ? 'success' : 'default'} 
-                                                    className="rounded-lg"
-                                                >
-                                                    {payment.status}
-                                                </Badge>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+                    <DataTable
+                        rowKey={(row) => row._id}
+                        data={revenue}
+                        emptyState={
+                            <div className="p-32 text-center">
+                                <Banknote size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
+                                <p className="text-sm font-medium text-muted-foreground italic">No payment history found.</p>
+                            </div>
+                        }
+                        columns={[
+                            {
+                                key: 'createdAt',
+                                label: 'Date',
+                                render: (val) => (
+                                    <span className="text-xs font-bold text-muted-foreground uppercase tabular-nums tracking-widest">
+                                        {new Date(val).toLocaleDateString()}
+                                    </span>
+                                ),
+                            },
+                            {
+                                key: 'tuitionId',
+                                label: 'Subject / Student',
+                                render: (_, payment) => (
+                                    <>
+                                        <p className="text-sm font-bold text-foreground">{payment.tuitionId?.subject || 'Tutoring Fee'}</p>
+                                        <p className="text-xs text-muted-foreground font-medium mt-1">{payment.studentEmail}</p>
+                                    </>
+                                ),
+                            },
+                            {
+                                key: 'grossAmount',
+                                label: 'Amount',
+                                align: 'center',
+                                render: (val) => (
+                                    <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
+                                ),
+                            },
+                            {
+                                key: 'status',
+                                label: 'Status',
+                                align: 'right',
+                                render: (val) => (
+                                    <Badge
+                                        variant={val === 'confirmed' ? 'success' : 'default'}
+                                        className="rounded-lg"
+                                    >
+                                        {val}
+                                    </Badge>
+                                ),
+                            },
+                        ]}
+                    />
                 </Card>
             )}
             {activeTab === 'availability' && <TutorAvailability />}

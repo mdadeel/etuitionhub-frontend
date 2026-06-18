@@ -22,6 +22,7 @@ import {
   Banknote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import DataTable from "@/components/ui/data-table";
 import SessionStatsCard from "./SessionStatsCard";
 import PostTuition from "../../pages/PostTuition";
  
@@ -279,83 +280,60 @@ const StudentDashboard = () => {
  
       {/* My Jobs Tab */}
       {activeTab === "my-jobs" && (
-        <Card className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-background border-b border-border">
-                <tr>
-                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
-                    Subject
-                  </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
-                    Budget
-                  </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
-                    Status
-                  </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                {myTuitions.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="4"
-                      className="p-20 text-center text-sm text-muted-foreground italic"
-                    >
-                      No active requests.
-                    </td>
-                  </tr>
-                ) : (
-                  myTuitions.map((job) => (
-                    <tr
-                      key={job._id}
-                      className="hover:bg-background/50 transition-colors"
-                    >
-                      <td className="px-8 py-6">
-                        <p className="text-sm font-bold text-foreground">
-                          {job.subject}
-                        </p>
-                        <p className="text-xs text-muted-foreground font-medium mt-1">
-                          {job.class_name}
-                        </p>
-                      </td>
-                      <td className="px-8 py-6 text-sm font-bold text-primary tabular-nums">
-                        ৳{job.salary}
-                      </td>
-                      <td className="px-8 py-6">
-                        <Badge
-                          variant={job.status === "approved" ? "success" : "default"}
-                          className="rounded-lg"
-                        >
-                          {job.status === "approved" ? "Active" : "Pending"}
-                        </Badge>
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        <div className="flex justify-end gap-3">
-                          <button
-                            onClick={() => navigate(`/tuition/${job._id}`)}
-                            className="text-xs font-bold text-primary hover:underline"
-                          >
-                            View
-                          </button>
-                          <button
-                            onClick={() => handleDeleteTuition(job._id)}
-                            className="text-xs font-bold text-red-600 hover:underline"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+        <DataTable
+          rowKey={(row) => row._id}
+          data={myTuitions}
+          emptyState={<p className="italic">No active requests.</p>}
+          columns={[
+            {
+              key: "subject",
+              label: "Subject",
+              render: (_, row) => (
+                <>
+                  <p className="text-sm font-bold text-foreground">{row.subject}</p>
+                  <p className="text-xs text-muted-foreground font-medium mt-1">{row.class_name}</p>
+                </>
+              ),
+            },
+            {
+              key: "salary",
+              label: "Budget",
+              render: (val) => (
+                <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
+              ),
+            },
+            {
+              key: "status",
+              label: "Status",
+              render: (val) => (
+                <Badge variant={val === "approved" ? "success" : "default"} className="rounded-lg">
+                  {val === "approved" ? "Active" : "Pending"}
+                </Badge>
+              ),
+            },
+            {
+              key: "_id",
+              label: "Actions",
+              align: "right",
+              render: (_, row) => (
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => navigate(`/tuition/${row._id}`)}
+                    className="text-xs font-bold text-primary hover:underline"
+                  >
+                    View
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTuition(row._id)}
+                    className="text-xs font-bold text-red-600 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+        />
       )}
  
       {/* Applications Tab */}
@@ -437,82 +415,63 @@ const StudentDashboard = () => {
  
       {/* Booked / Engagements Tab */}
       {activeTab === "booked" && (
-        <Card className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-background border-b border-border">
-                <tr>
-                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
-                    Tutor Name
-                  </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground">
-                    Subject
-                  </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-center">
-                    Contact
-                  </th>
-                  <th className="px-8 py-5 text-xs font-semibold text-muted-foreground text-right">
-                    Verification
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                {bookings.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="4"
-                      className="p-20 text-center text-sm text-muted-foreground italic"
+        <DataTable
+          rowKey={(row) => row._id}
+          data={bookings}
+          emptyState={<p className="italic">No verified engagements yet.</p>}
+          columns={[
+            {
+              key: "tutor_name",
+              label: "Tutor Name",
+              render: (_, row) => (
+                <p className="text-sm font-bold text-foreground">
+                  {row.tutor_name || row.tutorName}
+                </p>
+              ),
+            },
+            {
+              key: "subject",
+              label: "Subject",
+              render: (val) => (
+                <span className="text-sm font-semibold text-muted-foreground">{val}</span>
+              ),
+            },
+            {
+              key: "mobile",
+              label: "Contact",
+              align: "center",
+              render: (val) => (
+                <a
+                  href={`tel:${val}`}
+                  className="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1.5"
+                >
+                  <Phone size={12} /> {val}
+                </a>
+              ),
+            },
+            {
+              key: "_id",
+              label: "Verification",
+              align: "right",
+              render: (_, row) => (
+                <div className="flex flex-col items-end gap-2">
+                  <Badge variant="success" className="rounded-lg">
+                    Active
+                  </Badge>
+                  {row.isAccepted && (
+                    <Button
+                      size="sm"
+                      className="h-7 px-3 text-xs rounded-lg active:scale-[0.98]"
+                      onClick={() => navigate(`/session/${row._id}`)}
                     >
-                      No verified engagements yet.
-                    </td>
-                  </tr>
-                ) : (
-                  bookings.map((booking) => (
-                    <tr
-                      key={booking._id}
-                      className="hover:bg-background/50 transition-colors"
-                    >
-                      <td className="px-8 py-6">
-                        <p className="text-sm font-bold text-foreground">
-                          {booking.tutor_name || booking.tutorName}
-                        </p>
-                      </td>
-                      <td className="px-8 py-6 text-sm font-semibold text-muted-foreground">
-                        {booking.subject}
-                      </td>
-                      <td className="px-8 py-6 text-center">
-                        <a
-                           href={`tel:${booking.mobile}`}
-                           className="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1.5"
-                        >
-                          <Phone size={12} /> {booking.mobile}
-                        </a>
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        <div className="flex flex-col items-end gap-2">
-                          <Badge variant="success" className="rounded-lg">
-                            Active
-                          </Badge>
-                          {booking.isAccepted && (
-                            <Button
-                              size="sm"
-                              className="h-7 px-3 text-xs rounded-lg active:scale-[0.98]"
-                              onClick={() =>
-                                navigate(`/session/${booking._id}`)
-                              }
-                            >
-                              Join Room
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+                      Join Room
+                    </Button>
+                  )}
+                </div>
+              ),
+            },
+          ]}
+        />
       )}
 
       {/* Payments Tab */}
