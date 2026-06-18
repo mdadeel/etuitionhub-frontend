@@ -698,6 +698,14 @@ body {
   border-radius: 3px;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Premium Background Patterns */
 .bg-dot-pattern {
   background-image: radial-gradient(circle, currentColor 1px, transparent 1px);

@@ -65,6 +65,10 @@ api.interceptors.request.use(config => {
             config.headers['X-CSRF-Token'] = token;
         }
     }
+    const orgId = localStorage.getItem('x-org-id');
+    if (orgId) {
+        config.headers['x-org-id'] = orgId;
+    }
     return config;
 });
 
