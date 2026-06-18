@@ -56,3 +56,4 @@ test-results/.playwright-artifacts-1/traces/resources/page@b00d3c1ca525cce02730d
 dashboard-audit-report.md
 design.md
 design.html
+.env.vercel
