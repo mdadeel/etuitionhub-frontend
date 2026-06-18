@@ -18,7 +18,9 @@ import {
     Award,
     Send,
     Heart,
-    GraduationCap
+    GraduationCap,
+    CheckCircle2,
+    Trash2
 } from 'lucide-react';
 import SEO from '../components/shared/SEO';
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
@@ -103,7 +105,11 @@ const TutorDetails = () => {
     const [isHireModalOpen, setIsHireModalOpen] = useState(false);
     const [hireMessage, setHireMessage] = useState('');
     const [hireRate, setHireRate] = useState('');
+    const [selectedSubjects, setSelectedSubjects] = useState([]);
     const [submittingHire, setSubmittingHire] = useState(false);
+    const [existingRequest, setExistingRequest] = useState(null);
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [cancellingRequest, setCancellingRequest] = useState(false);
 
     // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
@@ -180,6 +186,37 @@ const TutorDetails = () => {
         }
     }, [id, user]);
 
+    useEffect(() => {
+        const checkExistingRequest = async () => {
+            if (!user || !tutor) return;
+            try {
+                const res = await api.get('/api/hire-requests/sent');
+                const active = (res.data?.data || []).find(
+                    r => r.toUserId?._id === tutor._id && ['pending', 'countered'].includes(r.status)
+                );
+                if (active) setExistingRequest(active);
+            } catch {
+                // silent — not critical
+            }
+        };
+        checkExistingRequest();
+    }, [user, tutor]);
+
+    const handleCancelRequest = async () => {
+        if (!existingRequest) return;
+        setCancellingRequest(true);
+        try {
+            await api.delete(`/api/hire-requests/${existingRequest._id}`);
+            toast.success('Hire request cancelled');
+            setExistingRequest(null);
+            setIsStatusModalOpen(false);
+        } catch (err) {
+            toast.error(err.response?.data?.error || 'Failed to cancel request');
+        } finally {
+            setCancellingRequest(false);
+        }
+    };
+
     const handleContact = () => {
         // Check if conversation already exists
         const existingConv = conversations.find(c => 
@@ -255,15 +292,26 @@ const TutorDetails = () => {
 
         setSubmittingHire(true);
         try {
-            await api.post('/api/hire-requests', {
+            const res = await api.post('/api/hire-requests', {
                 toUserId: tutor._id,
                 message: hireMessage,
-                proposedRate: hireRate ? Number(hireRate) : undefined
+                proposedRate: hireRate ? Number(hireRate) : undefined,
+                subjects: selectedSubjects
             });
             toast.success('Hire request sent successfully!');
+            const created = res.data?.data || res.data;
+            setExistingRequest({
+                _id: created._id,
+                toUserId: { _id: tutor._id, displayName: tutor.displayName },
+                proposedRate: created.proposedRate,
+                subjects: created.subjects || selectedSubjects,
+                message: created.message || hireMessage,
+                status: 'pending'
+            });
             setIsHireModalOpen(false);
             setHireMessage('');
             setHireRate('');
+            setSelectedSubjects([]);
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to send hire request');
         } finally {
@@ -387,6 +435,13 @@ const TutorDetails = () => {
                                                 {!user ? (
                                                     <button onClick={() => setShowLoginModal(true)} className="w-full px-4 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950">
                                                         Request to Hire
+                                                    </button>
+                                                ) : existingRequest ? (
+                                                    <button
+                                                        onClick={() => setIsStatusModalOpen(true)}
+                                                        className="w-full px-4 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-semibold rounded-xl flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
+                                                    >
+                                                        <CheckCircle2 size={14} aria-hidden="true" /> Sent
                                                     </button>
                                                 ) : (
                                                     <button
@@ -630,6 +685,34 @@ const TutorDetails = () => {
                         </div>
                         <form onSubmit={handleHireRequest}>
                             <div className="space-y-4">
+                                {/* Subject Selector */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-2">Subject(s)</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {Array.isArray(tutor.subjects) && tutor.subjects.map((subject) => (
+                                            <button
+                                                key={subject}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedSubjects(prev =>
+                                                        prev.includes(subject)
+                                                            ? prev.filter(s => s !== subject)
+                                                            : [...prev, subject]
+                                                    );
+                                                }}
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                                                    selectedSubjects.includes(subject)
+                                                        ? 'bg-emerald-600 text-white'
+                                                        : 'bg-background text-muted-foreground hover:bg-muted border border-border'
+                                                }`}
+                                            >
+                                                {subject}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Message */}
                                 <div>
                                     <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="hire-message-textarea">Message</label>
                                     <textarea
@@ -637,11 +720,15 @@ const TutorDetails = () => {
                                         value={hireMessage}
                                         onChange={(e) => setHireMessage(e.target.value)}
                                         placeholder={`Hi ${firstName}, I'd like to hire you for…`}
+                                        maxLength={500}
                                         className="w-full h-24 bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 resize-none transition-all"
                                     />
+                                    <p className="text-[10px] text-muted-foreground mt-1 text-right">{hireMessage.length}/500</p>
                                 </div>
+
+                                {/* Proposed Rate */}
                                 <div>
-                                    <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="proposed-rate-input">Proposed Monthly Rate (৳) (Optional)</label>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="proposed-rate-input">Proposed Monthly Rate (৳)</label>
                                     <input
                                         id="proposed-rate-input"
                                         type="number"
@@ -650,6 +737,9 @@ const TutorDetails = () => {
                                         placeholder={tutor.expectedSalary ? `e.g. ${tutor.expectedSalary}` : 'e.g. 5000'}
                                         className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 transition-all"
                                     />
+                                    {tutor.expectedSalary && (
+                                        <p className="text-[10px] text-muted-foreground mt-1">Tutor's listed rate: ৳{tutor.expectedSalary.toLocaleString()}/mo</p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex gap-3 justify-end mt-6">
@@ -673,6 +763,59 @@ const TutorDetails = () => {
                 </div>
             )}
         </div>
+
+        {/* Hire Request Status Modal */}
+        {isStatusModalOpen && existingRequest && (
+            <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="bg-card w-full max-w-sm rounded-2xl border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-heading text-foreground">Hire Request Sent</h3>
+                        <button onClick={() => setIsStatusModalOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
+                            &times;
+                        </button>
+                    </div>
+                    <div className="space-y-3 text-sm">
+                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold">
+                            <CheckCircle2 size={16} aria-hidden="true" />
+                            <span>Status: {existingRequest.status === 'countered' ? 'Countered by Tutor' : 'Pending'}</span>
+                        </div>
+                        {existingRequest.proposedRate && (
+                            <div className="flex justify-between text-muted-foreground">
+                                <span>Your Proposed Rate</span>
+                                <span className="font-semibold text-foreground">৳{existingRequest.proposedRate.toLocaleString()}/mo</span>
+                            </div>
+                        )}
+                        {existingRequest.subjects?.length > 0 && (
+                            <div>
+                                <span className="text-muted-foreground">Subjects</span>
+                                <div className="flex flex-wrap gap-1.5 mt-1">
+                                    {existingRequest.subjects.map((s, i) => (
+                                        <span key={i} className="px-2 py-0.5 bg-muted rounded-md text-xs font-medium text-foreground">{s}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div className="mt-6 flex gap-3">
+                        <button
+                            onClick={handleCancelRequest}
+                            disabled={cancellingRequest}
+                            className="flex-1 px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer disabled:opacity-50"
+                        >
+                            <Trash2 size={14} aria-hidden="true" />
+                            {cancellingRequest ? 'Cancelling…' : 'Cancel Request'}
+                        </button>
+                        <button
+                            onClick={() => setIsStatusModalOpen(false)}
+                            className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+
         <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="save this tutor" />
         </>
     );

@@ -8,7 +8,6 @@ import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import toast from 'react-hot-toast';
 import {
     Banknote,
-    Clock,
     CheckCircle2,
     AlertCircle,
     Database,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import ReceiptModal from '../shared/ReceiptModal';
 import ProgressTracker from '../shared/ProgressTracker';
+import DataTable from "@/components/ui/data-table";
 import { cn } from '@/lib/utils';
  
 const BkashIcon = () => (
@@ -219,92 +219,85 @@ const StudentPayments = ({ hideHeader }) => {
             </div>
 
             {/* Payment Table */}
-            {filteredPayments.length === 0 ? (
-                <Card className="p-16 text-center border-dashed">
-                    <Database size={48} className="text-muted-foreground/20 mx-auto mb-6" strokeWidth={1} />
-                    <p className="text-sm font-medium text-muted-foreground">No payment records found.</p>
-                </Card>
-            ) : (
-                <Card className="overflow-hidden" >
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-muted/30 border-b border-border/40">
-                                <tr>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                                        <div className="flex items-center gap-2">
-                                            <Clock size={12} /> Date
-                                        </div>
-                                    </th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Tutor</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Method</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-center">Amount</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-center">Transaction ID</th>
-                                    <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-right">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border/40">
-                                {filteredPayments.map((payment) => {
-                                    const method = PAYMENT_METHOD_LABELS[payment.paymentMethod] || { name: payment.paymentMethod || 'N/A', color: 'bg-muted-foreground' };
-                                    
-                                    return (
-                                        <tr key={payment._id} className="hover:bg-muted/10 transition-colors">
-                                            <td className="px-8 py-6">
-                                                <div className="text-sm font-semibold text-foreground">
-                                                    {new Date(payment.createdAt).toLocaleDateString('en-US', { 
-                                                        year: 'numeric', 
-                                                        month: 'short', 
-                                                        day: 'numeric' 
-                                                    })}
-                                                </div>
-                                                <div className="text-[10px] text-muted-foreground">
-                                                    {new Date(payment.createdAt).toLocaleTimeString('en-US', { 
-                                                        hour: '2-digit', 
-                                                        minute: '2-digit' 
-                                                    })}
-                                                </div>
-                                            </td>
-                                            <td className="px-8 py-6">
-                                                <p className="text-sm font-bold text-foreground">{payment.tutorName || 'Tutor'}</p>
-                                            </td>
-                                            <td className="px-8 py-6">
-                                                <div className="flex items-center gap-2">
-                                                    {(() => { const Icon = METHOD_ICONS[payment.paymentMethod]; return Icon ? <Icon /> : null; })()}
-                                                    <span className="text-xs font-semibold text-muted-foreground">{method.name}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-8 py-6 text-center">
-                                                <span className="text-lg font-bold text-primary tabular-nums">৳{payment.grossAmount?.toLocaleString()}</span>
-                                            </td>
-                                            <td className="px-8 py-6 text-center">
-                                                <span className="text-xs font-mono text-muted-foreground bg-muted/30 px-2 py-1 rounded-lg">
-                                                    {payment.transactionId || 'N/A'}
-                                                </span>
-                                            </td>
-                                            <td className="px-8 py-6 text-right">
-                                                <div className="flex flex-col items-end gap-2">
-                                                    <div className="flex items-center justify-end gap-3">
-                                                        {payment.status === 'confirmed' && (
-                                                            <button
-                                                                onClick={() => setReceiptFor(payment._id)}
-                                                                className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
-                                                                title="View receipt"
-                                                            >
-                                                                <Receipt size={14} />
-                                                            </button>
-                                                        )}
-                                                        {getStatusBadge(payment.status)}
-                                                    </div>
-                                                    <ProgressTracker status={payment.status} />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+            <DataTable
+                columns={[
+                    {
+                        key: 'createdAt',
+                        label: 'Date',
+                        render: (val) => (
+                            <>
+                                <div className="text-sm font-semibold text-foreground">
+                                    {new Date(val).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                                </div>
+                                <div className="text-[10px] text-muted-foreground">
+                                    {new Date(val).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                            </>
+                        ),
+                    },
+                    {
+                        key: 'tutorName',
+                        label: 'Tutor',
+                        render: (val) => <p className="text-sm font-bold text-foreground">{val || 'Tutor'}</p>,
+                    },
+                    {
+                        key: 'paymentMethod',
+                        label: 'Method',
+                        render: (val) => (
+                            <div className="flex items-center gap-2">
+                                {(() => { const Icon = METHOD_ICONS[val]; return Icon ? <Icon /> : null; })()}
+                                <span className="text-xs font-semibold text-muted-foreground">{(PAYMENT_METHOD_LABELS[val] || { name: val || 'N/A' }).name}</span>
+                            </div>
+                        ),
+                    },
+                    {
+                        key: 'grossAmount',
+                        label: 'Amount',
+                        align: 'center',
+                        render: (val) => <span className="text-lg font-bold text-primary tabular-nums">৳{val?.toLocaleString()}</span>,
+                    },
+                    {
+                        key: 'transactionId',
+                        label: 'Transaction ID',
+                        align: 'center',
+                        render: (val) => (
+                            <span className="text-xs font-mono text-muted-foreground bg-muted/30 px-2 py-1 rounded-lg">
+                                {val || 'N/A'}
+                            </span>
+                        ),
+                    },
+                    {
+                        key: 'status',
+                        label: 'Status',
+                        align: 'right',
+                        render: (val, row) => (
+                            <div className="flex flex-col items-end gap-2">
+                                <div className="flex items-center justify-end gap-3">
+                                    {row.status === 'confirmed' && (
+                                        <button
+                                            onClick={() => setReceiptFor(row._id)}
+                                            className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
+                                            title="View receipt"
+                                        >
+                                            <Receipt size={14} />
+                                        </button>
+                                    )}
+                                    {getStatusBadge(val)}
+                                </div>
+                                <ProgressTracker status={val} />
+                            </div>
+                        ),
+                    },
+                ]}
+                data={filteredPayments}
+                rowKey={(p) => p._id}
+                emptyState={
+                    <div className="flex flex-col items-center py-16">
+                        <Database size={48} className="text-muted-foreground/20 mx-auto mb-6" strokeWidth={1} />
+                        <p className="text-sm font-medium text-muted-foreground">No payment records found.</p>
                     </div>
-                </Card>
-            )}
+                }
+            />
 
             {receiptFor && <ReceiptModal paymentId={receiptFor} onClose={() => setReceiptFor(null)} />}
         </div>

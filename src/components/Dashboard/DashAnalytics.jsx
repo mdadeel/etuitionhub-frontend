@@ -8,6 +8,7 @@ import LoadingSpinner from '../shared/LoadingSpinner';
 import { Users, Zap, Layers, Banknote, Database } from 'lucide-react';
 import { useAnalyticsQuery } from '../../hooks/queries/useAnalyticsQuery';
 import { useAllPaymentsQuery } from '../../hooks/queries/usePaymentsQuery';
+import DataTable from "@/components/ui/data-table";
 import toast from 'react-hot-toast';
 
 const EMERALD_PRIMARY = '#10b981';
@@ -255,53 +256,59 @@ const DashAnalytics = () => {
                     </span>
                 </div>
                 
-                {transactions.length === 0 ? (
-                    <div className="p-12 text-center">
-                        <Database size={32} className="text-muted-foreground/30 mx-auto mb-4" />
-                        <p className="text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">No recent transactions found.</p>
-                    </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-transparent border-b border-border text-muted-foreground">
-                                    <th className="hidden md:table-cell px-5 py-3 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Transaction ID</th>
-                                    <th className="px-4 md:px-5 py-3 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Node</th>
-                                    <th className="px-4 md:px-5 py-3 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground text-center">Yield</th>
-                                    <th className="px-4 md:px-5 py-3 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground text-right">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-[rgba(15,23,46,0.06)]">
-                                {transactions.slice(0, 8).map((tx) => (
-                                    <tr key={tx._id} className="hover:bg-muted/30 hover:text-foreground transition-colors">
-                                        <td className="hidden md:table-cell px-5 py-3">
-                                            <span className="text-xs font-mono font-medium text-muted-foreground">#{tx._id.slice(-8).toUpperCase()}</span>
-                                        </td>
-                                        <td className="px-4 md:px-5 py-3">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs md:text-sm font-bold text-foreground leading-tight">{(tx.studentEmail || '').split('@')[0]}</span>
-                                                <span className="hidden md:inline text-xs text-muted-foreground mt-0.5">{tx.studentEmail}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 md:px-5 py-3 text-center">
-                                            <span className="text-xs md:text-sm font-heading font-black text-primary tabular-nums">৳{tx.amount?.toLocaleString()}</span>
-                                        </td>
-                                        <td className="px-4 md:px-5 py-3 text-right">
-                                            <span className={`px-2.5 py-1 text-[10px] font-label font-semibold uppercase tracking-wider rounded-lg border ${tx.status === 'confirmed'
-                                                ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
-                                                : tx.status === 'rejected'
-                                                ? 'bg-red-500/10 text-red-700 border-red-500/20'
-                                                : 'bg-orange-500/10 text-orange-700 border-orange-500/20'
-                                                }`}>
-                                                {tx.status === 'pending_verification' ? 'Verify' : tx.status.toUpperCase()}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                <DataTable
+                    data={transactions.slice(0, 8)}
+                    rowKey={(tx) => tx._id}
+                    columns={[
+                        {
+                            key: '_id',
+                            label: 'ID',
+                            hideOn: 'md',
+                            render: (val) => (
+                                <span className="text-xs font-mono font-medium text-muted-foreground">#{(val || '').slice(-8).toUpperCase()}</span>
+                            ),
+                        },
+                        {
+                            key: 'studentEmail',
+                            label: 'Node',
+                            render: (val) => (
+                                <div className="flex flex-col">
+                                    <span className="text-xs md:text-sm font-bold text-foreground leading-tight">{(val || '').split('@')[0]}</span>
+                                    <span className="hidden md:inline text-xs text-muted-foreground mt-0.5">{val}</span>
+                                </div>
+                            ),
+                        },
+                        {
+                            key: 'amount',
+                            label: 'Yield',
+                            align: 'center',
+                            render: (val) => (
+                                <span className="text-xs md:text-sm font-heading font-black text-primary tabular-nums">৳{val?.toLocaleString()}</span>
+                            ),
+                        },
+                        {
+                            key: 'status',
+                            label: 'Status',
+                            align: 'right',
+                            render: (val) => (
+                                <span className={`px-2.5 py-1 text-[10px] font-label font-semibold uppercase tracking-wider rounded-lg border ${val === 'confirmed'
+                                    ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
+                                    : val === 'rejected'
+                                    ? 'bg-red-500/10 text-red-700 border-red-500/20'
+                                    : 'bg-orange-500/10 text-orange-700 border-orange-500/20'
+                                    }`}>
+                                    {val === 'pending_verification' ? 'Verify' : (val || '').toUpperCase()}
+                                </span>
+                            ),
+                        },
+                    ]}
+                    emptyState={
+                        <div className="p-12 text-center">
+                            <Database size={32} className="text-muted-foreground/30 mx-auto mb-4" />
+                            <p className="text-xs font-heading font-bold uppercase tracking-wider text-muted-foreground">No recent transactions found.</p>
+                        </div>
+                    }
+                />
             </div>
         </div>
     );

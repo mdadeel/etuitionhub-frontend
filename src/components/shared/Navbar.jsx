@@ -39,6 +39,7 @@ const Navbar = () => {
   const profileDropdownRef = useRef(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const isAuthPage = ["/login", "/register", "/admin-login", "/forgot-password", "/reset-password"].includes(location.pathname);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -164,7 +165,7 @@ const Navbar = () => {
       )}
     >
       {/* Mobile Search Overlay */}
-      {isMobileSearchOpen && (
+      {!isAuthPage && isMobileSearchOpen && (
         <div className="absolute inset-0 bg-background z-50 flex items-center px-4 md:hidden animate-in fade-in duration-200">
           <form onSubmit={handleSearch} className="w-full flex items-center gap-3">
             <button
@@ -198,7 +199,7 @@ const Navbar = () => {
       )}
       <div className="container-premium flex items-center justify-between h-full">
         {/* Left Section: Calm Academic Branding */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
           <Link to="/" className="shrink-0">
             <Logo 
               boxSize="size-10" 
@@ -216,7 +217,7 @@ const Navbar = () => {
 
           {/* Editorial Navigation - calm, intentional spacing */}
           <nav
-            className="hidden lg:flex items-center gap-8"
+            className="hidden lg:flex items-center gap-6"
             data-tour="find-tutors"
           >
             {navLinks.map((link) => {
@@ -245,6 +246,7 @@ const Navbar = () => {
         </div>
 
         {/* Center Section: Calm Search */}
+        {!isAuthPage && (
         <div className="hidden md:flex flex-1 justify-center max-w-sm mx-8">
           <form
             onSubmit={handleSearch}
@@ -385,9 +387,10 @@ const Navbar = () => {
               )}
           </form>
         </div>
+        )}
 
         {/* Right Section: Calm Authentication */}
-        <div className="flex items-center justify-end gap-3 md:gap-6">
+        <div className="flex items-center justify-end gap-2 md:gap-4">
           {/* Post Tuition Action Button (students only) */}
           {userRole === "student" && (
             <div className="hidden sm:flex items-center">
@@ -414,6 +417,7 @@ const Navbar = () => {
               {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
             </button>
 
+            {!isAuthPage && (
             <button
               onClick={() => setIsMobileSearchOpen(true)}
               className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300 md:hidden"
@@ -421,12 +425,13 @@ const Navbar = () => {
             >
               <Search size={18} />
             </button>
+            )}
 
             {user && <NotificationBell />}
           </div>
 
           {user ? (
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-4">
               {/* User Avatar with Dropdown */}
               <div ref={profileDropdownRef} className="relative hidden md:block">
                 <button
@@ -481,7 +486,7 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-            <div className="hidden sm:flex items-center gap-5">
+            <div className="hidden sm:flex items-center gap-4">
               <Link
                 to="/login"
                 className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-label text-xs tracking-wide focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-background rounded px-2 py-1 -mx-2 -my-1"
@@ -516,8 +521,9 @@ const Navbar = () => {
             onClick={() => setIsMenuOpen(false)}
           />
           <div className="lg:hidden absolute top-[100%] left-0 right-0 bg-background border-b border-border shadow-xl z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
-            <div class="container-premium py-5">
-              <form onSubmit={handleSearch} className="mb-5 relative">
+            <div className="container-premium py-4">
+              {!isAuthPage && (
+              <form onSubmit={handleSearch} className="mb-4 relative">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                 <input
                   type="text"
@@ -528,6 +534,7 @@ const Navbar = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </form>
+              )}
               <div className="flex flex-col gap-1">
                 {navLinks.map((link) => (
                   <NavLink

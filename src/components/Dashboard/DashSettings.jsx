@@ -4,9 +4,11 @@ import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { FormSkeleton } from "@/components/shared/skeletons";
-import { Save, RefreshCw, Info, Globe, Phone, Banknote, Layout } from 'lucide-react';
+import { Save, RefreshCw, Info, Globe, Phone, Banknote, Layout, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const DashSettings = () => {
+    const navigate = useNavigate();
     const [settings, setSettings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -81,6 +83,25 @@ const DashSettings = () => {
 
     return (
         <div className="space-y-10 animate-in fade-in duration-700 animate-fade-in-up">
+            {/* My Profile Card */}
+            <div className="bg-card border border-border rounded-xl p-6 md:p-8 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="size-12 bg-muted rounded-lg flex items-center justify-center">
+                        <User size={20} className="text-muted-foreground" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-heading font-bold text-foreground">My Profile</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">Edit your personal information and preferences</p>
+                    </div>
+                </div>
+                <button
+                    onClick={() => navigate('/dashboard/profile')}
+                    className="h-9 px-4 rounded-lg border border-border text-[9px] font-label font-semibold uppercase tracking-wider text-foreground hover:bg-muted transition-colors"
+                >
+                    Edit Profile
+                </button>
+            </div>
+
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-6">
                 <div>
                     <div className="flex items-center gap-2 mb-3">

@@ -9,6 +9,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import StatusBadge from '../components/shared/StatusBadge';
+import DashboardPageHeader from '../components/shared/DashboardPageHeader';
+import EmptyState from '../components/shared/EmptyState';
 
 const BkashIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -57,6 +60,7 @@ const FILTERS = [
 const AdminWithdrawals = () => {
     const [withdrawals, setWithdrawals] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [initialLoad, setInitialLoad] = useState(true);
     const [filter, setFilter] = useState('requested');
     const [processingId, setProcessingId] = useState(null);
 
@@ -70,8 +74,8 @@ const AdminWithdrawals = () => {
     const [markPaidId, setMarkPaidId] = useState(null);
     const [markPaidTrxId, setMarkPaidTrxId] = useState('');
 
-    const load = useCallback(async (status) => {
-        setLoading(true);
+    const load = useCallback(async (status, isInitial = false) => {
+        if (isInitial) setLoading(true);
         try {
             const url = status ? `/api/wallet/admin/withdrawals?status=${status}` : '/api/wallet/admin/withdrawals';
             const res = await api.get(url);
@@ -80,10 +84,11 @@ const AdminWithdrawals = () => {
             toast.error('Failed to load withdrawals');
         } finally {
             setLoading(false);
+            setInitialLoad(false);
         }
     }, []);
 
-    useEffect(() => { load(filter); }, [filter, load]);
+    useEffect(() => { load(filter, initialLoad); }, [filter, load, initialLoad]);
 
     const lastWithdrawal = useRealtimeStore((s) => s.lastWithdrawal);
     const lastPayment = useRealtimeStore((s) => s.lastPayment);
@@ -151,7 +156,7 @@ const AdminWithdrawals = () => {
         }
     };
 
-    if (loading) {
+    if (loading && initialLoad) {
       return (
         <div className="space-y-4">
           <div className="flex gap-2">
@@ -165,17 +170,12 @@ const AdminWithdrawals = () => {
     }
 
     return (
-        <div className="space-y-10 p-6 md:p-8 lg:p-12 max-w-7xl mx-auto">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-6">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-1.5 bg-primary rounded-lg"></div>
-                        <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Withdrawal Management</span>
-                    </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Tutor Withdrawals</h2>
-                    <p className="text-xs text-muted-foreground mt-1">Approve, reject, and mark withdrawal requests as paid.</p>
-                </div>
-            </header>
+        <div className="space-y-8">
+            <DashboardPageHeader
+                category="Financial Operations"
+                title="Tutor Withdrawals"
+                subtitle="Approve, reject, and mark withdrawal requests as paid."
+            />
 
             <div className="flex flex-wrap bg-background p-1.5 rounded-lg gap-2 border border-border w-fit">
                 {FILTERS.map((f) => {
@@ -196,12 +196,7 @@ const AdminWithdrawals = () => {
             </div>
 
             {withdrawals.length === 0 ? (
-                <div className="py-40 text-center bg-background border border-border rounded-xl">
-                    <Database size={48} className="text-muted-foreground/30 mx-auto mb-8" strokeWidth={1} />
-                    <p className="text-[10px] font-heading font-bold text-muted-foreground/60 uppercase tracking-[0.25em]">
-                        No withdrawal requests in this queue
-                    </p>
-                </div>
+                <EmptyState title="No withdrawal requests in this queue" />
             ) : (
                 <div className="bg-card border border-border rounded-xl overflow-hidden">
                     <div className="overflow-x-auto">
@@ -248,9 +243,7 @@ const AdminWithdrawals = () => {
                                                 )}
                                             </td>
                                             <td className="px-4 md:px-6 py-5">
-                                                <span className={`px-2 py-0.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border ${STATUS_COLORS[w.status]}`}>
-                                                    {w.status}
-                                                </span>
+                                                <StatusBadge status={w.status} />
                                                 {w.transferTransactionId && (
                                                     <p className="text-[10px] text-emerald-700 mt-1 font-mono">↳ {w.transferTransactionId}</p>
                                                 )}

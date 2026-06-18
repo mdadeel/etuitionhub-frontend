@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { CheckCircle, XCircle, ExternalLink, ShieldAlert } from 'lucide-react';
+import { CheckCircle, ExternalLink, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
-// eslint-disable-next-line no-unused-vars
-import { cn } from '@/lib/utils';
+import DashboardPageHeader from '../shared/DashboardPageHeader';
+import EmptyState from '../shared/EmptyState';
 
 const AdminVerifications = () => {
     const [pendingUsers, setPendingUsers] = useState([]);
@@ -95,27 +95,22 @@ const AdminVerifications = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border pb-6">
-                <div>
-                    <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-1.5 bg-primary rounded-none"></div>
-                        <span className="text-[9px] font-label font-semibold uppercase tracking-[0.25em] text-primary">Verifications</span>
-                    </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Pending Verifications</h2>
-                    <p className="text-xs text-muted-foreground mt-1">Review tutor documents to grant the verified badge.</p>
-                </div>
-                <div className="px-4 py-2 bg-amber-500/10 text-amber-700 border border-amber-500/20 dark:bg-amber-500/25 dark:text-amber-400 dark:border-amber-500/30 rounded-lg text-[10px] font-label font-semibold uppercase tracking-widest flex items-center gap-2 w-fit">
-                    <ShieldAlert size={12} />
-                    {pendingUsers.length} Pending
-                </div>
-            </header>
+            <DashboardPageHeader
+                category="Verification Management"
+                title="Pending Verifications"
+                subtitle="Review tutor documents to grant the verified badge."
+                action={
+                    pendingUsers.length > 0 && (
+                        <div className="px-4 py-2 bg-amber-500/10 text-amber-700 border border-amber-500/20 dark:bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/25 rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center gap-2 w-fit">
+                            <ShieldAlert size={12} />
+                            {pendingUsers.length} Pending
+                        </div>
+                    )
+                }
+            />
  
             {pendingUsers.length === 0 ? (
-                <div className="border border-border p-12 text-center bg-background rounded-lg relative overflow-hidden group">
-                    <CheckCircle size={40} className="mx-auto mb-4 text-emerald-500/30" strokeWidth={1} />
-                    <h3 className="text-sm font-heading font-bold uppercase tracking-widest text-foreground">All caught up!</h3>
-                    <p className="text-xs text-muted-foreground mt-1">There are no pending verification requests.</p>
-                </div>
+                <EmptyState icon={CheckCircle} title="All caught up!" description="There are no pending verification requests." />
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {pendingUsers.map(user => (

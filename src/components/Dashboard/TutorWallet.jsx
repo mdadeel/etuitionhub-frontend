@@ -2,9 +2,13 @@ import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Wallet, TrendingUp, Clock, ArrowDownToLine, Banknote, ArrowUpRight, Percent } from 'lucide-react';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
+import DataTable from "@/components/ui/data-table";
 import { useRealtimeStore } from '../../store/realtimeStore';
 import { useWalletQuery } from '../../hooks/useWalletQuery';
 import api from '../../services/api';
+import StatusBadge from '../shared/StatusBadge';
+import DashboardPageHeader from '../shared/DashboardPageHeader';
+import EmptyState from '../shared/EmptyState';
 
 const STATUS_COLORS = {
     pending_verification: 'bg-amber-500/10 text-amber-700 border-amber-500/20',
@@ -49,23 +53,20 @@ const TutorWallet = () => {
     if (isError || !wallet) return null;
 
     return (
-        <div className="space-y-10 animate-in fade-in animate-fade-in-up duration-700">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-6">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-1.5 bg-emerald-500 rounded-lg"></div>
-                        <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Tutor Wallet</span>
-                    </div>
-                    <h2 className="text-xl md:text-2xl font-heading font-bold uppercase tracking-tight text-foreground">Earnings Overview</h2>
-                    <p className="text-xs text-muted-foreground mt-1">Track available balance, pending earnings, and withdrawal history.</p>
-                </div>
-                <Link
-                    to="/dashboard/withdraw"
-                    className="inline-flex items-center gap-2 h-10 px-6 rounded-lg bg-primary text-primary-foreground text-[10px] font-heading font-bold uppercase tracking-widest hover:bg-primary/90 transition-all active:scale-[0.98]"
-                >
-                    <ArrowDownToLine size={14} /> Withdraw Funds
-                </Link>
-            </header>
+        <div className="space-y-8 animate-in fade-in animate-fade-in-up duration-700">
+            <DashboardPageHeader
+                category="Tutor Wallet"
+                title="Earnings Overview"
+                subtitle="Track available balance, pending earnings, and withdrawal history."
+                action={
+                    <Link
+                        to="/dashboard/withdraw"
+                        className="inline-flex items-center gap-2 h-10 px-6 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-all active:scale-[0.98]"
+                    >
+                        <ArrowDownToLine size={14} /> Withdraw Funds
+                    </Link>
+                }
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <BalanceCard icon={Wallet} label="Available" amount={wallet.availableBalance} accent="emerald" subtitle="Ready to withdraw" />
@@ -88,41 +89,24 @@ const TutorWallet = () => {
                     <h3 className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Recent Earnings</h3>
                 </div>
                 {recentPayments.length === 0 ? (
-                    <div className="py-20 text-center bg-card border border-border rounded-xl">
-                        <Wallet size={32} className="text-muted-foreground/30 mx-auto mb-4" strokeWidth={1} />
-                        <p className="text-[10px] font-heading font-bold text-muted-foreground/60 uppercase tracking-[0.25em]">
-                            No earnings yet
-                        </p>
-                    </div>
+                    <EmptyState icon={Wallet} title="No earnings yet" />
                 ) : (
-                    <div className="bg-card border border-border rounded-xl overflow-x-auto">
-                        <table className="w-full text-left whitespace-nowrap">
-                            <thead>
-                                <tr className="bg-background border-b border-border">
-                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Student</th>
-                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Gross</th>
-                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Commission</th>
-                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Net (You)</th>
-                                    <th className="px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border/40">
-                                {recentPayments.map((p) => (
-                                    <tr key={p._id} className="hover:bg-muted/30 hover:text-foreground transition-colors">
-                                        <td className="px-6 py-4 text-xs font-bold text-foreground">{(p.studentEmail || '').split('@')[0]}</td>
-                                        <td className="px-6 py-4 text-xs font-heading font-bold text-foreground tabular-nums">৳{p.grossAmount}</td>
-                                        <td className="px-6 py-4 text-xs font-heading font-bold text-red-600 tabular-nums">-{p.commissionAmount ? `৳${p.commissionAmount}` : '—'}</td>
-                                        <td className="px-6 py-4 text-xs font-heading font-bold text-emerald-700 tabular-nums">৳{p.netTutorAmount}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-0.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border ${STATUS_COLORS[p.status] || STATUS_COLORS.pending_verification}`}>
-                                                {(p.status || '').replace(/_/g, ' ')}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <DataTable
+                        rowKey={(p) => p._id}
+                        columns={[
+                            { key: 'studentEmail', label: 'Student', render: (val) => (val || '').split('@')[0] },
+                            { key: 'grossAmount', label: 'Gross', render: (val) => <span className="font-heading font-bold tabular-nums">৳{val}</span> },
+                            { key: 'commissionAmount', label: 'Commission', render: (val) => <span className="font-heading font-bold text-red-600 tabular-nums">{val ? `-৳${val}` : '—'}</span> },
+                            { key: 'netTutorAmount', label: 'Net (You)', render: (val) => <span className="font-heading font-bold text-emerald-700 tabular-nums">৳{val}</span> },
+                            { key: 'status', label: 'Status', render: (val) => (
+                                <StatusBadge status={val} />
+                            )},
+                        ]}
+                        data={recentPayments}
+                        emptyState={
+                            <EmptyState icon={Wallet} title="No earnings yet" />
+                        }
+                    />
                 )}
             </section>
         </div>
