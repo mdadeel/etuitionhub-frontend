@@ -1,45 +1,56 @@
 import { Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
-import StudentDashboard from "../components/Dashboard/StudentDashboard";
-import TutorDashboard from "../components/Dashboard/TutorDashboard";
-import AdminDashboard from "../components/Dashboard/AdminDashboard";
-import Profile from "../components/Dashboard/Profile";
-import DashUsers from "../components/Dashboard/DashUsers";
-import TutorSessions from "../components/Dashboard/TutorSessions";
-import Bookmarks from "../components/Dashboard/Bookmarks";
-import BillingHistory from "../components/Dashboard/BillingHistory";
-import NotificationPage from "../components/Dashboard/NotificationPage";
-import VerificationFlow from "../components/Dashboard/VerificationFlow";
-import TutorWallet from "../components/Dashboard/TutorWallet";
-import TutorWithdraw from "../components/Dashboard/TutorWithdraw";
-import AdminWithdrawals from "./AdminWithdrawals";
-import AdminAuditLogs from "./AdminAuditLogs";
-import DashSettings from "../components/Dashboard/DashSettings";
-import DisputeWorkspace from "../components/Dashboard/DisputeWorkspace";
-import Assignments from "../components/Dashboard/Assignments";
-import { Menu, X, Home } from "lucide-react";
+import { Menu, X, Home, Settings } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
-import HireRequests from "../components/Dashboard/HireRequests";
-import ActiveRelationships from "../components/Dashboard/ActiveRelationships";
-import DashPayments from "../components/Dashboard/DashPayments";
-import SavedSearchAlerts from "../components/Dashboard/SavedSearchAlerts";
-import AdminContacts from "../components/Dashboard/AdminContacts";
-import SessionConfirmationList from "../components/Dashboard/SessionConfirmationList";
-import TemplateManager from "../components/Dashboard/TemplateManager";
+
 import { DashboardSkeleton } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
+
+// Lazy-loaded role-specific components — only downloaded when the route matches
+const StudentDashboard = lazy(() => import("../components/Dashboard/StudentDashboard"));
+const TutorDashboard = lazy(() => import("../components/Dashboard/TutorDashboard"));
+const AdminDashboard = lazy(() => import("../components/Dashboard/AdminDashboard"));
+const Profile = lazy(() => import("../components/Dashboard/Profile"));
+const DashUsers = lazy(() => import("../components/Dashboard/DashUsers"));
+const TutorSessions = lazy(() => import("../components/Dashboard/TutorSessions"));
+const Bookmarks = lazy(() => import("../components/Dashboard/Bookmarks"));
+const BillingHistory = lazy(() => import("../components/Dashboard/BillingHistory"));
+const NotificationPage = lazy(() => import("../components/Dashboard/NotificationPage"));
+const OrgDashboardLayout = lazy(() => import("../components/Dashboard/OrgDashboardLayout"));
+const SuperAdminDashboardLayout = lazy(() => import("../components/Dashboard/SuperAdminDashboardLayout"));
+const VerificationFlow = lazy(() => import("../components/Dashboard/VerificationFlow"));
+const TutorWallet = lazy(() => import("../components/Dashboard/TutorWallet"));
+const TutorWithdraw = lazy(() => import("../components/Dashboard/TutorWithdraw"));
+const AdminWithdrawals = lazy(() => import("./AdminWithdrawals"));
+const AdminAuditLogs = lazy(() => import("./AdminAuditLogs"));
+const DashSettings = lazy(() => import("../components/Dashboard/DashSettings"));
+const DisputeWorkspace = lazy(() => import("../components/Dashboard/DisputeWorkspace"));
+const Assignments = lazy(() => import("../components/Dashboard/Assignments"));
+const HireRequests = lazy(() => import("../components/Dashboard/HireRequests"));
+const ActiveRelationships = lazy(() => import("../components/Dashboard/ActiveRelationships"));
+const DashPayments = lazy(() => import("../components/Dashboard/DashPayments"));
+const SavedSearchAlerts = lazy(() => import("../components/Dashboard/SavedSearchAlerts"));
+const AdminContacts = lazy(() => import("../components/Dashboard/AdminContacts"));
+const SessionConfirmationList = lazy(() => import("../components/Dashboard/SessionConfirmationList"));
+const TemplateManager = lazy(() => import("../components/Dashboard/TemplateManager"));
+
+const RouteFallback = () => (
+  <div className="flex items-center justify-center py-24">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+  </div>
+);
 
 /**
  * Restricts a route to the admin role only.
  * Waits for dbUser to load before deciding — prevents false redirects.
  */
-const AdminRoute = ({ children, role }) => {
+const AdminRoute = ({ children, role, globalRole }) => {
   const { loading } = useAuth();
-  if (loading) return null; // wait silently — Dashboard already shows a spinner
-  if (role !== "admin") return <Navigate to="/dashboard" replace />;
+  if (loading) return null;
+  if (role !== "admin" && globalRole !== "super_admin") return <Navigate to="/dashboard" replace />;
   return children;
 };
 
@@ -53,6 +64,25 @@ const Dashboard = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const role = dbUser?.role?.toLowerCase() || (loading ? "" : "student");
+  const globalRole = dbUser?.globalRole;
+  const { orgContext, orgRole } = useAuth();
+  
+  const getRoleLabel = () => {
+    if (globalRole === 'super_admin') return 'Super Admin';
+    if (orgContext) {
+      if (orgRole === 'org_admin') return 'Org Admin';
+      if (orgRole === 'teacher') return 'Org Teacher';
+      return 'Org Student';
+    }
+    return role;
+  };
+
+  const getSettingsPath = () => {
+    if (globalRole === 'super_admin') return '/dashboard/super-admin/settings';
+    if (orgContext) return `/dashboard/org/${orgContext.orgId || orgContext.slug}/settings`;
+    if (role === 'admin') return '/dashboard/admin/settings';
+    return '/dashboard/profile';
+  };
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -71,7 +101,7 @@ const Dashboard = () => {
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Desktop Sidebar */}
-      <DashboardSidebar role={role} />
+      <DashboardSidebar />
 
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
@@ -96,13 +126,13 @@ const Dashboard = () => {
             <X size={18} className="text-muted-foreground" />
           </button>
         </div>
-        <DashboardSidebar role={role} />
+        <DashboardSidebar />
       </div>
 
       <main className={`flex-1 h-full overflow-x-hidden relative flex flex-col safe-bottom ${location.pathname === '/dashboard/messages' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
         {/* Dashboard Top Navbar */}
         <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
-          <div className="flex items-center justify-between h-16 px-6">
+          <div className="flex items-center justify-between h-14 px-6">
             {/* Left: Mobile menu toggle + breadcrumb */}
             <div className="flex items-center gap-4">
               <button
@@ -128,229 +158,222 @@ const Dashboard = () => {
               </nav>
             </div>
 
-            {/* Right: User info + notifications */}
-            <div className="flex items-center gap-4">
+            {/* Right: Notifications + Settings */}
+            <div className="flex items-center gap-2">
               <NotificationBell />
-              <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-border">
-                <div className="text-right">
-                  <p className="text-xs font-label font-semibold text-foreground uppercase tracking-wider">
-                    {user?.displayName?.split(" ")[0]}
-                  </p>
-                  <p className="text-[9px] font-heading font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{role}</p>
-                </div>
-                <div className="size-9 bg-muted rounded-none overflow-hidden border border-border">
-                  {user?.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      alt={user.displayName}
-                      className="size-full object-cover rounded-none"
-                    />
-                  ) : (
-                    <div className="size-full flex items-center justify-center text-muted-foreground text-xs font-label font-semibold uppercase">
-                      {user?.displayName?.charAt(0)}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <Link
+                to={getSettingsPath()}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition-colors"
+                title="Settings"
+              >
+                <Settings size={20} />
+              </Link>
             </div>
           </div>
+
         </header>
 
         {/* Main Content */}
         <div className="flex-grow p-6 md:p-8 lg:p-12">
           <div className="max-w-7xl mx-auto">
-            <Routes>
-              <Route
-                index
-                element={
-                  role === "admin" ? (
-                    <AdminDashboard />
-                  ) : role === "tutor" ? (
-                    <TutorDashboard />
-                  ) : (
-                    <StudentDashboard />
-                  )
-                }
-              />
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                {/* Multi-Tenant Dashboard Routes */}
+                <Route path="org/:orgId/*" element={<OrgDashboardLayout />} />
+                <Route path="super-admin/*" element={<SuperAdminDashboardLayout />} />
 
-              <Route
-                path="users"
-                element={
-                  <AdminRoute role={role}>
-                    <DashUsers />
-                  </AdminRoute>
-                }
-              />
+                <Route
+                  index
+                  element={
+                    globalRole === "super_admin" ? (
+                      <Navigate to="/dashboard/super-admin" replace />
+                    ) : orgContext ? (
+                      <Navigate to={`/dashboard/org/${orgContext.orgId || orgContext.slug}`} replace />
+                    ) : role === "admin" ? (
+                      <AdminDashboard />
+                    ) : role === "tutor" ? (
+                      <TutorDashboard />
+                    ) : (
+                      <StudentDashboard />
+                    )
+                  }
+                />
 
-              <Route path="profile" element={<Profile />} />
+                <Route
+                  path="users"
+                  element={
+                    <AdminRoute role={role} globalRole={globalRole}>
+                      <DashUsers />
+                    </AdminRoute>
+                  }
+                />
 
-              <Route
-                path="my-profile"
-                element={<Navigate to="/dashboard/profile" replace />}
-              />
+                <Route path="profile" element={<Profile />} />
 
+                <Route
+                  path="my-profile"
+                  element={<Navigate to="/dashboard/profile" replace />}
+                />
 
+                <Route
+                  path="sessions"
+                  element={
+                    role === "tutor" ? (
+                      <TutorSessions />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
 
-              <Route
-                path="sessions"
-                element={
-                  role === "tutor" ? (
-                    <TutorSessions />
-                  ) : (
-                    <Navigate to="/dashboard" replace />
-                  )
-                }
-              />
+                <Route
+                  path="billing"
+                  element={
+                    role === "tutor" ? <Navigate to="/dashboard" replace /> : <BillingHistory />
+                  }
+                />
 
-              <Route
-                path="billing"
-                element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <BillingHistory />
-                }
-              />
+                <Route
+                  path="bookmarks"
+                  element={
+                    role === "tutor" ? <Navigate to="/dashboard" replace /> : <Bookmarks />
+                  }
+                />
 
-              <Route
-                path="bookmarks"
-                element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <Bookmarks />
-                }
-              />
+                <Route
+                  path="payments"
+                  element={<Navigate to="/dashboard/billing" replace />}
+                />
+                <Route
+                  path="receipts"
+                  element={<Navigate to="/dashboard/billing" replace />}
+                />
 
-              <Route
-                path="payments"
-                element={<Navigate to="/dashboard/billing" replace />}
-              />
-              <Route
-                path="receipts"
-                element={<Navigate to="/dashboard/billing" replace />}
-              />
+                <Route
+                  path="saved-tutors"
+                  element={<Navigate to="/dashboard/bookmarks" replace />}
+                />
+                <Route
+                  path="saved-tuitions"
+                  element={<Navigate to="/dashboard/bookmarks" replace />}
+                />
+                <Route path="notifications" element={<NotificationPage />} />
+                <Route path="requests" element={<HireRequests />} />
+                <Route
+                  path="relationships"
+                  element={
+                    role === "tutor" ? <Navigate to="/dashboard" replace /> : <ActiveRelationships />
+                  }
+                />
+                <Route
+                  path="saved-searches"
+                  element={
+                    role === "tutor" ? <Navigate to="/dashboard" replace /> : <SavedSearchAlerts />
+                  }
+                />
+                <Route
+                  path="admin/contacts"
+                  element={
+                    <AdminRoute role={role} globalRole={globalRole}>
+                      <AdminContacts />
+                    </AdminRoute>
+                  }
+                />
 
-              <Route
-                path="saved-tutors"
-                element={<Navigate to="/dashboard/bookmarks" replace />}
-              />
-              <Route
-                path="saved-tuitions"
-                element={<Navigate to="/dashboard/bookmarks" replace />}
-              />
-              <Route path="notifications" element={<NotificationPage />} />
-              <Route path="requests" element={<HireRequests />} />
-              <Route
-                path="relationships"
-                element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <ActiveRelationships />
-                }
-              />
-              <Route
-                path="saved-searches"
-                element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <SavedSearchAlerts />
-                }
-              />
-              <Route
-                path="admin/contacts"
-                element={
-                  <AdminRoute role={role}>
-                    <AdminContacts />
-                  </AdminRoute>
-                }
-              />
+                <Route
+                  path="verification"
+                  element={
+                    role === "tutor" ? (
+                      <VerificationFlow />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
 
+                <Route
+                  path="wallet"
+                  element={
+                    role === "tutor" ? (
+                      <TutorWallet />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
 
+                <Route
+                  path="withdraw"
+                  element={
+                    role === "tutor" ? (
+                      <TutorWithdraw />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
 
-              <Route
-                path="verification"
-                element={
-                  role === "tutor" ? (
-                    <VerificationFlow />
-                  ) : (
-                    <Navigate to="/dashboard" replace />
-                  )
-                }
-              />
+                <Route
+                  path="admin/withdrawals"
+                  element={
+                    <AdminRoute role={role} globalRole={globalRole}>
+                      <AdminWithdrawals />
+                    </AdminRoute>
+                  }
+                />
 
-              <Route
-                path="wallet"
-                element={
-                  role === "tutor" ? (
-                    <TutorWallet />
-                  ) : (
-                    <Navigate to="/dashboard" replace />
-                  )
-                }
-              />
+                <Route
+                  path="admin/settings"
+                  element={
+                    <AdminRoute role={role} globalRole={globalRole}>
+                      <DashSettings />
+                    </AdminRoute>
+                  }
+                />
 
-              <Route
-                path="withdraw"
-                element={
-                  role === "tutor" ? (
-                    <TutorWithdraw />
-                  ) : (
-                    <Navigate to="/dashboard" replace />
-                  )
-                }
-              />
+                <Route
+                  path="admin/audit-logs"
+                  element={
+                    <AdminRoute role={role} globalRole={globalRole}>
+                      <AdminAuditLogs />
+                    </AdminRoute>
+                  }
+                />
 
-              <Route
-                path="admin/withdrawals"
-                element={
-                  <AdminRoute role={role}>
-                    <AdminWithdrawals />
-                  </AdminRoute>
-                }
-              />
+                <Route
+                  path="admin/payments"
+                  element={
+                    <AdminRoute role={role} globalRole={globalRole}>
+                      <DashPayments />
+                    </AdminRoute>
+                  }
+                />
 
-              <Route
-                path="admin/settings"
-                element={
-                  <AdminRoute role={role}>
-                    <DashSettings />
-                  </AdminRoute>
-                }
-              />
+                <Route
+                  path="disputes"
+                  element={<DisputeWorkspace />}
+                />
 
-              <Route
-                path="admin/audit-logs"
-                element={
-                  <AdminRoute role={role}>
-                    <AdminAuditLogs />
-                  </AdminRoute>
-                }
-              />
+                <Route
+                  path="assignments"
+                  element={<Assignments />}
+                />
+                <Route
+                  path="session-confirmations"
+                  element={
+                    role === "tutor" ? <Navigate to="/dashboard" replace /> : <SessionConfirmationList />
+                  }
+                />
+                <Route
+                  path="templates"
+                  element={
+                    role === "student" ? <Navigate to="/dashboard" replace /> : <TemplateManager />
+                  }
+                />
 
-              <Route
-                path="admin/payments"
-                element={
-                  <AdminRoute role={role}>
-                    <DashPayments />
-                  </AdminRoute>
-                }
-              />
-
-              <Route
-                path="disputes"
-                element={<DisputeWorkspace />}
-              />
-
-              <Route
-                path="assignments"
-                element={<Assignments />}
-              />
-              <Route
-                path="session-confirmations"
-                element={
-                  role === "tutor" ? <Navigate to="/dashboard" replace /> : <SessionConfirmationList />
-                }
-              />
-              <Route
-                path="templates"
-                element={
-                  role === "student" ? <Navigate to="/dashboard" replace /> : <TemplateManager />
-                }
-              />
-
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </Suspense>
           </div>
         </div>
       </main>
