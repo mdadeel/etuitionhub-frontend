@@ -21,6 +21,7 @@ import ConversationalBubble from './ConversationalBubble';
 import MessageActions from './MessageActions';
 import PoruaLogo from './PoruaLogo';
 import IntentBadge from './IntentBadge';
+import SkeletonCard from './SkeletonCard';
 
 /**
  * Format a timestamp per §5.14. HH:mm if same day, otherwise "MMM D, HH:mm".
@@ -160,33 +161,8 @@ function EditInput({ initialValue, onSave, onCancel }) {
     );
 }
 
-function ThinkingBubble() {
-    return (
-        <div
-            className="flex items-center gap-2 animate-fade-in-up"
-            role="status"
-            aria-live="polite"
-            aria-busy="true"
-        >
-            <div className="shrink-0 size-7 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
-                <PoruaLogo iconOnly size={13} className="animate-pulse" />
-            </div>
-            <div className="rounded-2xl rounded-bl-sm bg-card/80 border border-border/60 px-4 py-3 flex items-center gap-1.5">
-                <span
-                    className="size-1.5 rounded-full bg-muted-foreground/60 animate-bounce"
-                    style={{ animationDelay: '0ms' }}
-                />
-                <span
-                    className="size-1.5 rounded-full bg-muted-foreground/60 animate-bounce"
-                    style={{ animationDelay: '150ms' }}
-                />
-                <span
-                    className="size-1.5 rounded-full bg-muted-foreground/60 animate-bounce"
-                    style={{ animationDelay: '300ms' }}
-                />
-            </div>
-        </div>
-    );
+function SkeletonCardWrapper() {
+    return <SkeletonCard />;
 }
 
 function AssistantMessage({
@@ -351,7 +327,7 @@ export default function ChatMessage({
     feedbackMap = {},
 }) {
     if (message.isThinking) {
-        return <ThinkingBubble />;
+        return <SkeletonCardWrapper />;
     }
 
     if (message.isError) {
@@ -375,29 +351,47 @@ export default function ChatMessage({
     }
 
     if (message.isStreaming) {
-        // Strip out basic JSON structural elements if present to make stream readable
         let display = message.content || '';
         try {
             display = display.replace(/\\n/g, '\n');
             display = display.replace(/"[a-zA-Z0-9_]+"\s*:\s*/g, '');
             // eslint-disable-next-line no-useless-escape
             display = display.replace(/[\[\]{}"]/g, '');
-            display = display.trim() || 'Thinking...';
+            display = display.trim();
         } catch {
-            display = 'Thinking...';
+            display = '';
         }
 
+        const streamingTitle = message.userInput || '';
+
         return (
-            <div className="flex items-start gap-3 animate-fade-in-up w-full max-w-[850px] mb-4">
-                <div className="shrink-0 size-8 flex items-center justify-center mt-1">
-                    <PoruaLogo iconOnly size={20} className="text-primary/70" />
+            <article className="w-full max-w-[850px] bg-card border border-border rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 animate-fade-in-up">
+                <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-3 font-medium flex-wrap">
+                    <div className="flex items-center gap-2">
+                        <span className="flex items-center justify-center size-5 rounded-md bg-primary/10 text-primary">
+                            <PoruaLogo iconOnly size={12} />
+                        </span>
+                        <span>Education</span>
+                    </div>
                 </div>
-                <div className="flex-1 min-w-0 pt-1.5">
-                    <p className="text-[15px] leading-[1.6] text-foreground/90 whitespace-pre-wrap break-words">
-                        {parseInlineCode(display)}<span className="inline-block w-1.5 h-3.5 ml-1 bg-primary animate-pulse align-middle" />
-                    </p>
+
+                {streamingTitle && (
+                    <h1 className="text-[22px] font-bold text-foreground leading-snug mb-4 tracking-tight">
+                        {streamingTitle}
+                    </h1>
+                )}
+
+                <div className="text-[15px] leading-[1.6] text-foreground/90 whitespace-pre-wrap break-words">
+                    {display ? (
+                        <>
+                            {parseInlineCode(display)}
+                            <span className="inline-block w-1.5 h-4 ml-0.5 bg-primary animate-cursor-blink align-text-bottom" />
+                        </>
+                    ) : (
+                        <span className="inline-block w-1.5 h-4 bg-primary animate-cursor-blink align-text-bottom" />
+                    )}
                 </div>
-            </div>
+            </article>
         );
     }
 

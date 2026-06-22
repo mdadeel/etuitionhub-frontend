@@ -179,6 +179,11 @@ export const aiService = {
         const response = await api.post('/api/ai/tutor-recommendation-click', { tutorId, sessionId });
         return response.data;
     },
+
+    getUsage: async () => {
+        const response = await api.get('/api/ai/usage');
+        return response.data;
+    },
 };
 
 export default aiService;

@@ -53,6 +53,8 @@ export default function AiAssistantChat() {
     const abortControllerRef = useRef(null);
     const scrollRef = useRef(null);
     const initialMessageProcessed = useRef(false);
+    const [pendingUserInput, setPendingUserInput] = useState('');
+    const lastScrollRef = useRef(0);
 
     // Load session + messages.
     const { data, isLoading, refetch } = useQuery({
@@ -69,6 +71,12 @@ export default function AiAssistantChat() {
     }, [sessionId, setActiveSessionId]);
 
 
+    // Fetch AI usage limits on mount.
+    const setUsage = useAiStore((s) => s.setUsage);
+    useEffect(() => {
+        aiService.getUsage().then(setUsage).catch(() => {});
+    }, [setUsage]);
+
     // Reset localMessages and processed ref if sessionId changes
     useEffect(() => {
         setLocalMessages([]);
@@ -78,12 +86,19 @@ export default function AiAssistantChat() {
     // Auto-scroll to bottom on new messages / thinking / inline quiz.
     useEffect(() => {
         const el = scrollRef.current;
-        if (el) el.scrollTop = el.scrollHeight;
+        if (el) {
+            const now = Date.now();
+            if (now - lastScrollRef.current > 100) {
+                el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+                lastScrollRef.current = now;
+            }
+        }
     }, [data?.messages?.length, localMessages.length, thinking, streamingAssistantMessage, inlineQuizzes]);
 
     const handleSend = async (msg, forceTemplate = undefined, editMessageId = undefined, regenerateMessageId = undefined) => {
         const trimmed = (msg || '').trim();
         if (!trimmed || sending) return;
+        setPendingUserInput(trimmed);
 
         // Quiz-intent detection: "generate a quiz on X", "quiz me on X", etc.
         const quizIntentMatch = trimmed.match(/(?:generate|create|make|give|start|begin)\s+(?:a\s+)?quiz\s+(?:on|about|for)\s+(.+)/i)
@@ -211,8 +226,10 @@ export default function AiAssistantChat() {
 
             setStreamingAssistantMessage('');
             
-            if (sessionId === 'new' && newSessionId) {
-                navigate(`/ai-assistant/chat/${newSessionId}`, { replace: true });
+            if (sessionId === 'new') {
+                if (newSessionId) {
+                    navigate(`/ai-assistant/chat/${newSessionId}`, { replace: true });
+                }
             } else {
                 await refetch();
             }
@@ -510,7 +527,7 @@ export default function AiAssistantChat() {
                         )}
                         {streamingAssistantMessage && (
                             <ChatMessage
-                                message={{ isStreaming: true, content: streamingAssistantMessage, role: 'assistant' }}
+                                message={{ isStreaming: true, content: streamingAssistantMessage, role: 'assistant', userInput: pendingUserInput }}
                                 user={user}
                             />
                         )}

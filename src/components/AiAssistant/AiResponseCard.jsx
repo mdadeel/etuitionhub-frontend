@@ -1,12 +1,14 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, Component } from 'react';
 import {
     BookOpen, Target, Brain, Globe, AlertTriangle, ClipboardList,
-    Sigma, ListChecks, FileText, CheckCircle2, Sparkles, ChevronDown,
+    Sigma, ListChecks, FileText, CheckCircle2, ChevronDown,
     Calculator, Lightbulb, Code2, Languages, FileEdit, Clock, Zap,
     XCircle, Compass, Lightbulb as Idea, GraduationCap, BookMarked, Flame,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ConversationalBubble from './ConversationalBubble';
+import PoruaLogo from './PoruaLogo';
 
 class RendererBoundary extends Component {
     constructor(props) {
@@ -48,12 +50,15 @@ export function parseInlineCode(text) {
     });
 }
 
-// Flat V2 Section Header
+// Premium Swiss Section Divider
 function SectionTitle({ icon: Icon, title }) {
     return (
-        <div className="flex items-center gap-2 mb-2 mt-6">
-            {Icon && <Icon size={16} className="text-primary/70" />}
-            <h3 className="text-[16px] font-semibold text-foreground tracking-tight">{title}</h3>
+        <div className="flex items-center gap-4 mb-5 mt-8">
+            <div className="text-[12px] font-bold uppercase tracking-[1px] text-accent bg-accent/10 px-3 py-1.5 border border-accent/20 rounded-sm flex items-center gap-2">
+                {Icon && <Icon size={14} strokeWidth={2.5} />}
+                {title}
+            </div>
+            <div className="flex-1 h-[1px] bg-border"></div>
         </div>
     );
 }
@@ -185,7 +190,7 @@ function Highlight({ type, title, children }) {
     const config = {
         key:     { icon: Idea,          color: 'text-blue-500',  bg: 'bg-blue-500/10',  border: 'border-blue-500/20',  defaultTitle: 'Key Point' },
         mistake: { icon: AlertTriangle, color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20', defaultTitle: 'Common Mistake' },
-        tip:     { icon: Sparkles,      color: 'text-primary',   bg: 'bg-primary/10',   border: 'border-primary/20',   defaultTitle: 'Exam Tip' },
+        tip:     { icon: ({size, className}) => <PoruaLogo iconOnly size={size || 14} className={className} />,      color: 'text-primary',   bg: 'bg-primary/10',   border: 'border-primary/20',   defaultTitle: 'Exam Tip' },
     };
     const c = config[type] || config.key;
     const Icon = c.icon;
@@ -219,27 +224,71 @@ function BulletList({ items }) {
     );
 }
 
+function isHtmlCode(code) {
+    if (!code || typeof code !== 'string') return false;
+    const clean = code.trim().toLowerCase();
+    return (
+        clean.startsWith('<!doctype html') ||
+        clean.includes('<html') ||
+        (clean.includes('<body') && clean.includes('</body>')) ||
+        (clean.includes('<table') && clean.includes('</table>')) ||
+        (clean.includes('<div') && clean.includes('</div>'))
+    );
+}
+
 function CodeBlock({ code }) {
     const [copied, setCopied] = useState(false);
     if (!code) return null;
+    
     const handleCopy = () => {
         navigator.clipboard?.writeText(code).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 1500);
         });
     };
+
+    const handlePreview = () => {
+        try {
+            const blob = new Blob([code], { type: 'text/html;charset=utf-8' });
+            const blobUrl = URL.createObjectURL(blob);
+            const previewWindow = window.open(blobUrl, '_blank');
+            if (!previewWindow) {
+                alert('Popup blocker prevented opening the preview in a new tab. Please allow popups for this site.');
+                return;
+            }
+            setTimeout(() => {
+                URL.revokeObjectURL(blobUrl);
+            }, 60000);
+        } catch (err) {
+            console.error('Failed to open preview:', err);
+        }
+    };
+
+    const isHtml = isHtmlCode(code);
+
     return (
-        <div className="relative group mt-3 mb-4">
-            <pre className="bg-zinc-950/90 dark:bg-zinc-950 border border-zinc-800 rounded-lg p-4 text-[13px] font-mono leading-relaxed overflow-x-auto whitespace-pre text-zinc-100">
+        <div className="relative group mt-3 mb-6">
+            <pre className="bg-[#080a0d] dark:bg-[#080a0d] border border-border rounded-sm p-5 text-[13px] font-mono leading-relaxed overflow-x-auto whitespace-pre text-zinc-100 shadow-sm">
                 {code}
             </pre>
-            <button
-                type="button"
-                onClick={handleCopy}
-                className="absolute top-2 right-2 text-[10px] font-medium tracking-wider px-2 py-1 rounded bg-zinc-800/80 border border-zinc-700 text-zinc-300 hover:text-white transition-colors"
-            >
-                {copied ? 'Copied' : 'Copy'}
-            </button>
+            <div className="absolute top-3 right-3 flex items-center gap-2">
+                {isHtml && (
+                    <button
+                        type="button"
+                        onClick={handlePreview}
+                        className="text-[11px] font-bold px-2 py-1 rounded-[2px] border border-[#f97316]/30 bg-[#f97316]/10 text-[#f97316] hover:bg-[#f97316] hover:text-white hover:border-[#f97316] hover:scale-[1.03] active:scale-[0.97] transition-all duration-200 cursor-pointer"
+                    >
+                        Preview
+                    </button>
+                )}
+                <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="text-[11px] font-medium px-2 py-1 rounded-sm border border-zinc-700 bg-zinc-800/80 text-zinc-300 hover:text-white hover:border-zinc-500 transition-colors cursor-pointer"
+                >
+                    {copied ? 'Copied' : 'Copy'}
+                </button>
+            </div>
         </div>
     );
 }
@@ -380,27 +429,40 @@ function ProgrammingTemplate({ data }) {
             
             {data.solution && <CodeBlock code={data.solution} />}
             
-            {data.bestPractices?.length > 0 && (
-                <div>
-                    <SectionTitle icon={Zap} title="Best Practices" />
-                    <BulletList items={data.bestPractices} />
+            {(data.bestPractices?.length > 0 || data.commonMistakes?.length > 0) && (
+                <div className="mt-8 mb-6">
+                    <SectionTitle icon={Idea} title="Insights & Best Practices" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {data.bestPractices?.length > 0 && (
+                            <div className="bg-transparent border border-border hover:border-foreground/30 transition-colors p-5 rounded-sm shadow-sm flex flex-col gap-3">
+                                <h3 className="font-bold text-[16px] flex items-center gap-2 text-success">
+                                    <Zap size={16} strokeWidth={2.5} />
+                                    Best Practices
+                                </h3>
+                                <BulletList items={data.bestPractices} />
+                            </div>
+                        )}
+                        {data.commonMistakes?.length > 0 && (
+                            <div className="bg-transparent border border-border hover:border-foreground/30 transition-colors p-5 rounded-sm shadow-sm flex flex-col gap-3">
+                                <h3 className="font-bold text-[16px] flex items-center gap-2 text-accent">
+                                    <AlertTriangle size={16} strokeWidth={2.5} />
+                                    Common Pitfalls
+                                </h3>
+                                <BulletList items={data.commonMistakes} />
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
             
-            {data.commonMistakes?.length > 0 && (
-                <Highlight type="mistake" title="Common Mistakes">
-                    <BulletList items={data.commonMistakes} />
-                </Highlight>
-            )}
-            
             {data.testCases?.length > 0 && (
-                <div className="mt-4">
-                    <SectionTitle icon={CheckCircle2} title="Test Cases" />
+                <div className="mt-8">
+                    <SectionTitle icon={CheckCircle2} title="Verification & Tests" />
                     <div className="space-y-2">
                         {data.testCases.map((tc, i) => (
-                            <div key={i} className="bg-muted/20 border border-border/50 rounded-md p-3 text-[14px] font-mono text-foreground/80">
-                                <div className="mb-1"><span className="text-muted-foreground">Input:</span> {parseInlineCode(tc.input)}</div>
-                                <div><span className="text-muted-foreground">Output:</span> {parseInlineCode(tc.expectedOutput)}</div>
+                            <div key={i} className="bg-muted/10 border border-border/60 rounded-sm p-4 text-[14px] font-mono text-foreground/80">
+                                <div className="mb-2"><span className="text-muted-foreground font-sans text-xs uppercase tracking-wider font-semibold">Input:</span> <br/>{parseInlineCode(tc.input)}</div>
+                                <div><span className="text-muted-foreground font-sans text-xs uppercase tracking-wider font-semibold">Output:</span> <br/>{parseInlineCode(tc.expectedOutput)}</div>
                             </div>
                         ))}
                     </div>
@@ -528,7 +590,7 @@ function IeltsTemplate({ data }) {
             
             {data.practiceTips?.length > 0 && (
                 <div>
-                    <SectionTitle icon={Sparkles} title="Practice Tips" />
+                    <SectionTitle icon={({size, className}) => <PoruaLogo iconOnly size={size || 20} className={className} />} title="Practice Tips" />
                     <BulletList items={data.practiceTips} />
                 </div>
             )}
@@ -578,6 +640,93 @@ function SrijonshilTemplate({ data }) {
     );
 }
 
+function NeoBrutalistDivider({ title, icon: Icon }) {
+    return (
+        <div className="flex items-center gap-4 mb-5">
+            <div className="text-[12px] font-bold uppercase tracking-[1px] text-[#f97316] bg-[rgba(249,115,22,0.1)] py-1 px-3 border border-[rgba(249,115,22,0.2)] rounded-[2px] flex items-center gap-2">
+                {Icon && <Icon size={12} strokeWidth={2.5} />}
+                {title}
+            </div>
+            <div className="flex-1 h-[1px] bg-border"></div>
+        </div>
+    );
+}
+
+function UnifiedTemplate({ data }) {
+    return (
+        <div className="flex flex-col gap-8">
+            {/* SECTION 1: Solution Code */}
+            {data.solution && (
+                <section>
+                    <NeoBrutalistDivider title={data.solution.title || "Solution"} icon={FileText} />
+                    {data.solution.explanation && (
+                        <p className="text-muted-foreground leading-[1.6] text-[15px] mb-4">
+                            {parseInlineCode(data.solution.explanation)}
+                        </p>
+                    )}
+                    {data.solution.codeOrMath && (
+                        <div className="mt-4 rounded-[2px] overflow-hidden shadow-sm border border-border">
+                            <CodeBlock code={data.solution.codeOrMath} />
+                        </div>
+                    )}
+                </section>
+            )}
+            
+            {/* SECTION 2: Insights & Best Practices */}
+            {data.insights && data.insights.cards?.length > 0 && (
+                <section>
+                    <NeoBrutalistDivider title={data.insights.title || "Insights & Best Practices"} icon={Idea} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+                        {data.insights.cards.map((card, i) => (
+                            <div key={i} className="bg-[rgba(255,255,255,0.01)] border border-border hover:border-muted-foreground/30 p-5 rounded-[2px] shadow-sm flex flex-col gap-3 transition-colors duration-300">
+                                <h3 className={cn("font-bold text-[16px] flex items-center gap-2", card.type === 'success' ? "text-[#10b981]" : card.type === 'warning' ? "text-[#f97316]" : "text-primary")}>
+                                    {card.type === 'success' ? <CheckCircle2 size={16} strokeWidth={2.5} /> : card.type === 'warning' ? <AlertTriangle size={16} strokeWidth={2.5} /> : <Idea size={16} strokeWidth={2.5} />}
+                                    {card.title}
+                                </h3>
+                                <ul className="flex flex-col gap-2.5 list-none">
+                                    {card.points.map((pt, j) => (
+                                        <li key={j} className="text-[14px] leading-[1.5] text-muted-foreground relative pl-4">
+                                            <span className="absolute left-0 top-0 font-bold">•</span>
+                                            {parseInlineCode(pt)}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+            
+            {/* SECTION 3: Verification & Tests */}
+            {data.verification && data.verification.scenarios?.length > 0 && (
+                <section>
+                    <NeoBrutalistDivider title={data.verification.title || "Verification & Tests"} icon={CheckCircle2} />
+                    <div className="w-full mt-3 rounded-[2px] overflow-hidden border border-border overflow-x-auto">
+                        <table className="w-full text-left text-[14px] border-collapse whitespace-nowrap md:whitespace-normal">
+                            <thead className="bg-[rgba(255,255,255,0.02)] border-b border-border text-foreground font-semibold">
+                                <tr>
+                                    <th className="p-3 border-r border-border min-w-[120px]">Test Scenario</th>
+                                    <th className="p-3 border-r border-border min-w-[150px]">Input</th>
+                                    <th className="p-3 min-w-[200px]">Expected Output</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.verification.scenarios.map((tc, i) => (
+                                    <tr key={i} className="border-b border-border last:border-b-0">
+                                        <td className="p-3 border-r border-border align-top">{parseInlineCode(tc.scenario || `Scenario ${i+1}`)}</td>
+                                        <td className="p-3 border-r border-border align-top"><code className="font-mono text-[13px] px-1.5 py-0.5 bg-background border border-border rounded-[2px] text-[#f97316] break-all">{tc.input}</code></td>
+                                        <td className="p-3 align-top">{parseInlineCode(tc.expectedOutput)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            )}
+        </div>
+    );
+}
+
 const TEMPLATE_RENDERERS = {
     concept: ConceptTemplate,
     math: MathTemplate,
@@ -585,6 +734,7 @@ const TEMPLATE_RENDERERS = {
     ielts: IeltsTemplate,
     general: GeneralTemplate,
     srijonshil: SrijonshilTemplate,
+    unified: UnifiedTemplate,
 };
 
 function getMetadataLabel(type, topic) {
@@ -634,12 +784,12 @@ export default function AiResponseCard({
     const metadataStr = getMetadataLabel(type, structured.topic);
 
     return (
-        <article className={cn('animate-fade-in-up w-full max-w-[850px] bg-card/60 border border-border/60 shadow-sm rounded-2xl p-5', className)}>
+        <article className={cn('animate-fade-in-up w-full max-w-[850px] bg-card border border-border rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6', className)}>
             {/* Header: metadata row with difficulty badge */}
             <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-3 font-medium flex-wrap">
                 <div className="flex items-center gap-2">
                     <span className="flex items-center justify-center size-5 rounded-md bg-primary/10 text-primary">
-                        <Sparkles size={12} />
+                        <PoruaLogo iconOnly size={12} />
                     </span>
                     <span>{metadataStr}</span>
                 </div>
@@ -667,22 +817,25 @@ export default function AiResponseCard({
 
                 <FollowUpChips suggestions={structured.followUpSuggestions} onClick={onFollowUpClick} />
 
-                {/* Optional inline quiz CTA (V2 flat style) */}
+                {/* Optional inline quiz CTA (Neo-Brutalist Premium style) */}
                 {quizCta && (
-                    <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 border-t border-border/40">
-                        <div className="flex items-center gap-3">
-                            <Brain size={20} className="text-primary" />
-                            <p className="text-[15px] font-medium text-foreground">
-                                🧠 Want to test yourself?
+                    <div className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-lg border border-border bg-gradient-to-b from-transparent to-accent/5">
+                        <div className="flex flex-col gap-1">
+                            <h3 className="text-[16px] font-bold text-foreground flex items-center gap-2">
+                                <Brain size={18} className="text-accent" />
+                                Want to test your understanding?
+                            </h3>
+                            <p className="text-[13px] text-muted-foreground">
+                                Take a micro-quiz based on this content.
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={() => onStartQuiz?.(structured?.topic)}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-[14px] font-semibold hover:bg-primary/90 transition-colors"
+                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm bg-accent text-white text-[14px] font-semibold transition-all duration-200 hover:bg-accent/90 hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_12px_rgba(var(--accent-rgb),0.2)]"
                         >
-                            <ClipboardList size={16} />
                             Generate Quiz
+                            <ClipboardList size={16} />
                         </button>
                     </div>
                 )}

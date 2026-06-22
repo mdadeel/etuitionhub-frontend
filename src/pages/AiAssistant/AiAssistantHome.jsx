@@ -6,7 +6,7 @@
 //   - Intent-categorized action cards (8 intents from spec)
 //   - Compact subject selector on mobile
 //   - Chat input to start a conversation
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Sparkles } from 'lucide-react';
@@ -42,6 +42,12 @@ export default function AiAssistantHome() {
     const { user } = useAuth();
     const subject = useAiStore((s) => s.subject);
     const [text, setText] = useState('');
+
+    // Fetch AI usage limits on mount.
+    const setUsage = useAiStore((s) => s.setUsage);
+    useEffect(() => {
+        aiService.getUsage().then(setUsage).catch(() => {});
+    }, [setUsage]);
 
     // Recent chat sessions for the sidebar preview.
     const { data: recentData } = useQuery({

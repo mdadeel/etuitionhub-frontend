@@ -13,9 +13,12 @@
 import { useEffect, useRef, useState } from 'react';
 import {
     Send, Loader2, Square, Paperclip, Mic, MicOff, X, FileText, Image as ImageIcon,
+    GraduationCap, BookOpen, FileSearch, Calculator, Atom, FlaskConical,
+    Dna, Monitor, Globe, Languages, PenTool, Award, Code2, Sparkles, Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAiStore } from '../../store/aiStore';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const MAX_LENGTH = 8000;
 const WARNING_BAND = 7500;
@@ -44,6 +47,32 @@ function subjectLabel(s) {
     return SUBJECT_LABELS[s] || 'General';
 }
 
+const SUBJECT_META = {
+    ssc:         { label: 'SSC',         icon: GraduationCap,  hint: 'Class 9-10 (NCTB)' },
+    hsc:         { label: 'HSC',         icon: BookOpen,        hint: 'Class 11-12 (NCTB)' },
+    admission:   { label: 'Admission',   icon: FileSearch,      hint: 'BUET, DU, Medical' },
+    math:        { label: 'Math',        icon: Calculator,      hint: 'SSC/HSC/Admission Math' },
+    physics:     { label: 'Physics',     icon: Atom,            hint: 'SSC/HSC/Admission Physics' },
+    chemistry:   { label: 'Chemistry',   icon: FlaskConical,    hint: 'SSC/HSC/Admission Chemistry' },
+    biology:     { label: 'Biology',     icon: Dna,             hint: 'SSC/HSC/Medical Admission' },
+    ict:         { label: 'ICT',         icon: Monitor,         hint: 'Information & Communication Technology' },
+    english:     { label: 'English',     icon: Globe,           hint: 'Grammar, Vocabulary, Writing' },
+    bangla:      { label: 'Bangla',      icon: Languages,       hint: 'SSC/HSC Bangla Literature & Grammar' },
+    ielts:       { label: 'IELTS',       icon: PenTool,         hint: 'Band scoring (0-9)' },
+    toefl:       { label: 'TOEFL',       icon: Award,           hint: 'TOEFL iBT (0-120)' },
+    sat:         { label: 'SAT',         icon: Award,           hint: 'Math + Reading & Writing' },
+    programming: { label: 'Programming', icon: Code2,           hint: 'Code & Software' },
+    general:     { label: 'General',     icon: Sparkles,        hint: 'Anything else' },
+};
+
+const SUBJECT_ORDER = [
+    'ssc', 'hsc', 'admission',
+    'math', 'physics', 'chemistry', 'biology', 'ict',
+    'english', 'bangla',
+    'ielts', 'toefl', 'sat',
+    'programming', 'general',
+];
+
 export default function ChatInput({
     value,
     onChange,
@@ -56,8 +85,12 @@ export default function ChatInput({
 }) {
     const taRef = useRef(null);
     const fileInputRef = useRef(null);
+    const slashMenuRef = useRef(null);
     const [focused, setFocused] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
+    const [slashMenuOpen, setSlashMenuOpen] = useState(false);
+    const [slashFilter, setSlashFilter] = useState('');
+    const [slashIndex, setSlashIndex] = useState(0);
     const recognitionRef = useRef(null);
 
     const subject = useAiStore((s) => s.subject);
@@ -65,6 +98,7 @@ export default function ChatInput({
     const attachmentFile = useAiStore((s) => s.attachmentFile);
     const setAttachmentFile = useAiStore((s) => s.setAttachmentFile);
     const setThinkingLabelIndex = useAiStore((s) => s.setThinkingLabelIndex);
+    const usage = useAiStore((s) => s.usage);
 
     // Auto-grow the textarea up to 6 lines, then scroll.
     useEffect(() => {
@@ -91,9 +125,73 @@ export default function ChatInput({
         return () => clearInterval(t);
     }, [loading, setThinkingLabelIndex]);
 
-    const thinkingLabelIndex = useAiStore((s) => s.thinkingLabelIndex);
+    // const thinkingLabelIndex = useAiStore((s) => s.thinkingLabelIndex);
+
+    // ───── Slash-command menu ─────
+    const filteredSubjects = SUBJECT_ORDER.filter((key) => {
+        if (!slashFilter) return true;
+        const meta = SUBJECT_META[key];
+        return (
+            key.startsWith(slashFilter.toLowerCase()) ||
+            meta.label.toLowerCase().startsWith(slashFilter.toLowerCase())
+        );
+    });
+
+    useEffect(() => {
+        if (!slashMenuOpen) return;
+        const handler = (e) => {
+            if (slashMenuRef.current && !slashMenuRef.current.contains(e.target)) {
+                setSlashMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [slashMenuOpen]);
+
+    const selectSlashSubject = (key) => {
+        const meta = SUBJECT_META[key];
+        setSubject(key);
+        setSlashMenuOpen(false);
+        const prefix = `/${meta.label.toLowerCase()} `;
+        onChange?.(prefix);
+        taRef.current?.focus();
+    };
+
+    const handleValueChange = (newValue) => {
+        const slashMatch = newValue.match(/^\/([a-zA-Z]*)$/);
+        if (slashMatch) {
+            setSlashFilter(slashMatch[1]);
+            setSlashMenuOpen(true);
+            setSlashIndex(0);
+        } else {
+            setSlashMenuOpen(false);
+        }
+        onChange?.(newValue);
+    };
 
     const handleKeyDown = (e) => {
+        if (slashMenuOpen && filteredSubjects.length > 0) {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setSlashIndex((i) => Math.min(i + 1, filteredSubjects.length - 1));
+                return;
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setSlashIndex((i) => Math.max(i - 1, 0));
+                return;
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                selectSlashSubject(filteredSubjects[slashIndex]);
+                return;
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                setSlashMenuOpen(false);
+                return;
+            }
+        }
         // Esc while loading → Stop
         if (e.key === 'Escape' && loading) {
             e.preventDefault();
@@ -103,12 +201,24 @@ export default function ChatInput({
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             const trimmed = (value || '').trim();
-            if (trimmed && !loading && !disabled) onSend?.(trimmed);
+            if (trimmed && !loading && !disabled) {
+                // Parse /command prefix from the message text
+                let msg = trimmed;
+                const commandMatch = trimmed.match(/^\/(\w+)\s*(.*)/);
+                if (commandMatch) {
+                    const key = commandMatch[1].toLowerCase();
+                    if (SUBJECT_META[key]) {
+                        setSubject(key);
+                        msg = commandMatch[2] || '';
+                    }
+                }
+                onSend?.(msg);
+            }
         }
     };
 
     const charCount = (value || '').length;
-    const overWarning = charCount > WARNING_BAND;
+    // const overWarning = charCount > WARNING_BAND;
     const overLimit = charCount > MAX_LENGTH;
     const canSend = !overLimit && !loading && !disabled && (value || '').trim().length > 0;
 
@@ -116,7 +226,17 @@ export default function ChatInput({
         if (loading) {
             onStop?.();
         } else if (canSend) {
-            onSend?.((value || '').trim());
+            const trimmed = (value || '').trim();
+            let msg = trimmed;
+            const commandMatch = trimmed.match(/^\/(\w+)\s*(.*)/);
+            if (commandMatch) {
+                const key = commandMatch[1].toLowerCase();
+                if (SUBJECT_META[key]) {
+                    setSubject(key);
+                    msg = commandMatch[2] || '';
+                }
+            }
+            onSend?.(msg);
         }
     };
 
@@ -193,141 +313,183 @@ function pickRecognitionLang() {
                 className,
             )}
         >
-            {/* Subject context pill (above textarea) */}
-            {subject && subject !== 'general' && (
-                <div className="flex items-center gap-1.5 px-4 pt-2">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 border border-primary/30 text-[11px] font-label text-primary">
-                        {subjectLabel(subject)}
-                        <button
-                            type="button"
-                            onClick={() => setSubject('general')}
-                            aria-label="Clear subject"
-                            className="ml-0.5 -mr-0.5 rounded-sm hover:bg-primary/20 inline-flex items-center justify-center"
-                        >
-                            <X size={10} />
-                        </button>
-                    </span>
-                </div>
-            )}
-
-            <textarea
-                ref={taRef}
-                value={value}
-                onChange={(e) => onChange?.(e.target.value.slice(0, MAX_LENGTH))}
-                onKeyDown={handleKeyDown}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
-                placeholder={resolvedPlaceholder}
-                rows={1}
-                disabled={disabled}
-                className={cn(
-                    'w-full resize-none bg-transparent px-4 pt-3.5 pb-2 text-sm leading-[22px] text-foreground',
-                    'placeholder:text-muted-foreground/60 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
-                    'disabled:opacity-60 disabled:cursor-not-allowed',
-                )}
-                style={{ minHeight: 44, maxHeight: 152 }}
-            />
-
-            {/* Attachment preview chip */}
-            {attachmentFile && (
-                <div className="px-4 pb-1.5">
-                    <span className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-muted/60 px-3 py-1.5 text-xs font-label">
-                        {attachmentFile.type?.startsWith('image/') ? (
-                            <ImageIcon size={12} />
-                        ) : (
-                            <FileText size={12} />
-                        )}
-                        <span className="max-w-[180px] truncate">{attachmentFile.name}</span>
-                        <button
-                            type="button"
-                            onClick={handleRemoveAttachment}
-                            aria-label="Remove attachment"
-                            className="text-muted-foreground hover:text-foreground"
-                        >
-                            <X size={12} />
-                        </button>
-                    </span>
-                </div>
-            )}
-
-            <div className="flex items-center justify-between gap-2 px-3 pb-2.5">
-                <div className="flex items-center gap-1">
-                    {/* Hidden file picker */}
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={handleFileChange}
-                        className="hidden"
-                        aria-hidden="true"
-                    />
+            <div className="flex items-end gap-1.5 px-3 pb-2.5 pt-2">
+                {/* Hidden file picker */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    aria-hidden="true"
+                />
+                <div className="flex items-center gap-0.5 pb-1">
                     <button
                         type="button"
                         onClick={handleAttachClick}
                         title="Attach image or PDF"
                         aria-label="Attach image or PDF"
-                        className="h-7 w-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted inline-flex items-center justify-center transition-colors"
+                        className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted inline-flex items-center justify-center transition-colors"
                     >
-                        <Paperclip size={14} />
+                        <Paperclip size={16} />
                     </button>
-                    {SPEECH_SUPPORTED && (
-                        <button
-                            type="button"
-                            onClick={isRecording ? stopRecording : startRecording}
-                            title={isRecording ? 'Stop recording' : 'Voice input'}
-                            aria-label={isRecording ? 'Stop recording' : 'Voice input'}
-                            className={cn(
-                                'h-7 w-7 rounded-md inline-flex items-center justify-center transition-colors',
-                                isRecording
-                                    ? 'text-destructive animate-pulse'
-                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted',
-                            )}
-                        >
-                            {isRecording ? <MicOff size={14} /> : <Mic size={14} />}
-                        </button>
-                    )}
                 </div>
-
-                <div className="flex items-center gap-2">
-                    <span
+                <div className="flex-1 relative">
+                    {/* Slash-command subject menu */}
+                    {slashMenuOpen && filteredSubjects.length > 0 && (
+                        <div
+                            ref={slashMenuRef}
+                            className="absolute bottom-full left-0 right-0 mb-2 z-50 rounded-xl border border-border/40 bg-background shadow-lg overflow-hidden"
+                        >
+                            <div className="max-h-48 overflow-y-auto py-1">
+                                {filteredSubjects.map((key, i) => {
+                                    const meta = SUBJECT_META[key];
+                                    const Icon = meta.icon;
+                                    return (
+                                        <button
+                                            key={key}
+                                            type="button"
+                                            onClick={() => selectSlashSubject(key)}
+                                            onMouseEnter={() => setSlashIndex(i)}
+                                            className={cn(
+                                                'w-full flex items-center gap-2 px-3 py-1.5 text-left text-xs transition-colors',
+                                                i === slashIndex
+                                                    ? 'bg-primary/10 text-foreground'
+                                                    : 'text-muted-foreground hover:bg-muted/50',
+                                            )}
+                                        >
+                                            <span className="size-5 rounded-md bg-muted flex items-center justify-center shrink-0">
+                                                <Icon size={11} className={i === slashIndex ? 'text-primary' : ''} />
+                                            </span>
+                                            <span className="flex-1">{meta.label}</span>
+                                            <span className="text-[10px] text-muted-foreground/50 font-mono">/{key}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                    {/* Attachment preview inline above textarea */}
+                    {attachmentFile && (
+                        <div className="pb-1">
+                            <span className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-muted/60 px-3 py-1.5 text-xs font-label">
+                                {attachmentFile.type?.startsWith('image/') ? (
+                                    <ImageIcon size={12} />
+                                ) : (
+                                    <FileText size={12} />
+                                )}
+                                <span className="max-w-[180px] truncate">{attachmentFile.name}</span>
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveAttachment}
+                                    aria-label="Remove attachment"
+                                    className="text-muted-foreground hover:text-foreground"
+                                >
+                                    <X size={12} />
+                                </button>
+                            </span>
+                        </div>
+                    )}
+                    <textarea
+                        ref={taRef}
+                        value={value}
+                        onChange={(e) => handleValueChange(e.target.value.slice(0, MAX_LENGTH))}
+                        onKeyDown={handleKeyDown}
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => setFocused(false)}
+                        placeholder={slashMenuOpen ? 'Type a subject name…' : resolvedPlaceholder}
+                        rows={1}
+                        disabled={disabled}
                         className={cn(
-                            'text-[10px] font-label tracking-wider transition-colors',
-                            overLimit
-                                ? 'text-destructive'
-                                : overWarning
-                                    ? 'text-amber-500'
-                                    : 'text-muted-foreground/60',
+                            'w-full resize-none bg-transparent text-sm leading-[22px] text-foreground',
+                            'placeholder:text-muted-foreground/60 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
+                            'disabled:opacity-60 disabled:cursor-not-allowed',
                         )}
-                    >
-                        {charCount}/{MAX_LENGTH}
-                    </span>
+                        style={{ minHeight: 24, maxHeight: 152 }}
+                    />
+                </div>
+                <div className="flex items-end gap-1.5 pb-1">
+                    {usage && usage.limit.daily !== Infinity && (
+                        <TooltipProvider delayDuration={200}>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div
+                                        className={cn(
+                                            'flex items-center gap-1 rounded-full px-2.5 py-1 mr-1.5 border transition-all cursor-default select-none',
+                                            usage.remaining.daily === 0 || usage.remaining.monthly === 0
+                                                ? 'bg-destructive/10 text-destructive border-destructive/20'
+                                                : usage.remaining.daily / usage.limit.daily < 0.3 || usage.remaining.monthly / usage.limit.monthly < 0.3
+                                                    ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+                                                    : 'bg-muted/50 text-muted-foreground border-transparent hover:border-border/60 hover:text-foreground'
+                                        )}
+                                    >
+                                        <Zap 
+                                            size={13} 
+                                            className={cn(
+                                                usage.remaining.daily > 0 && usage.remaining.monthly > 0 ? "fill-current" : ""
+                                            )} 
+                                        />
+                                        <span className="text-[11px] font-bold tracking-tight">
+                                            {usage.remaining.daily}
+                                        </span>
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" sideOffset={12} className="px-3 py-2 text-xs">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex justify-between gap-4">
+                                            <span className="text-muted-foreground">Daily limits:</span>
+                                            <span className="font-medium">{usage.remaining.daily} / {usage.limit.daily}</span>
+                                        </div>
+                                        <div className="flex justify-between gap-4">
+                                            <span className="text-muted-foreground">Monthly limits:</span>
+                                            <span className="font-medium">{usage.remaining.monthly} / {usage.limit.monthly}</span>
+                                        </div>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
                     {loading ? (
                         <button
                             type="button"
                             onClick={onStop}
                             aria-label="Stop generating"
-                            className="inline-flex items-center gap-1.5 bg-destructive/10 text-destructive border border-destructive/30 h-9 px-3.5 text-xs font-semibold rounded-lg hover:bg-destructive/20 active:scale-95 transition-all"
+                            className="inline-flex items-center justify-center bg-destructive/10 text-destructive border border-destructive/30 h-9 w-9 rounded-lg hover:bg-destructive/20 active:scale-95 transition-all"
                         >
-                            <Square size={12} strokeWidth={2.5} />
-                            <span>Stop</span>
+                            <Square size={14} strokeWidth={2.5} />
                         </button>
-                    ) : (
+                    ) : (value || '').trim().length > 0 ? (
                         <button
                             type="button"
                             onClick={handleSendClick}
                             disabled={!canSend}
                             aria-label="Send message"
                             className={cn(
-                                'flex items-center gap-1.5 rounded-lg px-3.5 h-9 text-xs font-semibold transition-all duration-200',
+                                'inline-flex items-center justify-center rounded-lg h-9 w-9 transition-all duration-200',
                                 canSend
                                     ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90 hover:shadow-primary/30 active:scale-95'
                                     : 'bg-muted text-muted-foreground/60 cursor-not-allowed',
                             )}
                         >
-                            {THINKING_LABELS[thinkingLabelIndex] === 'Thinking…' ? null : null}
-                            <Send size={13} strokeWidth={2.5} />
-                            <span>Send</span>
+                            <Send size={16} strokeWidth={2} />
                         </button>
+                    ) : SPEECH_SUPPORTED ? (
+                        <button
+                            type="button"
+                            onClick={isRecording ? stopRecording : startRecording}
+                            title={isRecording ? 'Stop recording' : 'Voice input'}
+                            aria-label={isRecording ? 'Stop recording' : 'Voice input'}
+                            className={cn(
+                                'inline-flex items-center justify-center rounded-lg h-9 w-9 transition-all duration-200',
+                                isRecording
+                                    ? 'bg-destructive/10 text-destructive animate-pulse border border-destructive/30'
+                                    : 'bg-primary/10 text-primary hover:bg-primary/20 active:scale-95',
+                            )}
+                        >
+                            {isRecording ? <MicOff size={16} /> : <Mic size={16} />}
+                        </button>
+                    ) : (
+                        <span className="h-9 w-9" />
                     )}
                 </div>
             </div>

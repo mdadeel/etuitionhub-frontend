@@ -55,6 +55,10 @@ export const useAiStore = create(
             thinkingLabelIndex: 0,
             setThinkingLabelIndex: (i) => set({ thinkingLabelIndex: i }),
 
+            // Usage / credit tracking (fetched on mount).
+            usage: null,
+            setUsage: (usage) => set({ usage }),
+
             // Reset everything (used on logout).
             reset: () =>
                 set({
@@ -66,6 +70,7 @@ export const useAiStore = create(
                     editingMessageId: null,
                     attachmentFile: null,
                     thinkingLabelIndex: 0,
+                    usage: null,
                 }),
         }),
         {
