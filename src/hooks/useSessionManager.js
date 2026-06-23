@@ -5,6 +5,7 @@ import api, { resetSession } from '../services/api';
 import Cookies from 'js-cookie';
 import { AUTH_COOKIE_OPTIONS } from '../utils/cookieOptions';
 import toast from 'react-hot-toast';
+import { logError } from '../utils/devLogger';
 
 const useSessionManager = () => {
     const [user, setUser] = useState(null);
@@ -72,7 +73,7 @@ const useSessionManager = () => {
                     localStorage.setItem('x-org-id', targetOrg.orgId);
                 }
             } catch (err) {
-                console.error("Failed to fetch user organizations", err);
+                logError('useSessionManager', 'failed to fetch user organizations', err);
             }
 
             return res.data;
@@ -168,7 +169,7 @@ const useSessionManager = () => {
                             localStorage.setItem('x-org-id', targetOrg.orgId);
                         }
                     } catch (err) {
-                        console.error("Failed to fetch user organizations", err);
+                        logError('useSessionManager', 'failed to fetch user organizations', err);
                     }
                 } catch (error) {
                     if (error.response?.status === 404) {

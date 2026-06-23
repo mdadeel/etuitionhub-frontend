@@ -10,7 +10,10 @@ import {
   Loader2,
   Copy,
   CheckCircle2,
-  Shield
+  Shield,
+  Clock,
+  XCircle,
+  UserCheck
 } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
 
@@ -18,7 +21,9 @@ const OrgMembers = () => {
   const { orgId } = useParams();
   const [members, setMembers] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [joinRequests, setJoinRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("members");
   
   // Invite Modal State
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -38,6 +43,15 @@ const OrgMembers = () => {
       setRoles(rolesRes.data.data);
       if (rolesRes.data.data.length > 0) {
         setInviteRoleId(rolesRes.data.data[0]._id);
+      }
+
+      // Fetch pending join requests
+      try {
+        const joinRequestsRes = await api.get(`/api/v1/organizations/${orgId}/join-requests?status=pending`);
+        setJoinRequests(joinRequestsRes.data.data || []);
+      } catch {
+        // User might not have permission - that's fine
+        setJoinRequests([]);
       }
     } catch (error) {
       toast.error("Failed to load members or roles");
@@ -60,7 +74,7 @@ const OrgMembers = () => {
         roleId: inviteRoleId
       });
       toast.success("Invitation generated!");
-      setInviteResult(res.data.data); // Contains { inviteId, email, token }
+      setInviteResult(res.data.data);
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to create invite");
     } finally {
@@ -86,9 +100,40 @@ const OrgMembers = () => {
     try {
       await api.delete(`/api/v1/organizations/${orgId}/members/${memberId}`);
       toast.success("Member removed successfully");
-      fetchMembersAndRoles(); // Refresh the list
+      fetchMembersAndRoles();
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to remove member");
+    }
+  };
+
+  const handleApproveRequest = async (requestId, userName) => {
+    if (!window.confirm(`Approve ${userName}'s request to join?`)) {
+      return;
+    }
+    try {
+      await api.patch(`/api/v1/organizations/${orgId}/join-requests/${requestId}`, {
+        action: 'approve'
+      });
+      toast.success(`${userName} has been approved and added to the organization`);
+      fetchMembersAndRoles();
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to approve request");
+    }
+  };
+
+  const handleRejectRequest = async (requestId, userName) => {
+    const reason = window.prompt(`Reason for rejecting ${userName}? (optional)`);
+    if (reason === null) return;
+
+    try {
+      await api.patch(`/api/v1/organizations/${orgId}/join-requests/${requestId}`, {
+        action: 'reject',
+        rejectionReason: reason || ''
+      });
+      toast.success(`${userName}'s request has been rejected`);
+      fetchMembersAndRoles();
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to reject request");
     }
   };
 
@@ -106,7 +151,7 @@ const OrgMembers = () => {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Organization Members</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Manage your staff, teachers, and students.
+            Manage your staff, teachers, students, and join requests.
           </p>
         </div>
         <button
@@ -118,73 +163,171 @@ const OrgMembers = () => {
         </button>
       </div>
 
-      {/* Members Data Table */}
-      <DataTable
-        columns={[
-          {
-            key: "userId",
-            label: "User",
-            render: (_, member) => (
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                  {member.userId?.displayName?.charAt(0) || 'U'}
+      {/* Tabs */}
+      <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">
+        <button
+          onClick={() => setActiveTab("members")}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === "members"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Members ({members.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("requests")}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors relative ${
+            activeTab === "requests"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Join Requests
+          {joinRequests.length > 0 && (
+            <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
+              {joinRequests.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Members Tab */}
+      {activeTab === "members" && (
+        <DataTable
+          columns={[
+            {
+              key: "userId",
+              label: "User",
+              render: (_, member) => (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                    {member.userId?.displayName?.charAt(0) || 'U'}
+                  </div>
+                  <div>
+                    <div className="font-medium text-foreground">{member.userId?.displayName}</div>
+                    <div className="text-xs text-muted-foreground">{member.userId?.email}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-medium text-foreground">{member.userId?.displayName}</div>
-                  <div className="text-xs text-muted-foreground">{member.userId?.email}</div>
+              ),
+            },
+            {
+              key: "roleId",
+              label: "Role",
+              render: (_, member) => (
+                <div className="flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-primary" />
+                  <span className="font-medium">{member.roleId?.name}</span>
                 </div>
-              </div>
-            ),
-          },
-          {
-            key: "roleId",
-            label: "Role",
-            render: (_, member) => (
-              <div className="flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-primary" />
-                <span className="font-medium">{member.roleId?.name}</span>
-              </div>
-            ),
-          },
-          {
-            key: "status",
-            label: "Status",
-            render: (_, member) => (
-              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                member.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-              }`}>
-                {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
-              </span>
-            ),
-          },
-          {
-            key: "joinedAt",
-            label: "Joined",
-            render: (_, member) => (
-              <span className="text-muted-foreground">
-                {new Date(member.joinedAt).toLocaleDateString()}
-              </span>
-            ),
-          },
-          {
-            key: "_id",
-            label: "Actions",
-            align: "right",
-            render: (_, member) => (
-              <button
-                onClick={() => handleRemoveMember(member._id, member.userId?.displayName)}
-                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
-                title="Remove Member"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            ),
-          },
-        ]}
-        data={members}
-        emptyState="No members found."
-        rowKey={(m) => m._id}
-      />
+              ),
+            },
+            {
+              key: "status",
+              label: "Status",
+              render: (_, member) => (
+                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                  member.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                }`}>
+                  {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                </span>
+              ),
+            },
+            {
+              key: "joinedAt",
+              label: "Joined",
+              render: (_, member) => (
+                <span className="text-muted-foreground">
+                  {new Date(member.createdAt).toLocaleDateString()}
+                </span>
+              ),
+            },
+            {
+              key: "_id",
+              label: "Actions",
+              align: "right",
+              render: (_, member) => (
+                <button
+                  onClick={() => handleRemoveMember(member._id, member.userId?.displayName)}
+                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                  title="Remove Member"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              ),
+            },
+          ]}
+          data={members}
+          emptyState="No members found."
+          rowKey={(m) => m._id}
+        />
+      )}
+
+      {/* Join Requests Tab */}
+      {activeTab === "requests" && (
+        <DataTable
+          columns={[
+            {
+              key: "userId",
+              label: "User",
+              render: (_, request) => (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                    {request.userId?.displayName?.charAt(0) || 'U'}
+                  </div>
+                  <div>
+                    <div className="font-medium text-foreground">{request.userId?.displayName}</div>
+                    <div className="text-xs text-muted-foreground">{request.userId?.email}</div>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: "message",
+              label: "Message",
+              render: (_, request) => (
+                <span className="text-sm text-muted-foreground line-clamp-2">
+                  {request.message || "No message provided"}
+                </span>
+              ),
+            },
+            {
+              key: "createdAt",
+              label: "Requested",
+              render: (_, request) => (
+                <span className="text-muted-foreground">
+                  {new Date(request.createdAt).toLocaleDateString()}
+                </span>
+              ),
+            },
+            {
+              key: "_id",
+              label: "Actions",
+              align: "right",
+              render: (_, request) => (
+                <div className="flex items-center justify-end gap-1">
+                  <button
+                    onClick={() => handleApproveRequest(request._id, request.userId?.displayName)}
+                    className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-lg transition-colors"
+                    title="Approve"
+                  >
+                    <UserCheck className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleRejectRequest(request._id, request.userId?.displayName)}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                    title="Reject"
+                  >
+                    <XCircle className="w-4 h-4" />
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+          data={joinRequests}
+          emptyState="No pending join requests."
+          rowKey={(r) => r._id}
+        />
+      )}
 
       {/* Invite Modal Overlay */}
       {showInviteModal && (

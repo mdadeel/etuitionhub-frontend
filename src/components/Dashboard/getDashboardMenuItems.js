@@ -44,31 +44,53 @@ export function getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyR
     ];
   }
 
-  if (orgContext) {
-    const orgPath = `/dashboard/org/${orgContext.orgId || orgContext.slug}`;
-    const items = [
-      { path: orgPath, label: "Overview", icon: LayoutDashboard },
-      { path: `${orgPath}/tuitions`, label: "Tuitions", icon: BookOpen },
-      { path: `${orgPath}/sessions`, label: "Sessions", icon: ClipboardCheck },
-    ];
-    if (hasPermission('member:read')) {
-      items.push({ path: `${orgPath}/members`, label: "Members", icon: Users });
+    if (orgContext) {
+      const orgPath = `/dashboard/org/${orgContext.orgId || orgContext.slug}`;
+      const items = [
+        { path: orgPath, label: "Overview", icon: LayoutDashboard },
+        { path: `${orgPath}/tuitions`, label: "Tuitions", icon: BookOpen },
+        { path: `${orgPath}/sessions`, label: "Sessions", icon: ClipboardCheck },
+      ];
+      if (hasPermission('member:read')) {
+        items.push({ path: `${orgPath}/members`, label: "Members", icon: Users });
+      }
+      if (hasPermission('student:view')) {
+        items.push({ path: `${orgPath}/students`, label: "Students", icon: User });
+        items.push({ path: `${orgPath}/tutors`, label: "Tutors", icon: ShieldCheck });
+      }
+      if (hasPermission('class:manage')) {
+        items.push({ path: `${orgPath}/classes`, label: "Classes", icon: LayoutDashboard });
+      }
+      if (hasPermission('subject:manage')) {
+        items.push({ path: `${orgPath}/subjects`, label: "Subjects", icon: FileStack });
+      }
+      if (hasPermission('assignment:create') || hasPermission('student:view')) {
+        items.push({ path: `${orgPath}/assignments`, label: "Assignments", icon: FileText });
+      }
+      if (hasPermission('material:upload') || hasPermission('student:view')) {
+        items.push({ path: `${orgPath}/materials`, label: "Materials", icon: Bookmark });
+      }
+      if (hasPermission('announcement:create') || hasPermission('student:view')) {
+        items.push({ path: `${orgPath}/announcements`, label: "Announcements", icon: Mail });
+      }
+      if (hasPermission('attendance:mark')) {
+        items.push({ path: `${orgPath}/attendance`, label: "Attendance", icon: Calendar });
+      }
+      if (hasPermission('billing:read')) {
+        items.push({ path: `${orgPath}/payments`, label: "Payments", icon: Banknote });
+        items.push({ path: `${orgPath}/billing`, label: "Subscription", icon: CreditCard });
+      }
+      if (hasPermission('role:view')) {
+        items.push({ path: `${orgPath}/roles`, label: "Roles", icon: Shield });
+      }
+      if (hasPermission('analytics:view')) {
+        items.push({ path: `${orgPath}/analytics`, label: "Analytics", icon: BarChart3 });
+      }
+      if (hasPermission('org:update')) {
+        items.push({ path: `${orgPath}/settings`, label: "Settings", icon: Settings });
+      }
+      return items;
     }
-    if (hasPermission('billing:read')) {
-      items.push({ path: `${orgPath}/payments`, label: "Payments", icon: Banknote });
-      items.push({ path: `${orgPath}/billing`, label: "Subscription", icon: CreditCard });
-    }
-    if (hasPermission('role:view')) {
-      items.push({ path: `${orgPath}/roles`, label: "Roles", icon: Shield });
-    }
-    if (hasPermission('analytics:view')) {
-      items.push({ path: `${orgPath}/analytics`, label: "Analytics", icon: BarChart3 });
-    }
-    if (hasPermission('org:update')) {
-      items.push({ path: `${orgPath}/settings`, label: "Settings", icon: Settings });
-    }
-    return items;
-  }
 
   if (legacyRole === 'admin') {
     return [

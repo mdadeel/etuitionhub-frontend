@@ -1,6 +1,7 @@
 // analytics hook - gets dashboard stats
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import { logError } from '../utils/devLogger';
 
 // main hook
 export function useAnalytics() {
@@ -22,7 +23,7 @@ export function useAnalytics() {
             setStats(res.data);
             // console.log('stats loaded:', res.data);
         } catch (err) {
-            console.error('analytics fetch failed:', err.message);
+            logError('useAnalytics', 'analytics fetch failed', err.message);
             setFetchError(err.response?.data?.error || 'failed to load');
         } finally {
             setIsLoading(false);
@@ -78,7 +79,7 @@ export function useAnalyticsFallback() {
                     approvedTuitions: approved, totalRevenue: revenue
                 });
             } catch (err) {
-                console.error('fallback failed:', err.message);
+                logError('useAnalytics', 'fallback failed', err.message);
             } finally {
                 setIsLoading(false);
             }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { tuitionService } from '../services/tuitionService';
 import toast from 'react-hot-toast';
+import { logError } from '../utils/devLogger';
 
 export const useTuitions = (initialFilters = {}) => {
     const [tuitions, setTuitions] = useState([]);
@@ -44,7 +45,7 @@ export const useTuitions = (initialFilters = {}) => {
                 }
             } catch (err) {
                 if (!active) return;
-                console.error('tuition fetch error:', err);
+                logError('useTuitions', 'tuition fetch error', err);
                 const errorMsg = err.response?.data?.error || 'Failed to load tuitions. Please check your connection.';
                 setError(errorMsg);
                 toast.error(errorMsg);

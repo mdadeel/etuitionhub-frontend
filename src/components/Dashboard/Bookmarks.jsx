@@ -7,6 +7,7 @@ import { Bookmark, Trash2, ExternalLink, Users, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TutorCardGridSkeleton, TuitionCardGridSkeleton } from "@/components/shared/skeletons";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { AppleHeader } from "@/components/shared/AppleUI";
 
 const Bookmarks = () => {
   const navigate = useNavigate();

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { DynamicIslandContext, LAYOUT_PRESETS } from './DynamicIslandContext';
-import { registerToastBridge } from '../lib/react-hot-toast-mock';
 
 export const DynamicIslandProvider = ({ children }) => {
   const [activeNotification, setActiveNotification] = useState(LAYOUT_PRESETS.idle);
@@ -109,19 +108,6 @@ export const DynamicIslandProvider = ({ children }) => {
       }
     }, 150);
   }, [collapse]);
-
-  // Register legacy toast bridging
-  useEffect(() => {
-    registerToastBridge({
-      success: (msg, opts) => showNotification('success', { title: 'Success', message: msg }, opts),
-      error: (msg, opts) => showNotification('error', { title: 'Error', message: msg }, opts),
-      warning: (msg, opts) => showNotification('warning', { title: 'Warning', message: msg }, opts),
-      info: (msg, opts) => showNotification('info', { title: 'Notification', message: msg }, opts),
-      loading: (msg, opts) => morph('process', { title: msg, percentage: 0 }, opts),
-      dismiss: () => collapse(),
-    });
-    return () => registerToastBridge(null);
-  }, [showNotification, morph, collapse]);
 
   return (
     <DynamicIslandContext.Provider

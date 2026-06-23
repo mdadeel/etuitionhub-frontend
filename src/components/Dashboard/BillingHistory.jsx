@@ -3,6 +3,7 @@ import StudentPayments from "./StudentPayments";
 import MyReceipts from "./MyReceipts";
 import { CreditCard, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AppleHeader } from "@/components/shared/AppleUI";
 
 const BillingHistory = () => {
   const [activeTab, setActiveTab] = useState("payments");

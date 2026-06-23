@@ -1,5 +1,5 @@
 import "./app.css";
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, lazy } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -23,10 +23,9 @@ import PrivateRoute from "./components/shared/PrivateRoute";
 import PublicRoute from "./components/shared/PublicRoute";
 import FloatingChat from "./components/shared/FloatingChat";
 import { cn } from "@/lib/utils";
-import ErrorBoundary from "./components/shared/ErrorBoundary";
+import RouteErrorBoundary from "./components/shared/RouteErrorBoundary";
 import { DynamicIslandProvider } from "./contexts/DynamicIslandProvider";
 import { DynamicIsland } from "./components/shared/DynamicIsland";
-import { PageSkeleton } from "@/components/shared/skeletons";
 
 // Lazy-loaded page components for code splitting
 const Home = lazy(() => import("./pages/Home"));
@@ -49,6 +48,7 @@ const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentHistory = lazy(() => import("./pages/PaymentHistory"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const PasswordReset = lazy(() => import("./pages/PasswordReset"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
 const TutorsByCity = lazy(() => import("./pages/TutorsByCity"));
 const AiAssistantHome = lazy(() => import("./pages/AiAssistant/AiAssistantHome"));
@@ -60,9 +60,6 @@ const SavedNotes = lazy(() => import("./pages/AiAssistant/SavedNotes"));
 const AiAssistantSettings = lazy(() => import("./pages/AiAssistant/AiAssistantSettings"));
 const OrganizationDirectory = lazy(() => import("./pages/OrganizationDirectory"));
 const OrganizationDetails = lazy(() => import("./pages/OrganizationDetails"));
-
-// Loading fallback component
-const PageLoader = () => <PageSkeleton />;
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -168,155 +165,193 @@ let App = () => {
               <DynamicIsland />
               <ConditionalNavbar />
               <MainContent>
-                <ErrorBoundary>
-                <Suspense fallback={<PageLoader />}>
                 <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/tuitions" element={<Tuitions />} />
-                  <Route path="/tutors" element={<Tutors />} />
-                  <Route path="/tutors/:city" element={<TutorsByCity />} />
-                  <Route path="/tutor/:id" element={<TutorDetails />} />
-                  <Route path="/tuition/:id" element={<TuitionDetails />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/post-tuition" element={<PostTuition />} />
-                  <Route path="/become-tutor" element={<BecomeTutor />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/organizations" element={<OrganizationDirectory />} />
-                  <Route path="/organizations/:slug" element={<OrganizationDetails />} />
+                  <Route path="/" element={<RouteErrorBoundary><Home /></RouteErrorBoundary>} />
+                  <Route path="/tuitions" element={<RouteErrorBoundary><Tuitions /></RouteErrorBoundary>} />
+                  <Route path="/tutors" element={<RouteErrorBoundary><Tutors /></RouteErrorBoundary>} />
+                  <Route path="/tutors/:city" element={<RouteErrorBoundary><TutorsByCity /></RouteErrorBoundary>} />
+                  <Route path="/tutor/:id" element={<RouteErrorBoundary><TutorDetails /></RouteErrorBoundary>} />
+                  <Route path="/tuition/:id" element={<RouteErrorBoundary><TuitionDetails /></RouteErrorBoundary>} />
+                  <Route path="/about" element={<RouteErrorBoundary><About /></RouteErrorBoundary>} />
+                  <Route path="/contact" element={<RouteErrorBoundary><Contact /></RouteErrorBoundary>} />
+                  <Route path="/post-tuition" element={<RouteErrorBoundary><PostTuition /></RouteErrorBoundary>} />
+                  <Route path="/become-tutor" element={<RouteErrorBoundary><BecomeTutor /></RouteErrorBoundary>} />
+                  <Route path="/blog" element={<RouteErrorBoundary><Blog /></RouteErrorBoundary>} />
+                  <Route path="/organizations" element={<RouteErrorBoundary><OrganizationDirectory /></RouteErrorBoundary>} />
+                  <Route path="/organizations/:slug" element={<RouteErrorBoundary><OrganizationDetails /></RouteErrorBoundary>} />
                   <Route
                     path="/login"
                     element={
-                      <PublicRoute>
-                        <Login />
-                      </PublicRoute>
+                      <RouteErrorBoundary>
+                        <PublicRoute>
+                          <Login />
+                        </PublicRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/password-reset"
                     element={
-                      <PublicRoute>
-                        <PasswordReset />
-                      </PublicRoute>
+                      <RouteErrorBoundary>
+                        <PublicRoute>
+                          <PasswordReset />
+                        </PublicRoute>
+                      </RouteErrorBoundary>
+                    }
+                  />
+                  <Route
+                    path="/reset-password"
+                    element={
+                      <RouteErrorBoundary>
+                        <PublicRoute>
+                          <ResetPassword />
+                        </PublicRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/admin-login"
                     element={
-                      <PublicRoute>
-                        <AdminLogin />
-                      </PublicRoute>
+                      <RouteErrorBoundary>
+                        <PublicRoute>
+                          <AdminLogin />
+                        </PublicRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/register"
                     element={
-                      <PublicRoute>
-                        <Register />
-                      </PublicRoute>
+                      <RouteErrorBoundary>
+                        <PublicRoute>
+                          <Register />
+                        </PublicRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/dashboard/*"
                     element={
-                      <PrivateRoute>
-                        <Dashboard />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <Dashboard />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/checkout/:id"
                     element={
-                      <PrivateRoute>
-                        <Checkout />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <Checkout />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/session/:id"
                     element={
-                      <PrivateRoute>
-                        <SessionRoom />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <SessionRoom />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/payment-success"
                     element={
-                      <PrivateRoute>
-                        <PaymentSuccess />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <PaymentSuccess />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/payment-history"
                     element={
-                      <PrivateRoute>
-                        <PaymentHistory />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <PaymentHistory />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
-                  <Route path="/search" element={<SearchPage />} />
+                  <Route path="/search" element={<RouteErrorBoundary><SearchPage /></RouteErrorBoundary>} />
                   <Route
                     path="/ai-assistant"
                     element={
-                      <PrivateRoute>
-                        <AiAssistantHome />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <AiAssistantHome />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/ai-assistant/chat/:sessionId"
                     element={
-                      <PrivateRoute>
-                        <AiAssistantChat />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <AiAssistantChat />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/ai-assistant/quiz/:quizId"
                     element={
-                      <PrivateRoute>
-                        <AiAssistantQuiz />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <AiAssistantQuiz />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/ai-assistant/history"
                     element={
-                      <PrivateRoute>
-                        <AiAssistantHistory />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <AiAssistantHistory />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/ai-assistant/lesson-planner"
                     element={
-                      <PrivateRoute>
-                        <AiAssistantTutorTools />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <AiAssistantTutorTools />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/ai-assistant/saved-notes"
                     element={
-                      <PrivateRoute>
-                        <SavedNotes />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <SavedNotes />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
                   <Route
                     path="/ai-assistant/settings"
                     element={
-                      <PrivateRoute>
-                        <AiAssistantSettings />
-                      </PrivateRoute>
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <AiAssistantSettings />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
                     }
                   />
-                  <Route path="*" element={<NotFound />} />
+                  <Route path="*" element={<RouteErrorBoundary><NotFound /></RouteErrorBoundary>} />
                 </Routes>
-                </Suspense>
-                </ErrorBoundary>
               </MainContent>
                 <ConditionalFooter />
                 <ConditionalMobileBottomNav />

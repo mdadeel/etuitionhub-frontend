@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
 import { auth } from '../utils/firebase';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -32,25 +32,6 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         }
     };
 
-    // Fire-and-forget version: saves user in background without blocking auth flow.
-    // Sets optimistic state immediately so user can proceed to dashboard.
-    const saveUserToDBInBackground = (firebaseUser, role, mobileNumber = '') => {
-        const optimisticUser = {
-            _id: 'pending',
-            displayName: firebaseUser.displayName,
-            email: firebaseUser.email,
-            photoURL: firebaseUser.photoURL || '',
-            role: role,
-            mobileNumber: mobileNumber,
-            isVerified: false
-        };
-        setDbUser(optimisticUser);
-        setUserRole(role);
-
-        // Save in background — don't block the login flow
-        saveUserToDB(firebaseUser, role, mobileNumber).catch(() => {});
-    };
-
     const register = async (email, password, name, role = 'student', phone = '') => {
         setLoading(true);
         markAuthActionInProgress();
@@ -81,8 +62,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
                 setJWT(result.user.email, result.user),
             ]);
 
-            // Save user to DB in background (non-blocking)
-            saveUserToDBInBackground(result.user, role, phone);
+            await saveUserToDB(result.user, role, phone);
 
             setLoading(false);
             return result;
@@ -125,8 +105,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             // Set JWT first (fast) — user can proceed to dashboard
             await setJWT(email, result.user);
 
-            // Save user to DB in background (non-blocking)
-            saveUserToDBInBackground(result.user, selectedRole);
+            await saveUserToDB(result.user, selectedRole);
 
             // Clear the spinner now that the JWT cookie is set (see login()).
             setLoading(false);
@@ -155,8 +134,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             // Set JWT first (fast) — user can proceed to dashboard
             await setJWT(email, result.user);
 
-            // Save user to DB in background (non-blocking)
-            saveUserToDBInBackground(result.user, role);
+            await saveUserToDB(result.user, role);
 
             // Clear the spinner now that the JWT cookie is set (see login()).
             setLoading(false);
@@ -180,7 +158,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             setDbUser(null);
             setUserRole(null);
             setUser(null);
-        } catch (error) {
+        } catch {
             toast.error('Logout failed. Please try again.');
         } finally {
             setLoading(false);
@@ -189,7 +167,20 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
     const resetPassword = (email) => {
         setLoading(true);
-        return sendPasswordResetEmail(auth, email);
+        const actionCodeSettings = {
+            url: `${window.location.origin}/reset-password`,
+            handleCodeInApp: true,
+        };
+        return sendPasswordResetEmail(auth, email, actionCodeSettings);
+    };
+
+    const verifyResetCode = (oobCode) => {
+        return verifyPasswordResetCode(auth, oobCode);
+    };
+
+    const confirmReset = (oobCode, newPassword) => {
+        setLoading(true);
+        return confirmPasswordReset(auth, oobCode, newPassword);
     };
 
     const updateUserProfile = async (updateUser) => {
@@ -197,7 +188,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         try {
             await updateProfile(auth.currentUser, updateUser);
             setUser((preUser) => ({ ...preUser, ...updateUser }));
-        } catch (error) {
+        } catch {
             toast.error('Failed to sync profile with auth server');
         } finally {
             setLoading(false);
@@ -211,6 +202,8 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         googleRegister,
         logout,
         resetPassword,
+        verifyResetCode,
+        confirmReset,
         updateUserProfile,
     };
 };

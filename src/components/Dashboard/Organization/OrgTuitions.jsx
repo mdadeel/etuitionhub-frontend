@@ -87,7 +87,7 @@ const OrgTuitions = () => {
                     <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
                       tuition.status === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
                       tuition.status === 'matched' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                      tuition.status === 'completed' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
+                      tuition.status === 'completed' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' :
                       'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                     }`}>
                       {tuition.status.toUpperCase()}

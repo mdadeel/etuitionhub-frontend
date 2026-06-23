@@ -9,6 +9,7 @@ import api from "../../services/api";
 import { StatCardSkeleton } from "@/components/shared/skeletons";
 import StudentPayments from "./StudentPayments";
 import Assignments from "./Assignments";
+import { AppleHeader } from "@/components/shared/AppleUI";
 import {
   Activity,
   Plus,

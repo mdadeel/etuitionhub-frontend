@@ -10,6 +10,7 @@ import api from '../../services/api';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import TutorAvailability from './TutorAvailability';
 import Assignments from './Assignments';
+import { AppleHeader } from "@/components/shared/AppleUI";
 import { 
     Activity, 
     FileText, 

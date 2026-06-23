@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { useAuth } from './AuthContext';
 import useChatSocket from '../hooks/useChatSocket';
 import useChatPolling from '../hooks/useChatPolling';
+import { logError } from '../utils/devLogger';
 
 const ChatContext = createContext();
 
@@ -35,7 +36,7 @@ export const ChatProvider = ({ children }) => {
                 socketRef.current.emit('mark-read', { room: conversationId });
             }
         } catch (error) {
-            console.error('Failed to mark messages as read', error);
+            logError('ChatContext', 'failed to mark messages as read', error);
         }
     };
 

@@ -1,35 +1,28 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Building, MapPin, Users, Globe, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { Building, MapPin, Users, Globe, Mail, ArrowLeft, CheckCircle2, Loader2, Clock } from "lucide-react";
 import api from "../services/api";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
 
 const OrganizationDetails = () => {
-  const { t } = useTranslation();
   const { slug } = useParams();
+  const { user } = useAuth();
   const [organization, setOrganization] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [joinStatus, setJoinStatus] = useState(null);
+  const [joining, setJoining] = useState(false);
 
   useEffect(() => {
     const fetchOrgDetails = async () => {
       try {
         setLoading(true);
-        // Note: The backend needs an endpoint `GET /api/organizations/slug/:slug` or similar
-        // If we don't have one, we might need to fetch all and filter or add the endpoint
-        const res = await api.get(`/api/v1/organizations`);
-        const orgs = res.data.data || [];
-        const org = orgs.find(o => o.slug === slug);
-        
-        if (org) {
-          setOrganization(org);
-        } else {
-          setError("Organization not found.");
-        }
-      } catch (err) {
+        const res = await api.get(`/api/v1/organizations/slug/${slug}`);
+        setOrganization(res.data.data);
+      } catch {
         setError("Failed to load organization details.");
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -37,6 +30,69 @@ const OrganizationDetails = () => {
 
     fetchOrgDetails();
   }, [slug]);
+
+  useEffect(() => {
+    if (!user || !organization) return;
+
+    const checkJoinStatus = async () => {
+      try {
+        const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+        if (!token) return;
+
+        const res = await api.get(`/api/v1/organizations/${organization._id}/join-requests?status=pending`);
+        const myRequest = res.data.data?.find(r => r.userId?._id === user._id || r.userId === user._id);
+        if (myRequest) {
+          setJoinStatus('pending');
+        }
+      } catch {
+        // User might not have permission to view join requests - that's fine
+      }
+    };
+
+    checkJoinStatus();
+  }, [user, organization]);
+
+  const handleJoinRequest = async () => {
+    if (!user) {
+      toast.error("Please sign in to request joining this organization");
+      return;
+    }
+
+    try {
+      setJoining(true);
+      await api.post(`/api/v1/organizations/${organization._id}/join-request`, {
+        message: `I would like to join ${organization.name}`
+      });
+      setJoinStatus('pending');
+      toast.success("Join request submitted! The organization admin will review your request.");
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || "Failed to submit join request";
+      if (errorMsg.includes('invitation')) {
+        toast.error("This organization requires an invitation. Please contact an admin directly.");
+      } else {
+        toast.error(errorMsg);
+      }
+    } finally {
+      setJoining(false);
+    }
+  };
+
+  const handleWithdrawRequest = async () => {
+    try {
+      setJoining(true);
+      const res = await api.get(`/api/v1/organizations/${organization._id}/join-requests?status=pending`);
+      const myRequest = res.data.data?.find(r => r.userId?._id === user._id || r.userId === user._id);
+      if (myRequest) {
+        await api.delete(`/api/v1/organizations/${organization._id}/join-requests/${myRequest._id}`);
+        setJoinStatus(null);
+        toast.success("Join request withdrawn");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to withdraw request");
+    } finally {
+      setJoining(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -72,8 +128,8 @@ const OrganizationDetails = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <div className="size-32 md:size-40 bg-background border-4 border-card rounded-2xl overflow-hidden shadow-lg flex items-center justify-center">
-              {organization.logo ? (
-                <img src={organization.logo} alt={organization.name} className="size-full object-cover" />
+              {organization.profile?.logo ? (
+                <img src={organization.profile.logo} alt={organization.name} className="size-full object-cover" />
               ) : (
                 <Building className="size-16 text-primary opacity-50" />
               )}
@@ -86,17 +142,19 @@ const OrganizationDetails = () => {
               <div>
                 <h1 className="text-3xl md:text-4xl font-heading font-extrabold text-foreground mb-2 flex items-center gap-3">
                   {organization.name}
-                  {organization.isActive && (
+                  {organization.status === 'active' && (
                     <span title="Verified Organization">
                       <CheckCircle2 className="size-6 text-green-500" />
                     </span>
                   )}
                 </h1>
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground font-medium mb-4">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin size={16} className="text-primary" />
-                    <span>Dhaka, Bangladesh</span>
-                  </div>
+                  {organization.profile?.address && (
+                    <div className="flex items-center gap-1.5">
+                      <MapPin size={16} className="text-primary" />
+                      <span>{organization.profile.address}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-1.5">
                     <Users size={16} className="text-primary" />
                     <span>Educational Institution</span>
@@ -106,9 +164,37 @@ const OrganizationDetails = () => {
 
               {/* Actions */}
               <div className="flex flex-row gap-3">
-                <Button variant="default" className="shadow-lg hover:-translate-y-0.5 transition-all">
-                  Request to Join
-                </Button>
+                {joinStatus === 'pending' ? (
+                  <Button 
+                    variant="outline" 
+                    disabled={joining}
+                    onClick={handleWithdrawRequest}
+                    className="shadow-lg"
+                  >
+                    {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Clock className="mr-2 h-4 w-4" />}
+                    Request Pending - Withdraw
+                  </Button>
+                ) : organization.settings?.requireInviteToJoin ? (
+                  <Button 
+                    variant="outline" 
+                    disabled
+                    className="shadow-lg opacity-60"
+                    title="This organization requires an invitation to join"
+                  >
+                    <Mail className="mr-2 h-4 w-4" />
+                    Invitation Required
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="default" 
+                    className="shadow-lg hover:-translate-y-0.5 transition-all"
+                    onClick={handleJoinRequest}
+                    disabled={joining}
+                  >
+                    {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Request to Join
+                  </Button>
+                )}
                 <Button variant="outline">
                   Contact
                 </Button>
@@ -117,7 +203,7 @@ const OrganizationDetails = () => {
 
             <div className="mt-6 prose prose-slate dark:prose-invert max-w-none">
               <p className="text-foreground/80 leading-relaxed text-lg">
-                {organization.description || "This organization has not provided a description yet."}
+                {organization.profile?.description || "This organization has not provided a description yet."}
               </p>
             </div>
           </div>
@@ -138,14 +224,24 @@ const OrganizationDetails = () => {
             <div className="bg-card rounded-2xl border border-border p-6">
               <h3 className="text-lg font-bold text-foreground mb-4 font-heading">Contact Information</h3>
               <ul className="space-y-4">
-                <li className="flex items-start gap-3 text-sm text-foreground/80">
-                  <Mail className="size-5 text-muted-foreground flex-shrink-0" />
-                  <span>Contact admin to reveal email</span>
-                </li>
-                <li className="flex items-start gap-3 text-sm text-foreground/80">
-                  <Globe className="size-5 text-muted-foreground flex-shrink-0" />
-                  <a href="#" className="text-primary hover:underline">Website not provided</a>
-                </li>
+                {organization.profile?.publicEmail && (
+                  <li className="flex items-start gap-3 text-sm text-foreground/80">
+                    <Mail className="size-5 text-muted-foreground flex-shrink-0" />
+                    <span>{organization.profile.publicEmail}</span>
+                  </li>
+                )}
+                {organization.profile?.publicPhone && (
+                  <li className="flex items-start gap-3 text-sm text-foreground/80">
+                    <Globe className="size-5 text-muted-foreground flex-shrink-0" />
+                    <span>{organization.profile.publicPhone}</span>
+                  </li>
+                )}
+                {!organization.profile?.publicEmail && !organization.profile?.publicPhone && (
+                  <li className="flex items-start gap-3 text-sm text-foreground/80">
+                    <Mail className="size-5 text-muted-foreground flex-shrink-0" />
+                    <span>Contact admin to reveal email</span>
+                  </li>
+                )}
               </ul>
             </div>
           </div>

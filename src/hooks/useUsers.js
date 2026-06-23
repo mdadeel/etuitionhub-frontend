@@ -1,6 +1,7 @@
 // users hook - admin dashboard user management
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import { logError } from '../utils/devLogger';
 
 // TODO: add pagination support
 // eslint-disable-next-line no-unused-vars
@@ -19,7 +20,7 @@ export function useUsers(filters = {}) {
             setUserList(res.data);
             // console.log('users:', res.data.length);
         } catch (err) {
-            console.error('user fetch failed:', err.message);
+            logError('useUsers', 'user fetch failed', err.message);
             setFetchError(err.response?.data?.error || 'failed to load');
         } finally {
             setIsLoading(false);

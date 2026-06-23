@@ -6,6 +6,7 @@ import api from '../../services/api';
 import { useRealtimeStore } from '../../store/realtimeStore';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import toast from 'react-hot-toast';
+import { AppleHeader } from "@/components/shared/AppleUI";
 import {
     Banknote,
     CheckCircle2,

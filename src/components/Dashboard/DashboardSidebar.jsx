@@ -104,7 +104,9 @@ const DashboardSidebar = () => {
 
         {myOrgs?.length > 0 && (
           <div className="mt-3">
+            <label htmlFor="org-select" className="sr-only">Select Organization</label>
             <select
+              id="org-select"
               className="w-full text-[11px] p-2 bg-background border border-border rounded-lg outline-none focus:ring-1 focus:ring-primary"
               value={orgContext?.orgId || ''}
               onChange={(e) => switchOrg(e.target.value)}

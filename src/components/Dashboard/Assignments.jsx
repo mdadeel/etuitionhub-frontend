@@ -31,7 +31,7 @@ const AssignmentCard = ({ assignment, role, onRefresh }) => {
         if (!answer.trim()) { toast.error('Write your answer before submitting'); return; }
         setSubmitting(true);
         try {
-            await api.patch(`/api/assignment/${assignment._id}/submit`, { answer });
+            await api.patch(`/api/assignments/${assignment._id}/submit`, { answer });
             toast.success('Assignment submitted!');
             setAnswer('');
             onRefresh();
@@ -46,7 +46,7 @@ const AssignmentCard = ({ assignment, role, onRefresh }) => {
         if (!grade) { toast.error('Enter a grade'); return; }
         setGrading(true);
         try {
-            await api.patch(`/api/assignment/${assignment._id}/grade`, {
+            await api.patch(`/api/assignments/${assignment._id}/grade`, {
                 grade: parseFloat(grade),
                 feedback,
             });
@@ -211,7 +211,7 @@ const CreateAssignmentForm = ({ connections, onSuccess, onCancel }) => {
         if (!form.connectionId || !form.title) { toast.error('Connection and title are required'); return; }
         setSaving(true);
         try {
-            await api.post('/api/assignment', {
+            await api.post('/api/assignments', {
                 connectionId: form.connectionId,
                 title: form.title,
                 description: form.description,
@@ -340,7 +340,7 @@ const Assignments = () => {
 
             // Try the direct list endpoint
             try {
-                const assignRes = await api.get('/api/assignment', {
+                const assignRes = await api.get('/api/assignments', {
                     params: filter ? { status: filter } : {}
                 });
                 setAssignments(assignRes.data?.data || assignRes.data || []);

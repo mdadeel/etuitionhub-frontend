@@ -255,7 +255,7 @@ const TuitionDetails = () => {
                                 <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] text-xs font-medium rounded-full">Class {tuition.class_name}</span>
                                 <span className="px-2 py-1 bg-[#059669]/10 text-[#059669] text-xs font-medium rounded-full">Verified</span>
                                 {tuition.curriculum && (
-                                    <span className="px-2 py-1 bg-[#7C3AED]/10 text-[#7C3AED] text-xs font-medium rounded-full capitalize">{tuition.curriculum.replace(/_/g, ' ')}</span>
+                                    <span className="px-2 py-1 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-medium rounded-full capitalize">{tuition.curriculum.replace(/_/g, ' ')}</span>
                                 )}
                                 {tuition.mode && (
                                     <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${

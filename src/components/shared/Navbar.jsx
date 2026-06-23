@@ -39,7 +39,7 @@ const Navbar = () => {
   const profileDropdownRef = useRef(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-  const isAuthPage = ["/login", "/register", "/admin-login", "/forgot-password", "/reset-password"].includes(location.pathname);
+  const isAuthPage = ["/login", "/register", "/admin-login", "/password-reset", "/reset-password"].includes(location.pathname);
 
   useEffect(() => {
     const handleKeyDown = (e) => {

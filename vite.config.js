@@ -88,7 +88,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "react-hot-toast": path.resolve(__dirname, "./src/lib/react-hot-toast-mock.js"),
     },
   },
 })
