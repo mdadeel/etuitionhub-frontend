@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import demoTutors from '../data/demoTutors.json';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import TutorCard from '../components/shared/TutorCard';
@@ -110,16 +109,21 @@ const TutorDetails = () => {
     const [existingRequest, setExistingRequest] = useState(null);
     const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
     const [cancellingRequest, setCancellingRequest] = useState(false);
+    const [demoTutors, setDemoTutors] = useState(null);
 
     // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
+
+    useEffect(() => {
+        import('../data/demoTutors.json').then(m => setDemoTutors(m.default || m)).catch(() => {});
+    }, []);
 
     useEffect(() => {
         const fetchTutorData = async () => {
             setLoading(true);
 
             if (!isValidObjectId(id)) {
-                const found = demoTutors.find(t => t._id === id);
+                const found = demoTutors?.find(t => t._id === id);
                 if (found) {
                     setTutor(found);
                     setReviews([]);
@@ -170,7 +174,7 @@ const TutorDetails = () => {
                 }
             } catch (error) {
                 console.warn("API fetch failed, falling back to demo:", error.message);
-                const found = demoTutors.find(t => t._id === id);
+                const found = demoTutors?.find(t => t._id === id);
                 if (found) {
                     setTutor(found);
                 } else {
@@ -624,7 +628,7 @@ const TutorDetails = () => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {demoTutors
+                        {(demoTutors || [])
                             .filter(t => t._id !== id)
                             .slice(0, 3)
                             .map((item) => (

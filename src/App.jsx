@@ -1,5 +1,5 @@
 import "./app.css";
-import { useEffect, lazy } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -165,6 +165,7 @@ let App = () => {
               <DynamicIsland />
               <ConditionalNavbar />
               <MainContent>
+                <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>}>
                 <Routes>
                   <Route path="/" element={<RouteErrorBoundary><Home /></RouteErrorBoundary>} />
                   <Route path="/tuitions" element={<RouteErrorBoundary><Tuitions /></RouteErrorBoundary>} />
@@ -352,6 +353,7 @@ let App = () => {
                   />
                   <Route path="*" element={<RouteErrorBoundary><NotFound /></RouteErrorBoundary>} />
                 </Routes>
+                </Suspense>
               </MainContent>
                 <ConditionalFooter />
                 <ConditionalMobileBottomNav />

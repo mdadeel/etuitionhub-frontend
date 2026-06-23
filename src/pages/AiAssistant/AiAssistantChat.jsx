@@ -71,11 +71,13 @@ export default function AiAssistantChat() {
     }, [sessionId, setActiveSessionId]);
 
 
-    // Fetch AI usage limits on mount.
+    // Fetch AI usage limits with 5-min cache (warm from AiAssistantHome if navigated).
     const setUsage = useAiStore((s) => s.setUsage);
-    useEffect(() => {
-        aiService.getUsage().then(setUsage).catch(() => {});
-    }, [setUsage]);
+    useQuery({
+        queryKey: ['ai-usage'],
+        queryFn: async () => { const d = await aiService.getUsage(); setUsage(d); return d; },
+        staleTime: 5 * 60 * 1000,
+    });
 
     // Reset localMessages and processed ref if sessionId changes
     useEffect(() => {

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense, lazy } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -25,7 +25,8 @@ import {
 import { cn } from "@/lib/utils";
 import DataTable from "@/components/ui/data-table";
 import SessionStatsCard from "./SessionStatsCard";
-import PostTuition from "../../pages/PostTuition";
+
+const PostTuition = lazy(() => import("../../pages/PostTuition"));
  
 const tabs = [
   { id: "overview", label: "Overview", icon: Activity },
@@ -270,13 +271,15 @@ const StudentDashboard = () => {
         ))}
       {/* Post Job Tab */}
       {activeTab === "post-job" && (
-        <PostTuition
-          isDashboard={true}
-          onSuccess={async () => {
-            await refreshData();
-            setActiveTab("my-jobs");
-          }}
-        />
+        <Suspense fallback={<div className="p-8 text-center text-muted-foreground text-sm italic">Loading...</div>}>
+          <PostTuition
+            isDashboard={true}
+            onSuccess={async () => {
+              await refreshData();
+              setActiveTab("my-jobs");
+            }}
+          />
+        </Suspense>
       )}
  
       {/* My Jobs Tab */}
