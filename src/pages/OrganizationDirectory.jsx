@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import api from "../../services/api";
+import api from "../services/api";
 import { toast } from "react-hot-toast";
 import {
   Building2,
@@ -11,7 +11,7 @@ import {
   BookOpen,
   ArrowRight
 } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const OrganizationDirectory = () => {
   const { user } = useAuth();
