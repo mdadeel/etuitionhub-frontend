@@ -735,3 +735,34 @@ body {
 .animate-cursor-blink {
   animation: cursor-blink 1s step-end infinite;
 }
+
+.animate-in-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.animate-in-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.animate-in-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.animate-in-up.animate-in,
+.animate-in-left.animate-in,
+.animate-in-right.animate-in {
+  opacity: 1;
+  transform: translate(0);
+}
+
+.animate-stagger > *:nth-child(1) { transition-delay: 0s; }
+.animate-stagger > *:nth-child(2) { transition-delay: 0.08s; }
+.animate-stagger > *:nth-child(3) { transition-delay: 0.16s; }
+.animate-stagger > *:nth-child(4) { transition-delay: 0.24s; }
+.animate-stagger > *:nth-child(5) { transition-delay: 0.32s; }
+.animate-stagger > *:nth-child(6) { transition-delay: 0.40s; }
+.animate-stagger > *:nth-child(7) { transition-delay: 0.48s; }
+.animate-stagger > *:nth-child(8) { transition-delay: 0.56s; }

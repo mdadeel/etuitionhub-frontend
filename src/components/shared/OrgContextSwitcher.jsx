@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { ChevronDownIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline';
+import { ChevronDown, Building } from 'lucide-react';
 
 const OrgContextSwitcher = () => {
     const { myOrgs, orgContext, switchOrg } = useAuth();
@@ -12,11 +12,11 @@ const OrgContextSwitcher = () => {
     return (
         <div className="relative group inline-block z-50">
             <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <BuildingOfficeIcon className="w-5 h-5 text-gray-400" />
+                <Building className="w-5 h-5 text-gray-400" />
                 <span className="truncate max-w-[150px]">
                     {orgContext ? orgContext.orgName : 'Select Organization'}
                 </span>
-                <ChevronDownIcon className="w-4 h-4 ml-1 text-gray-400" />
+                <ChevronDown className="w-4 h-4 ml-1 text-gray-400" />
             </button>
             
             <div className="absolute right-0 hidden w-56 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg group-hover:block transition-all duration-200 ease-out z-50">

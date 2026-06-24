@@ -1,10 +1,5 @@
-import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Search, Star, Users } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
+import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const steps = [
   {
@@ -25,47 +20,15 @@ const steps = [
 ];
 
 const HowItWorks = () => {
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const trackRef = useRef(null);
-
-  useGSAP(() => {
-    const ctx = gsap.context(() => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top 80%",
-        onEnter: () => {
-          if (prefersReducedMotion) {
-            gsap.set(headingRef.current, { opacity: 1, y: 0 });
-            const items = gsap.utils.toArray('.step-item');
-            gsap.set(items, { opacity: 1, y: 0 });
-          } else {
-            gsap.fromTo(headingRef.current,
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
-            );
-
-            const items = gsap.utils.toArray('.step-item');
-            gsap.fromTo(items,
-              { opacity: 0, y: 40 },
-              { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power3.out", delay: 0.2 }
-            );
-          }
-        },
-        once: true,
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+  const headingRef = useAnimateOnScroll();
+  const trackRef = useAnimateOnScroll();
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-background py-20 md:py-28">
+    <section className="relative overflow-hidden bg-background py-20 md:py-28">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div ref={headingRef} className="text-center mb-20">
+        <div ref={headingRef} className="animate-in-up text-center mb-20">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-foreground tracking-tight leading-[0.95] text-wrap-balance">
             Three simple steps to find your perfect tutor
           </h2>
@@ -74,7 +37,6 @@ const HowItWorks = () => {
           </p>
         </div>
 
-        {/* Mobile step indicator: dots showing progression - Hidden since all steps fit inline now */}
         <div className="hidden justify-center gap-2 mt-6">
           {steps.map((_, idx) => (
             <div
@@ -87,12 +49,12 @@ const HowItWorks = () => {
           ))}
         </div>
 
-        <div ref={trackRef} className="relative">
+        <div ref={trackRef} className="animate-in-up animate-stagger relative">
           <div className="hidden md:block absolute top-16 left-[calc(16.66%+20px)] right-[calc(16.66%+20px)] h-px bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 pointer-events-none" />
 
           <div className="grid grid-cols-3 gap-3 md:gap-12">
             {steps.map((step, idx) => (
-              <div key={idx} className="step-item relative flex flex-col items-center text-center">
+              <div key={idx} className="animate-in-up-child relative flex flex-col items-center text-center">
                 <div className="relative mb-4 md:mb-8">
                   <span className="text-[60px] md:text-[160px] font-heading text-primary/[0.06] md:text-primary/[0.04] leading-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
                     {String(idx + 1).padStart(2, '0')}

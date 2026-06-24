@@ -472,22 +472,12 @@ export default function AiAssistantChat() {
             }
         >
             <div className="flex flex-col h-full w-full relative">
-                {/* Session header (title) */}
-                {session && (
-                    <div className="px-6 py-3 flex items-center justify-center gap-2 shrink-0 border-b border-border/10">
-                        <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                            {session.subject}
-                        </span>
-                        <span className="text-sm font-medium text-foreground truncate max-w-md">
-                            {session.title}
-                        </span>
-                    </div>
-                )}
+                {/* Removed bloated session header for cleaner interface */}
 
                 {/* Messages list */}
                 <div
                     ref={scrollRef}
-                    className="flex-1 overflow-y-auto px-4 sm:px-6 pt-6 w-full pb-36"
+                    className="flex-1 overflow-y-auto px-4 sm:px-6 pt-6 w-full pb-[140px]"
                 >
                     <div className="space-y-4">
                         {isChatLoading ? (
@@ -567,7 +557,7 @@ export default function AiAssistantChat() {
                 </div>
 
                 {/* Floating Input at Bottom Center */}
-                <div className="absolute bottom-0 left-0 right-0 pb-4 px-4 pointer-events-none">
+                <div className="absolute bottom-0 left-0 right-0 pt-8 pb-4 px-4 pointer-events-none bg-gradient-to-t from-background via-background to-transparent z-10 mt-[2px]">
                     <div className="max-w-3xl mx-auto pointer-events-auto">
                         <ChatInput
                             value={text}

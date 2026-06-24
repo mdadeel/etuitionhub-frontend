@@ -76,101 +76,103 @@ export default function AiAssistantHome() {
 
     return (
         <AiAssistantLayout>
-            <div className="flex flex-col items-center justify-start min-h-full py-8 overflow-y-auto px-4 md:px-6 lg:px-8">
-                <div className="max-w-2xl w-full space-y-8 my-auto">
+            <div className="flex flex-col h-full w-full relative">
+                {/* ── Scrollable Content Area ───────────────────────── */}
+                <div className="flex-1 overflow-y-auto flex flex-col items-center px-4 md:px-6 lg:px-8 pb-[140px]">
+                    <div className="max-w-2xl w-full flex flex-col min-h-full py-8">
+                        
+                        {/* ── Hero (Centered Vertically) ───────────────── */}
+                        <div className="flex-1 flex flex-col justify-center mb-8">
+                            <header className="space-y-3 text-center">
+                                {/* Porua AI logo + animated glow */}
+                                <div className="relative flex justify-center mb-4">
+                                    <div className="relative size-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/10">
+                                        <PoruaLogo iconOnly size={28} className="text-primary" />
+                                        {/* Subtle pulse ring */}
+                                        <span className="absolute inset-0 rounded-2xl border border-primary/30 animate-ping opacity-20 pointer-events-none" />
+                                    </div>
+                                </div>
 
-                    {/* ── Hero ─────────────────────────────────────────── */}
-                    <header className="space-y-3 text-center">
-                        {/* Porua AI logo + animated glow */}
-                        <div className="relative flex justify-center mb-4">
-                            <div className="relative size-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/10">
-                                <PoruaLogo iconOnly size={28} className="text-primary" />
-                                {/* Subtle pulse ring */}
-                                <span className="absolute inset-0 rounded-2xl border border-primary/30 animate-ping opacity-20 pointer-events-none" />
-                            </div>
+                                {/* Greeting */}
+                                <div className="space-y-1">
+                                    <div className="flex items-center justify-center gap-1.5">
+                                        <Sparkles size={13} className="text-primary/60" />
+                                        <span className="text-[10px] font-label font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                                            Porua AI · E-TuitionBD Official AI Tutor
+                                        </span>
+                                        <Sparkles size={13} className="text-primary/60" />
+                                    </div>
+                                    <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight text-foreground">
+                                        {greeting},{' '}
+                                        <span className="text-primary">{greetingName}</span>
+                                    </h2>
+                                    <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                                        Your AI study companion for SSC, HSC, Admission, IELTS, Programming, and more.
+                                        What would you like to learn today?
+                                    </p>
+                                </div>
+                            </header>
+
+
                         </div>
 
-                        {/* Greeting */}
-                        <div className="space-y-1">
-                            <div className="flex items-center justify-center gap-1.5">
-                                <Sparkles size={13} className="text-primary/60" />
-                                <span className="text-[10px] font-label font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                                    Porua AI · E-TuitionBD Official AI Tutor
-                                </span>
-                                <Sparkles size={13} className="text-primary/60" />
-                            </div>
-                            <h2 className="text-3xl sm:text-4xl font-heading font-bold tracking-tight text-foreground">
-                                {greeting},{' '}
-                                <span className="text-primary">{greetingName}</span>
-                            </h2>
-                            <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                                Your AI study companion for SSC, HSC, Admission, IELTS, Programming, and more.
-                                What would you like to learn today?
-                            </p>
-                        </div>
-                    </header>
-
-                    {/* ── Subject selector (mobile only) ───────────────── */}
-                    <div className="lg:hidden">
-                        <SubjectSelector compact />
-                    </div>
-
-                    {/* ── Intent action cards ───────────────────────────── */}
-                    <div className="space-y-2.5">
-                        <p className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground px-0.5">
-                            Quick actions
-                        </p>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            {SUGGESTED_ACTIONS.map((action) => {
-                                const Icon = action.icon;
-                                return (
-                                    <button
-                                        key={action.id}
-                                        type="button"
-                                        onClick={() => {
-                                            setText(action.prompt);
-                                            // Immediately jump to chat input and focus
-                                            setTimeout(() => {
-                                                const ta = document.querySelector('textarea');
-                                                if (ta) {
-                                                    ta.focus();
-                                                    ta.setSelectionRange(ta.value.length, ta.value.length);
-                                                    ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                                }
-                                            }, 50);
-                                        }}
-                                        className={cn(
-                                            'group relative flex flex-col items-start gap-2 rounded-xl border border-border/60',
-                                            'bg-card/60 p-3.5 text-left transition-all duration-300 overflow-hidden',
-                                            'hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5',
-                                        )}
-                                    >
-                                        {/* Gradient layer */}
-                                        <span
+                        {/* ── Intent action cards (Above Input) ─────────────── */}
+                        <div className="space-y-2.5 mt-auto">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                {SUGGESTED_ACTIONS.map((action, idx) => {
+                                    const Icon = action.icon;
+                                    const isMobileHidden = idx >= 4 ? 'hidden sm:flex' : '';
+                                    return (
+                                        <button
+                                            key={action.id}
+                                            type="button"
+                                            onClick={() => {
+                                                setText(action.prompt);
+                                                // Immediately jump to chat input and focus
+                                                setTimeout(() => {
+                                                    const ta = document.querySelector('textarea');
+                                                    if (ta) {
+                                                        ta.focus();
+                                                        ta.setSelectionRange(ta.value.length, ta.value.length);
+                                                    }
+                                                }, 50);
+                                            }}
                                             className={cn(
-                                                'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none',
-                                                action.color,
+                                                'group relative flex flex-col items-start gap-2 rounded-xl border border-border/60',
+                                                'bg-card/60 p-3.5 text-left transition-all duration-300 overflow-hidden',
+                                                'hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5',
+                                                isMobileHidden
                                             )}
-                                        />
-                                        {/* Icon */}
-                                        <div className="relative z-10 size-7 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                                            <Icon size={14} strokeWidth={2.2} className="text-muted-foreground group-hover:text-primary transition-colors" />
-                                        </div>
-                                        {/* Labels */}
-                                        <div className="relative z-10">
-                                            <p className="text-xs font-semibold text-foreground leading-tight">{action.label}</p>
-                                            {action.mode && (
-                                                <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{action.mode}</p>
-                                            )}
-                                        </div>
-                                    </button>
-                                );
-                            })}
+                                        >
+                                            {/* Gradient layer */}
+                                            <span
+                                                className={cn(
+                                                    'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none',
+                                                    action.color,
+                                                )}
+                                            />
+                                            {/* Icon */}
+                                            <div className="relative z-10 size-7 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                                                <Icon size={14} strokeWidth={2.2} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                                            </div>
+                                            {/* Labels */}
+                                            <div className="relative z-10">
+                                                <p className="text-xs font-semibold text-foreground leading-tight">{action.label}</p>
+                                                {action.mode && (
+                                                    <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{action.mode}</p>
+                                                )}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* ── Chat input ────────────────────────────────────── */}
-                    <div className="pt-2">
+                {/* ── Fixed Chat input (Bottom Center) ─────────────────────── */}
+                <div className="absolute bottom-0 left-0 right-0 pt-8 pb-4 px-4 pointer-events-none bg-gradient-to-t from-background via-background to-transparent z-10">
+                    <div className="max-w-3xl mx-auto pointer-events-auto">
                         <ChatInput
                             value={text}
                             onChange={setText}
@@ -178,7 +180,7 @@ export default function AiAssistantHome() {
                             loading={false}
                             placeholder={`Ask anything about ${subjectLabel(subject)}...`}
                         />
-                        <p className="text-[10px] text-center text-muted-foreground mt-4 px-4">
+                        <p className="hidden md:block text-[10px] text-center text-muted-foreground mt-3 px-4 leading-relaxed drop-shadow-sm">
                             Porua AI specializes in education. It can make mistakes — always verify important info.
                         </p>
                     </div>

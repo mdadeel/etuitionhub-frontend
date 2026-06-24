@@ -1,9 +1,4 @@
-import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const ShieldIllus = () => (
   <svg viewBox="0 0 180 160" className="w-full h-full" fill="none">
@@ -34,7 +29,6 @@ const ChatIllus = () => (
     <circle cx="88" cy="50" r="4" fill="hsl(38 95% 52% / 0.35)" />
     <circle cx="42" cy="68" r="4" fill="hsl(38 95% 52% / 0.15)" />
     <circle cx="65" cy="68" r="4" fill="hsl(38 95% 52% / 0.15)" />
-
     <rect x="100" y="60" width="65" height="45" rx="10"
       stroke="hsl(221 83% 53% / 0.2)" strokeWidth="2" fill="hsl(221 83% 53% / 0.04)" />
     <path d="M125 105 L115 125 L140 105" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5"
@@ -42,7 +36,6 @@ const ChatIllus = () => (
     <circle cx="118" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
     <circle cx="135" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
     <circle cx="152" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
-
     <path d="M90 75 Q 95 65 100 75" stroke="hsl(38 95% 52% / 0.3)" strokeWidth="1.5"
       strokeDasharray="3 3" />
   </svg>
@@ -56,7 +49,6 @@ const DeviceIllus = () => (
       stroke="hsl(221 83% 53% / 0.1)" strokeWidth="1" fill="hsl(221 83% 53% / 0.04)" />
     <line x1="45" y1="72" x2="80" y2="72" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5" />
     <rect x="58" y="16" width="9" height="4" rx="2" fill="hsl(221 83% 53% / 0.15)" />
-
     <rect x="110" y="50" width="40" height="75" rx="6"
       stroke="hsl(38 95% 52% / 0.25)" strokeWidth="2" fill="hsl(38 95% 52% / 0.04)" />
     <rect x="115" y="60" width="30" height="42" rx="3"
@@ -64,7 +56,6 @@ const DeviceIllus = () => (
     <line x1="122" y1="113" x2="138" y2="113" stroke="hsl(38 95% 52% / 0.3)" strokeWidth="2" strokeLinecap="round" />
     <line x1="127" y1="120" x2="133" y2="120" stroke="hsl(38 95% 52% / 0.15)" strokeWidth="1.5" strokeLinecap="round" />
     <circle cx="130" cy="125" r="3" stroke="hsl(38 95% 52% / 0.2)" strokeWidth="1.5" />
-
     <path d="M62 50 Q 72 45 80 50 Q 88 55 95 50" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5" fill="none" />
     <circle cx="10" cy="90" r="2" fill="hsl(221 83% 53% / 0.08)" />
     <circle cx="170" cy="30" r="2" fill="hsl(38 95% 52% / 0.08)" />
@@ -116,39 +107,13 @@ const trustStats = [
 ];
 
 const WhyChooseUs = () => {
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const statsRef = useRef(null);
-
-  useGSAP(() => {
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top 80%",
-        onEnter: () => {
-          gsap.fromTo(headingRef.current,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
-          );
-          const items = gsap.utils.toArray('.feature-block');
-          gsap.fromTo(items,
-            { opacity: 0, y: 50 },
-            { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power3.out", delay: 0.2 }
-          );
-          gsap.fromTo(statsRef.current,
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", delay: 0.8 }
-          );
-        },
-        once: true,
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+  const headingRef = useAnimateOnScroll();
+  const featuresRef = useAnimateOnScroll();
+  const statsRef = useAnimateOnScroll();
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-14 md:py-20 bg-background">
-      <div ref={headingRef} className="max-w-6xl mx-auto px-6 mb-12">
+    <section className="relative overflow-hidden py-14 md:py-20 bg-background">
+      <div ref={headingRef} className="animate-in-up max-w-6xl mx-auto px-6 mb-12">
         <span className="text-xs font-medium text-primary/70 uppercase tracking-[0.18em]">Why Trust Us</span>
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading text-foreground tracking-tight leading-[0.95] mt-2 max-w-4xl">
           Why parents trust us with their children's education
@@ -160,12 +125,12 @@ const WhyChooseUs = () => {
         </p>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 gap-6">
+      <div ref={featuresRef} className="animate-in-up animate-stagger max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 gap-6">
         {blocks.map((block, idx) => {
           const Illus = illustrations[idx];
           const isLast = idx === 2;
           return (
-            <div key={idx} className={`feature-block p-5 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm shadow-sm flex flex-col justify-between ${isLast ? 'col-span-2 md:col-span-1' : ''}`}>
+            <div key={idx} className={`animate-in-up-child p-5 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm shadow-sm flex flex-col justify-between ${isLast ? 'col-span-2 md:col-span-1' : ''}`}>
               <div className="flex flex-col items-center text-center space-y-3">
                 <div className="w-[120px] h-[100px] shrink-0">
                   <Illus />
@@ -202,7 +167,7 @@ const WhyChooseUs = () => {
         })}
       </div>
 
-      <div ref={statsRef} className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-border/30">
+      <div ref={statsRef} className="animate-in-up max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-border/30">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
           {trustStats.map((stat, idx) => (
             <div key={idx}>

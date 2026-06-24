@@ -22,13 +22,15 @@ import {
   CreditCard,
   BarChart3,
   Shield,
+  FilePlus,
 } from "lucide-react";
 
-export function getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyRole, hasPermission }) {
+export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasPermission }) {
   if (globalRole === 'super_admin') {
     return [
       { path: "/dashboard/super-admin", label: "Overview", icon: LayoutDashboard },
       { path: "/dashboard/super-admin/organizations", label: "Organizations", icon: Users },
+      { path: "/dashboard/super-admin/org-requests", label: "Org Requests", icon: FilePlus },
       { path: "/dashboard/super-admin/analytics", label: "Analytics", icon: History },
       { path: "/dashboard/super-admin/subscriptions", label: "Subscriptions", icon: CreditCard },
       { path: "/dashboard/super-admin/users", label: "All Users", icon: User },
@@ -72,6 +74,9 @@ export function getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyR
       }
       if (hasPermission('announcement:create') || hasPermission('student:view')) {
         items.push({ path: `${orgPath}/announcements`, label: "Announcements", icon: Mail });
+      }
+      if (hasPermission('message:send') || hasPermission('message:view')) {
+        items.push({ path: `${orgPath}/messages`, label: "Messages", icon: Mail });
       }
       if (hasPermission('attendance:mark')) {
         items.push({ path: `${orgPath}/attendance`, label: "Attendance", icon: Calendar });

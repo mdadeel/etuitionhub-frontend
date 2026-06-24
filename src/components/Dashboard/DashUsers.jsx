@@ -9,12 +9,21 @@ import useDebouncedValue from '../../hooks/useDebouncedValue';
 import { Button } from '@/components/ui/button';
 import { UserX, Edit2, ShieldAlert, UserCog, Search } from 'lucide-react';
 import FilterSelect from '../shared/FilterSelect';
+import DashboardFilterBar from '../shared/DashboardFilterBar';
+import LocationFilter from '../shared/LocationFilter';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DataTable from "@/components/ui/data-table";
 import EditModal from './EditModal';
 import Pagination from '../shared/Pagination';
 import StatusBadge from '../shared/StatusBadge';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
+
+const ROLE_OPTIONS = [
+    { value: '', label: 'All Roles' },
+    { value: 'student', label: 'Students' },
+    { value: 'tutor', label: 'Tutors' },
+    { value: 'admin', label: 'Admins' }
+];
 
 const DashUsers = () => {
     const [users, setUsers] = useState([]);
@@ -26,10 +35,14 @@ const DashUsers = () => {
     const [totalUsers, setTotalUsers] = useState(0);
     const debouncedSearch = useDebouncedValue(search, 300);
 
+    // Advanced filters
+    const [roleFilter, setRoleFilter] = useState('');
+    const [locationFilter, setLocationFilter] = useState(null);
+
     // Reset page when search or filter changes
     useEffect(() => {
         setPage(1);
-    }, [debouncedSearch, filter]);
+    }, [debouncedSearch, filter, roleFilter, locationFilter]);
 
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -45,14 +58,14 @@ const DashUsers = () => {
     const loadUsers = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await api.get('/api/users', {
-                params: { 
-                    search: debouncedSearch,
-                    page: page,
-                    // If filter is specific, we should ideally pass it to backend. 
-                    // But for now, we'll fetch paginated data.
-                },
-            });
+            const params = {
+                search: debouncedSearch,
+                page: page,
+            };
+            if (roleFilter) params.role = roleFilter;
+            if (locationFilter) params.location = locationFilter;
+
+            const res = await api.get('/api/users', { params });
             setUsers(res.data?.data || res.data || []);
             if (res.data?.pagination) {
                 setTotalPages(res.data.pagination.pages);
@@ -63,7 +76,7 @@ const DashUsers = () => {
         } finally {
             setLoading(false);
         }
-    }, [debouncedSearch, page]);
+    }, [debouncedSearch, page, roleFilter, locationFilter]);
 
     useEffect(() => {
         loadUsers();
@@ -189,6 +202,26 @@ const DashUsers = () => {
                     </div>
                 }
             />
+
+            {/* Advanced Filters */}
+            <DashboardFilterBar
+                activeCount={[roleFilter, locationFilter].filter(Boolean).length}
+                onClear={() => { setRoleFilter(''); setLocationFilter(null); }}
+            >
+                <div className="min-w-[140px]">
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Role</label>
+                    <select
+                        value={roleFilter}
+                        onChange={(e) => setRoleFilter(e.target.value)}
+                        className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    >
+                        {ROLE_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+                </div>
+                <LocationFilter value={locationFilter} onChange={setLocationFilter} />
+            </DashboardFilterBar>
 
             <DataTable
                 rowKey={(user) => user._id}

@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const PlatformOverview = lazy(() => import('./SuperAdmin/PlatformOverview'));
 const AllOrganizations = lazy(() => import('./SuperAdmin/AllOrganizations'));
+const OrgRequests = lazy(() => import('./SuperAdmin/OrgRequests'));
 const GlobalUsers = lazy(() => import('./SuperAdmin/GlobalUsers'));
 const AdminAuditLogs = lazy(() => import('../../pages/AdminAuditLogs'));
 const DashSettings = lazy(() => import('./DashSettings'));
@@ -26,6 +27,7 @@ const SuperAdminDashboardLayout = () => {
     <Routes>
       <Route index element={<PlatformOverview />} />
       <Route path="organizations" element={<AllOrganizations />} />
+      <Route path="org-requests" element={<OrgRequests />} />
       <Route path="users" element={<GlobalUsers />} />
       <Route path="analytics" element={<DashAnalytics />} />
       <Route path="tutors" element={<AdminTutors />} />

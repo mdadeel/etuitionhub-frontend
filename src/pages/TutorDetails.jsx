@@ -371,13 +371,7 @@ const TutorDetails = () => {
                 description={`Learn with ${tutor.displayName}, an experienced tutor in ${tutor.location}. Subject expertise: ${Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'Various'}.`}
             />
             <div className="max-w-6xl mx-auto px-4">
-                {/* Back Link */}
-                <div className="mb-6">
-                    <Link to="/tutors" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 rounded-md px-1 py-0.5">
-                        <ArrowLeft size={16} aria-hidden="true" />
-                        Back to Tutors
-                    </Link>
-                </div>
+
 
                 <div className="space-y-4">
                     {/* Identity Card */}

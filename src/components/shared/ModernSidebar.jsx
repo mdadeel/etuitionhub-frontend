@@ -51,7 +51,7 @@ const subjects = [
   { id: 'general', label: 'General', icon: Layout },
 ];
 
-const ModernSidebar = ({ className }) => {
+const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [editingChatId, setEditingChatId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
@@ -85,6 +85,7 @@ const ModernSidebar = ({ className }) => {
     if (location.pathname !== '/ai-assistant') {
       navigate('/ai-assistant');
     }
+    if (isMobile && onCloseMobile) onCloseMobile();
   };
 
   const dashboardItems = [
@@ -173,7 +174,10 @@ const ModernSidebar = ({ className }) => {
             {to ? (
               <Link
                 to={to}
-                onClick={onClick}
+                onClick={(e) => {
+                  if (onClick) onClick(e);
+                  if (isMobile && onCloseMobile) onCloseMobile();
+                }}
                 className={cn(
                   'group flex items-center gap-2.5 px-2 h-9 rounded-[7px] transition-all duration-200',
                   isActive
@@ -228,29 +232,32 @@ const ModernSidebar = ({ className }) => {
   return (
   <aside
     className={cn(
-      'h-screen bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out z-40 shrink-0 sticky top-0 left-0',
-      isCollapsed ? 'w-[68px]' : 'w-[260px]',
+      'h-screen bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out shrink-0 sticky top-0 left-0',
+      isCollapsed && !isMobile ? 'w-[68px]' : 'w-[260px]',
+      isMobile ? 'z-auto' : 'z-40',
       className
     )}
   >
     {/* Header */}
     <div className="h-[56px] flex items-center justify-end px-3 shrink-0 border-b-[0.5px] border-border/50 gap-2">
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={toggleSidebar}
-              className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors shrink-0"
-              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            {isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      {!isMobile && (
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggleSidebar}
+                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
     </div>
 
     <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-3 pt-4">
@@ -364,6 +371,9 @@ const ModernSidebar = ({ className }) => {
                     <TooltipTrigger asChild>
                       <Link
                         to={`/ai-assistant/chat/${chat._id}`}
+                        onClick={() => {
+                          if (isMobile && onCloseMobile) onCloseMobile();
+                        }}
                         className={cn(
                           'group flex items-center gap-2.5 px-2 h-9 rounded-[7px] transition-all duration-200 relative',
                           location.pathname.includes(chat._id)
@@ -445,6 +455,9 @@ const ModernSidebar = ({ className }) => {
                 <TooltipTrigger asChild>
                   <Link
                     to="/ai-assistant/history"
+                    onClick={() => {
+                      if (isMobile && onCloseMobile) onCloseMobile();
+                    }}
                     className={cn(
                       'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
                       location.pathname === '/ai-assistant/history'
@@ -464,6 +477,9 @@ const ModernSidebar = ({ className }) => {
                 <TooltipTrigger asChild>
                   <Link
                     to="/ai-assistant/lesson-planner"
+                    onClick={() => {
+                      if (isMobile && onCloseMobile) onCloseMobile();
+                    }}
                     className={cn(
                       'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
                       location.pathname === '/ai-assistant/lesson-planner'
@@ -485,6 +501,9 @@ const ModernSidebar = ({ className }) => {
             <TooltipTrigger asChild>
               <Link
                 to="/ai-assistant/saved-notes"
+                onClick={() => {
+                  if (isMobile && onCloseMobile) onCloseMobile();
+                }}
                 className={cn(
                   'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
                   location.pathname === '/ai-assistant/saved-notes'
@@ -504,6 +523,9 @@ const ModernSidebar = ({ className }) => {
             <TooltipTrigger asChild>
               <Link
                 to="/ai-assistant/settings"
+                onClick={() => {
+                  if (isMobile && onCloseMobile) onCloseMobile();
+                }}
                 className={cn(
                   'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
                   location.pathname === '/ai-assistant/settings'

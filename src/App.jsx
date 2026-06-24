@@ -73,7 +73,8 @@ const ConditionalNavbar = () => {
   const { pathname } = useLocation();
   const isDashboard = pathname.startsWith("/dashboard");
   const isSession = pathname.startsWith("/session");
-  if (isDashboard || isSession) return null;
+  const isAiAssistant = pathname.startsWith("/ai-assistant");
+  if (isDashboard || isSession || isAiAssistant) return null;
   return <Navbar />;
 };
 
@@ -113,12 +114,13 @@ const MainContent = ({ children }) => {
   const { pathname } = useLocation();
   const isDashboard = pathname.startsWith("/dashboard");
   const isSession = pathname.startsWith("/session");
+  const isAiAssistant = pathname.startsWith("/ai-assistant");
 
   return (
     <main
       className={cn(
         "flex-grow transition-all duration-300",
-        !isDashboard && !isSession ? "pt-14 safe-bottom" : "pt-0",
+        !isDashboard && !isSession && !isAiAssistant ? "pt-14 safe-bottom" : "pt-0",
       )}
     >
       {children}

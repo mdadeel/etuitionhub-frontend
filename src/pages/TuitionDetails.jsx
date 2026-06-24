@@ -238,13 +238,7 @@ const TuitionDetails = () => {
         <SEO title={`${tuition?.subject || 'Tuition'} in ${tuition?.location || 'Bangladesh'} | eTuitionBD`} description={`Find a verified ${tuition?.subject || 'tutor'} in ${tuition?.location || 'Bangladesh'}. View qualifications, experience, fees, and contact directly.`} />
         <div className="bg-background min-h-screen py-8">
             <div className="max-w-6xl mx-auto px-4">
-                {/* Back Link */}
-                <div className="mb-6">
-                    <Link to="/tuitions" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#2563EB] transition-colors">
-                        <ArrowLeft size={16} />
-                        Back to Tuition Jobs
-                    </Link>
-                </div>
+
 
                 <div className="grid lg:grid-cols-3 gap-6">
                     {/* Main Content */}

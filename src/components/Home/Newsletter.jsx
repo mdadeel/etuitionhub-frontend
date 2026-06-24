@@ -1,33 +1,12 @@
-import { useState, useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useState } from 'react';
 import { Mail, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-gsap.registerPlugin(ScrollTrigger);
+import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const Newsletter = () => {
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const sectionRef = useRef(null);
-
-  useGSAP(() => {
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top 85%",
-        onEnter: () => {
-          gsap.fromTo(sectionRef.current,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
-          );
-        },
-        once: true,
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+  const sectionRef = useAnimateOnScroll();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,59 +29,48 @@ const Newsletter = () => {
   };
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-20 md:py-28"
-      style={{ background: 'linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--primary) / 0.04) 50%, hsl(var(--accent) / 0.02) 100%)' }}
-    >
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-3xl pointer-events-none" />
+    <section ref={sectionRef} className="animate-in-up relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 py-20 md:py-28">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/[0.04] rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-xl mx-auto px-6 relative z-10 text-center">
-        <div className="size-14 rounded-full bg-primary/[0.06] border border-primary/10 flex items-center justify-center mx-auto mb-6">
-          <Mail size={24} className="text-primary" />
+      <div className="max-w-xl mx-auto px-6 text-center relative z-10">
+        <div className="flex justify-center mb-6">
+          <div className="size-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Mail size={24} className="text-primary" />
+          </div>
         </div>
-
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-foreground tracking-tight leading-[0.95] mb-4">
-          Stay inside <span className="text-primary">the loop</span>
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading text-foreground tracking-tight leading-[0.95] text-wrap-balance">
+          Stay updated with new tutors and features
         </h2>
-        <p className="text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-10">
-          Get verified tutor updates, learning tips, and educational resources delivered directly to your inbox.
+        <p className="text-sm md:text-base text-muted-foreground mt-3 max-w-md mx-auto leading-relaxed">
+          Get notified when new tutors join in your area and receive tips for finding the perfect match.
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-          <div className="relative flex-1 group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-              <Mail className="size-5 text-muted-foreground/50 group-focus-within:text-primary/70 transition-colors" />
-            </div>
+        <form onSubmit={handleSubmit} className="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <div className="flex-1 relative">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
-              className="w-full h-12 md:h-14 pl-12 pr-4 bg-background border border-border/40 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/5 rounded-lg transition-all font-body"
+              placeholder="Enter your email"
               required
+              className="w-full h-12 bg-background border border-border rounded-xl px-4 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all"
             />
           </div>
           <button
             type="submit"
             disabled={submitting}
-            className="h-12 md:h-14 px-8 md:px-10 bg-primary text-primary-foreground font-heading font-medium text-sm rounded-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
+            className="h-12 px-6 bg-primary text-primary-foreground font-semibold rounded-xl text-sm hover:bg-primary/90 disabled:opacity-50 transition-all shrink-0 cursor-pointer flex items-center justify-center gap-2"
           >
-            {submitting ? 'Subscribing...' : 'Subscribe'}
+            {submitting ? (
+              'Subscribing...'
+            ) : (
+              <>
+                Subscribe <CheckCircle2 size={16} />
+              </>
+            )}
           </button>
         </form>
-
-        <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 mt-10 pt-8 border-t border-border/20">
-          {[
-            { icon: CheckCircle2, text: "No spam" },
-            { icon: CheckCircle2, text: "Your email is secure" },
-            { icon: CheckCircle2, text: "Unsubscribe anytime" },
-          ].map((item, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground/60">
-              <item.icon size={14} className="text-primary/50" />
-              <span>{item.text}</span>
-            </div>
-          ))}
-        </div>
+        <p className="text-[11px] text-muted-foreground/60 mt-4">No spam. Unsubscribe anytime.</p>
       </div>
     </section>
   );

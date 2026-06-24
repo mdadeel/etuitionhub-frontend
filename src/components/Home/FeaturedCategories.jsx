@@ -66,7 +66,7 @@ const categories = [
         slug: "university",
         tag: "High demand",
         context: "Admission Preparation",
-        accent: "indigo",
+        accent: "slate",
     },
     {
         icon: Code,
@@ -103,7 +103,7 @@ const categories = [
 const tagConfig = {
     "Most popular": { icon: Flame, className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" },
     Trending: { icon: TrendingUp, className: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" },
-    "High demand": { icon: Star, className: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20" },
+    "High demand": { icon: Star, className: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20" },
 };
 
 const accentStyles = {
@@ -111,7 +111,7 @@ const accentStyles = {
     blue: { text: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", ring: "ring-blue-500/20", gradient: "from-blue-500/15 via-blue-500/5 to-transparent" },
     orange: { text: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", ring: "ring-orange-500/20", gradient: "from-orange-500/15 via-orange-500/5 to-transparent" },
     cyan: { text: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", ring: "ring-cyan-500/20", gradient: "from-cyan-500/15 via-cyan-500/5 to-transparent" },
-    indigo: { text: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", ring: "ring-indigo-500/20", gradient: "from-indigo-500/15 via-indigo-500/5 to-transparent" },
+    slate: { text: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", ring: "ring-slate-500/20", gradient: "from-slate-500/15 via-slate-500/5 to-transparent" },
     teal: { text: "text-teal-600 dark:text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20", ring: "ring-teal-500/20", gradient: "from-teal-500/15 via-teal-500/5 to-transparent" },
     pink: { text: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20", ring: "ring-pink-500/20", gradient: "from-pink-500/15 via-pink-500/5 to-transparent" },
     rose: { text: "text-rose-600 dark:text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", ring: "ring-rose-500/20", gradient: "from-rose-500/15 via-rose-500/5 to-transparent" },
@@ -128,12 +128,12 @@ const CategoryCard = ({ cat, index }) => {
         <Link
             to={`/tutors?subjects=${cat.slug}`}
             aria-label={`Browse ${cat.label} tutors`}
-            className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-2xl"
+            className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[20px]"
             style={{ animationDelay: `${100 + index * 50}ms` }}
         >
             <div
                 className={cn(
-                    "relative h-full overflow-hidden rounded-2xl border border-border/70 bg-card",
+                    "relative h-full overflow-hidden rounded-[20px] border border-border/70 bg-card",
                     "transition-all duration-300 ease-out",
                     "hover:shadow-premium-md",
                     "active:scale-[0.985]"
@@ -151,7 +151,7 @@ const CategoryCard = ({ cat, index }) => {
                 {/* Border + ring accent on hover */}
                 <div
                     className={cn(
-                        "pointer-events-none absolute inset-0 rounded-2xl border border-transparent",
+                        "pointer-events-none absolute inset-0 rounded-[20px] border border-transparent",
                         "transition-colors duration-300",
                         "group-hover:[border-color:var(--tw-border)]",
                         a.border
@@ -159,7 +159,7 @@ const CategoryCard = ({ cat, index }) => {
                 />
                 <div
                     className={cn(
-                        "pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-transparent",
+                        "pointer-events-none absolute inset-0 rounded-[20px] ring-1 ring-inset ring-transparent",
                         "transition-all duration-300 group-hover:ring-2",
                         a.ring
                     )}
@@ -169,18 +169,20 @@ const CategoryCard = ({ cat, index }) => {
                 {tag && TagIcon && (
                     <span
                         className={cn(
-                            "absolute top-3 right-3 z-10 inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider backdrop-blur-sm",
+                            "absolute top-3 right-3 z-10 inline-flex items-center gap-1 rounded-full border backdrop-blur-sm",
+                            "p-1.5 md:px-2 md:py-0.5",
                             tag.className
                         )}
+                        title={cat.tag}
                     >
-                        <TagIcon className="size-2.5" />
-                        {cat.tag}
+                        <TagIcon className="size-3 md:size-2.5" />
+                        <span className="hidden md:inline text-[9px] font-bold uppercase tracking-wider">{cat.tag}</span>
                     </span>
                 )}
 
-                <div className="relative z-10 flex h-full flex-col gap-3 p-4 md:p-5">
-                    {/* Icon + label in same line */}
-                    <div className="flex items-center gap-3">
+                <div className="relative z-10 flex h-full flex-col p-4 md:p-5">
+                    {/* Icon */}
+                    <div className="mb-3 md:mb-4">
                         <div
                             className={cn(
                                 "flex shrink-0 items-center justify-center rounded-xl border",
@@ -192,38 +194,29 @@ const CategoryCard = ({ cat, index }) => {
                         >
                             <cat.icon className={cn("size-5", a.text)} strokeWidth={2} />
                         </div>
-                        <div className="min-w-0 flex-1 pr-16">
-                            <h3 className="truncate font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
-                                {cat.label}
-                            </h3>
-                            <p className="truncate text-[11px] text-muted-foreground leading-tight mt-0.5">
-                                {cat.context}
-                            </p>
-                        </div>
                     </div>
 
-                    {/* Footer: stats + view btn in same line */}
-                    <div className="mt-auto flex items-center justify-between border-t border-border/60 pt-3">
-                        <div className="flex items-center gap-2.5 text-[11px] font-bold text-foreground">
-                            <span className="flex items-center gap-1">
-                                <Users className={cn("size-3", a.text)} />
-                                {cat.count} tutors
-                            </span>
-                            <span className="flex items-center gap-0.5 text-amber-500">
-                                <Star className="size-3 fill-amber-400" />
-                                {cat.rating}
-                            </span>
+                    {/* Title and context */}
+                    <div className="min-w-0 flex-1">
+                        <h3 className="line-clamp-2 font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
+                            {cat.label}
+                        </h3>
+                        <p className="line-clamp-2 text-[11px] md:text-xs text-muted-foreground leading-snug mt-1">
+                            {cat.context}
+                        </p>
+                    </div>
+
+                    {/* Footer: stats */}
+                    <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
+                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-foreground">
+                            <Users className={cn("size-3.5", a.text)} />
+                            {cat.count} <span className="font-normal text-muted-foreground">tutors</span>
                         </div>
-                        <span
-                            className={cn(
-                                "inline-flex items-center gap-0.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider",
-                                "bg-foreground text-background",
-                                "transition-all duration-300 group-hover:gap-1"
-                            )}
-                        >
-                            View
-                            <ArrowUpRight className="size-3" strokeWidth={2.5} />
-                        </span>
+                        <div className="flex items-center gap-1 text-[11px] font-bold text-foreground">
+                            <Star className="size-3.5 fill-amber-400 text-amber-500" />
+                            {cat.rating}
+                            <ArrowUpRight className={cn("size-3.5 ml-0.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5", a.text)} strokeWidth={2.5} />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -282,12 +275,12 @@ const FeaturedCategories = () => {
                     {/* 9th cell: "View all subjects" tile */}
                     <Link
                         to="/tutors"
-                        className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-2xl"
+                        className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[20px]"
                         style={{ animationDelay: `${100 + categories.length * 50}ms` }}
                     >
                         <div
                             className={cn(
-                                "relative flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-dashed border-border bg-background/40 p-4 md:p-5",
+                                "relative flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-[20px] border border-dashed border-border bg-background/40 p-4 md:p-5",
                                 "transition-all duration-300 ease-out",
                                 "hover:border-primary/40 hover:bg-primary/5 hover:shadow-premium-md",
                                 "active:scale-[0.985]"

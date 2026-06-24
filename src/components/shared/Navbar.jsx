@@ -502,14 +502,7 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Mobile Menu Toggle */}
-          <button
-            className="lg:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          >
-            {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          {/* Mobile Menu Toggle (Removed as requested) */}
         </div>
       </div>
 

@@ -1,11 +1,7 @@
-import { useState, useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-gsap.registerPlugin(ScrollTrigger);
+import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const faqs = [
   { question: "How do you verify tutors?", answer: "Every tutor submits their academic certificates and national ID. We verify all documents manually before activating their profile to ensure 100% academic integrity." },
@@ -17,81 +13,46 @@ const faqs = [
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-
-  useGSAP(() => {
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top 80%",
-        onEnter: () => {
-          gsap.fromTo(headingRef.current,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
-          );
-
-          const items = gsap.utils.toArray('.faq-item');
-          gsap.fromTo(items,
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: "power3.out", delay: 0.2 }
-          );
-        },
-        once: true,
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+  const headingRef = useAnimateOnScroll();
+  const listRef = useAnimateOnScroll();
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-background py-20 md:py-28">
+    <section className="relative overflow-hidden bg-background py-20 md:py-28">
       <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-primary/[0.03] rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-3xl mx-auto px-6 relative z-10">
-        <div ref={headingRef} className="text-center mb-14">
-          <span className="text-xs font-medium text-primary/70 uppercase tracking-[0.18em]">Questions & Answers</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-foreground tracking-tight leading-[0.95] mt-3">
-            Frequently Asked <span className="text-primary">Questions</span>
+        <div ref={headingRef} className="animate-in-up text-center mb-16">
+          <span className="text-xs font-medium text-primary/70 uppercase tracking-[0.18em]">FAQ</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-foreground tracking-tight leading-[0.95] mt-2">
+            Questions? We've got answers.
           </h2>
-          <p className="text-base text-muted-foreground mt-3">Got questions? We've got answers.</p>
         </div>
 
-        <div className="divide-y divide-border/20">
-          {faqs.map((faq, idx) => {
-            const isOpen = activeIndex === idx;
-            return (
-              <div key={idx} className="faq-item py-4 md:py-5 first:pt-0">
-                <button
-                  className="w-full flex items-center justify-between text-left gap-4 outline-none"
-                  onClick={() => setActiveIndex(isOpen ? null : idx)}
-                >
-                  <span className={cn(
-                    "text-sm md:text-base font-heading tracking-tight transition-colors duration-300",
-                    isOpen ? 'text-primary' : 'text-foreground'
-                  )}>
-                    {faq.question}
-                  </span>
-                  <div className={cn(
-                    "size-7 flex items-center justify-center rounded-md transition-all duration-300 shrink-0",
-                    isOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
-                  )}>
-                    {isOpen ? <Minus size={16} /> : <Plus size={16} />}
-                  </div>
-                </button>
-
-                <div className={cn(
-                    "grid transition-all duration-500 ease-in-out overflow-hidden",
-                    isOpen ? "grid-rows-[1fr] max-h-96" : "grid-rows-[0fr] max-h-0"
-                )}>
-                  <div className="min-w-0">
-                    <p className="pt-3 pb-1 text-sm text-muted-foreground leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
+        <div ref={listRef} className="animate-in-up animate-stagger space-y-3">
+          {faqs.map((faq, idx) => (
+            <div key={idx} className="animate-in-up-child border border-border/20 rounded-xl overflow-hidden bg-card/30 backdrop-blur-sm transition-all duration-300 hover:border-border/50">
+              <button
+                onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}
+                className="w-full flex items-center justify-between p-4 md:p-5 text-left cursor-pointer"
+              >
+                <span className="text-sm md:text-base font-semibold text-foreground pr-4">{faq.question}</span>
+                <span className="shrink-0 size-6 rounded-lg bg-muted/50 flex items-center justify-center transition-transform duration-300"
+                  style={{ transform: activeIndex === idx ? 'rotate(45deg)' : 'rotate(0deg)' }}>
+                  <Plus size={14} className="text-muted-foreground" />
+                </span>
+              </button>
+              <div className={cn(
+                "grid transition-all duration-300",
+                activeIndex === idx ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              )}>
+                <div className="overflow-hidden">
+                  <p className="px-4 md:px-5 pb-4 md:pb-5 text-sm text-muted-foreground leading-relaxed">
+                    {faq.answer}
+                  </p>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -10,6 +10,10 @@ import Pagination from '../shared/Pagination';
 import StatusBadge from '../shared/StatusBadge';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
 import EmptyState from '../shared/EmptyState';
+import DashboardFilterBar from '../shared/DashboardFilterBar';
+import SubjectFilter from '../shared/SubjectFilter';
+import ClassFilter from '../shared/ClassFilter';
+import LocationFilter from '../shared/LocationFilter';
 import {
     Dialog,
     DialogContent,
@@ -28,10 +32,15 @@ const DashTuitions = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalTuitions, setTotalTuitions] = useState(0);
 
-    // Reset page when filter changes
+    // Advanced filters
+    const [subjectFilter, setSubjectFilter] = useState(null);
+    const [classFilter, setClassFilter] = useState(null);
+    const [locationFilter, setLocationFilter] = useState(null);
+
+    // Reset page when any filter changes
     useEffect(() => {
         setPage(1);
-    }, [filter]);
+    }, [filter, subjectFilter, classFilter, locationFilter]);
     
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -53,9 +62,12 @@ const DashTuitions = () => {
     const loadTuitions = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await api.get('/api/tuitions', {
-                params: { page }
-            });
+            const params = { page };
+            if (subjectFilter) params.subjects = subjectFilter;
+            if (classFilter) params.classFilter = classFilter;
+            if (locationFilter) params.locationFilter = locationFilter;
+
+            const res = await api.get('/api/tuitions', { params });
             const data = res.data;
             setTuitions(Array.isArray(data) ? data : (data?.data || []));
             if (data?.pagination) {
@@ -67,7 +79,7 @@ const DashTuitions = () => {
         } finally {
             setLoading(false);
         }
-    }, [page]);
+    }, [page, subjectFilter, classFilter, locationFilter]);
 
     useEffect(() => {
         loadTuitions();
@@ -174,6 +186,16 @@ const DashTuitions = () => {
                     </div>
                 }
             />
+
+            {/* Advanced Filters */}
+            <DashboardFilterBar
+                activeCount={[subjectFilter, classFilter, locationFilter].filter(Boolean).length}
+                onClear={() => { setSubjectFilter(null); setClassFilter(null); setLocationFilter(null); }}
+            >
+                <SubjectFilter value={subjectFilter} onChange={setSubjectFilter} />
+                <ClassFilter value={classFilter} onChange={setClassFilter} />
+                <LocationFilter value={locationFilter} onChange={setLocationFilter} />
+            </DashboardFilterBar>
 
             <DataTable
                 columns={[

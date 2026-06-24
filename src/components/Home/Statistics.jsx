@@ -1,11 +1,5 @@
-import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import countUpModule from 'react-countup';
-const CountUp = countUpModule.default || countUpModule;
-
-gsap.registerPlugin(ScrollTrigger);
+import { useState, useEffect, useRef } from 'react';
+import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const PeopleIcon = ({ color }) => (
   <svg viewBox="0 0 32 32" fill="none" className="size-8 shrink-0">
@@ -78,70 +72,66 @@ const statData = [
   { value: 95, label: 'Success Rate', suffix: '%', max: 100, color: '221 83% 53%' },
 ];
 
-const Statistics = () => {
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
+function AnimatedNumber({ end, duration = 2500 }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
 
-  useGSAP(() => {
-    const ctx = gsap.context(() => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top 80%",
-        onEnter: () => {
-          if (prefersReducedMotion) {
-            gsap.set(headingRef.current, { opacity: 1, y: 0 });
-            const items = gsap.utils.toArray('.stat-item');
-            gsap.set(items, { opacity: 1, y: 0 });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        let current = 0;
+        const increment = end / (duration / 16);
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= end) {
+            setCount(end);
+            clearInterval(timer);
           } else {
-            gsap.fromTo(headingRef.current,
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
-            );
-            const items = gsap.utils.toArray('.stat-item');
-            gsap.fromTo(items,
-              { opacity: 0, y: 20 },
-              { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power3.out", delay: 0.15 }
-            );
+            setCount(Math.floor(current));
           }
-        },
-        once: true,
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+        }, 16);
+        observer.unobserve(el);
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [end, duration]);
+
+  return <span ref={ref}>{count.toLocaleString()}</span>;
+}
+
+const Statistics = () => {
+  const headingRef = useAnimateOnScroll();
+  const gridRef = useAnimateOnScroll();
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-16 md:py-24 bg-background">
+    <section className="relative overflow-hidden py-16 md:py-24 bg-background">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.04)_0%,transparent_60%)] pointer-events-none" />
       <div className="absolute inset-0 bg-pattern-academic opacity-[0.03] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div ref={headingRef} className="text-center mb-12 md:mb-16">
+        <div ref={headingRef} className="animate-in-up text-center mb-12 md:mb-16">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading text-foreground tracking-tight leading-tight text-wrap-balance">
             Our platform has connected thousands of students with perfect tutors
           </h2>
         </div>
 
-        <div className="bg-border/10 border border-border/10 rounded-xl grid grid-cols-2 gap-px overflow-hidden md:flex md:flex-row md:gap-0 md:bg-background md:divide-x md:divide-border/10">
+        <div ref={gridRef} className="animate-in-up animate-stagger bg-border/10 border border-border/10 rounded-xl grid grid-cols-2 gap-px overflow-hidden md:flex md:flex-row md:gap-0 md:bg-background md:divide-x md:divide-border/10">
           {statData.map((stat, i) => {
             const Icon = icons[i];
             const isLast = i === 4;
             return (
-              <div key={i} className={`stat-item flex-1 flex flex-col p-5 md:p-6 gap-3 bg-background ${isLast ? 'col-span-2' : ''}`}>
+              <div key={i} className="animate-in-up-child flex-1 flex flex-col p-5 md:p-6 gap-3 bg-background" style={isLast ? { gridColumn: 'span 2' } : undefined}>
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
                   <Icon color={stat.color} />
                   <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2">
                     <span className="text-xl md:text-2xl font-heading tracking-tight tabular-nums leading-none"
                       style={{ color: `hsl(${stat.color})` }}>
-                      <CountUp
-                        end={stat.value}
-                        duration={2.5}
-                        separator=","
-                        enableScrollSpy={true}
-                        scrollSpyOnce={true}
-                      />
+                      <AnimatedNumber end={stat.value} />
                       <span className="text-sm md:text-base text-muted-foreground ml-0.5 font-body">{stat.suffix}</span>
                     </span>
                     <span className="text-[10px] md:text-[11px] font-medium text-muted-foreground uppercase tracking-wider">

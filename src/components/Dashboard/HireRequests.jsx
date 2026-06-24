@@ -169,7 +169,7 @@ const HireRequests = () => {
             const cfg = statusConfig[req.status] || statusConfig.pending;
             const isPending = req.status === 'pending';
             const isCountered = req.status === 'countered';
-            const canAct = tab === 'inbox' && (isPending || isCountered);
+            const canAct = (tab === 'inbox' && isPending) || (tab === 'sent' && isCountered);
 
             return (
               <div key={req._id} className="bg-card border border-border rounded-xl p-4 hover:border-primary/20 transition-colors">
@@ -210,7 +210,7 @@ const HireRequests = () => {
                       {isCountered && (
                         <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
                           <p className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                            Your offer: ৳{req.proposedRate?.toLocaleString()} → Counter: ৳{req.counterRate?.toLocaleString()}/mo
+                            Original offer: ৳{req.proposedRate?.toLocaleString()} → Counter: ৳{req.counterRate?.toLocaleString()}/mo
                           </p>
                           {req.counterMessage && (
                             <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 italic">"{req.counterMessage}"</p>
@@ -229,15 +229,13 @@ const HireRequests = () => {
                       >
                         <Check className="size-4" />
                       </button>
-                      {isCountered && (
-                        <button
-                          onClick={() => setCounterModal({ open: true, requestId: req._id, originalRate: req.proposedRate })}
-                          className="size-9 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 active:scale-[0.98] transition-all"
-                          title="Counter"
-                        >
-                          <ArrowRightLeft className="size-4" />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => setCounterModal({ open: true, requestId: req._id, originalRate: isCountered ? req.counterRate : req.proposedRate })}
+                        className="size-9 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 active:scale-[0.98] transition-all"
+                        title="Counter"
+                      >
+                        <ArrowRightLeft className="size-4" />
+                      </button>
                       <button
                         onClick={() => handleDecline(req._id)}
                         className="size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 active:scale-[0.98] transition-all"

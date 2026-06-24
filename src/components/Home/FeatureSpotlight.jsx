@@ -1,16 +1,11 @@
-import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   CheckCircle, Mail, Eye, BarChart3, Zap, MessageCircle, ArrowRight,
   TrendingUp, Users, BookOpen, Calendar, Star, Clock, Award, Target,
-  GraduationCap, DollarSign, Search, Sparkles
+  GraduationCap, DollarSign, Search, Sparkles, FileText
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
-
-gsap.registerPlugin(ScrollTrigger);
+import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const studentSubjects = [
   { name: "Math", pct: 88 },
@@ -45,34 +40,12 @@ const features = [
 ];
 
 const FeatureSpotlight = () => {
-  const sectionRef = useRef(null);
-  const dashboardRef = useRef(null);
-  const featuresRef = useRef(null);
+  const dashboardRef = useAnimateOnScroll();
+  const featuresRef = useAnimateOnScroll();
   const { user, dbUser } = useAuth();
 
   const isLoggedIn = !!user;
   const role = dbUser?.role?.toLowerCase() || 'guest';
-
-  useGSAP(() => {
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top 80%",
-        onEnter: () => {
-          gsap.fromTo(dashboardRef.current,
-            { opacity: 0, y: 40 },
-            { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
-          );
-          gsap.fromTo(featuresRef.current,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.4 }
-          );
-        },
-        once: true,
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
 
   const renderGuestDashboard = () => (
     <div className="rounded-[20px] p-6 md:p-10 relative overflow-hidden mb-8"
@@ -105,274 +78,197 @@ const FeatureSpotlight = () => {
 
         <div className="bg-background/40 border border-border/30 rounded-2xl p-5 relative overflow-hidden group">
           <div className="absolute -bottom-6 -right-6 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity">
-            <Target size={80} />
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
-            <Target size={20} className="text-emerald-500" />
-          </div>
-          <h3 className="font-heading text-sm font-semibold tracking-tight mb-1">Track Goals</h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">Set learning goals and monitor your progress over time</p>
-        </div>
-
-        <div className="bg-background/40 border border-border/30 rounded-2xl p-5 relative overflow-hidden group">
-          <div className="absolute -bottom-6 -right-6 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity">
             <MessageCircle size={80} />
           </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3">
-            <MessageCircle size={20} className="text-amber-500" />
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+            <MessageCircle size={20} className="text-primary" />
           </div>
-          <h3 className="font-heading text-sm font-semibold tracking-tight mb-1">Connect</h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">Message tutors, schedule sessions, and manage everything</p>
+          <h3 className="font-heading text-sm font-semibold tracking-tight mb-1">Direct Contact</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">Message tutors directly, no middlemen or agents</p>
+        </div>
+
+        <div className="bg-background/40 border border-border/30 rounded-2xl p-5 relative overflow-hidden group md:col-span-1 col-span-2">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <TrendingUp size={20} className="text-emerald-500" />
+            </div>
+            <div>
+              <h3 className="font-heading text-sm font-semibold tracking-tight">Track Progress</h3>
+              <p className="text-xs text-muted-foreground">Monitor improvement over time</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex -space-x-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="size-7 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border-2 border-background" />
+              ))}
+            </div>
+            <span className="text-[11px] text-muted-foreground font-medium">+12 students this week</span>
+          </div>
         </div>
       </div>
 
-      <div className="bg-background/40 border border-border/30 rounded-2xl p-6 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 opacity-50" />
-        <div className="relative z-10">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <GraduationCap size={28} className="text-primary" />
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-background/40 border border-border/30 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-xs font-semibold text-foreground">Recent Activity</span>
           </div>
-          <h3 className="font-heading text-base font-semibold tracking-tight mb-2">Start Your Learning Journey</h3>
-          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-5">
-            Join thousands of students finding the perfect tutors. Track your progress, manage sessions, and achieve your goals.
-          </p>
-          <Link
-            to="/signup"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
-          >
-            Get Started Free
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderStudentDashboard = () => {
-    const stats = [
-      { value: "+12%", label: "Growth", color: "hsl(var(--accent))", pct: 88 },
-      { value: "4", label: "Classes", color: "hsl(var(--primary))", pct: 25 },
-      { value: "6.5", label: "Hours", color: "hsl(var(--success))", pct: 70 },
-    ];
-
-    return (
-      <div className="rounded-[20px] p-6 md:p-10 relative overflow-hidden mb-8"
-        style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 40%, hsl(var(--accent) / 0.04) 100%)' }}
-      >
-        <div className="absolute -top-1/2 -right-[20%] w-[300px] h-[300px] bg-primary/[0.06] rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex items-end justify-between flex-wrap gap-4 mb-8 relative">
-          <div>
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Learning Dashboard</span>
-            <h2 className="text-2xl md:text-3xl font-heading font-bold tracking-tight mt-1">Weekly Progress</h2>
-          </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-500 rounded-full text-xs font-semibold tracking-wide">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Live &middot; Jun 24 – Jun 30
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
-          {stats.map((s, idx) => {
-            const radius = 30;
-            const circumference = 2 * Math.PI * radius;
-            const offset = circumference - (s.pct / 100) * circumference;
-            return (
-              <div key={idx} className="relative bg-background/40 border border-border/30 rounded-2xl p-5 text-center overflow-hidden">
-                <div className="w-[72px] h-[72px] mx-auto mb-3 relative">
-                  <svg viewBox="0 0 72 72" className="w-full h-full -rotate-90">
-                    <circle cx="36" cy="36" r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
-                    <circle cx="36" cy="36" r={radius} fill="none" stroke={s.color} strokeWidth="4" strokeLinecap="round"
-                      strokeDasharray={circumference} strokeDashoffset={offset} className="transition-all duration-1000 ease-out" />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center font-heading text-lg font-bold tracking-tight" style={{ color: s.color }}>
-                    {s.value}
-                  </div>
-                </div>
-                <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">{s.label}</div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="bg-background/40 border border-border/30 rounded-2xl p-5 relative">
-          <h3 className="font-heading text-sm font-semibold tracking-tight mb-4">Subject Progress</h3>
           <div className="space-y-3">
-            {studentSubjects.map((s, i) => (
+            {studentActivities.map((act, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="w-16 text-xs font-medium text-muted-foreground shrink-0">{s.name}</span>
-                <div className="flex-1 h-[3px] bg-muted/50 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-primary/60 transition-all duration-1000 ease-out" style={{ width: `${s.pct}%` }} />
+                <act.icon size={14} className={act.color} />
+                <span className="text-xs text-muted-foreground flex-1">{act.text}</span>
+                <span className="text-[10px] text-muted-foreground/50">{act.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-background/40 border border-border/30 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-1.5">
+              {studentSubjects.slice(0, 3).map((s, i) => (
+                <div
+                  key={i}
+                  className="w-7 h-2 rounded-full"
+                  style={{
+                    background: `linear-gradient(90deg, hsl(var(--primary) / 0.6) 0%, hsl(var(--primary) / ${s.pct / 100}) 100%)`,
+                    opacity: 0.7 + i * 0.1,
+                  }}
+                />
+              ))}
+            </div>
+            <span className="text-xs font-semibold text-foreground">Subject Progress</span>
+          </div>
+          <div className="space-y-2">
+            {studentSubjects.map((subj, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-[10px] w-14 text-muted-foreground font-medium">{subj.name}</span>
+                <div className="flex-1 h-1.5 rounded-full bg-border/40 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${subj.pct}%`, background: 'linear-gradient(90deg, hsl(var(--primary) / 0.7), hsl(var(--primary)))' }}
+                  />
                 </div>
-                <span className="w-9 text-right text-xs font-semibold font-heading">{s.pct}%</span>
+                <span className="text-[10px] text-muted-foreground w-6 text-right">{subj.pct}%</span>
               </div>
             ))}
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+
+  const renderStudentDashboard = () => (
+    <div className="rounded-[20px] p-6 md:p-10 relative overflow-hidden mb-8"
+      style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 40%, hsl(var(--accent) / 0.04) 100%)' }}
+    >
+      <div className="flex items-end justify-between flex-wrap gap-4 mb-8">
+        <div>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Your Dashboard</span>
+          <h2 className="text-2xl md:text-3xl font-heading font-bold tracking-tight mt-1">Welcome back, Student</h2>
+        </div>
+        <Link to="/dashboard?tab=post-job" className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-xl hover:bg-primary/90 transition-all">
+          Post a Request <ArrowRight size={14} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {[
+          { icon: Search, label: "Find Tutors", value: "2,500+", color: "from-primary/20 to-primary/5" },
+          { icon: FileText, label: "Active Requests", value: "3", color: "from-amber-500/20 to-amber-500/5" },
+          { icon: Users, label: "Applications", value: "8", color: "from-emerald-500/20 to-emerald-500/5" },
+          { icon: Calendar, label: "Sessions This Week", value: "5", color: "from-violet-500/20 to-violet-500/5" },
+        ].map((item, i) => (
+          <div key={i} className={`bg-gradient-to-br ${item.color} border border-border/20 rounded-2xl p-4`}>
+            <item.icon size={18} className="text-foreground/70 mb-2" />
+            <p className="text-2xl font-heading font-bold text-foreground tracking-tight">{item.value}</p>
+            <p className="text-[10px] text-muted-foreground font-medium mt-0.5">{item.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   const renderTutorDashboard = () => (
     <div className="rounded-[20px] p-6 md:p-10 relative overflow-hidden mb-8"
       style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 40%, hsl(var(--accent) / 0.04) 100%)' }}
     >
-      <div className="absolute -top-1/2 -right-[20%] w-[300px] h-[300px] bg-primary/[0.06] rounded-full blur-3xl pointer-events-none" />
-
-      <div className="flex items-end justify-between flex-wrap gap-4 mb-8 relative">
+      <div className="flex items-end justify-between flex-wrap gap-4 mb-8">
         <div>
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Tutor Dashboard</span>
-          <h2 className="text-2xl md:text-3xl font-heading font-bold tracking-tight mt-1">Your Teaching Overview</h2>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Your Dashboard</span>
+          <h2 className="text-2xl md:text-3xl font-heading font-bold tracking-tight mt-1">Welcome back, Tutor</h2>
         </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-500 rounded-full text-xs font-semibold tracking-wide">
-          <Star size={12} className="fill-amber-500" />
-          4.9 Rating
-        </div>
+        <Link to="/dashboard?tab=my-tuitions" className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-xl hover:bg-primary/90 transition-all">
+          View Requests <ArrowRight size={14} />
+        </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
-        <div className="bg-background/40 border border-border/30 rounded-2xl p-5 text-center">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-            <Users size={20} className="text-primary" />
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-background/40 border border-border/30 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xs font-semibold text-foreground">Applications Received</span>
           </div>
-          <div className="text-xl font-heading font-bold tracking-tight text-foreground">24</div>
-          <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-1">Active Students</div>
-        </div>
-
-        <div className="bg-background/40 border border-border/30 rounded-2xl p-5 text-center">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-3">
-            <Calendar size={20} className="text-emerald-500" />
-          </div>
-          <div className="text-xl font-heading font-bold tracking-tight text-foreground">12</div>
-          <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-1">Sessions This Week</div>
-        </div>
-
-        <div className="bg-background/40 border border-border/30 rounded-2xl p-5 text-center">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mx-auto mb-3">
-            <TrendingUp size={20} className="text-amber-500" />
-          </div>
-          <div className="text-xl font-heading font-bold tracking-tight text-foreground">৳42K</div>
-          <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-1">Monthly Earnings</div>
-        </div>
-      </div>
-
-      <div className="bg-background/40 border border-border/30 rounded-2xl p-5 relative">
-        <h3 className="font-heading text-sm font-semibold tracking-tight mb-4">Your Subjects</h3>
-        <div className="space-y-3">
-          {tutorSubjects.map((s, i) => (
-            <div key={i} className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">{s.name}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{s.students} students</span>
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+          <div className="space-y-3">
+            {tutorActivities.slice(0, 2).map((act, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <act.icon size={14} className={act.color} />
+                <span className="text-xs text-muted-foreground flex-1">{act.text}</span>
+                <span className="text-[10px] text-muted-foreground/50">{act.time}</span>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-background/40 border border-border/30 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xs font-semibold text-foreground">Subject Demand</span>
+          </div>
+          <div className="space-y-2">
+            {tutorSubjects.map((subj, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-[10px] w-16 text-muted-foreground font-medium">{subj.name}</span>
+                <div className="flex-1 h-2 rounded-full bg-border/40 overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${Math.min(100, (subj.students / 30) * 100)}%`,
+                      background: 'linear-gradient(90deg, hsl(var(--primary) / 0.6), hsl(var(--primary)))',
+                    }}
+                  />
+                </div>
+                <span className="text-[10px] text-muted-foreground">{subj.students} students</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 
-  const renderActivitySection = () => {
-    const activities = role === 'tutor' ? tutorActivities : studentActivities;
-    return (
-      <div className="grid grid-cols-2 gap-3 md:gap-4 mb-8">
-        <div className="bg-background/40 border border-border/30 rounded-2xl overflow-hidden">
-          <div className="px-3 py-2.5 md:px-5 md:py-3.5 border-b border-border/20 font-heading text-xs md:text-sm font-semibold flex items-center gap-1.5 md:gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Recent Activity
-          </div>
-          {activities.map((a, i) => (
-            <div key={i} className={`flex items-center gap-2 md:gap-3 px-3 py-2.5 md:px-5 md:py-3.5 ${i < activities.length - 1 ? 'border-b border-border/20' : ''}`}>
-              <div className={`w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 ${a.color.replace('text-', 'bg-').replace('emerald-500', 'emerald-500/10').replace('primary', 'primary/10').replace('accent', 'accent/10').replace('amber-500', 'amber-500/10')}`}>
-                <a.icon className={`size-3.5 md:size-4 ${a.color}`} />
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-background via-primary/[0.02] to-background py-20 md:py-28">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.04)_0%,transparent_50%)] pointer-events-none" />
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <div ref={dashboardRef} className="animate-in-up">
+          {!isLoggedIn && renderGuestDashboard()}
+          {isLoggedIn && role === 'tutor' && renderTutorDashboard()}
+          {isLoggedIn && role !== 'tutor' && renderStudentDashboard()}
+        </div>
+
+        <div ref={featuresRef} className="animate-in-up animate-stagger grid md:grid-cols-3 gap-4 md:gap-6 mt-8">
+          {features.map((f, idx) => (
+            <div key={idx} className="animate-in-up-child p-5 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm flex items-start gap-4 transition-all duration-300 hover:shadow-md hover:border-primary/20">
+              <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <f.icon size={20} className="text-primary" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs md:text-sm text-foreground truncate">{a.text}</p>
-                <p className="text-[10px] md:text-[11px] text-muted-foreground mt-0.5">{a.time}</p>
+              <div>
+                <h3 className="text-sm font-heading font-semibold text-foreground">{f.title}</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{f.description}</p>
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="bg-background/40 border border-border/30 rounded-2xl overflow-hidden">
-          <div className="px-3 py-2.5 md:px-5 md:py-3.5 border-b border-border/20 font-heading text-xs md:text-sm font-semibold flex items-center gap-1.5 md:gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Live Updates
-          </div>
-          <div className="flex items-center gap-2 md:gap-3 px-3 py-2.5 md:px-5 md:py-3.5 border-b border-border/20">
-            <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10">
-              <Zap className="size-3.5 md:size-4 text-emerald-500" />
-            </div>
-            <span className="text-xs md:text-sm text-foreground truncate">New update</span>
-          </div>
-          <div className="flex items-center gap-2 md:gap-3 px-3 py-2.5 md:px-5 md:py-3.5">
-            <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 bg-primary/10">
-              <CheckCircle className="size-3.5 md:size-4 text-primary" />
-            </div>
-            <span className="text-xs md:text-sm text-foreground truncate">Session completed</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <section ref={sectionRef} className="relative overflow-hidden py-20 md:py-28 bg-background">
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/[0.02] rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div ref={dashboardRef}>
-          {!isLoggedIn && renderGuestDashboard()}
-          {isLoggedIn && role === 'student' && renderStudentDashboard()}
-          {isLoggedIn && role === 'tutor' && renderTutorDashboard()}
-          {isLoggedIn && renderActivitySection()}
-        </div>
-
-        <div ref={featuresRef} className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start pt-8 border-t border-border/20">
-          <div className="lg:col-span-5 space-y-6">
-            <div>
-              <span className="text-xs font-medium text-primary/70 uppercase tracking-[0.18em]">Our Features</span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-foreground tracking-tight leading-[0.95] mt-3">
-                Track Your <span className="text-primary">Learning</span>
-              </h2>
-            </div>
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              Take control of your educational journey with our comprehensive dashboard.
-              Keep track of tutor interactions, lesson progress, and improvements in one
-              simple, intuitive interface designed for students and parents.
-            </p>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground pt-4">
-              <div className="flex -space-x-2">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="size-8 rounded-full bg-muted border-2 border-background flex items-center justify-center text-[10px] font-medium">
-                    <span className="text-muted-foreground">U</span>
-                  </div>
-                ))}
-              </div>
-              <span>Trusted by 15,000+ students</span>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 space-y-0">
-            {features.map((f, idx) => (
-              <div key={idx} className="group flex items-start gap-5 py-6 border-b border-border/15 last:border-b-0">
-                <div className="shrink-0 size-10 rounded-lg bg-primary/[0.06] border border-primary/10 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                  <f.icon size={18} className="text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-heading text-foreground tracking-tight group-hover:text-primary transition-colors">
-                    {f.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mt-1">
-                    {f.description}
-                  </p>
-                </div>
-                <ArrowRight size={16} className="text-muted-foreground/30 group-hover:text-primary/50 group-hover:translate-x-1 transition-all shrink-0 mt-1" />
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>

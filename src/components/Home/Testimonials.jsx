@@ -1,10 +1,5 @@
-import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Star, ShieldCheck, Award } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
+import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const testimonials = [
   {
@@ -30,139 +25,51 @@ const testimonials = [
   },
 ];
 
+const testimonialIcons = [Star, ShieldCheck, Award];
+
 const Testimonials = () => {
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-
-  useGSAP(() => {
-    const ctx = gsap.context(() => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top 80%",
-        onEnter: () => {
-          if (prefersReducedMotion) {
-            gsap.set(headingRef.current, { opacity: 1, y: 0 });
-            const items = gsap.utils.toArray('.testimonial-item');
-            gsap.set(items, { opacity: 1, y: 0 });
-          } else {
-            gsap.fromTo(headingRef.current,
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
-            );
-            const items = gsap.utils.toArray('.testimonial-item');
-            gsap.fromTo(items,
-              { opacity: 0, y: 40 },
-              { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power3.out", delay: 0.2 }
-            );
-          }
-        },
-        once: true,
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+  const headingRef = useAnimateOnScroll();
+  const listRef = useAnimateOnScroll();
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-20 md:py-28 bg-background">
-      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent/[0.02] rounded-full blur-3xl pointer-events-none" />
+    <section className="relative overflow-hidden bg-gradient-to-b from-background via-primary/[0.02] to-background py-20 md:py-28">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,hsl(var(--primary)/0.05)_0%,transparent_60%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div ref={headingRef} className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-foreground tracking-tight leading-[0.95] text-wrap-balance">
-            Stories from <span className="text-primary">real families</span>
+        <div ref={headingRef} className="animate-in-up text-center mb-16">
+          <span className="text-xs font-medium text-primary/70 uppercase tracking-[0.18em]">Testimonials</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading text-foreground tracking-tight leading-[0.95] mt-2 text-wrap-balance">
+            Real results from real families
           </h2>
         </div>
 
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 [column-fill:_balance] w-full mt-12 md:mt-16">
-          
-          {/* Testimonial 1 */}
-          <div className="testimonial-item break-inside-avoid mb-6 p-6 rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-sm flex flex-col gap-4">
-            <div className="flex items-center gap-1 text-amber-500">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-3.5 ${i < testimonials[0].rating ? 'fill-amber-500 text-amber-500' : 'text-muted/20'}`} />
-              ))}
-            </div>
-            <p className="text-sm md:text-base text-foreground leading-relaxed italic">
-              "{testimonials[0].text}"
-            </p>
-            <div className="flex items-center gap-3 mt-2 pt-3 border-t border-border/10">
-              <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs uppercase">
-                {testimonials[0].name.split(' ').map(n => n[0]).join('')}
+        <div ref={listRef} className="animate-in-up animate-stagger grid md:grid-cols-3 gap-4 md:gap-6">
+          {testimonials.map((t, idx) => {
+            const Icon = testimonialIcons[idx];
+            return (
+              <div key={idx} className="animate-in-up-child relative p-6 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300 group">
+                <div className="absolute -top-2 -right-2 opacity-[0.08] group-hover:opacity-[0.12] transition-opacity">
+                  <Icon size={48} />
+                </div>
+                <div className="flex gap-1 mb-4">
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-6 italic font-light tracking-wide">
+                  &ldquo;{t.text}&rdquo;
+                </p>
+                <div className="border-t border-border/20 pt-4 mt-auto">
+                  <p className="text-sm font-semibold text-foreground">{t.name}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[11px] text-muted-foreground">{t.role}</span>
+                    <span className="text-[10px] text-muted-foreground/40">·</span>
+                    <span className="text-[11px] text-muted-foreground">{t.location}</span>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h4 className="text-xs font-bold text-foreground leading-none">{testimonials[0].name}</h4>
-                <p className="text-[10px] text-muted-foreground mt-1 leading-none">{testimonials[0].role}{testimonials[0].location && ` · ${testimonials[0].location}`}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Reward Card 1 (Verification) */}
-          <div className="testimonial-item break-inside-avoid mb-6 p-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-sm shadow-sm flex flex-col gap-3">
-            <div className="size-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-              <ShieldCheck className="size-5" />
-            </div>
-            <h3 className="text-sm font-bold text-foreground tracking-tight">100% Verified Profiles</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Every tutor's national ID, university documents, and background checks are manually checked by our team.
-            </p>
-          </div>
-
-          {/* Testimonial 2 */}
-          <div className="testimonial-item break-inside-avoid mb-6 p-6 rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-sm flex flex-col gap-4">
-            <div className="flex items-center gap-1 text-amber-500">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-3.5 ${i < testimonials[1].rating ? 'fill-amber-500 text-amber-500' : 'text-muted/20'}`} />
-              ))}
-            </div>
-            <p className="text-sm md:text-base text-foreground leading-relaxed italic">
-              "{testimonials[1].text}"
-            </p>
-            <div className="flex items-center gap-3 mt-2 pt-3 border-t border-border/10">
-              <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs uppercase">
-                {testimonials[1].name.split(' ').map(n => n[0]).join('')}
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-foreground leading-none">{testimonials[1].name}</h4>
-                <p className="text-[10px] text-muted-foreground mt-1 leading-none">{testimonials[1].role}{testimonials[1].location && ` · ${testimonials[1].location}`}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Reward Card 2 (Platform Rating) */}
-          <div className="testimonial-item break-inside-avoid mb-6 p-6 rounded-2xl border border-primary/20 bg-primary/5 backdrop-blur-sm shadow-sm flex flex-col gap-3">
-            <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-              <Award className="size-5" />
-            </div>
-            <h3 className="text-sm font-bold text-foreground tracking-tight">4.9/5 Parent Rating</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Direct feedback collected from thousands of parents across Dhaka, Chittagong, and Sylhet.
-            </p>
-          </div>
-
-          {/* Testimonial 3 */}
-          <div className="testimonial-item break-inside-avoid mb-6 p-6 rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm shadow-sm flex flex-col gap-4">
-            <div className="flex items-center gap-1 text-amber-500">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`size-3.5 ${i < testimonials[2].rating ? 'fill-amber-500 text-amber-500' : 'text-muted/20'}`} />
-              ))}
-            </div>
-            <p className="text-sm md:text-base text-foreground leading-relaxed italic">
-              "{testimonials[2].text}"
-            </p>
-            <div className="flex items-center gap-3 mt-2 pt-3 border-t border-border/10">
-              <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs uppercase">
-                {testimonials[2].name.split(' ').map(n => n[0]).join('')}
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-foreground leading-none">{testimonials[2].name}</h4>
-                <p className="text-[10px] text-muted-foreground mt-1 leading-none">{testimonials[2].role}{testimonials[2].location && ` · ${testimonials[2].location}`}</p>
-              </div>
-            </div>
-          </div>
-
+            );
+          })}
         </div>
       </div>
     </section>

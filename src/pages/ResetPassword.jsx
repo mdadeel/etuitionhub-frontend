@@ -6,6 +6,7 @@ import { Lock, Eye, EyeOff, ArrowLeft, CheckCircle } from 'lucide-react';
 import Logo from '../components/shared/Logo';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PasswordStrength from '../components/shared/PasswordStrength';
 
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
@@ -44,8 +45,8 @@ const ResetPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (newPassword.length < 6) {
-            toast.error('Password must be at least 6 characters');
+        if (newPassword.length < 8) {
+            toast.error('Password must be at least 8 characters');
             return;
         }
         if (newPassword !== confirmPassword) {
@@ -171,7 +172,7 @@ const ResetPassword = () => {
                                         type={showPassword ? 'text' : 'password'}
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
-                                        placeholder="Min. 6 characters"
+                                        placeholder="Min. 8 characters"
                                         required
                                         className="pl-9 pr-10 h-11 bg-input/40 border border-border focus-visible:border-primary text-foreground rounded-xl transition-smooth"
                                     />
@@ -183,6 +184,7 @@ const ResetPassword = () => {
                                         {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                                     </button>
                                 </div>
+                                <PasswordStrength password={newPassword} />
                             </div>
 
                             <div className="space-y-1">
