@@ -181,8 +181,8 @@ const CategoryCard = ({ cat, index }) => {
                 )}
 
                 <div className="relative z-10 flex h-full flex-col p-4 md:p-5">
-                    {/* Icon */}
-                    <div className="mb-3 md:mb-4">
+                    {/* Icon and Title */}
+                    <div className="flex items-center gap-3 mb-3 md:mb-4 min-w-0">
                         <div
                             className={cn(
                                 "flex shrink-0 items-center justify-center rounded-xl border",
@@ -194,14 +194,16 @@ const CategoryCard = ({ cat, index }) => {
                         >
                             <cat.icon className={cn("size-5", a.text)} strokeWidth={2} />
                         </div>
+                        <div className="min-w-0">
+                            <h3 className="line-clamp-1 font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
+                                {cat.label}
+                            </h3>
+                        </div>
                     </div>
 
-                    {/* Title and context */}
+                    {/* Context */}
                     <div className="min-w-0 flex-1">
-                        <h3 className="line-clamp-2 font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
-                            {cat.label}
-                        </h3>
-                        <p className="line-clamp-2 text-[11px] md:text-xs text-muted-foreground leading-snug mt-1">
+                        <p className="line-clamp-2 text-[11px] md:text-xs text-muted-foreground leading-snug">
                             {cat.context}
                         </p>
                     </div>
@@ -280,22 +282,30 @@ const FeaturedCategories = () => {
                     >
                         <div
                             className={cn(
-                                "relative flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-[20px] border border-dashed border-border bg-background/40 p-4 md:p-5",
+                                "relative flex h-full flex-col p-4 md:p-5 overflow-hidden rounded-[20px] border border-dashed border-border bg-background/40",
                                 "transition-all duration-300 ease-out",
                                 "hover:border-primary/40 hover:bg-primary/5 hover:shadow-premium-md",
                                 "active:scale-[0.985]"
                             )}
                         >
-                            <div className="flex size-10 md:size-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-8deg]">
-                                <ArrowUpRight className="size-5" strokeWidth={2.5} />
+                            <div className="flex items-center gap-3 mb-3 md:mb-4 min-w-0">
+                                <div className="flex shrink-0 size-10 md:size-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-8deg]">
+                                    <ArrowUpRight className="size-5" strokeWidth={2.5} />
+                                </div>
+                                <div className="min-w-0">
+                                    <h3 className="font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
+                                        View all
+                                    </h3>
+                                </div>
                             </div>
-                            <div className="text-center">
-                                <h3 className="font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
-                                    View all
-                                </h3>
-                                <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[11px] md:text-xs text-muted-foreground leading-snug">
                                     See every subject
                                 </p>
+                            </div>
+                            <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
+                                <span className="text-[11px] font-bold text-primary group-hover:underline">Explore options</span>
+                                <ArrowUpRight className="size-3.5 text-primary transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.5} />
                             </div>
                         </div>
                     </Link>

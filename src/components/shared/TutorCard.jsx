@@ -178,7 +178,8 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           <Button
             type="button"
             variant="primary"
-            className="font-semibold text-[11px] px-4 min-h-[36px] pointer-events-auto flex items-center justify-center gap-1 rounded-[12px] shadow-sm hover:shadow-md transition-all active:scale-95 shrink-0"
+            size="sm"
+            className="font-semibold text-[10px] px-2 h-6 pointer-events-auto flex items-center justify-center gap-1 rounded-[10px] shadow-sm hover:shadow-md transition-all active:scale-95 shrink-0"
             onClick={(e) => {
               if (isBannerPreview) {
                 e.stopPropagation();
@@ -186,8 +187,8 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               }
             }}
           >
-            Profile
-            <ChevronRight size={14} className="transition-transform" />
+            View
+            <ChevronRight size={12} className="transition-transform" />
           </Button>
         </div>
       </div>
@@ -283,7 +284,8 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           <Button
             type="button"
             variant="primary"
-            className="font-semibold text-xs tracking-wider pointer-events-auto flex items-center gap-1 group/btn rounded-[14px] min-h-[44px] px-4 shadow-sm hover:shadow-[0_0_12px_hsl(var(--primary)/0.25)]"
+            size="sm"
+            className="font-semibold text-[11px] tracking-wider pointer-events-auto flex items-center gap-1 group/btn rounded-[10px] h-6 px-2 shadow-sm hover:shadow-[0_0_12px_hsl(var(--primary)/0.25)]"
             onClick={(e) => {
               if (isBannerPreview) {
                 e.stopPropagation();
@@ -291,8 +293,8 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               }
             }}
           >
-            Profile
-            <ChevronRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform" />
+            View
+            <ChevronRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
           </Button>
         </div>
       </div>

@@ -92,11 +92,9 @@ const ConditionalFooter = () => {
 
 const ConditionalMobileBottomNav = () => {
   const { pathname } = useLocation();
-  const { dbUser } = useAuth();
   const isSession = pathname.startsWith("/session");
   const isCheckout = pathname.startsWith("/checkout");
   if (isSession || isCheckout) return null;
-  if (!dbUser) return null;
   return <MobileBottomNav />;
 };
 

@@ -3,7 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
-import { Menu, X, Home, Settings } from "lucide-react";
+import { Menu, X, Home, Settings, ChevronRight } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
 
 import { DashboardSkeleton } from "@/components/shared/skeletons";
@@ -84,6 +84,34 @@ const Dashboard = () => {
     return '/dashboard/profile';
   };
 
+  const getSettingsLabel = () => {
+    if (globalRole === 'super_admin') return 'Platform Settings';
+    if (orgContext) return 'Organization Settings';
+    if (role === 'admin') return 'Admin Settings';
+    return 'Account Settings';
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const getBreadcrumbExtra = () => {
+    const path = location.pathname;
+    if (path.includes('/super-admin')) return 'Super Admin';
+    if (path.includes('/org/')) return 'Organization';
+    if (path.includes('/admin/')) return 'Admin';
+    if (path.includes('/profile')) return 'Profile';
+    if (path.includes('/notifications')) return 'Notifications';
+    if (path.includes('/bookmarks')) return 'Bookmarks';
+    if (path.includes('/wallet')) return 'Wallet';
+    if (path.includes('/sessions')) return 'Sessions';
+    if (path.includes('/billing')) return 'Billing';
+    return null;
+  };
+
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -133,7 +161,7 @@ const Dashboard = () => {
         {/* Dashboard Top Navbar */}
         <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between h-14 px-6">
-            {/* Left: Mobile menu toggle + breadcrumb */}
+            {/* Left: Mobile menu toggle + Greeting + Breadcrumb */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsMobileMenuOpen(prev => !prev)}
@@ -145,16 +173,29 @@ const Dashboard = () => {
                   <Menu size={20} className="text-muted-foreground" />
                 )}
               </button>
-              <nav className="flex items-center gap-2 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
-                >
+              
+              {/* Greeting */}
+              <div className="hidden sm:block">
+                <p className="text-sm font-medium text-foreground">
+                  {getGreeting()}, {dbUser?.displayName?.split(' ')[0] || 'User'}
+                </p>
+                <p className="text-[10px] text-muted-foreground">{getRoleLabel()}</p>
+              </div>
+
+              {/* Breadcrumb */}
+              <nav className="hidden md:flex items-center gap-1.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1">
                   <Home size={12} />
                   <span className="hidden sm:inline">{t("nav.home", "Home")}</span>
                 </Link>
-                <span className="text-[#E2E8F0] font-normal">/</span>
-                <span className="text-foreground font-semibold">{t("nav.dashboard", "Dashboard")}</span>
+                <ChevronRight size={10} />
+                <span className="text-foreground">{t("nav.dashboard", "Dashboard")}</span>
+                {getBreadcrumbExtra() && (
+                  <>
+                    <ChevronRight size={10} />
+                    <span className="text-foreground">{getBreadcrumbExtra()}</span>
+                  </>
+                )}
               </nav>
             </div>
 
@@ -164,7 +205,7 @@ const Dashboard = () => {
               <Link
                 to={getSettingsPath()}
                 className="p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition-colors"
-                title="Settings"
+                title={getSettingsLabel()}
               >
                 <Settings size={20} />
               </Link>

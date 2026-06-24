@@ -26,7 +26,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 
-export function getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyRole, hasPermission }) {
+export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasPermission }) {
   if (globalRole === 'super_admin') {
     return [
       { path: "/dashboard/super-admin", label: "Overview", icon: LayoutDashboard, group: "Platform" },

@@ -31,24 +31,15 @@ const DashboardSidebar = () => {
 
   const roleInfo = getRoleInfo();
 
-  const baseItems = getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyRole, hasPermission });
+  const menuItems = getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyRole, hasPermission });
 
-  let menuItems = [];
-
-  if (globalRole === 'super_admin') {
-    menuItems = [
-      { group: "Platform" },
-      ...baseItems.filter(i => ["/dashboard/super-admin", "/dashboard/super-admin/organizations", "/dashboard/super-admin/analytics", "/dashboard/super-admin/subscriptions"].includes(i.path)),
-      { group: "Users & Content" },
-      ...baseItems.filter(i => ["/dashboard/super-admin/users", "/dashboard/super-admin/tutors", "/dashboard/super-admin/tuitions", "/dashboard/super-admin/verifications"].includes(i.path)),
-      { group: "Finance" },
-      ...baseItems.filter(i => ["/dashboard/admin/withdrawals", "/dashboard/admin/payments"].includes(i.path)),
-      { group: "Operations" },
-      ...baseItems.filter(i => ["/dashboard/admin/contacts", "/dashboard/super-admin/audit-logs", "/dashboard/disputes", "/dashboard/requests"].includes(i.path)),
-    ];
-  } else {
-    menuItems = baseItems;
-  }
+  // Group menu items by their group field
+  const groupedItems = menuItems.reduce((acc, item) => {
+    const group = item.group || 'General';
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(item);
+    return acc;
+  }, {});
 
   const handleLogout = async () => {
     try {
@@ -102,6 +93,7 @@ const DashboardSidebar = () => {
           </div>
         </div>
 
+        {/* Organization Selector */}
         {myOrgs?.length > 0 && (
           <div className="mt-3">
             <label htmlFor="org-select" className="sr-only">Select Organization</label>
@@ -120,51 +112,54 @@ const DashboardSidebar = () => {
             </select>
           </div>
         )}
+        {myOrgs?.length === 0 && !orgContext && (
+          <div className="mt-3 text-[10px] text-muted-foreground text-center">
+            <Link to="/organizations" className="text-primary hover:underline">Browse Organizations</Link>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto px-3 pb-4 min-h-0">
         <ul>
-          {menuItems.map((item, idx) => {
-            if (item.group) {
-              return (
-                <li key={`group-${item.group}-${idx}`} className="pt-5 pb-1.5 px-3 first:pt-0">
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/50">
-                    {item.group}
-                  </p>
-                </li>
-              );
-            }
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            return (
-              <li key={item.path || `item-${idx}`}>
-                <Link
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 relative text-[12px] font-medium",
-                    active
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  {active && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] bg-primary rounded-r" />
-                  )}
-                  {Icon && (
-                    <Icon
-                      size={16}
+          {Object.entries(groupedItems).map(([group, items]) => (
+            <li key={group}>
+              <p className="pt-5 pb-1.5 px-3 first:pt-0 text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/50">
+                {group}
+              </p>
+              {items.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.path);
+                return (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
                       className={cn(
-                        "transition-opacity duration-200 shrink-0",
-                        active ? "opacity-100" : "opacity-50 group-hover:opacity-100",
+                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 relative text-[12px] font-medium",
+                        active
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
                       )}
-                    />
-                  )}
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            );
-          })}
+                    >
+                      {active && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] bg-primary rounded-r" />
+                      )}
+                      {Icon && (
+                        <Icon
+                          size={16}
+                          className={cn(
+                            "transition-opacity duration-200 shrink-0",
+                            active ? "opacity-100" : "opacity-50 group-hover:opacity-100",
+                          )}
+                        />
+                      )}
+                      <span>{item.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </li>
+          ))}
         </ul>
       </div>
 
