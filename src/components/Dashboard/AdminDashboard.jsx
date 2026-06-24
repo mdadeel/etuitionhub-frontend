@@ -1,14 +1,15 @@
+import { Suspense, lazy, useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { useState } from 'react';
-import DashUsers from './DashUsers';
-import DashTuitions from './DashTuitions';
-import DashAnalytics from './DashAnalytics';
-import DashPayments from './DashPayments';
-import DashSettings from './DashSettings';
-import AdminVerifications from './AdminVerifications';
-import DisputeWorkspace from './DisputeWorkspace';
-import AdminTutors from './AdminTutors';
 import { cn } from '@/lib/utils';
+
+const DashAnalytics = lazy(() => import('./DashAnalytics'));
+const DashPayments = lazy(() => import('./DashPayments'));
+const DashUsers = lazy(() => import('./DashUsers'));
+const AdminTutors = lazy(() => import('./AdminTutors'));
+const DashTuitions = lazy(() => import('./DashTuitions'));
+const AdminVerifications = lazy(() => import('./AdminVerifications'));
+const DisputeWorkspace = lazy(() => import('./DisputeWorkspace'));
+const DashSettings = lazy(() => import('./DashSettings'));
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('analytics');
@@ -47,16 +48,18 @@ const AdminDashboard = () => {
 
             {/* Content Area */}
             <Card className="p-4 md:p-6 min-h-fit" >
-                <div className="space-y-4">
-                    {activeTab === 'analytics' && <DashAnalytics />}
-                    {activeTab === 'payments' && <DashPayments />}
-                    {activeTab === 'users' && <DashUsers />}
-                    {activeTab === 'tutors' && <AdminTutors />}
-                    {activeTab === 'tuitions' && <DashTuitions />}
-                    {activeTab === 'verifications' && <AdminVerifications />}
-                    {activeTab === 'disputes' && <DisputeWorkspace isAdminView />}
-                    {activeTab === 'settings' && <DashSettings />}
-                </div>
+                <Suspense fallback={<div className="flex items-center justify-center h-48"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                    <div className="space-y-4">
+                        {activeTab === 'analytics' && <DashAnalytics />}
+                        {activeTab === 'payments' && <DashPayments />}
+                        {activeTab === 'users' && <DashUsers />}
+                        {activeTab === 'tutors' && <AdminTutors />}
+                        {activeTab === 'tuitions' && <DashTuitions />}
+                        {activeTab === 'verifications' && <AdminVerifications />}
+                        {activeTab === 'disputes' && <DisputeWorkspace isAdminView />}
+                        {activeTab === 'settings' && <DashSettings />}
+                    </div>
+                </Suspense>
             </Card>
         </div>
     );

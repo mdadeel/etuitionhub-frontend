@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import Peer from 'simple-peer';
 import API_URL from '../config/api';
 import api from '../services/api';
 import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare } from 'lucide-react';
@@ -13,6 +12,7 @@ export default function SessionRoom() {
     const navigate = useNavigate();
     const { user, dbUser } = useAuth();
 
+    const PeerRef = useRef(null);
     const [stream, setStream] = useState();
     const [receivingCall, setReceivingCall] = useState(false);
     const [callerSignal, setCallerSignal] = useState();
@@ -57,7 +57,9 @@ export default function SessionRoom() {
     }, [bookingId, user, dbUser, navigate]);
 
     function callUser(userToCall, currentStream) {
-        const peer = new Peer({
+        const P = PeerRef.current;
+        if (!P) return;
+        const peer = new P({
             initiator: true,
             trickle: false,
             stream: currentStream
@@ -93,6 +95,8 @@ export default function SessionRoom() {
             console.log('SessionRoom: WebRTC/Video not available on Vercel');
             return;
         }
+
+        import('simple-peer').then(m => { PeerRef.current = m.default; }).catch(() => {});
 
         socket.current = io(API_URL, {
             withCredentials: true,
@@ -151,8 +155,10 @@ export default function SessionRoom() {
 
 
     const answerCall = () => {
+        const P = PeerRef.current;
+        if (!P) return;
         setCallAccepted(true);
-        const peer = new Peer({
+        const peer = new P({
             initiator: false,
             trickle: false,
             stream: stream
