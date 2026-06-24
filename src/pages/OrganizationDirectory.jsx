@@ -184,7 +184,7 @@ const OrganizationDirectory = () => {
                 {/* Banner */}
                 <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 relative">
                   {org.profile?.banner && (
-                    <img src={org.profile.banner} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <img src={org.profile.banner} alt={`${org.name} Banner`} className="absolute inset-0 w-full h-full object-cover" />
                   )}
                   <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background/80 to-transparent">
                     <div className="flex items-center gap-3">

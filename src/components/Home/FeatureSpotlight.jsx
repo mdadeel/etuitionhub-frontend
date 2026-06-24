@@ -179,7 +179,7 @@ const FeatureSpotlight = () => {
           { icon: Search, label: "Find Tutors", value: "2,500+", color: "from-primary/20 to-primary/5" },
           { icon: FileText, label: "Active Requests", value: "3", color: "from-amber-500/20 to-amber-500/5" },
           { icon: Users, label: "Applications", value: "8", color: "from-emerald-500/20 to-emerald-500/5" },
-          { icon: Calendar, label: "Sessions This Week", value: "5", color: "from-violet-500/20 to-violet-500/5" },
+          { icon: Calendar, label: "Sessions This Week", value: "5", color: "from-teal-500/20 to-teal-500/5" },
         ].map((item, i) => (
           <div key={i} className={`bg-gradient-to-br ${item.color} border border-border/20 rounded-2xl p-4`}>
             <item.icon size={18} className="text-foreground/70 mb-2" />
