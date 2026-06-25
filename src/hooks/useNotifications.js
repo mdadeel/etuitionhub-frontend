@@ -12,7 +12,7 @@ const isSafeRedirect = (url) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const useNotifications = ({ userId, pageSize = 20, enabled = true } = {}) => {
+const useNotifications = ({ userId, pageSize = 20, enabled = true, category = null } = {}) => {
     const [notifications, setNotifications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
@@ -24,7 +24,8 @@ const useNotifications = ({ userId, pageSize = 20, enabled = true } = {}) => {
     const refetch = useCallback(async (page = 1) => {
         try {
             setIsLoading(true);
-            const res = await api.get(`/api/notifications?page=${page}&limit=${pageSize}`);
+            const query = `/api/notifications?page=${page}&limit=${pageSize}${category ? `&category=${category}` : ''}`;
+            const res = await api.get(query);
             const response = res.data;
 
             if (response && response.data && Array.isArray(response.data)) {
@@ -43,7 +44,7 @@ const useNotifications = ({ userId, pageSize = 20, enabled = true } = {}) => {
         } finally {
             setIsLoading(false);
         }
-    }, [pageSize]);
+    }, [pageSize, category]);
 
     // Initial fetch + count. The 10s poll is gone — unread count is driven by
     // socket 'notification:new' events (incremented on arrival, decremented on
@@ -67,11 +68,12 @@ const useNotifications = ({ userId, pageSize = 20, enabled = true } = {}) => {
         const socket = getSocket();
         if (!socket) return;
         const handler = (notification) => {
+            // Very basic local filtering if category is present. Backend doesn't emit 'category' with socket.
             setNotifications((prev) => [notification, ...prev]);
         };
         socket.on('notification:new', handler);
         return () => socket.off('notification:new', handler);
-    }, []);
+    }, [category]);
 
     const goToPage = useCallback((page) => refetch(page), [refetch]);
 

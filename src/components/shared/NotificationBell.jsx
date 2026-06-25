@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Bell, Check, Trash2, Calendar, CreditCard, MessageSquare, Star, FileText, ShieldCheck, ExternalLink, Loader2 } from 'lucide-react';
+import { Bell, Check, Trash2, Calendar, CreditCard, MessageSquare, Star, FileText, ShieldCheck, ExternalLink, Loader2, AlertTriangle, BookOpen } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import useNotifications from '@/hooks/useNotifications';
 import { formatRelativeTime } from '@/utils/dateUtils';
@@ -8,6 +8,36 @@ import api from '@/services/api';
 
 const NOTIF_PAGE_SIZE = 15;
 const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
+
+const getTypeIcon = (type) => {
+    const props = { size: 16, className: 'text-current' };
+    switch (type) {
+        case 'booking':
+        case 'tutoring_scheduled':
+        case 'tutoring_started':
+        case 'tutoring_completed':
+            return <Calendar {...props} />;
+        case 'payment':
+        case 'trx_verified':
+        case 'payment_due_generated':
+            return <CreditCard {...props} />;
+        case 'message': return <MessageSquare {...props} />;
+        case 'review': return <Star {...props} />;
+        case 'application': return <FileText {...props} />;
+        case 'verification':
+        case 'admin':
+        case 'system':
+            return <ShieldCheck {...props} />;
+        case 'attendance_warning':
+        case 'trx_rejected':
+        case 'dispute_filed':
+            return <AlertTriangle {...props} />;
+        case 'assignment_created':
+        case 'new_material':
+            return <BookOpen {...props} />;
+        default: return <Bell {...props} />;
+    }
+};
 
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -70,29 +100,19 @@ const NotificationBell = () => {
         setAllPage(1);
     }, []);
 
-    const getTypeIcon = (type) => {
-        const iconProps = { size: 16, className: 'text-muted-foreground' };
-        switch (type) {
-            case 'booking': return <Calendar {...iconProps} />;
-            case 'payment': return <CreditCard {...iconProps} />;
-            case 'message': return <MessageSquare {...iconProps} />;
-            case 'review': return <Star {...iconProps} />;
-            case 'application': return <FileText {...iconProps} />;
-            case 'verification': return <ShieldCheck {...iconProps} />;
-            default: return <Bell {...iconProps} />;
-        }
-    };
-
     const renderActions = (notif) => {
         if (!notif.actions || notif.actions.length === 0) return null;
         return (
-            <div className="flex gap-1.5 mt-1.5">
+            <div className="flex flex-wrap gap-1 mt-2">
                 {notif.actions.map((action) => (
                     <button
                         key={action.label}
                         type="button"
-                        onClick={() => handleAction(notif._id, action.action, action.link)}
-                        className="flex items-center gap-1 text-[10px] font-heading font-bold uppercase tracking-wider text-primary hover:text-primary/80 hover:underline transition-colors"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleAction(notif._id, action.action, action.link);
+                        }}
+                        className="flex items-center gap-1 px-2 py-1 bg-black text-white dark:bg-white dark:text-black font-mono font-bold text-[10px] uppercase tracking-wider hover:bg-[#FF5500] dark:hover:bg-[#FF5500] hover:text-white transition-colors"
                     >
                         {action.label}
                         <ExternalLink size={10} />
@@ -102,45 +122,62 @@ const NotificationBell = () => {
         );
     };
 
-    const renderNotification = (notif) => (
+    const renderNotification = (notif, index) => (
         <div
             key={notif._id}
-            className={cn(
-                'px-4 py-3 border-b border-border hover:bg-background transition-colors',
-                !notif.isRead && 'bg-primary/5'
-            )}
+            className="animate-fade-in-up"
+            style={{ animationDelay: `${index * 50}ms` }}
         >
-            <div className="flex items-start gap-3">
-                <span className="mt-0.5">{getTypeIcon(notif.type)}</span>
-                <div className="flex-1 min-w-0">
-                    <p className={cn('text-sm font-heading leading-tight', !notif.isRead && 'text-foreground font-semibold')}>
-                        {notif.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                        {notif.message}
-                    </p>
-                    {renderActions(notif)}
-                    <p className="text-[10px] text-muted-foreground/60 mt-1">
-                        {formatRelativeTime(notif.createdAt)}
-                    </p>
-                </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                    {!notif.isRead && (
+            <div
+                className={cn(
+                    'relative p-3 border-b-2 border-black dark:border-white transition-all hover:bg-black/5 dark:hover:bg-white/5 group',
+                    !notif.isRead && 'bg-[#FF5500]/10 border-l-4 border-l-[#FF5500]'
+                )}
+            >
+                <div className="flex items-start gap-3">
+                    <div className={cn(
+                        "p-2 border-2 border-black dark:border-white shrink-0",
+                        notif.isRead ? "bg-card" : "bg-black text-white dark:bg-white dark:text-black"
+                    )}>
+                        {getTypeIcon(notif.type)}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-2">
+                            <p className={cn(
+                                'text-sm font-heading leading-tight uppercase line-clamp-1', 
+                                !notif.isRead ? 'font-black' : 'font-bold'
+                            )}>
+                                {notif.title}
+                            </p>
+                            <span className="text-[9px] font-mono whitespace-nowrap text-muted-foreground mt-0.5">
+                                T-{formatRelativeTime(notif.createdAt)}
+                            </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {notif.message}
+                        </p>
+                        {renderActions(notif)}
+                    </div>
+                    
+                    <div className="flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {!notif.isRead && (
+                            <button
+                                onClick={() => markAsRead(notif._id)}
+                                className="p-1 border-2 border-black dark:border-white bg-green-400 text-black hover:bg-green-500 transition-colors"
+                                title="Acknowledge"
+                            >
+                                <Check size={12} />
+                            </button>
+                        )}
                         <button
-                            onClick={() => markAsRead(notif._id)}
-                            className="p-1 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded transition-colors"
-                            title="Mark as read"
+                            onClick={() => deleteNotification(notif._id)}
+                            className="p-1 border-2 border-black dark:border-white bg-red-500 text-white hover:bg-red-600 transition-colors"
+                            title="Purge"
                         >
-                            <Check size={14} className="text-green-600" />
+                            <Trash2 size={12} />
                         </button>
-                    )}
-                    <button
-                        onClick={() => deleteNotification(notif._id)}
-                        className="p-1 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded transition-colors"
-                        title="Delete"
-                    >
-                        <Trash2 size={14} className="text-red-500" />
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -157,69 +194,87 @@ const NotificationBell = () => {
                     setIsOpen(!isOpen);
                     if (!isOpen) setExpanded(false);
                 }}
-                className="p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition-colors relative"
+                className={cn(
+                    "p-2 rounded-none border-2 transition-all relative overflow-hidden",
+                    isOpen 
+                        ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px]" 
+                        : "border-transparent hover:border-black dark:hover:border-white text-muted-foreground hover:text-foreground"
+                )}
             >
-                <Bell size={20} />
+                <Bell size={20} className={cn(isOpen && "animate-pulse")} />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 size-5 flex items-center justify-center text-[10px] font-bold bg-red-500 text-white rounded-full">
+                    <span className="absolute top-0 right-0 size-4 flex items-center justify-center text-[9px] font-mono font-bold bg-[#FF5500] text-white border border-black dark:border-white translate-x-1/4 -translate-y-1/4 z-10">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-border shadow-xl rounded-lg overflow-hidden z-50">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                        <h3 className="font-heading text-sm font-bold">
-                            {expanded ? 'Last 5 Days' : 'Notifications'}
+                <div className="absolute right-0 top-[calc(100%+8px)] w-[360px] bg-card border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] z-50 animate-fade-in-up">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b-4 border-black dark:border-white bg-black text-white dark:bg-white dark:text-black">
+                        <h3 className="font-heading text-sm font-black uppercase tracking-wider flex items-center gap-2">
+                            <span className="w-2 h-2 bg-[#FF5500] animate-pulse"></span>
+                            {expanded ? 'SYSTEM LOG (5D)' : 'SYSTEM ALERTS'}
                         </h3>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             {unreadCount > 0 && !expanded && (
-                                <button onClick={markAllAsRead} className="text-xs text-primary hover:underline">
-                                    Mark all read
+                                <button 
+                                    onClick={markAllAsRead} 
+                                    className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#FF5500] hover:text-white dark:hover:text-black transition-colors"
+                                >
+                                    ACKNOWLEDGE ALL
                                 </button>
                             )}
                             {expanded && (
-                                <button onClick={handleCollapse} className="text-xs text-muted-foreground hover:text-foreground">
-                                    Collapse
+                                <button 
+                                    onClick={handleCollapse} 
+                                    className="text-[10px] font-mono font-bold uppercase tracking-widest hover:text-[#FF5500] transition-colors"
+                                >
+                                    COLLAPSE
                                 </button>
                             )}
                         </div>
                     </div>
 
-                    <div className="max-h-96 overflow-y-auto">
+                    {/* Content */}
+                    <div className="max-h-[400px] overflow-y-auto">
                         {displayNotifications.length === 0 && !allLoading ? (
-                            <div className="p-8 text-center text-sm text-muted-foreground">
-                                <Bell size={24} className="mx-auto mb-2 opacity-30" />
-                                {expanded ? 'No notifications in the last 5 days' : 'No notifications yet'}
+                            <div className="p-12 text-center border-b-2 border-black dark:border-white">
+                                <Bell size={32} className="mx-auto mb-3 opacity-20" />
+                                <p className="font-mono text-sm font-bold uppercase tracking-widest">
+                                    {expanded ? 'NO LOGS FOUND' : 'NO ACTIVE ALERTS'}
+                                </p>
                             </div>
                         ) : (
-                            displayNotifications.map(renderNotification)
+                            displayNotifications.map((notif, index) => renderNotification(notif, index))
                         )}
+                        
                         {allLoading && (
-                            <div className="flex items-center justify-center py-4">
-                                <Loader2 size={16} className="animate-spin text-muted-foreground" />
+                            <div className="flex items-center justify-center p-6 border-b-2 border-black dark:border-white">
+                                <Loader2 size={24} className="animate-spin" />
                             </div>
                         )}
                     </div>
 
+                    {/* Footer */}
                     {notifications.length > 0 && (
-                        <div className="border-t border-border">
+                        <div>
                             {expanded && hasMore && (
                                 <button
                                     onClick={handleLoadMore}
                                     disabled={allLoading}
-                                    className="w-full px-4 py-3 text-xs font-heading font-bold uppercase tracking-wider text-primary hover:bg-background transition-colors disabled:opacity-50"
+                                    className="w-full px-4 py-3 text-xs font-mono font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 border-t-2 border-black dark:border-white"
                                 >
-                                    {allLoading ? 'Loading...' : 'Load More'}
+                                    {allLoading ? 'FETCHING...' : 'LOAD MORE DATA'}
                                 </button>
                             )}
                             {!expanded && (
                                 <button
                                     onClick={handleShowAll}
-                                    className="w-full px-4 py-3 text-xs font-heading font-bold uppercase tracking-wider text-primary hover:bg-background transition-colors"
+                                    className="w-full px-4 py-3 text-xs font-mono font-bold uppercase tracking-widest bg-black text-white dark:bg-white dark:text-black hover:bg-[#FF5500] dark:hover:bg-[#FF5500] hover:text-white transition-colors"
                                 >
-                                    Show All
+                                    ACCESS FULL LOGS
                                 </button>
                             )}
                         </div>
