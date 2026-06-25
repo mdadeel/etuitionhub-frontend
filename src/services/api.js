@@ -86,7 +86,7 @@ api.interceptors.response.use(
             if (status === 429) {
                 const msg = err?.response?.data?.error || 'Too many requests. Please slow down and try again.';
                 toast.error(msg, { duration: 4000 });
-            } else if (status === 401 && !originalRequest._isRefresh) {
+            } else if (status === 401 && !originalRequest._isRefresh && !originalRequest._retry) {
                 redirectToLogin();
             } else if (status === 403) {
                 toast.error('You do not have permission to perform this action.');
@@ -121,6 +121,7 @@ api.interceptors.response.use(
                 return api(originalRequest);
             }
             sessionDead = true;
+            setTimeout(() => { sessionDead = false; }, 60_000);
             processQueue(refreshError);
             redirectToLogin();
             return Promise.reject(refreshError);
