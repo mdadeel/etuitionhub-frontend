@@ -137,7 +137,7 @@ const NotificationBell = () => {
                 <div className="flex items-start gap-3">
                     <div className={cn(
                         "p-2 rounded-lg border shrink-0 flex items-center justify-center size-9",
-                        notif.isRead ? "bg-muted text-muted-foreground border-border/80" : "bg-primary/10 text-primary border-primary/20"
+                        notif.isRead ? "bg-muted text-muted-foreground border-border" : "bg-primary/10 text-primary border-primary/20"
                     )}>
                         {getTypeIcon(notif.type)}
                     </div>
@@ -195,9 +195,9 @@ const NotificationBell = () => {
                     if (!isOpen) setExpanded(false);
                 }}
                 className={cn(
-                    "p-2 rounded-xl transition-all relative",
+                    "p-2 rounded-lg transition-all relative",
                     isOpen 
-                        ? "bg-muted text-foreground border border-border/80 shadow-sm" 
+                        ? "bg-muted text-foreground border border-border shadow-sm" 
                         : "border border-transparent hover:bg-muted/65 text-muted-foreground hover:text-foreground"
                 )}
             >
@@ -210,9 +210,9 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] w-[360px] bg-card border border-border/80 rounded-2xl shadow-premium z-50 animate-fade-in-up overflow-hidden">
+                <div className="absolute right-0 top-[calc(100%+8px)] w-[360px] bg-card border border-border rounded-xl shadow-premium-lg z-50 animate-fade-in-up overflow-hidden">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3.5 border-b border-border/80">
+                    <div className="flex items-center justify-between px-4 py-3.5 border-b border-border">
                         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
                             {expanded ? 'System Log (5d)' : 'Notifications'}

@@ -139,7 +139,7 @@ const NotificationPage = () => {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setShowFiltersMobile(!showFiltersMobile)}
-                            className="md:hidden inline-flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-xl bg-card hover:bg-muted/50 text-sm font-semibold text-foreground transition-all shadow-sm active:scale-95"
+                            className="md:hidden inline-flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-lg bg-card hover:bg-muted/50 text-sm font-semibold text-foreground transition-all shadow-sm active:scale-95"
                         >
                             <Filter size={16} />
                             Filters
@@ -147,7 +147,7 @@ const NotificationPage = () => {
                         {unreadCount > 0 && (
                             <button
                                 onClick={markAllAsRead}
-                                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/95 transition-all shadow-sm hover:shadow-[0_0_12px_hsl(var(--primary)/0.2)] active:scale-95"
+                                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/95 transition-all shadow-sm hover:shadow-[0_0_12px_hsl(var(--primary)/0.2)] active:scale-95"
                             >
                                 <Check size={16} />
                                 Mark all as read
@@ -163,7 +163,7 @@ const NotificationPage = () => {
                     "w-full md:w-60 flex-shrink-0 md:block transition-all",
                     showFiltersMobile ? "block" : "hidden"
                 )}>
-                    <div className="sticky top-24 space-y-1 bg-card border border-border/80 rounded-2xl p-4 shadow-sm">
+                    <div className="sticky top-24 space-y-1 bg-card border border-border rounded-xl p-4 shadow-sm">
                         <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-3 mb-3">
                             Categories
                         </h3>
@@ -175,7 +175,7 @@ const NotificationPage = () => {
                                     key={cat.label}
                                     onClick={() => setCategory(cat.id)}
                                     className={cn(
-                                        "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200",
+                                        "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200",
                                         isActive
                                             ? "bg-primary/10 text-primary"
                                             : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -196,13 +196,13 @@ const NotificationPage = () => {
                 <main className="flex-1 min-w-0">
                     {/* Batch Actions Float */}
                     {selectedIds.size > 0 && (
-                        <div className="flex items-center justify-between p-4 mb-6 bg-primary text-primary-foreground rounded-2xl shadow-lg border border-primary/30 animate-fade-in-up">
+                        <div className="flex items-center justify-between p-4 mb-6 bg-primary text-primary-foreground rounded-xl shadow-lg border border-primary/30 animate-fade-in-up">
                             <span className="text-sm font-semibold tracking-tight">
                                 Selected {selectedIds.size} {selectedIds.size === 1 ? 'notification' : 'notifications'}
                             </span>
                             <button
                                 onClick={handleDeleteSelected}
-                                className="flex items-center gap-2 px-4 py-2 bg-primary-foreground text-primary hover:bg-primary-foreground/90 transition-all font-semibold rounded-xl text-xs active:scale-95 shadow-sm"
+                                className="flex items-center gap-2 px-4 py-2 bg-primary-foreground text-primary hover:bg-primary-foreground/90 transition-all font-semibold rounded-lg text-xs active:scale-95 shadow-sm"
                             >
                                 <Trash2 size={14} />
                                 Delete Selected
@@ -213,14 +213,14 @@ const NotificationPage = () => {
                     {isLoading ? (
                         <NotificationListSkeleton count={6} />
                     ) : !Array.isArray(notifications) || notifications.length === 0 ? (
-                        <div className="border border-dashed border-border rounded-2xl p-12 text-center bg-card/50">
+                        <div className="border border-dashed border-border rounded-xl p-12 text-center bg-card/50">
                             <Info size={40} className="mx-auto mb-3.5 text-muted-foreground opacity-60" />
                             <h3 className="font-bold text-lg text-foreground">No notifications</h3>
                             <p className="text-muted-foreground mt-1 text-sm">Your notification list is currently empty.</p>
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between px-2 pb-3 border-b border-border/80">
+                            <div className="flex items-center justify-between px-2 pb-3 border-b border-border">
                                 <label className="flex items-center gap-3 cursor-pointer group">
                                     <div className="relative flex items-center justify-center w-5 h-5 rounded border border-border bg-card group-hover:border-primary/50 transition-colors">
                                         <input
@@ -246,9 +246,9 @@ const NotificationPage = () => {
                                     >
                                         <div
                                             className={cn(
-                                                'relative border rounded-2xl p-5 transition-all duration-300',
+                                                'relative border rounded-xl p-5 transition-all duration-300',
                                                 notif.isRead 
-                                                    ? 'bg-card border-border/80 shadow-sm hover:shadow-premium-md' 
+                                                    ? 'bg-card border-border shadow-sm hover:shadow-premium-md' 
                                                     : 'bg-primary/[0.01] border-primary/20 shadow-sm hover:shadow-premium hover:border-primary/40',
                                                 isSelected && 'ring-2 ring-primary ring-offset-2 ring-offset-background'
                                             )}
@@ -272,9 +272,9 @@ const NotificationPage = () => {
 
                                                 {/* Icon Wrapper */}
                                                 <div className={cn(
-                                                    "p-3 rounded-xl border shrink-0 flex items-center justify-center size-11",
+                                                    "p-3 rounded-lg border shrink-0 flex items-center justify-center size-11",
                                                     notif.isRead 
-                                                        ? "bg-muted text-muted-foreground border-border/80" 
+                                                        ? "bg-muted text-muted-foreground border-border" 
                                                         : "bg-primary/10 text-primary border-primary/20"
                                                 )}>
                                                     {getTypeIcon(notif.type, 20)}
@@ -304,7 +304,7 @@ const NotificationPage = () => {
                                                             {!notif.isRead && (
                                                                 <button
                                                                     onClick={() => markAsRead(notif._id)}
-                                                                    className="p-2 border border-border rounded-xl bg-card text-muted-foreground hover:text-primary hover:border-primary/20 transition-all active:scale-95 shadow-sm"
+                                                                    className="p-2 border border-border rounded-lg bg-card text-muted-foreground hover:text-primary hover:border-primary/20 transition-all active:scale-95 shadow-sm"
                                                                     title="Mark as read"
                                                                 >
                                                                     <Check size={14} className="stroke-[2.5]" />
@@ -312,7 +312,7 @@ const NotificationPage = () => {
                                                             )}
                                                             <button
                                                                 onClick={() => deleteNotification(notif._id)}
-                                                                className="p-2 border border-border rounded-xl bg-card text-muted-foreground hover:text-red-500 hover:border-red-500/20 transition-all active:scale-95 shadow-sm"
+                                                                className="p-2 border border-border rounded-lg bg-card text-muted-foreground hover:text-red-500 hover:border-red-500/20 transition-all active:scale-95 shadow-sm"
                                                                 title="Delete"
                                                             >
                                                                 <Trash2 size={14} />
@@ -337,7 +337,7 @@ const NotificationPage = () => {
                                 <button
                                     onClick={() => goToPage(pagination.page - 1)}
                                     disabled={pagination.page <= 1}
-                                    className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-xl bg-card hover:bg-muted/50 disabled:opacity-50 disabled:hover:bg-card text-xs font-bold text-foreground transition-all shadow-sm active:scale-95"
+                                    className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg bg-card hover:bg-muted/50 disabled:opacity-50 disabled:hover:bg-card text-xs font-bold text-foreground transition-all shadow-sm active:scale-95"
                                 >
                                     <ChevronLeft size={14} />
                                     Previous
@@ -345,7 +345,7 @@ const NotificationPage = () => {
                                 <button
                                     onClick={() => goToPage(pagination.page + 1)}
                                     disabled={pagination.page >= pagination.totalPages}
-                                    className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-xl bg-card hover:bg-muted/50 disabled:opacity-50 disabled:hover:bg-card text-xs font-bold text-foreground transition-all shadow-sm active:scale-95"
+                                    className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg bg-card hover:bg-muted/50 disabled:opacity-50 disabled:hover:bg-card text-xs font-bold text-foreground transition-all shadow-sm active:scale-95"
                                 >
                                     Next
                                     <ChevronRight size={14} />
