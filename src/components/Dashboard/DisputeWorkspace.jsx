@@ -14,6 +14,13 @@ const DISPUTE_TYPES = [
     { value: 'conduct_dispute', label: 'Conduct Issue' },
 ];
 
+const RESOLUTION_TYPES = [
+    { value: 'full_refund', label: 'Full Refund' },
+    { value: 'partial_refund', label: 'Partial Refund' },
+    { value: 'no_refund', label: 'No Refund' },
+    { value: 'other', label: 'Other' },
+];
+
 const STATUS_CONFIG = {
     open: { label: 'Open', color: 'text-amber-700 bg-amber-500/10 border-amber-500/20' },
     under_review: { label: 'Under Review', color: 'text-blue-700 bg-blue-500/10 border-blue-500/20' },
@@ -26,13 +33,14 @@ const DisputeRow = ({ dispute, isAdmin, onRefresh }) => {
     const [open, setOpen] = useState(false);
     const [resolving, setResolving] = useState(false);
     const [resolution, setResolution] = useState('');
+    const [resolutionType, setResolutionType] = useState('no_refund');
     const status = STATUS_CONFIG[dispute.status] || STATUS_CONFIG.open;
 
     const handleResolve = async () => {
         if (!resolution.trim()) { toast.error('Enter a resolution note'); return; }
         setResolving(true);
         try {
-            await api.patch(`/api/disputes/${dispute._id}/resolve`, { resolution: resolution.trim() });
+            await api.patch(`/api/disputes/${dispute._id}/resolve`, { resolution: resolution.trim(), resolutionType });
             toast.success('Dispute resolved — parties notified');
             onRefresh();
         } catch (err) {
@@ -100,9 +108,20 @@ const DisputeRow = ({ dispute, isAdmin, onRefresh }) => {
                     )}
 
                     {/* Admin resolve form */}
-                    {isAdmin && dispute.status !== 'resolved' && dispute.status !== 'closed' && (
+                    {isAdmin && dispute.status !== 'resolved' && dispute.status !== 'closed' && dispute.status !== 'refunded' && (
                         <div className="pt-2 border-t border-border space-y-3">
                             <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Admin Resolution</p>
+                            
+                            <select
+                                value={resolutionType}
+                                onChange={e => setResolutionType(e.target.value)}
+                                className="w-full text-sm border border-border rounded-lg px-4 py-2.5 bg-background focus:outline-none focus:border-primary transition-colors"
+                            >
+                                {RESOLUTION_TYPES.map(t => (
+                                    <option key={t.value} value={t.value}>{t.label}</option>
+                                ))}
+                            </select>
+
                             <textarea
                                 value={resolution}
                                 onChange={e => setResolution(e.target.value)}

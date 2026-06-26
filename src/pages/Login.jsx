@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from '../contexts/AuthContext'
 import { useState } from 'react'
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 const Login = () => {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm({ mode: 'onChange' })
+    const { register, handleSubmit, control, formState: { errors } } = useForm({ mode: 'onChange' })
     const { login, googleLogin } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
@@ -20,7 +20,7 @@ const Login = () => {
     }
     const [loading, setLoading] = useState(false)
 
-    const emailValue = watch('email')
+    const emailValue = useWatch({ control, name: 'email' })
 
     const isEmailValid = emailValue && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)
     const isEmailInvalid = emailValue && !isEmailValid

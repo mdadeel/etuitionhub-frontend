@@ -9,11 +9,11 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { Menu, X, ChevronLeft } from 'lucide-react';
 
 export default function AiAssistantLayout({ children, showBack = false, rightSlot = null, className = '' }) {
-    const { theme } = useTheme();
+    useTheme();
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     return (
-        <div className={cn('flex h-screen w-full bg-background overflow-hidden fixed inset-0 gap-1 pb-[env(safe-area-inset-bottom,0)]', className)}>
+        <div className={cn('flex w-full bg-background overflow-hidden fixed top-14 md:top-16 inset-x-0 bottom-0 gap-1 pb-[env(safe-area-inset-bottom,0)]', className)}>
             {/* Desktop Sidebar */}
             <ModernSidebar className="hidden lg:flex shrink-0 z-40" />
 
@@ -44,31 +44,33 @@ export default function AiAssistantLayout({ children, showBack = false, rightSlo
                 />
             </div>
 
-            {/* Mobile Header (Dedicated Top Bar) */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 h-[56px] z-[60] flex items-center justify-between px-3 bg-background/95 backdrop-blur-md border-b border-border/40">
-                <div className="flex items-center gap-1">
-                    {showBack ? (
-                        <button onClick={() => window.history.back()} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-300 rounded-lg">
-                            <ChevronLeft size={24} />
-                        </button>
-                    ) : (
-                        <button onClick={() => setIsMobileSidebarOpen(true)} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-300 rounded-lg">
-                            <Menu size={22} />
-                        </button>
-                    )}
-                    <span className="text-sm font-semibold tracking-tight ml-1">Porua AI</span>
-                </div>
-                
-                {rightSlot && (
-                    <div className="flex items-center">
-                        {rightSlot}
-                    </div>
-                )}
-            </div>
-
             {/* Main content - add padding bottom for MobileBottomNav (h-14 = 56px) */}
-            <div className="flex-1 min-w-0 min-h-0 flex flex-col h-full relative pt-[56px] lg:pt-0 pb-14 lg:pb-0">
-                {children}
+            <div className="flex-1 min-w-0 min-h-0 flex flex-col h-full relative pb-14 lg:pb-0">
+                {/* Mobile Header (inline, sits under global Navbar) */}
+                <div className="lg:hidden flex h-12 shrink-0 items-center justify-between px-3 bg-background/95 backdrop-blur-md border-b border-border/45">
+                    <div className="flex items-center gap-1">
+                        {showBack ? (
+                            <button onClick={() => window.history.back()} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-300 rounded-lg">
+                                <ChevronLeft size={20} />
+                            </button>
+                        ) : (
+                            <button onClick={() => setIsMobileSidebarOpen(true)} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-300 rounded-lg">
+                                <Menu size={20} />
+                            </button>
+                        )}
+                        <span className="text-sm font-semibold tracking-tight ml-1">Porua AI</span>
+                    </div>
+                    
+                    {rightSlot && (
+                        <div className="flex items-center">
+                            {rightSlot}
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex-1 min-w-0 min-h-0 flex flex-col h-full">
+                    {children}
+                </div>
             </div>
         </div>
     );

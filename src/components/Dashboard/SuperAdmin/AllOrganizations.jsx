@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
@@ -9,7 +9,6 @@ import {
   ShieldOff,
   ShieldCheck,
   Bell,
-  Eye
 } from "lucide-react";
 import { Card } from "../../ui/card";
 import { Input } from "../../ui/input";
@@ -38,7 +37,7 @@ const AllOrganizations = () => {
   const [notifyMessage, setNotifyMessage] = useState("");
   const [notifyLoading, setNotifyLoading] = useState(false);
 
-  const fetchOrgs = async () => {
+  const fetchOrgs = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get("/api/v1/organizations/all", {
@@ -51,14 +50,12 @@ const AllOrganizations = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, statusFilter, page]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchOrgs();
-    }, 500);
+    const timer = setTimeout(fetchOrgs, 500);
     return () => clearTimeout(timer);
-  }, [search, statusFilter, page]);
+  }, [fetchOrgs]);
 
   const handleBan = async (orgId, orgName) => {
     if (!confirm(`Ban "${orgName}"? This will suspend all org activities.`)) return;
@@ -124,6 +121,12 @@ const AllOrganizations = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-heading font-bold">Organizations</h2>
+        <Link to="/dashboard/super-admin/org-requests">
+          <Button size="sm" className="flex items-center gap-1.5">
+            <Building2 className="h-4 w-4" />
+            Org Requests
+          </Button>
+        </Link>
       </div>
 
       {/* Filters */}

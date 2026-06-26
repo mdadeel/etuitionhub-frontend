@@ -51,7 +51,6 @@ const Checkout = () => {
         notes: ''
     });
     const [screenshotFile, setScreenshotFile] = useState(null);
-    const [screenshotUploaded, setScreenshotUploaded] = useState(false);
 
     const fetchApplication = async () => {
         try {
@@ -96,7 +95,6 @@ const Checkout = () => {
             return;
         }
         setScreenshotFile(file);
-        setScreenshotUploaded(false);
     };
 
     const handleSubmit = async (e) => {
@@ -140,7 +138,6 @@ const Checkout = () => {
                         await api.post('/api/upload/payment-screenshot', fd, {
                             headers: { 'Content-Type': 'multipart/form-data' }
                         });
-                        setScreenshotUploaded(true);
                     } catch {
                         // Screenshot upload failed — payment still submitted
                     }

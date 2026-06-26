@@ -5,9 +5,11 @@ import toast from 'react-hot-toast';
 import { X, CheckCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import DisputeModal from '../Dashboard/DisputeModal';
 
 const ConnectionRequestCard = ({ request, onUpdate }) => {
   const [loading, setLoading] = useState(false);
+  const [showDispute, setShowDispute] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
 
@@ -63,7 +65,7 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
           </p>
         )}
         <div className="flex justify-end gap-2 mt-4">
-          {!loading && (
+          {!loading && request.status === 'pending' && (
             <>
               <Button 
                 variant="outline" 
@@ -80,6 +82,16 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
               </Button>
             </>
           )}
+          {!loading && request.status === 'accepted' && (
+             <Button
+               variant="outline"
+               onClick={() => setShowDispute(true)}
+               size="sm"
+               className="text-red-500 border-red-500/30 hover:bg-red-500/10 hover:text-red-600"
+             >
+               File Dispute
+             </Button>
+          )}
           {loading && (
             <div className="flex items-center gap-2">
               <Loader2 size={16} className="mr-2" />
@@ -88,6 +100,12 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
           )}
         </div>
       </div>
+
+      <DisputeModal 
+        open={showDispute}
+        onOpenChange={setShowDispute}
+        connectionId={request._id}
+      />
     </div>
   );
 };

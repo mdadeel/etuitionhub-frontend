@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { Loader2, Users, UserX } from 'lucide-react';
 import ActiveRelationshipCard from './ActiveRelationshipCard';
+import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 
 const TABS = [
   { key: 'all', label: 'All' },
@@ -13,8 +13,6 @@ const TABS = [
 ];
 
 const ActiveRelationships = () => {
-  // eslint-disable-next-line no-unused-vars
-  const { dbUser } = useAuth();
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('all');
@@ -40,14 +38,19 @@ const ActiveRelationships = () => {
     : connections.filter(c => c.relationshipStatus === tab);
 
   return (
-    <div className="space-y-4 animate-fade-in-up">
+    <div className="space-y-6 animate-fade-in-up">
+      <DashboardPageHeader
+        title="Active Relationships"
+        subtitle="Manage your tutoring connections"
+      />
+
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-border pb-3">
+      <div className="flex gap-2 border-b border-border pb-3 overflow-x-auto">
         {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
               tab === t.key
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:bg-muted'
@@ -66,7 +69,9 @@ const ActiveRelationships = () => {
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">
           <UserX className="size-12 text-muted-foreground/40 mx-auto mb-4" />
-          <p className="text-muted-foreground">No {tab === 'all' ? '' : tab} relationships</p>
+          <p className="text-muted-foreground">
+            {tab === 'all' ? 'No relationships yet' : `No ${tab.replace('_', ' ')} relationships`}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">

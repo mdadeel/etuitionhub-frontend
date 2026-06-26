@@ -24,6 +24,7 @@ import PublicRoute from "./components/shared/PublicRoute";
 import FloatingChat from "./components/shared/FloatingChat";
 import { cn } from "@/lib/utils";
 import RouteErrorBoundary from "./components/shared/RouteErrorBoundary";
+import ErrorBoundary from "./components/shared/ErrorBoundary";
 import { DynamicIslandProvider } from "./contexts/DynamicIslandProvider";
 import { DynamicIsland } from "./components/shared/DynamicIsland";
 
@@ -73,8 +74,7 @@ const ConditionalNavbar = () => {
   const { pathname } = useLocation();
   const isDashboard = pathname.startsWith("/dashboard");
   const isSession = pathname.startsWith("/session");
-  const isAiAssistant = pathname.startsWith("/ai-assistant");
-  if (isDashboard || isSession || isAiAssistant) return null;
+  if (isDashboard || isSession) return null;
   return <Navbar />;
 };
 
@@ -112,13 +112,12 @@ const MainContent = ({ children }) => {
   const { pathname } = useLocation();
   const isDashboard = pathname.startsWith("/dashboard");
   const isSession = pathname.startsWith("/session");
-  const isAiAssistant = pathname.startsWith("/ai-assistant");
 
   return (
     <main
       className={cn(
         "flex-grow transition-all duration-300",
-        !isDashboard && !isSession && !isAiAssistant ? "pt-14 safe-bottom" : "pt-0",
+        !isDashboard && !isSession ? "pt-14 safe-bottom" : "pt-0",
       )}
     >
       {children}
@@ -151,6 +150,7 @@ const HeartbeatBridge = () => {
 
 let App = () => {
   return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <AuthProvider>
@@ -365,6 +365,7 @@ let App = () => {
       </AuthProvider>
     </ThemeProvider>
     </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

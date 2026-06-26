@@ -29,7 +29,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
     const handleConfirm = async () => {
         try {
-            const bookingRes = await api.post('/api/bookings', {
+            await api.post('/api/bookings', {
                 tutorId,
                 tutorName,
                 studentEmail: user?.email || dbUser?.email,

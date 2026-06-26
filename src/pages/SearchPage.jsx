@@ -6,7 +6,7 @@ import TutorCard from "../components/shared/TutorCard";
 import TuitionCard from "../components/shared/TuitionCard";
 import SaveSearchButton from "../components/shared/SaveSearchButton";
 import useDebouncedValue from "../hooks/useDebouncedValue";
-import API_URL from "../config/api";
+import api from "../services/api";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TutorCardGridSkeleton, TuitionCardGridSkeleton } from "@/components/shared/skeletons";
@@ -47,21 +47,15 @@ const SearchPage = () => {
     const fetchAll = async () => {
       try {
         const [tutorsRes, tuitionsRes] = await Promise.all([
-          fetch(
-            `${API_URL}/api/tutors/search?q=${encodeURIComponent(debouncedQuery)}&limit=10`,
-            { signal: controller.signal },
-          ).then((r) => r.json()),
-          fetch(
-            `${API_URL}/api/tuitions?search=${encodeURIComponent(debouncedQuery)}&limit=10&status=approved`,
-            { signal: controller.signal },
-          ).then((r) => r.json()),
+          api.get(`/api/tutors/search?q=${encodeURIComponent(debouncedQuery)}&limit=10`, { signal: controller.signal }),
+          api.get(`/api/tuitions?search=${encodeURIComponent(debouncedQuery)}&limit=10&status=approved`, { signal: controller.signal }),
         ]);
-        setTutors(tutorsRes.data || []);
-        const tuitionData = tuitionsRes.data || tuitionsRes.tuitions || [];
+        setTutors(tutorsRes.data.data || []);
+        const tuitionData = tuitionsRes.data.data || tuitionsRes.data.tuitions || [];
         setTuitions(tuitionData);
         setActiveIndex(-1);
       } catch (err) {
-        if (err.name !== "AbortError") {
+        if (err.name !== "CanceledError" && err.name !== "AbortError") {
           setTutors([]);
           setTuitions([]);
         }
@@ -82,12 +76,12 @@ const SearchPage = () => {
     const controller = new AbortController();
     const fetchSuggestions = async () => {
       try {
-        const res = await fetch(
-          `${API_URL}/api/search/suggest?q=${encodeURIComponent(debouncedQuery)}`,
+        const res = await api.get(
+          `/api/search/suggest?q=${encodeURIComponent(debouncedQuery)}`,
           { signal: controller.signal }
         );
-        if (res.ok) {
-          const data = await res.json();
+        if (res.status === 200) {
+          const data = res.data;
           setSuggestions({
             tutors: (data.tutors || []).slice(0, 5),
             tuitions: (data.tuitions || []).slice(0, 5),

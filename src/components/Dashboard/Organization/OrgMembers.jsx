@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
@@ -11,11 +11,12 @@ import {
   Copy,
   CheckCircle2,
   Shield,
-  Clock,
   XCircle,
-  UserCheck
+  UserCheck,
+  AlertOctagon
 } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
+import ModerationModal from "../ModerationModal";
 
 const OrgMembers = () => {
   const { orgId } = useParams();
@@ -32,7 +33,11 @@ const OrgMembers = () => {
   const [inviting, setInviting] = useState(false);
   const [inviteResult, setInviteResult] = useState(null);
 
-  const fetchMembersAndRoles = async () => {
+  // Moderation Modal State
+  const [showModerationModal, setShowModerationModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const fetchMembersAndRoles = useCallback(async () => {
     try {
       setLoading(true);
       const [membersRes, rolesRes] = await Promise.all([
@@ -59,11 +64,11 @@ const OrgMembers = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
   useEffect(() => {
     fetchMembersAndRoles();
-  }, [orgId]);
+  }, [fetchMembersAndRoles]);
 
   const handleInvite = async (e) => {
     e.preventDefault();
@@ -246,13 +251,25 @@ const OrgMembers = () => {
               label: "Actions",
               align: "right",
               render: (_, member) => (
-                <button
-                  onClick={() => handleRemoveMember(member._id, member.userId?.displayName)}
-                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
-                  title="Remove Member"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => {
+                      setSelectedUser(member.userId);
+                      setShowModerationModal(true);
+                    }}
+                    className="p-2 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors"
+                    title="Moderate Member"
+                  >
+                    <AlertOctagon className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleRemoveMember(member._id, member.userId?.displayName)}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                    title="Remove Member"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               ),
             },
           ]}
@@ -416,6 +433,20 @@ const OrgMembers = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Moderation Modal Overlay */}
+      {selectedUser && (
+        <ModerationModal
+          open={showModerationModal}
+          onOpenChange={(open) => {
+            setShowModerationModal(open);
+            if (!open) setSelectedUser(null);
+          }}
+          targetUser={selectedUser}
+          organizationId={orgId}
+          onModerationComplete={fetchMembersAndRoles}
+        />
       )}
     </div>
   );

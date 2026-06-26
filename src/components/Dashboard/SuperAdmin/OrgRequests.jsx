@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
@@ -40,7 +40,7 @@ const OrgRequests = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get("/api/v1/org-requests", {
@@ -53,14 +53,12 @@ const OrgRequests = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, statusFilter, page]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchRequests();
-    }, 500);
+    const timer = setTimeout(fetchRequests, 500);
     return () => clearTimeout(timer);
-  }, [search, statusFilter, page]);
+  }, [fetchRequests]);
 
   const handleApprove = async (id) => {
     try {

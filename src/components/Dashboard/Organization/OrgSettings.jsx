@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import { 
-  Building2, 
   Settings, 
   Image as ImageIcon, 
   Globe, 
@@ -16,7 +15,6 @@ import {
   LogOut,
   AlertTriangle
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Textarea } from "../../ui/textarea";
@@ -116,8 +114,12 @@ const OrgSettings = () => {
     
     try {
       setLeaving(true);
-      await api.delete(`/api/v1/organizations/${orgId}/leave`);
-      toast.success("You have left the organization");
+      const res = await api.post(`/api/v1/organizations/${orgId}/leave`);
+      if (res.data.requiresApproval) {
+        toast.success("Leave request submitted. An admin will review your request.");
+      } else {
+        toast.success("You have left the organization");
+      }
       navigate("/organizations");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to leave organization");

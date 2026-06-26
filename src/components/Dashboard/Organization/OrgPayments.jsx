@@ -6,10 +6,7 @@ import {
   DollarSign,
   Loader2,
   TrendingUp,
-  ArrowDownToLine,
-  CheckCircle2,
   Clock,
-  XCircle,
 } from "lucide-react";
 import { Card } from "../../ui/card";
 import DataTable from "@/components/ui/data-table";

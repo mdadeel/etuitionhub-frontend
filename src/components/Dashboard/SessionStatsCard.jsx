@@ -1,4 +1,4 @@
-import { Loader2, CheckCircle, Clock, AlertCircle, Timer, BarChart3 } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Timer, BarChart3 } from 'lucide-react';
 import useSessionStats from '../../hooks/useSessionStats';
 import { cn } from '@/lib/utils';
 

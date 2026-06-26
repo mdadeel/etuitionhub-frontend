@@ -443,7 +443,6 @@ export default function AiAssistantChat() {
     };
 
     const messages = sessionId === 'new' ? localMessages : (data?.messages || []);
-    const session = data?.session;
     const isChatLoading = sessionId === 'new' ? false : isLoading;
 
     return (

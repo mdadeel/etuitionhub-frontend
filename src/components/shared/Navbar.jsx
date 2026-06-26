@@ -99,11 +99,17 @@ const Navbar = () => {
     }
     const controller = new AbortController();
     fetch(
-      `${API_URL}/api/search/suggest?q=${encodeURIComponent(debouncedQuery)}`,
+      `${API_URL}/api/search/combined?q=${encodeURIComponent(debouncedQuery)}&limit=5`,
       { signal: controller.signal },
     )
       .then((r) => r.json())
-      .then((data) => setSuggestions(data))
+      .then((data) => {
+        if (data && Array.isArray(data.tutors) && Array.isArray(data.tuitions)) {
+          setSuggestions(data);
+        } else {
+          setSuggestions({ tutors: [], tuitions: [] });
+        }
+      })
       .catch(() => {});
     return () => controller.abort();
   }, [debouncedQuery]);

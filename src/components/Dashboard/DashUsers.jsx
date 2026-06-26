@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TableSkeleton } from "@/components/shared/skeletons";
 import useDebouncedValue from '../../hooks/useDebouncedValue';
 import { Button } from '@/components/ui/button';
-import { UserX, Edit2, ShieldAlert, UserCog, Search } from 'lucide-react';
+import { UserX, Edit2, Search, ShieldAlert, UserCog } from 'lucide-react';
 import FilterSelect from '../shared/FilterSelect';
 import DashboardFilterBar from '../shared/DashboardFilterBar';
 import LocationFilter from '../shared/LocationFilter';
@@ -137,7 +137,7 @@ const DashUsers = () => {
         const isVerified = ['verified_basic', 'verified_premium'].includes(status);
         
         try {
-            await api.patch(`/api/users/${id}`, { verificationStatus: status, isVerified });
+            await api.patch(`/api/users/${id}`, { verificationStatus: status, isVerified, searchVisibility: isVerified });
             toast.success(`Verification updated to ${status}`);
             await loadUsers();
         } catch (err) {

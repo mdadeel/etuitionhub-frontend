@@ -128,12 +128,12 @@ const CategoryCard = ({ cat, index }) => {
         <Link
             to={`/tutors?subjects=${cat.slug}`}
             aria-label={`Browse ${cat.label} tutors`}
-            className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[20px]"
+            className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[16px]"
             style={{ animationDelay: `${100 + index * 50}ms` }}
         >
             <div
                 className={cn(
-                    "relative h-full overflow-hidden rounded-[20px] border border-border/70 bg-card",
+                    "relative h-full overflow-hidden rounded-[16px] border border-border/70 bg-card",
                     "transition-all duration-300 ease-out",
                     "hover:shadow-premium-md",
                     "active:scale-[0.985]"
@@ -151,7 +151,7 @@ const CategoryCard = ({ cat, index }) => {
                 {/* Border + ring accent on hover */}
                 <div
                     className={cn(
-                        "pointer-events-none absolute inset-0 rounded-[20px] border border-transparent",
+                        "pointer-events-none absolute inset-0 rounded-[16px] border border-transparent",
                         "transition-colors duration-300",
                         "group-hover:[border-color:var(--tw-border)]",
                         a.border
@@ -159,7 +159,7 @@ const CategoryCard = ({ cat, index }) => {
                 />
                 <div
                     className={cn(
-                        "pointer-events-none absolute inset-0 rounded-[20px] ring-1 ring-inset ring-transparent",
+                        "pointer-events-none absolute inset-0 rounded-[16px] ring-1 ring-inset ring-transparent",
                         "transition-all duration-300 group-hover:ring-2",
                         a.ring
                     )}
@@ -169,33 +169,33 @@ const CategoryCard = ({ cat, index }) => {
                 {tag && TagIcon && (
                     <span
                         className={cn(
-                            "absolute top-3 right-3 z-10 inline-flex items-center gap-1 rounded-full border backdrop-blur-sm",
-                            "p-1.5 md:px-2 md:py-0.5",
+                            "absolute top-2 right-2 z-10 inline-flex items-center gap-1 rounded-full border backdrop-blur-sm",
+                            "p-1 md:px-1.5 md:py-0.5",
                             tag.className
                         )}
                         title={cat.tag}
                     >
-                        <TagIcon className="size-3 md:size-2.5" />
-                        <span className="hidden md:inline text-[9px] font-bold uppercase tracking-wider">{cat.tag}</span>
+                        <TagIcon className="size-2.5 md:size-2" />
+                        <span className="hidden md:inline text-[8px] font-bold uppercase tracking-wider">{cat.tag}</span>
                     </span>
                 )}
 
-                <div className="relative z-10 flex h-full flex-col p-4 md:p-5">
+                <div className="relative z-10 flex h-full flex-col p-3 md:p-4">
                     {/* Icon and Title */}
-                    <div className="flex items-center gap-3 mb-3 md:mb-4 min-w-0">
+                    <div className="flex items-center gap-2.5 mb-2 md:mb-3 min-w-0">
                         <div
                             className={cn(
-                                "flex shrink-0 items-center justify-center rounded-xl border",
+                                "flex shrink-0 items-center justify-center rounded-lg border",
                                 "transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-4deg]",
-                                "size-10 md:size-11",
+                                "size-8 md:size-9",
                                 a.bg,
                                 a.border
                             )}
                         >
-                            <cat.icon className={cn("size-5", a.text)} strokeWidth={2} />
+                            <cat.icon className={cn("size-4 md:size-4.5", a.text)} strokeWidth={2} />
                         </div>
                         <div className="min-w-0">
-                            <h3 className="line-clamp-1 font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
+                            <h3 className="line-clamp-1 font-heading font-bold tracking-tight text-foreground leading-tight text-sm md:text-base">
                                 {cat.label}
                             </h3>
                         </div>
@@ -203,21 +203,21 @@ const CategoryCard = ({ cat, index }) => {
 
                     {/* Context */}
                     <div className="min-w-0 flex-1">
-                        <p className="line-clamp-2 text-[11px] md:text-xs text-muted-foreground leading-snug">
+                        <p className="line-clamp-2 text-[10px] md:text-xs text-muted-foreground leading-snug">
                             {cat.context}
                         </p>
                     </div>
 
                     {/* Footer: stats */}
-                    <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
-                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-foreground">
-                            <Users className={cn("size-3.5", a.text)} />
+                    <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2 md:pt-2.5">
+                        <div className="flex items-center gap-1 text-[10px] md:text-[11px] font-bold text-foreground">
+                            <Users className={cn("size-3 md:size-3.5", a.text)} />
                             {cat.count} <span className="font-normal text-muted-foreground">tutors</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] font-bold text-foreground">
-                            <Star className="size-3.5 fill-amber-400 text-amber-500" />
+                        <div className="flex items-center gap-1 text-[10px] md:text-[11px] font-bold text-foreground">
+                            <Star className="size-3 fill-amber-400 text-amber-500" />
                             {cat.rating}
-                            <ArrowUpRight className={cn("size-3.5 ml-0.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5", a.text)} strokeWidth={2.5} />
+                            <ArrowUpRight className={cn("size-3 ml-0.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5", a.text)} strokeWidth={2.5} />
                         </div>
                     </div>
                 </div>
@@ -277,35 +277,35 @@ const FeaturedCategories = () => {
                     {/* 9th cell: "View all subjects" tile */}
                     <Link
                         to="/tutors"
-                        className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[20px]"
+                        className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[16px]"
                         style={{ animationDelay: `${100 + categories.length * 50}ms` }}
                     >
                         <div
                             className={cn(
-                                "relative flex h-full flex-col p-4 md:p-5 overflow-hidden rounded-[20px] border border-dashed border-border bg-background/40",
+                                "relative flex h-full flex-col p-3 md:p-4 overflow-hidden rounded-[16px] border border-dashed border-border bg-background/40",
                                 "transition-all duration-300 ease-out",
                                 "hover:border-primary/40 hover:bg-primary/5 hover:shadow-premium-md",
                                 "active:scale-[0.985]"
                             )}
                         >
-                            <div className="flex items-center gap-3 mb-3 md:mb-4 min-w-0">
-                                <div className="flex shrink-0 size-10 md:size-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-8deg]">
-                                    <ArrowUpRight className="size-5" strokeWidth={2.5} />
+                            <div className="flex items-center gap-2.5 mb-2 md:mb-3 min-w-0">
+                                <div className="flex shrink-0 size-8 md:size-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-8deg]">
+                                    <ArrowUpRight className="size-4 md:size-4.5" strokeWidth={2.5} />
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="font-heading font-bold tracking-tight text-foreground leading-tight text-base md:text-lg">
+                                    <h3 className="font-heading font-bold tracking-tight text-foreground leading-tight text-sm md:text-base">
                                         View all
                                     </h3>
                                 </div>
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="text-[11px] md:text-xs text-muted-foreground leading-snug">
+                                <p className="text-[10px] md:text-xs text-muted-foreground leading-snug">
                                     See every subject
                                 </p>
                             </div>
-                            <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
-                                <span className="text-[11px] font-bold text-primary group-hover:underline">Explore options</span>
-                                <ArrowUpRight className="size-3.5 text-primary transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.5} />
+                            <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2 md:pt-2.5">
+                                <span className="text-[10px] md:text-[11px] font-bold text-primary group-hover:underline">Explore options</span>
+                                <ArrowUpRight className="size-3 text-primary transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.5} />
                             </div>
                         </div>
                     </Link>

@@ -1,9 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useEffect, useState, useMemo } from 'react';
 import api from '../../services/api';
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton, LineSkeleton } from "@/components/shared/skeletons";
+import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 import toast from 'react-hot-toast';
+import { Calendar, Clock, Video, MapPin, Loader2, Users } from 'lucide-react';
+
+const STATUS_CONFIG = {
+  pending: { label: 'Pending', variant: 'outline', className: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
+  accepted: { label: 'Confirmed', variant: 'outline', className: 'bg-green-500/10 text-green-600 border-green-500/20' },
+  completed: { label: 'Completed', variant: 'outline', className: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
+  cancelled: { label: 'Cancelled', variant: 'outline', className: 'bg-red-500/10 text-red-600 border-red-500/20' },
+};
+
+const TABS = [
+  { key: 'all', label: 'All' },
+  { key: 'pending', label: 'Pending' },
+  { key: 'accepted', label: 'Confirmed' },
+  { key: 'completed', label: 'Completed' },
+];
 
 function SessionCardSkeleton() {
   return (
@@ -22,56 +39,146 @@ function SessionCardSkeleton() {
 }
 
 export default function TutorSessions() {
-    const { dbUser } = useAuth();
-    const [sessions, setSessions] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState('all');
 
-    useEffect(() => {
-        if (dbUser?.email) {
-            api.get(`/api/bookings/tutor/${dbUser.email}`)
-                .then(res => setSessions(res.data))
-                .catch(err => {
-                    console.error(err);
-                    toast.error('Failed to load sessions');
-                })
-                .finally(() => setLoading(false));
-        }
-    }, [dbUser]);
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const res = await api.get('/api/sessions', { params: { scope: 'tutor' } });
+        setSessions(res.data.data || res.data || []);
+      } catch {
+        toast.error('Failed to load sessions');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSessions();
+  }, []);
 
-    if (loading) {
-      return (
+  const filtered = useMemo(() => {
+    if (tab === 'all') return sessions;
+    return sessions.filter(s => s.status === tab);
+  }, [sessions, tab]);
+
+  const counts = useMemo(() => ({
+    all: sessions.length,
+    pending: sessions.filter(s => s.status === 'pending').length,
+    accepted: sessions.filter(s => s.status === 'accepted').length,
+    completed: sessions.filter(s => s.status === 'completed').length,
+  }), [sessions]);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
         <div className="space-y-3">
           {[...Array(4)].map((_, i) => (
             <SessionCardSkeleton key={i} />
           ))}
         </div>
-      );
-    }
-
-    return (
-        <div className="space-y-4 animate-fade-in-up">
-            <h2 className="text-xl font-bold">My Sessions</h2>
-            {sessions.length === 0 ? (
-                <p className="text-muted-foreground">No sessions yet</p>
-            ) : (
-                <div className="grid gap-4">
-                    {sessions.map(session => (
-                        <div key={session._id} className="p-4 border rounded-lg">
-                            <p className="font-medium">{session.studentEmail}</p>
-                            <p className="text-sm text-muted-foreground">
-                                {session.meetingDate} at {session.slot}
-                            </p>
-                            <span className={`inline-block px-2 py-1 text-xs rounded mt-2 ${
-                                session.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                                session.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-muted'
-                            }`}>
-                                {session.status}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="space-y-6 animate-fade-in-up">
+      <DashboardPageHeader
+        title="My Sessions"
+        subtitle="View and manage your tutoring sessions"
+      />
+
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-border pb-3 overflow-x-auto">
+        {TABS.map(t => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
+              tab === t.key
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
+            }`}
+          >
+            {t.label}
+            {counts[t.key] > 0 && (
+              <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${
+                tab === t.key ? 'bg-primary-foreground/20' : 'bg-muted'
+              }`}>
+                {counts[t.key]}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Sessions List */}
+      {filtered.length === 0 ? (
+        <div className="text-center py-20">
+          <Users className="size-12 text-muted-foreground/40 mx-auto mb-4" />
+          <p className="text-muted-foreground">
+            {tab === 'all' ? 'No sessions yet' : `No ${tab} sessions`}
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map(session => {
+            const statusConfig = STATUS_CONFIG[session.status] || STATUS_CONFIG.pending;
+            return (
+              <Card key={session._id} className="p-5 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Users className="size-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm leading-tight">{session.studentEmail || session.studentName || 'Student'}</p>
+                      {session.topic && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{session.topic}</p>
+                      )}
+                    </div>
+                  </div>
+                  <Badge variant={statusConfig.variant} className={`text-[10px] ${statusConfig.className}`}>
+                    {statusConfig.label}
+                  </Badge>
+                </div>
+
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="size-3.5" />
+                    <span>{session.meetingDate ? new Date(session.meetingDate).toLocaleDateString() : 'TBD'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="size-3.5" />
+                    <span>{session.slot || session.durationMinutes ? `${session.durationMinutes || 60} min` : 'TBD'}</span>
+                  </div>
+                  {session.mode && (
+                    <div className="flex items-center gap-2">
+                      {session.mode === 'online' ? <Video className="size-3.5" /> : <MapPin className="size-3.5" />}
+                      <span className="capitalize">{session.mode}</span>
+                    </div>
+                  )}
+                </div>
+
+                {session.status === 'pending' && (
+                  <div className="mt-4 pt-3 border-t border-border flex gap-2">
+                    <button className="flex-1 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors">
+                      Confirm
+                    </button>
+                    <button className="px-3 py-1.5 text-xs text-muted-foreground hover:text-red-500 border border-border rounded-lg hover:bg-red-500/5 transition-colors">
+                      Decline
+                    </button>
+                  </div>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }

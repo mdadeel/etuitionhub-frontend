@@ -12,17 +12,15 @@ import TutorAvailability from './TutorAvailability';
 import Assignments from './Assignments';
 import { AppleHeader } from "@/components/shared/AppleUI";
 import { 
-    Activity, 
     FileText, 
     Banknote, 
-    Trash2,
     Database,
-    Clock,
     UserCheck,
     ArrowUpRight,
     TrendingUp,
+    Activity,
     Calendar,
-    BookOpen
+    BookOpen,
 } from "lucide-react";
 import { cn } from '@/lib/utils';
 import SessionStatsCard from './SessionStatsCard';

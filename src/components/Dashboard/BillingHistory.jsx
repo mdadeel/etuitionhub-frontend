@@ -47,20 +47,6 @@ const BillingHistory = () => {
       {/* Content */}
       <div className="mt-8">
         {activeTab === "payments" ? (
-          // StudentPayments has its own headers internally, so we can let it render
-          // Wait, let's see: StudentPayments has a header inside it!
-          // If StudentPayments has a header inside it, does it duplicate the main header we just put in BillingHistory?
-          // Ah! Let's check StudentPayments.jsx code:
-          // Yes: it has:
-          // <div className="mb-8"><div className="flex items-center gap-3"><h2 className="text-2xl font-bold tracking-tight text-foreground">Payment History</h2></div><p className="text-muted-foreground mt-2">Track all your transactions and payment activities.</p></div>
-          // Wait, if it has a header, then having two headers (one in BillingHistory and one in StudentPayments) would look redundant!
-          // Same for MyReceipts: it has:
-          // <header className="border-b border-border pb-6"> ... <h2>My Receipts</h2> ... </header>
-          // Let's modify StudentPayments.jsx and MyReceipts.jsx to accept a prop `hideHeader` or remove their internal headers,
-          // OR we can make StudentPayments.jsx and MyReceipts.jsx not have headers by default, and have BillingHistory show the header.
-          // Wait! Since StudentPayments and MyReceipts are now only rendered inside BillingHistory (or redirected to it),
-          // we can edit them to remove their internal headers or make them conditional on a `hideHeader` prop!
-          // This is a very clean approach and keeps the components modular.
           <StudentPayments hideHeader />
         ) : (
           <MyReceipts hideHeader />

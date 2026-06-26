@@ -8,8 +8,6 @@ import {
     Clock, 
     CheckCircle2, 
     XCircle,
-    Banknote,
-    Activity,
     ChevronLeft,
     ChevronRight
 } from "lucide-react";

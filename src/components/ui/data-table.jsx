@@ -65,7 +65,6 @@ export default function DataTable({
     return w ? { width: w, maxWidth: w } : undefined;
   }, [colWidths]);
 
-  const py = compact ? "py-2" : "py-3";
   const tdPy = compact ? "py-2.5" : "py-4";
 
   return (

@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
@@ -18,11 +18,11 @@ const Register = () => {
     const [role, setRole] = useState('student')
     const [loading, setLoading] = useState(false)
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm({ mode: 'onChange' })
+    const { register, handleSubmit, control, formState: { errors } } = useForm({ mode: 'onChange' })
 
-    const emailValue = watch('email')
-    const phoneValue = watch('phone')
-    const passwordValue = watch('password')
+    const emailValue = useWatch({ control, name: 'email' })
+    const phoneValue = useWatch({ control, name: 'phone' })
+    const passwordValue = useWatch({ control, name: 'password' })
 
     const isEmailValid = emailValue && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)
     const isEmailInvalid = emailValue && !isEmailValid

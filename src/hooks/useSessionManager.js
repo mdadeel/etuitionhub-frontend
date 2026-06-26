@@ -17,6 +17,7 @@ const useSessionManager = () => {
     const [orgContext, setOrgContext] = useState(null);
     const [orgMember, setOrgMember] = useState(null);
     const [orgRole, setOrgRole] = useState(null);
+    const orgContextRef = useRef(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -29,6 +30,11 @@ const useSessionManager = () => {
     // After initial load, subsequent onAuthStateChanged firings should NOT
     // set loading=true (which unmounts/remounts Dashboard, causing full-page refresh).
     const initialAuthDoneRef = useRef(false);
+
+    // Keep orgContextRef in sync with orgContext state
+    useEffect(() => {
+        orgContextRef.current = orgContext;
+    }, [orgContext]);
 
     const setJWT = useCallback(async (email, firebaseUser) => {
         if (!email) return;
@@ -63,7 +69,8 @@ const useSessionManager = () => {
                 const orgs = orgRes.data.data || [];
                 setMyOrgs(orgs);
                 // Auto-select first org if context is empty, or maintain current context
-                if (orgs.length > 0 && !orgContext) {
+                // Use ref to avoid stale closure and unnecessary re-subscriptions
+                if (orgs.length > 0 && !orgContextRef.current) {
                     const savedOrgId = localStorage.getItem('x-org-id');
                     let targetOrg = orgs.find(o => o.orgId === savedOrgId);
                     if (!targetOrg) targetOrg = orgs[0];
@@ -80,7 +87,7 @@ const useSessionManager = () => {
         } catch {
             return null;
         }
-    }, [orgContext]);
+    }, []); // No dependencies — reads orgContext via ref
 
     const checkUserExists = useCallback(async (email) => {
         try {
@@ -115,14 +122,13 @@ const useSessionManager = () => {
                 }
                 // Token refresh or silent auth event — update user but don't show spinner
                 if (currentUser?.email) {
-                    // Silent JWT refresh + user refresh in background.
-                    // Chain refreshUserFromDB AFTER setJWT completes so the
-                    // new access-token cookie is in place before the next
-                    // request — prevents a 401 race when the old token is
-                    // expired.
+                    // CRITICAL: Reset sessionDead BEFORE setJWT to break deadlock.
+                    // If sessionDead is true, the request interceptor blocks api.post(),
+                    // which means setJWT() can never succeed, which means resetSession()
+                    // can never be called. By resetting first, we allow setJWT() to proceed.
+                    resetSession();
                     setJWT(currentUser.email, currentUser)
                         .then(() => {
-                            resetSession();
                             refreshUserFromDB(currentUser.email).catch(() => {});
                         })
                         .catch(() => {});
@@ -147,8 +153,8 @@ const useSessionManager = () => {
             }
 
             if (currentUser?.email) {
-                await setJWT(currentUser.email, currentUser);
                 resetSession();
+                await setJWT(currentUser.email, currentUser);
 
                 try {
                     let res = await api.get(`/api/users/${currentUser.email}`);

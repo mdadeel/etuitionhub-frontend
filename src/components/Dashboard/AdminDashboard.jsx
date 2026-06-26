@@ -8,6 +8,7 @@ const DashUsers = lazy(() => import('./DashUsers'));
 const AdminTutors = lazy(() => import('./AdminTutors'));
 const DashTuitions = lazy(() => import('./DashTuitions'));
 const AdminVerifications = lazy(() => import('./AdminVerifications'));
+const AdminModeration = lazy(() => import('./AdminModeration'));
 const DisputeWorkspace = lazy(() => import('./DisputeWorkspace'));
 const DashSettings = lazy(() => import('./DashSettings'));
 
@@ -20,6 +21,7 @@ const AdminDashboard = () => {
         { id: 'tutors', label: 'Tutors' },
         { id: 'tuitions', label: 'Tuitions' },
         { id: 'verifications', label: 'Verifications' },
+        { id: 'moderation', label: 'Moderation' },
         { id: 'disputes', label: 'Disputes' },
         { id: 'settings', label: 'Settings' }
     ];
@@ -56,6 +58,7 @@ const AdminDashboard = () => {
                         {activeTab === 'tutors' && <AdminTutors />}
                         {activeTab === 'tuitions' && <DashTuitions />}
                         {activeTab === 'verifications' && <AdminVerifications />}
+                        {activeTab === 'moderation' && <AdminModeration />}
                         {activeTab === 'disputes' && <DisputeWorkspace isAdminView />}
                         {activeTab === 'settings' && <DashSettings />}
                     </div>

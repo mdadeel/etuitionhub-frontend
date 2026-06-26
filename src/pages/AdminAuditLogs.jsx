@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, Fragment } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
-import { History, Filter, ChevronDown, ChevronRight, Search, RefreshCw } from 'lucide-react';
+import { History, ChevronDown, ChevronRight, Search, RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 const ACTION_COLORS = {

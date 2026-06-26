@@ -188,7 +188,7 @@ const TutorDetails = () => {
         if (id) {
             fetchTutorData();
         }
-    }, [id, user]);
+    }, [id, user, demoTutors]);
 
     useEffect(() => {
         const checkExistingRequest = async () => {

@@ -1,6 +1,5 @@
 import HomeBanner from '../components/Home/HomeBanner'
 import PopularTutors from '../components/Home/PopularTutors'
-import Statistics from "../components/Home/Statistics"
 import HowItWorks from '../components/Home/HowItWorks'
 import Testimonials from "../components/Home/Testimonials"
 import FeaturedCategories from '../components/Home/FeaturedCategories';
@@ -16,7 +15,6 @@ const Home = () => {
                 keywords="tutor, online tutor, home tutor, bangladesh tuition, e-tuitionBD, find tutors, home tuition dhaka"
             />
             <HomeBanner />
-            <Statistics />
             <FeaturedCategories />
             <PopularTutors />
             <HowItWorks />

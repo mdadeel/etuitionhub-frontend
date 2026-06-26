@@ -1,16 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import { 
   Users, 
   Search, 
   Loader2,
-  Shield,
-  Mail,
-  MapPin
+  AlertOctagon
 } from "lucide-react";
 import { Input } from "../../ui/input";
 import DataTable from "@/components/ui/data-table";
+import ModerationModal from "../ModerationModal";
 
 const GlobalUsers = () => {
   const [users, setUsers] = useState([]);
@@ -19,14 +18,10 @@ const GlobalUsers = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchUsers();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [search, page]);
+  const [showModerationModal, setShowModerationModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get("/api/users", {
@@ -34,12 +29,17 @@ const GlobalUsers = () => {
       });
       setUsers(res.data.data || res.data || []);
       setTotalPages(res.data.pagination?.pages || 1);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load users");
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, page]);
+
+  useEffect(() => {
+    const timer = setTimeout(fetchUsers, 500);
+    return () => clearTimeout(timer);
+  }, [fetchUsers]);
 
   if (loading && users.length === 0) {
     return (
@@ -108,14 +108,34 @@ const GlobalUsers = () => {
           {
             key: 'verificationStatus',
             label: 'Status',
-            render: (val) => (
-              <span className={`text-xs font-label font-semibold uppercase px-2 py-0.5 rounded ${
-                val === 'verified_basic' || val === 'verified_premium'
-                  ? 'bg-green-500/10 text-green-500'
-                  : 'bg-yellow-500/10 text-yellow-500'
-              }`}>
-                {val || 'unverified'}
-              </span>
+            render: (val) => {
+              let color = 'bg-yellow-500/10 text-yellow-500';
+              if (val === 'verified_basic' || val === 'verified_premium') color = 'bg-green-500/10 text-green-500';
+              else if (val === 'banned') color = 'bg-red-500/10 text-red-500';
+              else if (val === 'suspended') color = 'bg-amber-500/10 text-amber-500';
+
+              return (
+                <span className={`text-xs font-label font-semibold uppercase px-2 py-0.5 rounded ${color}`}>
+                  {val || 'unverified'}
+                </span>
+              );
+            },
+          },
+          {
+            key: '_id',
+            label: 'Actions',
+            align: 'right',
+            render: (_, u) => (
+              <button
+                onClick={() => {
+                  setSelectedUser(u);
+                  setShowModerationModal(true);
+                }}
+                className="p-2 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors"
+                title="Moderate User"
+              >
+                <AlertOctagon className="w-4 h-4" />
+              </button>
             ),
           },
         ]}
@@ -149,6 +169,18 @@ const GlobalUsers = () => {
             Next
           </button>
         </div>
+      )}
+
+      {selectedUser && (
+        <ModerationModal
+          open={showModerationModal}
+          onOpenChange={(open) => {
+            setShowModerationModal(open);
+            if (!open) setSelectedUser(null);
+          }}
+          targetUser={selectedUser}
+          onModerationComplete={fetchUsers}
+        />
       )}
     </div>
   );

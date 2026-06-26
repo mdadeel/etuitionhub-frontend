@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
-import { Plus, UserX, ShieldAlert, ShieldCheck, Shield, Clock, Eye, ChevronDown, Star, Calendar, BookOpen, FileText, GraduationCap, AlertCircle, Award, Mail, Phone } from 'lucide-react';
+import { Plus, UserX, ShieldCheck, Clock, Eye, BookOpen, FileText, GraduationCap, Mail, Phone, ShieldAlert, AlertCircle, Award, Shield, Star, Calendar } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DataTable from "@/components/ui/data-table";
 import {
@@ -108,7 +108,7 @@ const AdminTutors = () => {
     const handleVerificationChange = async (userId, newStatus) => {
         setUpdatingVerification(true);
         try {
-            await api.patch(`/api/users/${userId}`, { verificationStatus: newStatus });
+            await api.patch(`/api/users/${userId}`, { verificationStatus: newStatus, searchVisibility: newStatus.startsWith('verified_') });
             toast.success(`Verification updated to ${newStatus.replace('_', ' ')}`);
             setProfileTutor(prev => prev ? { ...prev, verificationStatus: newStatus, isVerified: newStatus.startsWith('verified_') } : prev);
             await loadTutors();

@@ -34,7 +34,8 @@ const AdminVerifications = () => {
         try {
             // Update user status
             await api.patch(`/api/users/${userId}`, {
-                verificationStatus: newStatus
+                verificationStatus: newStatus,
+                searchVisibility: action === 'approve'
             });
 
             // Send In-App Mail Notification

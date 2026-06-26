@@ -1,14 +1,9 @@
 import { useState, useEffect } from "react";
 import api from "../../../services/api";
-import { toast } from "react-hot-toast";
 import { 
   Building2, 
   Users, 
-  TrendingUp, 
-  DollarSign,
   Loader2,
-  Shield,
-  BarChart3
 } from "lucide-react";
 import { Card } from "../../ui/card";
 

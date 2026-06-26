@@ -4,6 +4,7 @@ import { Loader2, Check, X, Send, Inbox, User, Mail, ArrowRightLeft, Eye, Clock 
 import toast from 'react-hot-toast';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
+import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import ImportantMails from './ImportantMails';
 
 const statusConfig = {
@@ -119,9 +120,14 @@ const HireRequests = () => {
   };
 
   return (
-    <div className="space-y-4 animate-fade-in-up">
+    <div className="space-y-6 animate-fade-in-up">
+      <DashboardPageHeader
+        title="Hire Requests"
+        subtitle="Manage incoming and outgoing tutoring requests"
+      />
+
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-border pb-3">
+      <div className="flex gap-2 border-b border-border pb-3 overflow-x-auto">
         <button
           onClick={() => setTab('inbox')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${

@@ -74,10 +74,12 @@ const TutorWithdraw = () => {
         accountName: '',
     });
 
+    // One-time prefill from user profile — intentionally omit form.accountNumber
     useEffect(() => {
         if (dbUser?.mobileNumber && !form.accountNumber) {
             setForm(prev => ({ ...prev, accountNumber: dbUser.mobileNumber }));
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dbUser]);
 
     const handleSubmit = async (e) => {

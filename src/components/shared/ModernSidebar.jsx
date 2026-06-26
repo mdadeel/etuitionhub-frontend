@@ -232,21 +232,63 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
   return (
   <aside
     className={cn(
-      'h-screen bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out shrink-0 sticky top-0 left-0',
+      'h-full bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out shrink-0 sticky top-0 left-0',
       isCollapsed && !isMobile ? 'w-[68px]' : 'w-[260px]',
       isMobile ? 'z-auto' : 'z-40',
       className
     )}
   >
     {/* Header */}
-    <div className="h-[56px] flex items-center justify-end px-3 shrink-0 border-b-[0.5px] border-border/50 gap-2">
+    <div className={cn(
+      "flex items-center shrink-0 border-b-[0.5px] border-border/50",
+      isCollapsed && !isMobile 
+        ? "h-[96px] flex-col justify-center gap-2 py-3 px-2" 
+        : "h-[56px] justify-between px-3 gap-2"
+    )}>
+      {/* New Chat Action (Only when not on dashboard) */}
+      {!location.pathname.startsWith('/dashboard') && (
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={handleNewChat}
+                aria-label="Start a new chat"
+                className={cn(
+                  'group flex items-center justify-center gap-2 rounded-lg transition-all duration-200',
+                  'border border-primary/20 bg-primary/5 text-primary',
+                  'hover:border-primary/45 hover:bg-primary/10',
+                  isCollapsed && !isMobile ? 'size-9' : 'px-3 h-9 flex-1'
+                )}
+              >
+                <Plus
+                  size={16}
+                  className="shrink-0 transition-transform duration-200 group-hover:rotate-90"
+                />
+                {(!isCollapsed || isMobile) && (
+                  <span className="text-[13px] font-semibold truncate">
+                    New chat
+                  </span>
+                )}
+              </button>
+            </TooltipTrigger>
+            {isCollapsed && !isMobile && (
+              <TooltipContent side="right">
+                New chat
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
+      )}
+
+      {/* Collapse Toggle Button */}
       {!isMobile && (
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 onClick={toggleSidebar}
-                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                className="p-1.5 w-9 h-9 flex items-center justify-center hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors shrink-0"
                 aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -282,41 +324,6 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
             ))}
           </div>
         </div>
-      )}
-
-      {/* New Chat Action (Hidden on Dashboard) */}
-      {!location.pathname.startsWith('/dashboard') && (
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                onClick={handleNewChat}
-                aria-label="Start a new chat"
-                className={cn(
-                  'group flex items-center gap-2.5 w-full mb-4 px-2.5 h-9 rounded-[7px] transition-all duration-200',
-                  'border border-dashed border-primary/30 bg-primary/5 text-primary',
-                  'hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_0_0_3px_hsl(var(--primary)/0.08)]'
-                )}
-              >
-                <Plus
-                  size={16}
-                  className="shrink-0 transition-transform duration-200 group-hover:rotate-90"
-                />
-                {!isCollapsed && (
-                  <span className="text-[13px] font-semibold truncate flex-1 text-left">
-                    New chat
-                  </span>
-                )}
-              </button>
-            </TooltipTrigger>
-            {isCollapsed && (
-              <TooltipContent side="right" className="font-medium text-[12px]">
-                New chat
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </TooltipProvider>
       )}
 
       {/* Subjects Section (Hidden on Dashboard) */}

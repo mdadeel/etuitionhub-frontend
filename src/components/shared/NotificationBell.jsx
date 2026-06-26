@@ -112,7 +112,7 @@ const NotificationBell = () => {
                             e.stopPropagation();
                             handleAction(notif._id, action.action, action.link);
                         }}
-                        className="flex items-center gap-1 px-2 py-1 bg-black text-white dark:bg-white dark:text-black font-mono font-bold text-[10px] uppercase tracking-wider hover:bg-[#FF5500] dark:hover:bg-[#FF5500] hover:text-white transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/95 text-[10px] font-bold tracking-wide transition-all shadow-sm active:scale-95"
                     >
                         {action.label}
                         <ExternalLink size={10} />
@@ -130,14 +130,14 @@ const NotificationBell = () => {
         >
             <div
                 className={cn(
-                    'relative p-3 border-b-2 border-black dark:border-white transition-all hover:bg-black/5 dark:hover:bg-white/5 group',
-                    !notif.isRead && 'bg-[#FF5500]/10 border-l-4 border-l-[#FF5500]'
+                    'relative p-3.5 border-b border-border/50 transition-all hover:bg-muted/30 group',
+                    !notif.isRead && 'bg-primary/[0.01] border-l-2 border-l-primary'
                 )}
             >
                 <div className="flex items-start gap-3">
                     <div className={cn(
-                        "p-2 border-2 border-black dark:border-white shrink-0",
-                        notif.isRead ? "bg-card" : "bg-black text-white dark:bg-white dark:text-black"
+                        "p-2 rounded-lg border shrink-0 flex items-center justify-center size-9",
+                        notif.isRead ? "bg-muted text-muted-foreground border-border/80" : "bg-primary/10 text-primary border-primary/20"
                     )}>
                         {getTypeIcon(notif.type)}
                     </div>
@@ -145,35 +145,35 @@ const NotificationBell = () => {
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start gap-2">
                             <p className={cn(
-                                'text-sm font-heading leading-tight uppercase line-clamp-1', 
-                                !notif.isRead ? 'font-black' : 'font-bold'
+                                'text-xs leading-tight line-clamp-1', 
+                                !notif.isRead ? 'font-bold text-primary' : 'font-semibold text-foreground'
                             )}>
                                 {notif.title}
                             </p>
-                            <span className="text-[9px] font-mono whitespace-nowrap text-muted-foreground mt-0.5">
-                                T-{formatRelativeTime(notif.createdAt)}
+                            <span className="text-[9px] whitespace-nowrap text-muted-foreground mt-0.5">
+                                {formatRelativeTime(notif.createdAt)}
                             </span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                        <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
                             {notif.message}
                         </p>
                         {renderActions(notif)}
                     </div>
                     
-                    <div className="flex flex-col items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex flex-col items-center gap-1.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
                         {!notif.isRead && (
                             <button
                                 onClick={() => markAsRead(notif._id)}
-                                className="p-1 border-2 border-black dark:border-white bg-green-400 text-black hover:bg-green-500 transition-colors"
-                                title="Acknowledge"
+                                className="p-1.5 border border-border rounded-lg bg-card text-muted-foreground hover:text-primary hover:border-primary/20 transition-all active:scale-95 shadow-sm"
+                                title="Mark as read"
                             >
-                                <Check size={12} />
+                                <Check size={12} className="stroke-[2.5]" />
                             </button>
                         )}
                         <button
                             onClick={() => deleteNotification(notif._id)}
-                            className="p-1 border-2 border-black dark:border-white bg-red-500 text-white hover:bg-red-600 transition-colors"
-                            title="Purge"
+                            className="p-1.5 border border-border rounded-lg bg-card text-muted-foreground hover:text-red-500 hover:border-red-500/20 transition-all active:scale-95 shadow-sm"
+                            title="Delete"
                         >
                             <Trash2 size={12} />
                         </button>
@@ -195,55 +195,55 @@ const NotificationBell = () => {
                     if (!isOpen) setExpanded(false);
                 }}
                 className={cn(
-                    "p-2 rounded-none border-2 transition-all relative overflow-hidden",
+                    "p-2 rounded-xl transition-all relative",
                     isOpen 
-                        ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px]" 
-                        : "border-transparent hover:border-black dark:hover:border-white text-muted-foreground hover:text-foreground"
+                        ? "bg-muted text-foreground border border-border/80 shadow-sm" 
+                        : "border border-transparent hover:bg-muted/65 text-muted-foreground hover:text-foreground"
                 )}
             >
                 <Bell size={20} className={cn(isOpen && "animate-pulse")} />
                 {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 size-4 flex items-center justify-center text-[9px] font-mono font-bold bg-[#FF5500] text-white border border-black dark:border-white translate-x-1/4 -translate-y-1/4 z-10">
+                    <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 rounded-full flex items-center justify-center text-[9px] font-bold bg-primary text-primary-foreground border border-background shadow-sm">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] w-[360px] bg-card border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] z-50 animate-fade-in-up">
+                <div className="absolute right-0 top-[calc(100%+8px)] w-[360px] bg-card border border-border/80 rounded-2xl shadow-premium z-50 animate-fade-in-up overflow-hidden">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b-4 border-black dark:border-white bg-black text-white dark:bg-white dark:text-black">
-                        <h3 className="font-heading text-sm font-black uppercase tracking-wider flex items-center gap-2">
-                            <span className="w-2 h-2 bg-[#FF5500] animate-pulse"></span>
-                            {expanded ? 'SYSTEM LOG (5D)' : 'SYSTEM ALERTS'}
+                    <div className="flex items-center justify-between px-4 py-3.5 border-b border-border/80">
+                        <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                            {expanded ? 'System Log (5d)' : 'Notifications'}
                         </h3>
                         <div className="flex items-center gap-3">
                             {unreadCount > 0 && !expanded && (
                                 <button 
                                     onClick={markAllAsRead} 
-                                    className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#FF5500] hover:text-white dark:hover:text-black transition-colors"
+                                    className="text-xs font-semibold text-primary hover:underline transition-colors"
                                 >
-                                    ACKNOWLEDGE ALL
+                                    Mark all as read
                                 </button>
                             )}
                             {expanded && (
                                 <button 
                                     onClick={handleCollapse} 
-                                    className="text-[10px] font-mono font-bold uppercase tracking-widest hover:text-[#FF5500] transition-colors"
+                                    className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
                                 >
-                                    COLLAPSE
+                                    Collapse
                                 </button>
                             )}
                         </div>
                     </div>
 
                     {/* Content */}
-                    <div className="max-h-[400px] overflow-y-auto">
+                    <div className="max-h-[360px] overflow-y-auto custom-scrollbar">
                         {displayNotifications.length === 0 && !allLoading ? (
-                            <div className="p-12 text-center border-b-2 border-black dark:border-white">
-                                <Bell size={32} className="mx-auto mb-3 opacity-20" />
-                                <p className="font-mono text-sm font-bold uppercase tracking-widest">
-                                    {expanded ? 'NO LOGS FOUND' : 'NO ACTIVE ALERTS'}
+                            <div className="p-12 text-center">
+                                <Bell size={28} className="mx-auto mb-2 text-muted-foreground opacity-30" />
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                    {expanded ? 'No logs found' : 'No notifications'}
                                 </p>
                             </div>
                         ) : (
@@ -251,8 +251,8 @@ const NotificationBell = () => {
                         )}
                         
                         {allLoading && (
-                            <div className="flex items-center justify-center p-6 border-b-2 border-black dark:border-white">
-                                <Loader2 size={24} className="animate-spin" />
+                            <div className="flex items-center justify-center p-6">
+                                <Loader2 size={20} className="animate-spin text-primary" />
                             </div>
                         )}
                     </div>
@@ -264,17 +264,17 @@ const NotificationBell = () => {
                                 <button
                                     onClick={handleLoadMore}
                                     disabled={allLoading}
-                                    className="w-full px-4 py-3 text-xs font-mono font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 border-t-2 border-black dark:border-white"
+                                    className="w-full px-4 py-3 text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors disabled:opacity-50 border-t border-border"
                                 >
-                                    {allLoading ? 'FETCHING...' : 'LOAD MORE DATA'}
+                                    {allLoading ? 'Fetching...' : 'Load more logs'}
                                 </button>
                             )}
                             {!expanded && (
                                 <button
                                     onClick={handleShowAll}
-                                    className="w-full px-4 py-3 text-xs font-mono font-bold uppercase tracking-widest bg-black text-white dark:bg-white dark:text-black hover:bg-[#FF5500] dark:hover:bg-[#FF5500] hover:text-white transition-colors"
+                                    className="w-full px-4 py-3 text-xs font-bold text-center text-primary hover:bg-muted/40 border-t border-border transition-colors block"
                                 >
-                                    ACCESS FULL LOGS
+                                    View full logs (5d)
                                 </button>
                             )}
                         </div>

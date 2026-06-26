@@ -18,7 +18,6 @@ const OrgHome = () => {
   const { orgId } = useParams();
   const [org, setOrg] = useState(null);
   const [stats, setStats] = useState(null);
-  const [members, setMembers] = useState([]);
   const [tuitions, setTuitions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +32,6 @@ const OrgHome = () => {
         ]);
 
         setOrg(orgRes.data.data);
-        setMembers(membersRes.data.data || []);
         setTuitions(tuitionsRes.data.data || []);
 
         const memberList = membersRes.data.data || [];

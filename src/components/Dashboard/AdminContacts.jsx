@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trash2, RotateCcw, Mail, MailOpen, AlertCircle, MailPlus } from 'lucide-react';
+import { Trash2, RotateCcw, MailOpen, AlertCircle, MailPlus } from 'lucide-react';
 import api from '../../services/api';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

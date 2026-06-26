@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Wallet, TrendingUp, Clock, ArrowDownToLine, Banknote, ArrowUpRight, Percent } from 'lucide-react';
+import { Wallet, TrendingUp, Clock, ArrowDownToLine, Banknote, Percent } from 'lucide-react';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import DataTable from "@/components/ui/data-table";
 import { useRealtimeStore } from '../../store/realtimeStore';

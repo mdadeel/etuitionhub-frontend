@@ -1,27 +1,24 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Search, Compass, Bookmark, User } from 'lucide-react';
+import { Home, Compass, User, BookOpen } from 'lucide-react';
+import PoruaLogo from '../AiAssistant/PoruaLogo';
 import { cn } from '@/lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 /**
  * MobileBottomNav Component - Provides a fixed bottom navigation for mobile users.
- * Optimized structure: Home, Search, Tutors, Saved, Profile.
- * Directs guest users to login/signup for protected tabs (Saved, Profile).
+ * Structure: Home, Tutors, Tutions, Porua, Profile.
+ * Directs guest users to login/signup for Profile.
  */
 const MobileBottomNav = () => {
     const { user, dbUser } = useAuth();
 
     const navItems = [
         { icon: Home, label: 'Home', path: '/' },
-        { icon: Search, label: 'Search', path: '/search' },
         { icon: Compass, label: 'Tutors', path: '/tutors' },
-        { 
-            icon: Bookmark, 
-            label: 'Saved', 
-            path: user ? '/dashboard?tab=bookmarks' : '/login' 
-        },
+        { icon: BookOpen, label: 'Tutions', path: '/tuitions' },
+        { icon: (props) => <PoruaLogo iconOnly {...props} />, label: 'Porua', path: '/ai-assistant' },
         { 
             icon: User, 
             label: 'Profile', 

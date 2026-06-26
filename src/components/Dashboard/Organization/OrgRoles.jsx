@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
@@ -41,7 +41,7 @@ const OrgRoles = () => {
   const [expandedGroups, setExpandedGroups] = useState({});
   const [saving, setSaving] = useState(false);
 
-  const fetchRoles = async () => {
+  const fetchRoles = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/organizations/${orgId}/roles`);
@@ -51,11 +51,11 @@ const OrgRoles = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
   useEffect(() => {
     fetchRoles();
-  }, [orgId]);
+  }, [fetchRoles]);
 
   const toggleGroup = (group) => {
     setExpandedGroups((prev) => ({ ...prev, [group]: !prev[group] }));

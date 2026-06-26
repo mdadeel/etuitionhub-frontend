@@ -31,7 +31,6 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
     return [
       { path: "/dashboard/super-admin", label: "Overview", icon: LayoutDashboard, group: "Platform" },
       { path: "/dashboard/super-admin/organizations", label: "Organizations", icon: Users, group: "Platform" },
-      { path: "/dashboard/super-admin/org-requests", label: "Org Requests", icon: FilePlus, group: "Platform" },
       { path: "/dashboard/super-admin/analytics", label: "Analytics", icon: History, group: "Platform" },
       { path: "/dashboard/super-admin/subscriptions", label: "Subscriptions", icon: CreditCard, group: "Platform" },
       { path: "/dashboard/super-admin/users", label: "All Users", icon: User, group: "Users & Content" },
@@ -43,7 +42,6 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
       { path: "/dashboard/admin/contacts", label: "Contacts", icon: Mail, group: "Operations" },
       { path: "/dashboard/super-admin/audit-logs", label: "Audit Logs", icon: History, group: "Operations" },
       { path: "/dashboard/disputes", label: "Disputes", icon: Scale, group: "Operations" },
-      { path: "/dashboard/requests", label: "Requests", icon: Inbox, group: "Operations" },
     ];
   }
 
@@ -101,7 +99,6 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
   if (legacyRole === 'admin') {
     return [
       { path: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Management" },
-      { path: "/dashboard/requests", label: "Requests", icon: Inbox, group: "Management" },
       { path: "/dashboard/users", label: "Users", icon: Users, group: "Management" },
       { path: "/dashboard/admin/withdrawals", label: "Withdrawals", icon: ArrowDownToLine, group: "Finance" },
       { path: "/dashboard/admin/payments", label: "Payments", icon: DollarSign, group: "Finance" },
@@ -115,7 +112,6 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
   if (legacyRole === 'tutor') {
     return [
       { path: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Teaching" },
-      { path: "/dashboard/requests", label: "Requests", icon: Inbox, group: "Teaching" },
       { path: "/dashboard/sessions", label: "Sessions", icon: Calendar, group: "Teaching" },
       { path: "/dashboard/verification", label: "Verification", icon: ShieldCheck, group: "Account" },
       { path: "/dashboard/wallet", label: "Wallet", icon: Wallet, group: "Finance" },
@@ -127,7 +123,6 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
 
   return [
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Learning" },
-    { path: "/dashboard/requests", label: "Requests", icon: Inbox, group: "Learning" },
     { path: "/dashboard/billing", label: "Billing", icon: Banknote, group: "Finance" },
     { path: "/dashboard/relationships", label: "Relationships", icon: Users, group: "Connections" },
     { path: "/dashboard/bookmarks", label: "Bookmarks", icon: Bookmark, group: "Connections" },

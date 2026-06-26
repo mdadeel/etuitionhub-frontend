@@ -9,7 +9,6 @@ import {
   BookOpen,
   Loader2,
   Video,
-  MapPin,
   CheckCircle2,
   XCircle,
   Hourglass,

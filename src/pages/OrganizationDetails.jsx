@@ -14,6 +14,7 @@ const OrganizationDetails = () => {
   const [error, setError] = useState(null);
   const [joinStatus, setJoinStatus] = useState(null);
   const [joining, setJoining] = useState(false);
+  const [joinMessage, setJoinMessage] = useState("");
 
   useEffect(() => {
     const fetchOrgDetails = async () => {
@@ -36,9 +37,6 @@ const OrganizationDetails = () => {
 
     const checkJoinStatus = async () => {
       try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token='));
-        if (!token) return;
-
         const res = await api.get(`/api/v1/organizations/${organization._id}/join-requests?status=pending`);
         const myRequest = res.data.data?.find(r => r.userId?._id === user._id || r.userId === user._id);
         if (myRequest) {
@@ -60,11 +58,15 @@ const OrganizationDetails = () => {
 
     try {
       setJoining(true);
-      await api.post(`/api/v1/organizations/${organization._id}/join-request`, {
-        message: `I would like to join ${organization.name}`
+      const res = await api.post(`/api/v1/organizations/${organization._id}/join-request`, {
+        message: joinMessage || `I would like to join ${organization.name}`
       });
-      setJoinStatus('pending');
-      toast.success("Join request submitted! The organization admin will review your request.");
+      if (res.data.autoApproved) {
+        toast.success(`Welcome to ${organization.name}!`);
+      } else {
+        setJoinStatus('pending');
+        toast.success("Join request submitted! The organization admin will review your request.");
+      }
     } catch (err) {
       const errorMsg = err.response?.data?.error || "Failed to submit join request";
       if (errorMsg.includes('invitation')) {
@@ -174,7 +176,7 @@ const OrganizationDetails = () => {
                     {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Clock className="mr-2 h-4 w-4" />}
                     Request Pending - Withdraw
                   </Button>
-                ) : organization.settings?.requireInviteToJoin ? (
+                ) : (organization.settings?.joinMode || 'approval_required') === 'invite_only' ? (
                   <Button 
                     variant="outline" 
                     disabled
@@ -185,15 +187,25 @@ const OrganizationDetails = () => {
                     Invitation Required
                   </Button>
                 ) : (
-                  <Button 
-                    variant="default" 
-                    className="shadow-lg hover:-translate-y-0.5 transition-all"
-                    onClick={handleJoinRequest}
-                    disabled={joining}
-                  >
-                    {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    Request to Join
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <textarea
+                      value={joinMessage}
+                      onChange={(e) => setJoinMessage(e.target.value)}
+                      placeholder="Why do you want to join? (optional)"
+                      maxLength={500}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-border rounded-lg bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                    <Button 
+                      variant="default" 
+                      className="shadow-lg hover:-translate-y-0.5 transition-all"
+                      onClick={handleJoinRequest}
+                      disabled={joining}
+                    >
+                      {joining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                      Request to Join
+                    </Button>
+                  </div>
                 )}
                 <Button variant="outline">
                   Contact

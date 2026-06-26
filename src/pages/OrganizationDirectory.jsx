@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
@@ -21,7 +21,7 @@ const OrganizationDirectory = () => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [orgsRes, myOrgsRes] = await Promise.all([
@@ -35,16 +35,32 @@ const OrganizationDirectory = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const [joinMessage, setJoinMessage] = useState("");
+  const [joinTarget, setJoinTarget] = useState(null); // { orgId, orgName }
 
   const handleJoin = async (orgId, orgName) => {
+    setJoinTarget({ orgId, orgName });
+    setJoinMessage("");
+  };
+
+  const confirmJoin = async () => {
+    if (!joinTarget) return;
     try {
-      await api.post(`/api/v1/organizations/${orgId}/join`);
-      toast.success(`Request sent to ${orgName}!`);
+      const res = await api.post(`/api/v1/organizations/${joinTarget.orgId}/join-request`, {
+        message: joinMessage
+      });
+      if (res.data.autoApproved) {
+        toast.success(`Welcome to ${joinTarget.orgName}!`);
+      } else {
+        toast.success(`Request sent to ${joinTarget.orgName}!`);
+      }
+      setJoinTarget(null);
       fetchData();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to join organization");
@@ -52,10 +68,14 @@ const OrganizationDirectory = () => {
   };
 
   const handleLeave = async (orgId, orgName) => {
-    if (!confirm(`Are you sure you want to leave ${orgName}?`)) return;
+    if (!confirm(`Are you sure you want to leave ${orgName}? You may need admin approval.`)) return;
     try {
-      await api.post(`/api/v1/organizations/${orgId}/leave`);
-      toast.success(`You have left ${orgName}`);
+      const res = await api.post(`/api/v1/organizations/${orgId}/leave`);
+      if (res.data.requiresApproval) {
+        toast.success("Leave request submitted. An admin will review your request.");
+      } else {
+        toast.success(`You have left ${orgName}`);
+      }
       fetchData();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to leave organization");
@@ -253,7 +273,7 @@ const OrganizationDirectory = () => {
                         Open Dashboard
                         <ArrowRight className="h-3 w-3" />
                       </Link>
-                    ) : org.settings?.allowSelfJoin ? (
+                    ) : (org.settings?.joinMode || 'approval_required') !== 'invite_only' ? (
                       <button
                         onClick={() => handleJoin(org._id, org.name)}
                         className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -278,6 +298,40 @@ const OrganizationDirectory = () => {
           </div>
         )}
       </div>
+
+      {/* Join Request Dialog */}
+      {joinTarget && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-card border border-border rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-heading font-bold mb-2">Request to Join {joinTarget.orgName}</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Send a message to the organization admin with your request.
+            </p>
+            <textarea
+              value={joinMessage}
+              onChange={(e) => setJoinMessage(e.target.value)}
+              placeholder="Why do you want to join? (optional)"
+              maxLength={500}
+              rows={3}
+              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 mb-4"
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setJoinTarget(null)}
+                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmJoin}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                Send Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

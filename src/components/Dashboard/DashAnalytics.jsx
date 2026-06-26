@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';

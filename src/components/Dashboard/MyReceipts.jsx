@@ -63,7 +63,7 @@ const MyReceipts = ({ hideHeader }) => {
                         {
                             key: 'receiptNumber',
                             label: 'Receipt #',
-                            render: (val, r) => (
+                            render: (val) => (
                                 <div className="flex items-center gap-2">
                                     <FileText size={14} className="text-muted-foreground" />
                                     <span className="text-sm font-mono font-bold text-foreground">{val}</span>

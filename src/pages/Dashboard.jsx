@@ -1,9 +1,9 @@
 import { Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { lazy, Suspense, useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
-import { Menu, X, Home, Settings, ChevronRight } from "lucide-react";
+import { Menu, X, Settings, ChevronRight, Inbox } from "lucide-react";
 import NotificationBell from "../components/shared/NotificationBell";
 
 import { DashboardSkeleton } from "@/components/shared/skeletons";
@@ -112,6 +112,103 @@ const Dashboard = () => {
     return null;
   };
 
+  const renderBreadcrumbs = () => {
+    const path = location.pathname;
+    
+    // Base "Dashboard" item
+    const items = [
+      { label: t("nav.dashboard", "Dashboard"), to: "/dashboard", isLast: false }
+    ];
+
+    if (path === "/dashboard" || path === "/dashboard/") {
+      items[0].isLast = true;
+    } else if (path.includes("/super-admin/org-requests")) {
+      items.push({ label: "Organizations", to: "/dashboard/super-admin/organizations", isLast: false });
+      items.push({ label: "Org Requests", isLast: true });
+    } else if (path.includes("/super-admin/organizations")) {
+      items.push({ label: "Organizations", isLast: true });
+    } else if (path.includes("/super-admin/analytics")) {
+      items.push({ label: "Analytics", isLast: true });
+    } else if (path.includes("/super-admin/subscriptions")) {
+      items.push({ label: "Subscriptions", isLast: true });
+    } else if (path.includes("/super-admin/users")) {
+      items.push({ label: "Users", isLast: true });
+    } else if (path.includes("/super-admin/tutors")) {
+      items.push({ label: "Tutors", isLast: true });
+    } else if (path.includes("/super-admin/tuitions")) {
+      items.push({ label: "Tuitions", isLast: true });
+    } else if (path.includes("/super-admin/verifications")) {
+      items.push({ label: "Verifications", isLast: true });
+    } else if (path.includes("/super-admin/audit-logs")) {
+      items.push({ label: "Audit Logs", isLast: true });
+    } else if (path.includes("/super-admin")) {
+      items.push({ label: "Super Admin", isLast: true });
+    } else if (path.includes("/org/")) {
+      items.push({ label: "Organization", to: `/dashboard/org/${orgContext?.orgId || 'context'}`, isLast: false });
+      if (path.includes("/tuitions")) {
+        items.push({ label: "Tuitions", isLast: true });
+      } else if (path.includes("/sessions")) {
+        items.push({ label: "Sessions", isLast: true });
+      } else if (path.includes("/members")) {
+        items.push({ label: "Members", isLast: true });
+      } else if (path.includes("/students")) {
+        items.push({ label: "Students", isLast: true });
+      } else if (path.includes("/tutors")) {
+        items.push({ label: "Tutors", isLast: true });
+      } else if (path.includes("/classes")) {
+        items.push({ label: "Classes", isLast: true });
+      } else if (path.includes("/subjects")) {
+        items.push({ label: "Subjects", isLast: true });
+      } else if (path.includes("/assignments")) {
+        items.push({ label: "Assignments", isLast: true });
+      } else if (path.includes("/materials")) {
+        items.push({ label: "Materials", isLast: true });
+      } else if (path.includes("/announcements")) {
+        items.push({ label: "Announcements", isLast: true });
+      } else if (path.includes("/messages")) {
+        items.push({ label: "Messages", isLast: true });
+      } else if (path.includes("/attendance")) {
+        items.push({ label: "Attendance", isLast: true });
+      } else if (path.includes("/payments")) {
+        items.push({ label: "Payments", isLast: true });
+      } else if (path.includes("/billing")) {
+        items.push({ label: "Subscription", isLast: true });
+      } else if (path.includes("/roles")) {
+        items.push({ label: "Roles", isLast: true });
+      } else if (path.includes("/analytics")) {
+        items.push({ label: "Analytics", isLast: true });
+      } else if (path.includes("/settings")) {
+        items.push({ label: "Settings", isLast: true });
+      } else {
+        items[1].isLast = true;
+      }
+    } else {
+      const extra = getBreadcrumbExtra();
+      if (extra) {
+        items.push({ label: extra, isLast: true });
+      } else {
+        items[0].isLast = true;
+      }
+    }
+
+    return (
+      <nav className="hidden md:flex items-center gap-1.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+        {items.map((item, idx) => (
+          <Fragment key={idx}>
+            {idx > 0 && <ChevronRight size={10} />}
+            {item.isLast ? (
+              <span className="text-foreground">{item.label}</span>
+            ) : (
+              <Link to={item.to} className="hover:text-foreground transition-colors">
+                {item.label}
+              </Link>
+            )}
+          </Fragment>
+        ))}
+      </nav>
+    );
+  };
+
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -129,7 +226,7 @@ const Dashboard = () => {
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Desktop Sidebar */}
-      <DashboardSidebar />
+      <DashboardSidebar className="hidden lg:flex" />
 
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
@@ -157,7 +254,7 @@ const Dashboard = () => {
         <DashboardSidebar />
       </div>
 
-      <main className={`flex-1 h-full overflow-x-hidden relative flex flex-col safe-bottom ${location.pathname === '/dashboard/messages' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+      <main className="flex-1 h-full overflow-x-hidden relative flex flex-col safe-bottom overflow-y-auto">
         {/* Dashboard Top Navbar */}
         <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between h-14 px-6">
@@ -173,34 +270,19 @@ const Dashboard = () => {
                   <Menu size={20} className="text-muted-foreground" />
                 )}
               </button>
-              
-              {/* Greeting */}
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-foreground">
-                  {getGreeting()}, {dbUser?.displayName?.split(' ')[0] || 'User'}
-                </p>
-                <p className="text-[10px] text-muted-foreground">{getRoleLabel()}</p>
-              </div>
-
               {/* Breadcrumb */}
-              <nav className="hidden md:flex items-center gap-1.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-1">
-                  <Home size={12} />
-                  <span className="hidden sm:inline">{t("nav.home", "Home")}</span>
-                </Link>
-                <ChevronRight size={10} />
-                <span className="text-foreground">{t("nav.dashboard", "Dashboard")}</span>
-                {getBreadcrumbExtra() && (
-                  <>
-                    <ChevronRight size={10} />
-                    <span className="text-foreground">{getBreadcrumbExtra()}</span>
-                  </>
-                )}
-              </nav>
+              {renderBreadcrumbs()}
             </div>
 
             {/* Right: Notifications + Settings */}
             <div className="flex items-center gap-2">
+              <Link
+                to="/dashboard/requests"
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition-colors"
+                title="Requests"
+              >
+                <Inbox size={20} />
+              </Link>
               <NotificationBell />
               <Link
                 to={getSettingsPath()}

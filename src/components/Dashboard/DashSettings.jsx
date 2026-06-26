@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { FormSkeleton } from "@/components/shared/skeletons";
-import { Save, RefreshCw, Info, Globe, Phone, Banknote, Layout, User } from 'lucide-react';
+import { Info, Globe, Phone, Banknote, Layout, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const DashSettings = () => {

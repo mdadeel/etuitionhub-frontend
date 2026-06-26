@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
  * Returns the correct dashboard base route for current user's role + org context
  */
 const useOrgDashboard = () => {
-    const { orgRole, orgContext, dbUser, userRole } = useAuth();
+    const { orgRole, orgContext, dbUser } = useAuth();
     
     // 1. Super Admin route
     if (dbUser?.globalRole === 'super_admin') {

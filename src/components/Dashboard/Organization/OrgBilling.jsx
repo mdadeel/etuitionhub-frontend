@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
@@ -6,11 +6,8 @@ import {
   CreditCard,
   Loader2,
   Check,
-  X,
   ArrowRight,
-  AlertCircle,
   Calendar,
-  Receipt,
 } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
 
@@ -22,7 +19,7 @@ const OrgBilling = () => {
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [subRes, plansRes, paymentsRes] = await Promise.all([
@@ -38,11 +35,11 @@ const OrgBilling = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
   useEffect(() => {
     fetchData();
-  }, [orgId]);
+  }, [fetchData]);
 
   const handleSubscribe = async (planId, billingCycle) => {
     try {

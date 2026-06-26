@@ -11,15 +11,13 @@ import StudentPayments from "./StudentPayments";
 import Assignments from "./Assignments";
 import { AppleHeader } from "@/components/shared/AppleUI";
 import {
-  Activity,
-  Plus,
   Database,
   FileText,
-  Trash2,
   UserCheck,
   Phone,
-  RefreshCw,
   Search,
+  Activity,
+  Plus,
   Banknote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";

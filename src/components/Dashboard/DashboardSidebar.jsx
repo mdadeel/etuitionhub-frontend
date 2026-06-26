@@ -8,8 +8,9 @@ import { getDashboardMenuItems } from "./getDashboardMenuItems";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import Logo from "@/components/shared/Logo";
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ className = '' }) => {
   const location = useLocation();
   const { user, dbUser, logout, orgContext, orgRole, myOrgs, switchOrg, hasPermission } = useAuth();
   const globalRole = dbUser?.globalRole;
@@ -53,19 +54,11 @@ const DashboardSidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <aside className="w-64 h-full hidden lg:flex flex-col flex-shrink-0 border-r border-border bg-card">
+    <aside className={cn("w-64 h-full flex flex-col flex-shrink-0 border-r border-border bg-card", className)}>
       {/* Brand */}
       <div className="px-5 pt-5 pb-4 border-b border-border flex-shrink-0">
-        <Link to="/dashboard" className="flex items-center gap-2.5">
-          <div className="size-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-sm font-heading font-bold text-white">E</span>
-          </div>
-          <span className="text-sm font-heading font-bold text-foreground tracking-tight">eTuitionBD</span>
-          {globalRole === 'super_admin' && (
-            <span className="text-[8px] font-semibold uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded">
-              Admin
-            </span>
-          )}
+        <Link to="/" className="flex items-center gap-2.5">
+          <Logo boxSize="size-8" iconSize="size-5" textSize="text-sm" />
         </Link>
       </div>
 
