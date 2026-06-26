@@ -1,18 +1,9 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
+import { Users, GraduationCap, BookOpen, TrendingUp, DollarSign, BarChart3 } from "lucide-react";
 import api from "../../../services/api";
-import { toast } from "react-hot-toast";
-import {
-  BarChart3,
-  Users,
-  BookOpen,
-  DollarSign,
-  TrendingUp,
-  Loader2,
-  ArrowUpRight,
-  ArrowDownRight,
-} from "lucide-react";
-import { Card } from "../../ui/card";
+import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const OrgAnalytics = () => {
   const { orgId } = useParams();
@@ -20,153 +11,118 @@ const OrgAnalytics = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchStats = async () => {
       try {
-        setLoading(true);
-        const [orgRes, membersRes, tuitionsRes, paymentsRes] = await Promise.all([
-          api.get(`/api/v1/organizations/${orgId}`).catch(() => ({ data: { data: null } })),
-          api.get(`/api/v1/organizations/${orgId}/members`).catch(() => ({ data: { data: [] } })),
-          api.get(`/api/v1/organizations/${orgId}/tuitions`).catch(() => ({ data: { data: [] } })),
-          api.get(`/api/v1/organizations/${orgId}/payments`).catch(() => ({ data: { data: [] } })),
-        ]);
-
-        const members = membersRes.data.data || [];
-        const tuitions = tuitionsRes.data.data || [];
-        const payments = paymentsRes.data?.data || paymentsRes.data || [];
-
-        const activeTuitions = tuitions.filter(t => t.status === "approved" || t.status === "matched");
-        const totalRevenue = payments.filter(p => p.status === "completed").reduce((sum, p) => sum + (p.amount || 0), 0);
-        const thisMonth = new Date();
-        thisMonth.setDate(1);
-        const monthPayments = payments.filter(p => p.status === "completed" && new Date(p.createdAt) >= thisMonth);
-        const monthRevenue = monthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
-
-        // Tuition status breakdown
-        const statusBreakdown = tuitions.reduce((acc, t) => {
-          acc[t.status] = (acc[t.status] || 0) + 1;
-          return acc;
-        }, {});
-
-        // Role breakdown
-        const roleBreakdown = members.reduce((acc, m) => {
-          const roleName = m.roleId?.slug || "unknown";
-          acc[roleName] = (acc[roleName] || 0) + 1;
-          return acc;
-        }, {});
-
-        setStats({
-          totalMembers: members.length,
-          teachers: roleBreakdown["teacher"] || roleBreakdown["org_admin"] || 0,
-          students: roleBreakdown["student"] || 0,
-          totalTuitions: tuitions.length,
-          activeTuitions: activeTuitions.length,
-          pendingTuitions: statusBreakdown["pending"] || 0,
-          totalRevenue,
-          monthRevenue,
-          totalPayments: payments.length,
-          statusBreakdown,
-          roleBreakdown,
-        });
+        const res = await api.get(`/api/v1/organizations/${orgId}/analytics/dashboard`);
+        setStats(res.data.data);
       } catch {
-        toast.error("Failed to load analytics");
+        toast.error("Failed to fetch analytics");
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+    fetchStats();
   }, [orgId]);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex justify-center p-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="space-y-6">
+        <h2 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h2>
+        <p className="text-muted-foreground">No analytics data available.</p>
       </div>
     );
   }
 
   const statCards = [
-    { label: "Total Members", value: stats?.totalMembers || 0, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "Active Tuitions", value: stats?.activeTuitions || 0, icon: BookOpen, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { label: "Total Revenue", value: `৳${(stats?.totalRevenue || 0).toLocaleString()}`, icon: DollarSign, color: "text-primary", bg: "bg-primary/10" },
-    { label: "This Month", value: `৳${(stats?.monthRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: "text-amber-500", bg: "bg-amber-500/10" },
+    { title: "Total Members", value: stats.members?.total || 0, icon: Users, color: "text-blue-500" },
+    { title: "Students", value: stats.members?.students || 0, icon: GraduationCap, color: "text-green-500" },
+    { title: "Teachers", value: stats.members?.teachers || 0, icon: BookOpen, color: "text-cyan-500" },
+    { title: "Active Enrollments", value: stats.enrollments?.active || 0, icon: TrendingUp, color: "text-orange-500" },
+    { title: "Total Revenue", value: `৳${(stats.finance?.totalRevenue || 0).toLocaleString()}`, icon: DollarSign, color: "text-emerald-500" },
+    { title: "Net Income", value: `৳${(stats.finance?.netIncome || 0).toLocaleString()}`, icon: BarChart3, color: stats.finance?.netIncome >= 0 ? "text-green-500" : "text-red-500" },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
-        <p className="text-muted-foreground text-sm mt-1">Overview of your organization's performance and activity.</p>
+        <h2 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h2>
+        <p className="text-muted-foreground mt-1">Overview of your organization's performance.</p>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((card) => (
-          <Card key={card.label} className="p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className={`size-9 ${card.bg} rounded-lg flex items-center justify-center`}>
-                <card.icon size={16} className={card.color} />
-              </div>
-            </div>
-            <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-              {card.label}
-            </p>
-            <p className="text-2xl font-heading font-bold mt-1">{card.value}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {statCards.map((stat, i) => (
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
+              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+            </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Tuition Status Breakdown */}
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h3 className="text-sm font-label font-semibold uppercase tracking-wider text-muted-foreground mb-4">Tuition Status</h3>
-          <div className="space-y-3">
-            {Object.entries(stats?.statusBreakdown || {}).map(([status, count]) => (
-              <div key={status} className="flex items-center justify-between">
-                <span className="text-sm text-foreground capitalize">{status}</span>
-                <div className="flex items-center gap-3">
-                  <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${
-                        status === "approved" || status === "matched" ? "bg-green-500" :
-                        status === "pending" ? "bg-yellow-500" :
-                        status === "rejected" ? "bg-red-500" : "bg-primary"
-                      }`}
-                      style={{ width: `${(count / (stats?.totalTuitions || 1)) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-sm font-medium text-foreground w-8 text-right">{count}</span>
-                </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Finance Summary</CardTitle>
+            <CardDescription>Revenue vs Expenses</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Revenue</span>
+                <span className="font-medium text-green-600">৳{(stats.finance?.totalRevenue || 0).toLocaleString()}</span>
               </div>
-            ))}
-            {Object.keys(stats?.statusBreakdown || {}).length === 0 && (
-              <p className="text-sm text-muted-foreground">No tuitions yet</p>
-            )}
-          </div>
-        </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Expenses</span>
+                <span className="font-medium text-red-600">৳{(stats.finance?.totalExpenses || 0).toLocaleString()}</span>
+              </div>
+              <div className="border-t pt-2 flex justify-between items-center">
+                <span className="text-sm font-medium">Net Income</span>
+                <span className={`font-bold ${(stats.finance?.netIncome || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  ৳{(stats.finance?.netIncome || 0).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Role Breakdown */}
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h3 className="text-sm font-label font-semibold uppercase tracking-wider text-muted-foreground mb-4">Member Roles</h3>
-          <div className="space-y-3">
-            {Object.entries(stats?.roleBreakdown || {}).map(([role, count]) => (
-              <div key={role} className="flex items-center justify-between">
-                <span className="text-sm text-foreground capitalize">{role.replace(/_/g, " ")}</span>
-                <div className="flex items-center gap-3">
-                  <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-primary"
-                      style={{ width: `${(count / (stats?.totalMembers || 1)) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-sm font-medium text-foreground w-8 text-right">{count}</span>
-                </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Stats</CardTitle>
+            <CardDescription>Organization overview</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Branches</span>
+                <span className="font-medium">{stats.branches || 0}</span>
               </div>
-            ))}
-            {Object.keys(stats?.roleBreakdown || {}).length === 0 && (
-              <p className="text-sm text-muted-foreground">No members yet</p>
-            )}
-          </div>
-        </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Exams</span>
+                <span className="font-medium">{stats.exams || 0}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Pending Invoices</span>
+                <span className="font-medium">{stats.finance?.pendingInvoices || 0}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Paid Invoices</span>
+                <span className="font-medium">{stats.finance?.paidInvoices || 0}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

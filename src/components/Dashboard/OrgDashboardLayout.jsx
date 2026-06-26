@@ -20,6 +20,18 @@ const OrgAssignments = lazy(() => import('./Organization/OrgAssignments'));
 const OrgMaterials = lazy(() => import('./Organization/OrgMaterials'));
 const OrgAnnouncements = lazy(() => import('./Organization/OrgAnnouncements'));
 const OrgAttendance = lazy(() => import('./Organization/OrgAttendance'));
+const OrgBranches = lazy(() => import('./Organization/OrgBranches'));
+const OrgEnrollments = lazy(() => import('./Organization/OrgEnrollments'));
+const OrgGuardians = lazy(() => import('./Organization/OrgGuardians'));
+const OrgSchedule = lazy(() => import('./Organization/OrgSchedule'));
+const OrgExams = lazy(() => import('./Organization/OrgExams'));
+const OrgResults = lazy(() => import('./Organization/OrgResults'));
+const OrgInvoices = lazy(() => import('./Organization/OrgInvoices'));
+const OrgSalaries = lazy(() => import('./Organization/OrgSalaries'));
+const OrgExpenses = lazy(() => import('./Organization/OrgExpenses'));
+const OrgScholarships = lazy(() => import('./Organization/OrgScholarships'));
+const OrgAcademicYears = lazy(() => import('./Organization/OrgAcademicYears'));
+const OrgBatches = lazy(() => import('./Organization/OrgBatches'));
 
 const OrgDashboardLayout = () => {
   const { orgId } = useParams();
@@ -110,7 +122,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="tutors" 
         element={
-          <OrgPermissionGate permission="student:view" redirect>
+          <OrgPermissionGate permission="tutor:view" redirect>
             <OrgTutors />
           </OrgPermissionGate>
         } 
@@ -134,7 +146,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="assignments" 
         element={
-          <OrgPermissionGate permission="student:view" redirect>
+          <OrgPermissionGate permission="assignment:view" redirect>
             <OrgAssignments />
           </OrgPermissionGate>
         } 
@@ -142,7 +154,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="materials" 
         element={
-          <OrgPermissionGate permission="student:view" redirect>
+          <OrgPermissionGate permission="material:view" redirect>
             <OrgMaterials />
           </OrgPermissionGate>
         } 
@@ -150,7 +162,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="announcements" 
         element={
-          <OrgPermissionGate permission="student:view" redirect>
+          <OrgPermissionGate permission="announcement:view" redirect>
             <OrgAnnouncements />
           </OrgPermissionGate>
         } 
@@ -160,6 +172,102 @@ const OrgDashboardLayout = () => {
         element={
           <OrgPermissionGate permission="attendance:mark" redirect>
             <OrgAttendance />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="branches" 
+        element={
+          <OrgPermissionGate permission="branch:view" redirect>
+            <OrgBranches />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="enrollments" 
+        element={
+          <OrgPermissionGate permission="student:view" redirect>
+            <OrgEnrollments />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="guardians" 
+        element={
+          <OrgPermissionGate permission="student:view" redirect>
+            <OrgGuardians />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="schedule" 
+        element={
+          <OrgPermissionGate permission="class:view" redirect>
+            <OrgSchedule />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="exams" 
+        element={
+          <OrgPermissionGate permission="exam:manage" redirect>
+            <OrgExams />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="results" 
+        element={
+          <OrgPermissionGate permission="result:manage" redirect>
+            <OrgResults />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="invoices" 
+        element={
+          <OrgPermissionGate permission="invoice:view" redirect>
+            <OrgInvoices />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="salaries" 
+        element={
+          <OrgPermissionGate permission="salary:view" redirect>
+            <OrgSalaries />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="expenses" 
+        element={
+          <OrgPermissionGate permission="payment:view_all" redirect>
+            <OrgExpenses />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="scholarships" 
+        element={
+          <OrgPermissionGate permission="student:view" redirect>
+            <OrgScholarships />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="academic-years" 
+        element={
+          <OrgPermissionGate permission="class:manage" redirect>
+            <OrgAcademicYears />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
+        path="batches" 
+        element={
+          <OrgPermissionGate permission="class:manage" redirect>
+            <OrgBatches />
           </OrgPermissionGate>
         } 
       />
