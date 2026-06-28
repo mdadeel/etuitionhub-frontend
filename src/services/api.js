@@ -10,7 +10,7 @@ function getCsrfToken() {
 const api = axios.create({
     baseURL: API_URL,
     withCredentials: true,
-    timeout: 30000
+    timeout: 120000
 });
 
 let isRefreshing = false;

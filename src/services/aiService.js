@@ -108,6 +108,16 @@ export const aiService = {
                 }
             }
         }
+        // Process any remaining data left in the buffer after stream closes
+        if (buffer.trim()) {
+            const line = buffer.split('\n').find((l) => l.startsWith('data:'));
+            if (line) {
+                const payload = line.slice(5).trim();
+                if (payload && payload !== '[DONE]' && onChunk) {
+                    onChunk(payload);
+                }
+            }
+        }
     },
 
     getChatSession: async (sessionId) => {

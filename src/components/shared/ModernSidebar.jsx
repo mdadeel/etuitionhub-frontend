@@ -141,19 +141,35 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
   };
 
   const handleSaveEdit = async (e, chatId) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!editTitle.trim()) {
-        setEditingChatId(null);
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Prevent double execution by storing the current title
+    const newTitle = editTitle.trim();
+    setEditingChatId(null);
+    setEditTitle("");
+
+    if (!newTitle) {
         return;
     }
     
     try {
-        setEditingChatId(null);
-        await aiService.updateChatSession(chatId, { title: editTitle });
+        // Optimistic update
+        queryClient.setQueryData(['recent-chats', user?.uid], (old) => {
+            if (!old) return old;
+            const sessions = Array.isArray(old.sessions) ? old.sessions : (Array.isArray(old) ? old : []);
+            const updatedSessions = sessions.map(s => s._id === chatId ? { ...s, title: newTitle } : s);
+            return Array.isArray(old.sessions) ? { ...old, sessions: updatedSessions } : updatedSessions;
+        });
+
+        await aiService.updateChatSession(chatId, { title: newTitle });
         queryClient.invalidateQueries({ queryKey: ['recent-chats'] });
     } catch (err) {
         console.error("Failed to update chat title", err);
+        // Revert optimistic update by invalidating
+        queryClient.invalidateQueries({ queryKey: ['recent-chats'] });
     }
   };
 
@@ -162,6 +178,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
           handleSaveEdit(e, chatId);
       } else if (e.key === 'Escape') {
           setEditingChatId(null);
+          setEditTitle("");
       }
   };
 
