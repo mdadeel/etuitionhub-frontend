@@ -51,6 +51,7 @@ export default function AiAssistantChat() {
     const [streamingAssistantMessage, setStreamingAssistantMessage] = useState('');
     const [localMessages, setLocalMessages] = useState([]);
     const abortControllerRef = useRef(null);
+    const sendingRef = useRef(false);
     const scrollRef = useRef(null);
     const initialMessageProcessed = useRef(false);
     const [pendingUserInput, setPendingUserInput] = useState('');
@@ -89,17 +90,25 @@ export default function AiAssistantChat() {
     useEffect(() => {
         const el = scrollRef.current;
         if (el) {
-            const now = Date.now();
-            if (now - lastScrollRef.current > 100) {
-                el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-                lastScrollRef.current = now;
+            // Increase threshold to account for large AiResponseCards popping in suddenly
+            const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 1500;
+            const lastMsg = data?.messages?.[data.messages.length - 1] || localMessages[localMessages.length - 1];
+            const isUserLast = lastMsg?.role === 'user';
+
+            if (isNearBottom || isUserLast || thinking) {
+                const now = Date.now();
+                if (now - lastScrollRef.current > 50) {
+                    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+                    lastScrollRef.current = now;
+                }
             }
         }
     }, [data?.messages?.length, localMessages.length, thinking, streamingAssistantMessage, inlineQuizzes]);
 
     const handleSend = async (msg, forceTemplate = undefined, editMessageId = undefined, regenerateMessageId = undefined) => {
         const trimmed = (msg || '').trim();
-        if (!trimmed || sending) return;
+        if (!trimmed || sendingRef.current) return;
+        sendingRef.current = true;
         setPendingUserInput(trimmed);
 
         // Quiz-intent detection: "generate a quiz on X", "quiz me on X", etc.
@@ -124,6 +133,7 @@ export default function AiAssistantChat() {
                 toast.error(err?.response?.data?.error || err?.message || 'Failed to generate quiz');
                 setInlineQuizzes((q) => { const next = { ...q }; delete next[tempKey]; return next; });
             } finally {
+                sendingRef.current = false;
                 setSending(false);
                 setThinking(false);
             }
@@ -196,8 +206,15 @@ export default function AiAssistantChat() {
                             }
                             return;
                         }
-                        if (parsed.text) {
+                        if (parsed.text !== undefined) {
                             localStreamData += parsed.text;
+                        } else if (parsed.content !== undefined) {
+                            localStreamData += parsed.content;
+                        } else if (parsed.answer !== undefined) {
+                            localStreamData += parsed.answer;
+                        } else {
+                            // If it's some other JSON chunk we can't extract, stringify or use the raw chunk
+                            localStreamData += typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
                         }
                     } catch {
                         localStreamData += chunk;
@@ -228,12 +245,18 @@ export default function AiAssistantChat() {
 
             setStreamingAssistantMessage('');
             
-            if (sessionId === 'new') {
-                if (newSessionId) {
-                    navigate(`/ai-assistant/chat/${newSessionId}`, { replace: true });
+            try {
+                if (sessionId === 'new') {
+                    if (newSessionId) {
+                        navigate(`/ai-assistant/chat/${newSessionId}`, { replace: true });
+                    }
+                } else {
+                    await refetch();
                 }
-            } else {
-                await refetch();
+            } catch (postErr) {
+                // Non-critical: stream succeeded, DB saved the message.
+                // A failed refetch/navigate shouldn't show an error to the user.
+                console.warn('Post-stream navigation/refetch failed:', postErr);
             }
         } catch (err) {
             if (err?.name === 'AbortError') {
@@ -261,6 +284,7 @@ export default function AiAssistantChat() {
                 }
             }
         } finally {
+            sendingRef.current = false;
             setSending(false);
             setThinking(false);
             setStreamingAssistantMessage('');
@@ -533,6 +557,19 @@ export default function AiAssistantChat() {
                                     <div className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                                         Porua · Quiz · {item.topic || ''}
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setInlineQuizzes(q => {
+                                                const next = { ...q };
+                                                delete next[quizKey];
+                                                return next;
+                                            });
+                                        }}
+                                        className="text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 bg-muted/50 hover:bg-muted rounded-md cursor-pointer"
+                                    >
+                                        Skip Quiz
+                                    </button>
                                 </div>
                                 {item.submitting && !item.quiz && (
                                     <div className="text-sm text-muted-foreground flex items-center gap-2">

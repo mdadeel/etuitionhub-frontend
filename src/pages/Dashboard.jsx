@@ -67,6 +67,7 @@ const Dashboard = () => {
   const globalRole = dbUser?.globalRole;
   const { orgContext, orgRole } = useAuth();
   
+  // eslint-disable-next-line no-unused-vars
   const getRoleLabel = () => {
     if (globalRole === 'super_admin') return 'Super Admin';
     if (orgContext) {
@@ -91,6 +92,7 @@ const Dashboard = () => {
     return 'Account Settings';
   };
 
+  // eslint-disable-next-line no-unused-vars
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';

@@ -6,43 +6,44 @@
 import { Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import PoruaLogo from './PoruaLogo';
-import { parseInlineCode } from './AiResponseCard';
+import { Typewriter } from './ChatMessage';
+import MarkdownRenderer from './MarkdownRenderer';
 
 /**
  * @param {Object}   props
  * @param {Object}   props.structured  LLM JSON: { templateType: "conversational", answer, followUpSuggestion }
  * @param {Function} [props.onFollowUpClick]  Pre-fill the chat input with the suggested follow-up.
  * @param {string}   [props.className]
+ * @param {boolean}  [props.isLast]
  */
-export default function ConversationalBubble({ structured, onFollowUpClick, className = '' }) {
+export default function ConversationalBubble({ structured, onFollowUpClick, className = '', isLast }) {
     if (!structured) return null;
     const answer = structured.answer;
     const followUp = structured.followUpSuggestion;
 
     return (
-        <div className="flex items-start gap-2 animate-fade-in-up">
-            <div className="shrink-0 size-7 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
-                <PoruaLogo iconOnly size={13} />
-            </div>
-            <div
-                className={cn(
-                    'flex-1 border-l-2 border-primary/40 pl-4 py-2 text-sm leading-relaxed text-foreground/90',
-                    className,
-                )}
-            >
-                {answer && <p className="whitespace-pre-wrap break-words">{parseInlineCode(answer)}</p>}
+        <div
+            className={cn(
+                'border-l-2 border-primary/30 pl-4 py-1.5 text-[14px] leading-relaxed text-foreground/95',
+                className,
+            )}
+        >
+            {answer && (
+                <p className="break-words">
+                    {isLast ? <Typewriter text={answer} speed={10} /> : <MarkdownRenderer content={answer} />}
+                </p>
+            )}
 
-                {followUp && (
-                    <button
-                        type="button"
-                        onClick={() => onFollowUpClick?.(followUp)}
-                        className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/60 bg-card/50 text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 cursor-pointer"
-                    >
-                        <Lightbulb size={12} />
-                        <span>{followUp}</span>
-                    </button>
-                )}
-            </div>
+            {followUp && (
+                <button
+                    type="button"
+                    onClick={() => onFollowUpClick?.(followUp)}
+                    className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/50 bg-card text-xs text-muted-foreground hover:text-foreground hover:border-primary/45 hover:bg-primary/5 active:scale-95 transition-all duration-150 cursor-pointer"
+                >
+                    <Lightbulb size={12} className="text-primary/75" aria-hidden="true" />
+                    <span>{followUp}</span>
+                </button>
+            )}
         </div>
     );
 }

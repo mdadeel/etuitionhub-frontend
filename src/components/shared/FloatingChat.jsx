@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useChat } from '../../contexts/ChatContext';
 import api from '../../services/api';
-import { MessageCircle, X, ArrowLeft, Edit, MessageSquare } from 'lucide-react';
+import { MessageCircle, X, ArrowLeft, Edit, MessageSquare, Bot } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -495,7 +495,7 @@ const FloatingChat = () => {
                 className="size-14 bg-gradient-to-tr from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.45)] flex items-center justify-center relative"
                 title={isFloatingOpen ? "Close messages" : "Open messages"}
             >
-                {isFloatingOpen ? <X size={22} strokeWidth={2.5} /> : <MessageCircle size={24} strokeWidth={2} />}
+                {isFloatingOpen ? <X size={22} strokeWidth={2.5} /> : <Bot size={24} strokeWidth={2} />}
 
                 {/* Unread Badge */}
                 {!isFloatingOpen && unreadTotal > 0 && (

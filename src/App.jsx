@@ -61,6 +61,7 @@ const SavedNotes = lazy(() => import("./pages/AiAssistant/SavedNotes"));
 const AiAssistantSettings = lazy(() => import("./pages/AiAssistant/AiAssistantSettings"));
 const OrganizationDirectory = lazy(() => import("./pages/OrganizationDirectory"));
 const OrganizationDetails = lazy(() => import("./pages/OrganizationDetails"));
+const EngineeringShowcase = lazy(() => import("./pages/Docs/EngineeringShowcase"));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -281,6 +282,7 @@ let App = () => {
                     }
                   />
                   <Route path="/search" element={<RouteErrorBoundary><SearchPage /></RouteErrorBoundary>} />
+                  <Route path="/docs/engineering" element={<RouteErrorBoundary><EngineeringShowcase /></RouteErrorBoundary>} />
                   <Route
                     path="/ai-assistant"
                     element={

@@ -29,7 +29,7 @@ const ChatSidebarItem = memo(({ conv, user, isActive, onClick }) => {
                 "w-[calc(100%-16px)] mx-2 my-1 px-3.5 py-3 flex items-center gap-3.5 text-left transition-all duration-200 rounded-2xl relative group",
                 isActive 
                     ? "bg-primary/10 dark:bg-primary/20 text-foreground shadow-sm" 
-                    : "hover:bg-[color:hsl(var(--chat-hover))] hover:scale-[1.01]"
+                    : "hover:bg-[color:hsl(var(--chat-hover))]"
             )}
         >
             <div className="relative shrink-0">

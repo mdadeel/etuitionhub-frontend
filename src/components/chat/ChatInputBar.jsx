@@ -173,9 +173,9 @@ const ChatInputBar = ({
             )}
 
             {/* Input Composer */}
-            <div className="flex items-end gap-2.5 max-w-5xl mx-auto w-full px-1">
+            <div className="flex items-center gap-2.5 max-w-5xl mx-auto w-full px-1">
                 {/* Emoji Action (Left side) */}
-                <div className="flex items-center shrink-0 mb-[2px]">
+                <div className="flex items-center shrink-0">
                     <button
                         type="button"
                         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -209,7 +209,7 @@ const ChatInputBar = ({
                     disabled={!value.trim() || sending}
                     aria-label="Send message"
                     className={cn(
-                        "shrink-0 flex items-center justify-center transition-all duration-200 mb-[2px] rounded-full active:scale-90",
+                        "shrink-0 flex items-center justify-center transition-all duration-200 rounded-full active:scale-90",
                         value.trim() && !sending
                             ? "bg-gradient-to-tr from-blue-500 to-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.4)] hover:scale-105"
                             : "bg-slate-100 dark:bg-slate-800 text-slate-450 dark:text-slate-600 cursor-not-allowed",

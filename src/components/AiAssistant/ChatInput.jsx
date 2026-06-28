@@ -305,15 +305,15 @@ function pickRecognitionLang() {
     return (
         <div
             className={cn(
-                'group relative w-full rounded-2xl border bg-background/80 backdrop-blur-xl transition-all duration-200',
+                'group relative w-full rounded-2xl border bg-white dark:bg-background/95 backdrop-blur-xl transition-all duration-300 ease-in-out',
                 focused
-                    ? 'border-primary/40 shadow-sm'
-                    : 'border-border/60 shadow-sm',
-                overLimit && 'border-destructive/50',
+                    ? 'border-primary/25 ring-4 ring-primary/5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.25)]'
+                    : 'border-border/40 shadow-[0_8px_30px_rgb(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)]',
+                overLimit && 'border-destructive/40 ring-4 ring-destructive/5',
                 className,
             )}
         >
-            <div className="flex items-end gap-1.5 px-3 pb-2.5 pt-2">
+            <div className="flex flex-col p-1.5 sm:p-2 w-full">
                 {/* Hidden file picker */}
                 <input
                     ref={fileInputRef}
@@ -323,174 +323,187 @@ function pickRecognitionLang() {
                     className="hidden"
                     aria-hidden="true"
                 />
-                <div className="flex items-center gap-0.5 pb-1">
-                    <button
-                        type="button"
-                        onClick={handleAttachClick}
-                        title="Attach image or PDF"
-                        aria-label="Attach image or PDF"
-                        className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted inline-flex items-center justify-center transition-colors"
-                    >
-                        <Paperclip size={16} />
-                    </button>
-                </div>
-                <div className="flex-1 relative">
-                    {/* Slash-command subject menu */}
-                    {slashMenuOpen && filteredSubjects.length > 0 && (
-                        <div
-                            ref={slashMenuRef}
-                            className="absolute bottom-full left-0 right-0 mb-2 z-50 rounded-xl border border-border/40 bg-background shadow-lg overflow-hidden"
+
+                {/* Staged Attachment Preview - sits in its own row above the input bar */}
+                {attachmentFile && (
+                    <div className="px-2.5 pt-1.5 pb-2">
+                        <span className="inline-flex items-center gap-2 rounded-xl border border-border/40 bg-muted/40 px-3 py-1.5 text-xs font-medium transition-all duration-200">
+                            {attachmentFile.type?.startsWith('image/') ? (
+                                <ImageIcon size={13} className="text-primary/75" />
+                            ) : (
+                                <FileText size={13} className="text-primary/75" />
+                            )}
+                            <span className="max-w-[180px] truncate text-foreground/90 font-medium">{attachmentFile.name}</span>
+                            <button
+                                type="button"
+                                onClick={handleRemoveAttachment}
+                                aria-label="Remove attachment"
+                                className="text-muted-foreground hover:text-foreground active:scale-90 transition-all ml-1 p-0.5 rounded-full hover:bg-muted/80"
+                            >
+                                <X size={12} />
+                            </button>
+                        </span>
+                    </div>
+                )}
+
+                {/* Horizontal composer input row */}
+                <div className="flex items-center gap-2.5 w-full">
+                    {/* Attachment trigger */}
+                    <div className="flex items-center">
+                        <button
+                            type="button"
+                            onClick={handleAttachClick}
+                            title="Attach image or PDF"
+                            aria-label="Attach image or PDF"
+                            className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/70 active:scale-95 inline-flex items-center justify-center transition-all duration-200"
                         >
-                            <div className="max-h-48 overflow-y-auto py-1">
-                                {filteredSubjects.map((key, i) => {
-                                    const meta = SUBJECT_META[key];
-                                    const Icon = meta.icon;
-                                    return (
-                                        <button
-                                            key={key}
-                                            type="button"
-                                            onClick={() => selectSlashSubject(key)}
-                                            onMouseEnter={() => setSlashIndex(i)}
+                            <Paperclip size={16} />
+                        </button>
+                    </div>
+
+                    {/* Text area and command dropdown */}
+                    <div className="flex-1 relative flex items-center">
+                        {/* Slash-command subject menu */}
+                        {slashMenuOpen && filteredSubjects.length > 0 && (
+                            <div
+                                ref={slashMenuRef}
+                                className="absolute bottom-full left-0 right-0 mb-3.5 z-50 rounded-2xl border border-border/30 bg-card/95 backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200"
+                            >
+                                <div className="max-h-48 overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
+                                    {filteredSubjects.map((key, i) => {
+                                        const meta = SUBJECT_META[key];
+                                        const Icon = meta.icon;
+                                        return (
+                                            <button
+                                                key={key}
+                                                type="button"
+                                                onClick={() => selectSlashSubject(key)}
+                                                onMouseEnter={() => setSlashIndex(i)}
+                                                className={cn(
+                                                    'w-full flex items-center gap-3 px-4 py-2.5 text-left text-xs transition-colors',
+                                                    i === slashIndex
+                                                        ? 'bg-primary/10 text-foreground font-semibold'
+                                                        : 'text-muted-foreground hover:bg-muted/40',
+                                                )}
+                                            >
+                                                <span className="size-6 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                                                    <Icon size={13} className={i === slashIndex ? 'text-primary' : ''} />
+                                                </span>
+                                                <span className="flex-1 font-medium">{meta.label}</span>
+                                                <span className="text-[10px] text-muted-foreground/45 font-mono">/{key}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        <textarea
+                            ref={taRef}
+                            value={value}
+                            onChange={(e) => handleValueChange(e.target.value.slice(0, MAX_LENGTH))}
+                            onKeyDown={handleKeyDown}
+                            onFocus={() => setFocused(true)}
+                            onBlur={() => setFocused(false)}
+                            placeholder={slashMenuOpen ? 'Type a subject name…' : resolvedPlaceholder}
+                            aria-label="Chat message input"
+                            rows={1}
+                            disabled={disabled}
+                            className={cn(
+                                'w-full resize-none bg-transparent text-[15px] sm:text-base leading-[24px] text-foreground py-2 px-1',
+                                'placeholder:text-muted-foreground/40 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
+                                'disabled:opacity-60 disabled:cursor-not-allowed scrollbar-none',
+                            )}
+                            style={{ minHeight: 24, maxHeight: 152 }}
+                        />
+                    </div>
+
+                    {/* Badge and action buttons wrapper */}
+                    <div className="flex items-center gap-2">
+                        {usage && usage.limit.daily !== Infinity && (
+                            <TooltipProvider delayDuration={200}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div
                                             className={cn(
-                                                'w-full flex items-center gap-2 px-3 py-1.5 text-left text-xs transition-colors',
-                                                i === slashIndex
-                                                    ? 'bg-primary/10 text-foreground'
-                                                    : 'text-muted-foreground hover:bg-muted/50',
+                                                'flex items-center gap-1 rounded-full px-3 py-1.5 border transition-all duration-200 cursor-default select-none',
+                                                usage.remaining.daily === 0 || usage.remaining.monthly === 0
+                                                    ? 'bg-destructive/10 text-destructive border-destructive/20'
+                                                    : usage.remaining.daily / usage.limit.daily < 0.3 || usage.remaining.monthly / usage.limit.monthly < 0.3
+                                                        ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+                                                        : 'bg-muted/50 text-muted-foreground border-transparent hover:border-border/40 hover:text-foreground'
                                             )}
                                         >
-                                            <span className="size-5 rounded-md bg-muted flex items-center justify-center shrink-0">
-                                                <Icon size={11} className={i === slashIndex ? 'text-primary' : ''} />
+                                            <Zap 
+                                                size={11} 
+                                                className={cn(
+                                                    usage.remaining.daily > 0 && usage.remaining.monthly > 0 ? "fill-current animate-pulse-subtle" : ""
+                                                )} 
+                                            />
+                                            <span className="text-[10px] font-bold tracking-tight">
+                                                {usage.remaining.daily}
                                             </span>
-                                            <span className="flex-1">{meta.label}</span>
-                                            <span className="text-[10px] text-muted-foreground/50 font-mono">/{key}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-                    {/* Attachment preview inline above textarea */}
-                    {attachmentFile && (
-                        <div className="pb-1">
-                            <span className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-muted/60 px-3 py-1.5 text-xs font-label">
-                                {attachmentFile.type?.startsWith('image/') ? (
-                                    <ImageIcon size={12} />
-                                ) : (
-                                    <FileText size={12} />
-                                )}
-                                <span className="max-w-[180px] truncate">{attachmentFile.name}</span>
-                                <button
-                                    type="button"
-                                    onClick={handleRemoveAttachment}
-                                    aria-label="Remove attachment"
-                                    className="text-muted-foreground hover:text-foreground"
-                                >
-                                    <X size={12} />
-                                </button>
-                            </span>
-                        </div>
-                    )}
-                    <textarea
-                        ref={taRef}
-                        value={value}
-                        onChange={(e) => handleValueChange(e.target.value.slice(0, MAX_LENGTH))}
-                        onKeyDown={handleKeyDown}
-                        onFocus={() => setFocused(true)}
-                        onBlur={() => setFocused(false)}
-                        placeholder={slashMenuOpen ? 'Type a subject name…' : resolvedPlaceholder}
-                        rows={1}
-                        disabled={disabled}
-                        className={cn(
-                            'w-full resize-none bg-transparent text-sm leading-[22px] text-foreground',
-                            'placeholder:text-muted-foreground/60 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
-                            'disabled:opacity-60 disabled:cursor-not-allowed',
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" sideOffset={12} className="px-3 py-2 text-xs rounded-xl shadow-lg border border-border/40 bg-card">
+                                        <div className="flex flex-col gap-1.5">
+                                            <div className="flex justify-between gap-4">
+                                                <span className="text-muted-foreground">Daily limits:</span>
+                                                <span className="font-semibold">{usage.remaining.daily} / {usage.limit.daily}</span>
+                                            </div>
+                                            <div className="flex justify-between gap-4">
+                                                <span className="text-muted-foreground">Monthly limits:</span>
+                                                <span className="font-semibold">{usage.remaining.monthly} / {usage.limit.monthly}</span>
+                                            </div>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         )}
-                        style={{ minHeight: 24, maxHeight: 152 }}
-                    />
-                </div>
-                <div className="flex items-end gap-1.5 pb-1">
-                    {usage && usage.limit.daily !== Infinity && (
-                        <TooltipProvider delayDuration={200}>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div
-                                        className={cn(
-                                            'flex items-center gap-1 rounded-full px-2.5 py-1 mr-1.5 border transition-all cursor-default select-none',
-                                            usage.remaining.daily === 0 || usage.remaining.monthly === 0
-                                                ? 'bg-destructive/10 text-destructive border-destructive/20'
-                                                : usage.remaining.daily / usage.limit.daily < 0.3 || usage.remaining.monthly / usage.limit.monthly < 0.3
-                                                    ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
-                                                    : 'bg-muted/50 text-muted-foreground border-transparent hover:border-border/60 hover:text-foreground'
-                                        )}
-                                    >
-                                        <Zap 
-                                            size={13} 
-                                            className={cn(
-                                                usage.remaining.daily > 0 && usage.remaining.monthly > 0 ? "fill-current" : ""
-                                            )} 
-                                        />
-                                        <span className="text-[11px] font-bold tracking-tight">
-                                            {usage.remaining.daily}
-                                        </span>
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" sideOffset={12} className="px-3 py-2 text-xs">
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex justify-between gap-4">
-                                            <span className="text-muted-foreground">Daily limits:</span>
-                                            <span className="font-medium">{usage.remaining.daily} / {usage.limit.daily}</span>
-                                        </div>
-                                        <div className="flex justify-between gap-4">
-                                            <span className="text-muted-foreground">Monthly limits:</span>
-                                            <span className="font-medium">{usage.remaining.monthly} / {usage.limit.monthly}</span>
-                                        </div>
-                                    </div>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    )}
-                    {loading ? (
-                        <button
-                            type="button"
-                            onClick={onStop}
-                            aria-label="Stop generating"
-                            className="inline-flex items-center justify-center bg-destructive/10 text-destructive border border-destructive/30 h-9 w-9 rounded-lg hover:bg-destructive/20 active:scale-95 transition-all"
-                        >
-                            <Square size={14} strokeWidth={2.5} />
-                        </button>
-                    ) : (value || '').trim().length > 0 ? (
-                        <button
-                            type="button"
-                            onClick={handleSendClick}
-                            disabled={!canSend}
-                            aria-label="Send message"
-                            className={cn(
-                                'inline-flex items-center justify-center rounded-lg h-9 w-9 transition-all duration-200',
-                                canSend
-                                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90 hover:shadow-primary/30 active:scale-95'
-                                    : 'bg-muted text-muted-foreground/60 cursor-not-allowed',
-                            )}
-                        >
-                            <Send size={16} strokeWidth={2} />
-                        </button>
-                    ) : SPEECH_SUPPORTED ? (
-                        <button
-                            type="button"
-                            onClick={isRecording ? stopRecording : startRecording}
-                            title={isRecording ? 'Stop recording' : 'Voice input'}
-                            aria-label={isRecording ? 'Stop recording' : 'Voice input'}
-                            className={cn(
-                                'inline-flex items-center justify-center rounded-lg h-9 w-9 transition-all duration-200',
-                                isRecording
-                                    ? 'bg-destructive/10 text-destructive animate-pulse border border-destructive/30'
-                                    : 'bg-primary/10 text-primary hover:bg-primary/20 active:scale-95',
-                            )}
-                        >
-                            {isRecording ? <MicOff size={16} /> : <Mic size={16} />}
-                        </button>
-                    ) : (
-                        <span className="h-9 w-9" />
-                    )}
+
+                        {loading ? (
+                            <button
+                                type="button"
+                                onClick={onStop}
+                                aria-label="Stop generating"
+                                className="inline-flex items-center justify-center bg-destructive/10 text-destructive border border-destructive/20 h-9 w-9 rounded-full hover:bg-destructive/20 active:scale-95 transition-all duration-200 shadow-sm"
+                            >
+                                <Square size={13} strokeWidth={2.5} />
+                            </button>
+                        ) : (value || '').trim().length > 0 ? (
+                            <button
+                                type="button"
+                                onClick={handleSendClick}
+                                disabled={!canSend}
+                                aria-label="Send message"
+                                className={cn(
+                                    'inline-flex items-center justify-center rounded-full h-9 w-9 transition-all duration-200 shadow-sm',
+                                    canSend
+                                        ? 'bg-primary text-primary-foreground shadow-primary/10 hover:bg-primary/95 active:scale-95'
+                                        : 'bg-muted text-muted-foreground/40 cursor-not-allowed',
+                                )}
+                            >
+                                <Send size={15} strokeWidth={2.5} className="ml-[1px] mt-[1px]" />
+                            </button>
+                        ) : SPEECH_SUPPORTED ? (
+                            <button
+                                type="button"
+                                onClick={isRecording ? stopRecording : startRecording}
+                                title={isRecording ? 'Stop recording' : 'Voice input'}
+                                aria-label={isRecording ? 'Stop recording' : 'Voice input'}
+                                className={cn(
+                                    'inline-flex items-center justify-center rounded-full h-9 w-9 transition-all duration-200',
+                                    isRecording
+                                        ? 'bg-destructive/10 text-destructive animate-pulse border border-destructive/20'
+                                        : 'bg-primary/5 text-primary hover:bg-primary/10 active:scale-95',
+                                )}
+                            >
+                                {isRecording ? <MicOff size={17} /> : <Mic size={17} />}
+                            </button>
+                        ) : (
+                            <span className="h-9 w-9" />
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

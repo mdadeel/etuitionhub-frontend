@@ -1,23 +1,32 @@
+import { useState, useEffect } from 'react';
+
 export default function SkeletonCard() {
+    const phrases = [
+        'Thinking…',
+        'Checking notes…',
+        'Working it out…',
+        'Formulating response…'
+    ];
+    const [phraseIdx, setPhraseIdx] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setPhraseIdx((prev) => (prev + 1) % phrases.length);
+        }, 2000);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
-        <article
-            className="w-full max-w-[850px] bg-card border border-border rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 animate-fade-in-up"
-            role="status"
-            aria-label="Generating response..."
-        >
-            <div className="flex items-center gap-2 mb-3">
-                <div className="size-5 rounded-[4px] shimmer-bg" />
-                <div className="h-3 w-[160px] rounded shimmer-bg" />
+        <div role="status" aria-live="polite" aria-label="AI is thinking" className="w-full bg-card border border-border/50 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="h-5 w-[30%] mb-3 rounded-md bg-gradient-to-r from-secondary/50 via-border/50 to-secondary/50 bg-[length:200%_100%] animate-shimmer" />
+            <div className="h-4 w-[90%] mb-3 rounded-md bg-gradient-to-r from-secondary/50 via-border/50 to-secondary/50 bg-[length:200%_100%] animate-shimmer" />
+            <div className="h-4 w-[85%] mb-3 rounded-md bg-gradient-to-r from-secondary/50 via-border/50 to-secondary/50 bg-[length:200%_100%] animate-shimmer" />
+            <div className="h-4 w-[60%] mb-3 rounded-md bg-gradient-to-r from-secondary/50 via-border/50 to-secondary/50 bg-[length:200%_100%] animate-shimmer" />
+
+            <div className="text-[13px] text-muted-foreground mt-4 font-medium flex items-center gap-2">
+                <div className="w-3.5 h-3.5 border-2 border-border border-t-primary rounded-full animate-spin" />
+                <span>{phrases[phraseIdx]}</span>
             </div>
-            <div className="mb-4">
-                <div className="h-[22px] w-[70%] rounded shimmer-bg" />
-            </div>
-            <div className="space-y-3">
-                <div className="h-4 w-full rounded shimmer-bg" />
-                <div className="h-4 w-[92%] rounded shimmer-bg" />
-                <div className="h-4 w-[85%] rounded shimmer-bg" />
-                <div className="h-4 w-[60%] rounded shimmer-bg" />
-            </div>
-        </article>
+        </div>
     );
 }

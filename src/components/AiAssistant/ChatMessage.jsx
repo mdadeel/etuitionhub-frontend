@@ -11,7 +11,7 @@
 //   • A hover-faded HH:mm timestamp (§5.14). User: left of bubble.
 //     AI: below the MessageActions row.
 //   • A MessageActions bar that fades in on parent hover (§5.13).
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { User as UserIcon, Send, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AiResponseCard, { parseInlineCode } from './AiResponseCard';
@@ -22,6 +22,7 @@ import MessageActions from './MessageActions';
 import PoruaLogo from './PoruaLogo';
 import IntentBadge from './IntentBadge';
 import SkeletonCard from './SkeletonCard';
+import ThinkingBlock from './ThinkingBlock';
 
 /**
  * Format a timestamp per §5.14. HH:mm if same day, otherwise "MMM D, HH:mm".
@@ -42,26 +43,73 @@ function formatTimestamp(dateLike) {
     return `${monthShort} ${d.getDate()}, ${hh}:${mm}`;
 }
 
-function UserBubble({
+export function Typewriter({ text, speed = 8 }) {
+    const [displayedText, setDisplayedText] = useState('');
+    const queueRef = useRef('');
+    const timerRef = useRef(null);
+
+    useEffect(() => {
+        queueRef.current = text;
+        
+        if (!timerRef.current) {
+            timerRef.current = setInterval(() => {
+                setDisplayedText((curr) => {
+                    const target = queueRef.current;
+                    if (curr.length >= target.length) {
+                        clearInterval(timerRef.current);
+                        timerRef.current = null;
+                        return curr;
+                    }
+                    const diff = target.length - curr.length;
+                    const step = diff > 40 ? 6 : diff > 15 ? 3 : 1;
+                    return target.slice(0, curr.length + step);
+                });
+            }, speed);
+        }
+
+        return () => {
+            if (timerRef.current && queueRef.current === text) {
+                // Keep streaming timer active
+            } else if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+        };
+    }, [text, speed]);
+
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
+    }, []);
+
+    return (
+        <>
+            {parseInlineCode(displayedText, true)}
+        </>
+    );
+}
+
+const UserBubble = memo(function UserBubble({
     content, user, createdAt, onEdit, isEditing, onCancelEdit, onResend,
 }) {
     const timestamp = formatTimestamp(createdAt);
 
     if (isEditing) {
         return (
-            <div className="flex items-start justify-end gap-1.5 animate-fade-in-up">
-                <div className="flex flex-col items-end gap-1 max-w-[85%]">
+            <div className="flex items-start justify-end gap-2.5 animate-fade-in-up">
+                <div className="flex flex-col items-end gap-1.5 max-w-[85%]">
                     <EditInput
                         initialValue={content}
                         onSave={onResend}
                         onCancel={onCancelEdit}
                     />
                 </div>
-                <div className="shrink-0 size-7 rounded-lg bg-muted border border-border flex items-center justify-center overflow-hidden">
+                <div className="shrink-0 size-8 rounded-lg bg-muted border border-border/50 flex items-center justify-center overflow-hidden shadow-sm">
                     {user?.photoURL ? (
                         <img src={user.photoURL} alt={user.displayName || 'You'} className="size-full object-cover" />
                     ) : (
-                        <UserIcon size={13} className="text-muted-foreground" />
+                        <UserIcon size={14} className="text-muted-foreground" />
                     )}
                 </div>
             </div>
@@ -69,19 +117,19 @@ function UserBubble({
     }
 
     return (
-        <div className="group flex items-start justify-end gap-1.5 animate-fade-in-up">
-            <div className="flex flex-col items-end gap-1 max-w-[85%]">
+        <div className="group flex items-start justify-end gap-2.5 animate-fade-in-up">
+            <div className="flex flex-col items-end gap-1.5 max-w-[85%]">
                 <div
                     className={cn(
-                        'max-w-full rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm leading-relaxed',
-                        'bg-primary text-primary-foreground shadow-md shadow-primary/15',
+                        'w-fit max-w-full rounded-2xl rounded-tr-sm px-5 py-3 text-[14px] leading-[22px]',
+                        'bg-primary text-primary-foreground shadow-md shadow-primary/10',
                     )}
                 >
                     <p className="whitespace-pre-wrap break-words">{content}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5 px-0.5">
                     {timestamp && (
-                        <span className="text-[10px] font-label text-muted-foreground/50 opacity-0 group-hover:opacity-60 transition-opacity duration-200">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/45 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             {timestamp}
                         </span>
                     )}
@@ -89,7 +137,7 @@ function UserBubble({
                         <button
                             type="button"
                             onClick={onEdit}
-                            className="text-[10px] font-label text-muted-foreground/40 hover:text-primary transition-colors opacity-0 group-hover:opacity-60"
+                            className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/40 hover:text-primary transition-all duration-150 opacity-0 group-hover:opacity-100 active:scale-95"
                             title="Edit message"
                         >
                             Edit
@@ -97,7 +145,7 @@ function UserBubble({
                     )}
                 </div>
             </div>
-            <div className="shrink-0 size-7 rounded-lg bg-muted border border-border flex items-center justify-center overflow-hidden">
+            <div className="shrink-0 size-8 rounded-lg bg-muted border border-border/50 flex items-center justify-center overflow-hidden shadow-sm">
                 {user?.photoURL ? (
                     <img
                         src={user.photoURL}
@@ -105,12 +153,12 @@ function UserBubble({
                         className="size-full object-cover"
                     />
                 ) : (
-                    <UserIcon size={13} className="text-muted-foreground" />
+                    <UserIcon size={14} className="text-muted-foreground" />
                 )}
             </div>
         </div>
     );
-}
+});
 
 function EditInput({ initialValue, onSave, onCancel }) {
     const [value, setValue] = useState(initialValue);
@@ -130,7 +178,7 @@ function EditInput({ initialValue, onSave, onCancel }) {
     };
 
     return (
-        <div className="flex flex-col items-end gap-1.5 w-full">
+        <div className="flex flex-col items-end gap-2 w-full">
             <label htmlFor="edit-message-textarea" className="sr-only">Edit message</label>
             <textarea
                 id="edit-message-textarea"
@@ -138,21 +186,21 @@ function EditInput({ initialValue, onSave, onCancel }) {
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full min-w-[260px] rounded-xl border border-primary/30 bg-background px-3 py-2 text-sm text-foreground resize-none outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                className="w-full min-w-[260px] rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground resize-none outline-none focus:border-primary/45 focus:ring-2 focus:ring-primary/10 transition-all duration-200"
                 rows={2}
             />
             <div className="flex items-center gap-2">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-3 py-1 text-[11px] font-label text-muted-foreground hover:text-foreground transition-colors"
+                    className="px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground active:scale-95 transition-all duration-150"
                 >
                     Cancel
                 </button>
                 <button
                     type="button"
                     onClick={() => { if (value.trim()) onSave?.(value.trim()); }}
-                    className="px-3 py-1 text-[11px] font-label bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                    className="px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider bg-primary text-primary-foreground rounded-lg hover:bg-primary/95 active:scale-95 transition-all duration-150 shadow-sm shadow-primary/10"
                 >
                     Save
                 </button>
@@ -165,17 +213,20 @@ function SkeletonCardWrapper() {
     return <SkeletonCard />;
 }
 
-function AssistantMessage({
+const AssistantMessage = memo(function AssistantMessage({
     message, isLast,
     onStartQuiz, onTrackTutorClick,
     onCopy, onRegenerate, onFeedback, onFollowUpClick,
     feedback, isCopied
 }) {
     // Defensive: if structured is a JSON string, parse it
-    let structured = message.structured;
-    if (typeof structured === 'string') {
-        try { structured = JSON.parse(structured); } catch { structured = null; }
-    }
+    const structured = useMemo(() => {
+        let s = message.structured;
+        if (typeof s === 'string') {
+            try { s = JSON.parse(s); } catch { s = null; }
+        }
+        return s;
+    }, [message.structured]);
     const tutors = message.recommendedTutors || [];
     const tuitions = message.recommendedTuitions || [];
     const timestamp = formatTimestamp(message.createdAt);
@@ -212,9 +263,11 @@ function AssistantMessage({
                     <PoruaLogo iconOnly size={13} />
                 </div>
                 <div className="flex-1 min-w-0 space-y-1.5">
+                    {message.thinking && <ThinkingBlock thinking={message.thinking} />}
                     <ConversationalBubble
                         structured={structured}
                         onFollowUpClick={onFollowUpClick}
+                        isLast={isLast}
                     />
                     <div className="flex items-center gap-2">
                         {timestamp && (
@@ -238,9 +291,11 @@ function AssistantMessage({
     }
     return (
         <div className="group space-y-2 max-w-full">
+            {/* Thinking block — collapsible chain-of-thought */}
+            {message.thinking && <ThinkingBlock thinking={message.thinking} />}
             {/* Intent badge — shows what mode Porua AI used for this response */}
             {structured?.templateType && structured.templateType !== 'conversational' && (
-                <IntentBadge templateType={structured.templateType} className="mb-1" />
+                <IntentBadge templateType={structured.templateType} intent={structured.intent} className="mb-1" />
             )}
             <AiResponseCard
                 structured={structured}
@@ -256,6 +311,7 @@ function AssistantMessage({
                 }
                 onStartQuiz={onStartQuiz}
                 onFollowUpClick={onFollowUpClick}
+                isLast={isLast}
             >
                 {tutors.length > 0 && (
                     <TutorRecommendationCard
@@ -289,7 +345,7 @@ function AssistantMessage({
             </div>
         </div>
     );
-}
+});
 
 /**
  * @param {Object}   props
@@ -354,18 +410,33 @@ export default function ChatMessage({
         let display = message.content || '';
         try {
             display = display.replace(/\\n/g, '\n');
-            display = display.replace(/"[a-zA-Z0-9_]+"\s*:\s*/g, '');
-            // eslint-disable-next-line no-useless-escape
-            display = display.replace(/[\[\]{}"]/g, '');
+            const trimmed = display.trim();
+            if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+                display = trimmed.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '');
+                const firstBrace = display.indexOf('{');
+                const lastBrace = display.lastIndexOf('}');
+                if (firstBrace !== -1 && lastBrace > firstBrace) {
+                    display = display.slice(firstBrace, lastBrace + 1);
+                } else if (firstBrace !== -1) {
+                    // Incomplete JSON string. Try to extract main content gently.
+                    const match = display.match(/"(?:answer|content|explanation|text|easyExplanation)"\s*:\s*"((?:[^"\\]|\\.)*)(?:"|$)/);
+                    if (match && match[1]) {
+                        display = match[1].replace(/\\"/g, '"');
+                    } else {
+                        // Strip leading JSON characters to hide the raw structure as it streams
+                        display = display.replace(/^[^{]*{\s*(?:"[^"]+"\s*:\s*"?)?/, '');
+                    }
+                }
+            }
             display = display.trim();
         } catch {
-            display = '';
+            display = display.trim();
         }
 
         const streamingTitle = message.userInput || '';
 
         return (
-            <article className="w-full max-w-[850px] bg-card border border-border rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 animate-fade-in-up">
+            <article className="w-full max-w-[850px] bg-card border border-border/60 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 animate-fade-in-up">
                 <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-3 font-medium flex-wrap">
                     <div className="flex items-center gap-2">
                         <span className="flex items-center justify-center size-5 rounded-md bg-primary/10 text-primary">
@@ -383,10 +454,7 @@ export default function ChatMessage({
 
                 <div className="text-[15px] leading-[1.6] text-foreground/90 whitespace-pre-wrap break-words">
                     {display ? (
-                        <>
-                            {parseInlineCode(display)}
-                            <span className="inline-block w-1.5 h-4 ml-0.5 bg-primary animate-cursor-blink align-text-bottom" />
-                        </>
+                        <Typewriter text={display} />
                     ) : (
                         <span className="inline-block w-1.5 h-4 bg-primary animate-cursor-blink align-text-bottom" />
                     )}

@@ -13,7 +13,7 @@
 import { ThumbsUp, ThumbsDown, Copy, RotateCcw, Pencil, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-function ActionButton({ active, activeClass, children, onClick, label, disabled }) {
+function ActionButton({ active, activeClass, children, onClick, label, disabled, ariaLive }) {
     return (
         <button
             type="button"
@@ -21,6 +21,7 @@ function ActionButton({ active, activeClass, children, onClick, label, disabled 
             disabled={disabled}
             aria-label={label}
             title={label}
+            aria-live={ariaLive}
             className={cn(
                 'h-7 px-2 text-[11px] font-label rounded-md text-muted-foreground hover:text-foreground hover:bg-muted',
                 'border border-transparent hover:border-border/60 transition-all duration-200',
@@ -99,7 +100,7 @@ export default function MessageActions({
             >
                 <ThumbsDown size={11} className={feedback === 'down' ? 'text-destructive' : feedback === 'up' ? 'opacity-40' : ''} />
             </ActionButton>
-            <ActionButton label="Copy response" onClick={onCopy}>
+            <ActionButton label={isCopied ? "Copied to clipboard" : "Copy response"} onClick={onCopy} ariaLive="polite">
                 {isCopied ? (
                     <>
                         <Check size={11} />

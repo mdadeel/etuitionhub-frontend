@@ -75,6 +75,7 @@ export default {
         'fade-in': 'fadeIn 200ms ease-out',
         'slide-up': 'slideUp 250ms ease-out',
         'scale-in': 'scaleIn 200ms ease-out',
+        'shimmer': 'shimmer 1.5s infinite',
       },
       zIndex: {
         'base': '0',
@@ -98,6 +99,10 @@ export default {
         scaleIn: {
           '0%': { opacity: '0', transform: 'scale(0.96)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
         },
       },
     },

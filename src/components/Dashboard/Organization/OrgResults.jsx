@@ -66,6 +66,7 @@ const OrgResults = () => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handlePublish = async (examId) => {
     try {
       await api.patch(`/api/v1/organizations/${orgId}/results/exams/${examId}/publish`);

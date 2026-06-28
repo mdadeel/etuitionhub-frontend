@@ -414,8 +414,8 @@ const MessageBubble = memo(({
                             "bubble-content px-4 py-2 text-[14px] relative leading-relaxed w-fit font-body z-10 flex flex-col gap-1 transition-all duration-200",
                             roundedClass,
                             isMe 
-                                ? (isDeleted ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700" : "bg-gradient-to-br from-[#3B82F6] to-[#2563EB] text-white ml-auto shadow-[0_2px_8px_rgba(37,99,235,0.15)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.25)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.35)] hover:-translate-y-[0.5px] active:scale-[0.99]")
-                                : (isDeleted ? "bg-slate-100/50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 italic border border-slate-200/50 dark:border-slate-700/50" : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 mr-auto border border-slate-150 dark:border-slate-700/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:-translate-y-[0.5px] active:scale-[0.99]"),
+                                ? (isDeleted ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700" : "bg-gradient-to-br from-[#3B82F6] to-[#2563EB] text-white ml-auto shadow-[0_2px_8px_rgba(37,99,235,0.15)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.25)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.35)]")
+                                : (isDeleted ? "bg-slate-100/50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 italic border border-slate-200/50 dark:border-slate-700/50" : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 mr-auto border border-slate-150 dark:border-slate-700/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"),
                             isHighlighted && "ring-2 ring-blue-500 ring-offset-2 ring-offset-background shadow-lg shadow-blue-500/20",
                             isDeleted && "py-1.5 px-3 text-[12.5px]"
                         )}
@@ -485,15 +485,15 @@ const MessageBubble = memo(({
                                 key={emoji}
                                 onClick={(e) => handlePillClick(e, emoji)}
                                 className={cn(
-                                    "h-7 min-w-[28px] px-2.5 py-0.5 rounded-full text-[12px] flex gap-1.5 items-center justify-center select-none cursor-pointer hover:scale-105 active:scale-95 transition-all duration-150 border shadow-sm",
+                                    "h-6 min-w-[24px] px-1.5 rounded-full text-[10px] flex gap-1 items-center justify-center select-none cursor-pointer hover:scale-105 active:scale-95 transition-all duration-150 border shadow-sm",
                                     "bg-white text-black border-gray-200/80",
                                     "dark:bg-zinc-800 dark:text-white dark:border-zinc-700/80",
                                     "animate-in fade-in zoom-in-90 duration-200 ease-out"
                                 )}
                             >
-                                <span className="text-[13px] leading-none select-none">{emoji}</span>
+                                <span className="text-[11px] leading-none select-none flex items-center justify-center h-full">{emoji}</span>
                                 {count > 1 && (
-                                    <span className="text-[10px] font-bold text-muted-foreground/95 pl-0.5 pr-0.5">{count}</span>
+                                    <span className="text-[9px] font-bold text-muted-foreground/95 pl-0.5 pr-0.5">{count}</span>
                                 )}
                             </div>
                         ))}

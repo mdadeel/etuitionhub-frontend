@@ -33,7 +33,7 @@ export default function AiAssistantLayout({ children, showBack = false, rightSlo
                 {/* Mobile close button inside drawer top-right */}
                 <button 
                     onClick={() => setIsMobileSidebarOpen(false)}
-                    className="absolute top-4 right-4 z-50 p-2 bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-colors"
+                    className="absolute top-4 right-4 z-50 p-2 bg-muted/65 text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 rounded-full transition-all duration-200"
                 >
                     <X size={18} />
                 </button>
@@ -47,18 +47,18 @@ export default function AiAssistantLayout({ children, showBack = false, rightSlo
             {/* Main content - add padding bottom for MobileBottomNav (h-14 = 56px) */}
             <div className="flex-1 min-w-0 min-h-0 flex flex-col h-full relative pb-14 lg:pb-0">
                 {/* Mobile Header (inline, sits under global Navbar) */}
-                <div className="lg:hidden flex h-12 shrink-0 items-center justify-between px-3 bg-background/95 backdrop-blur-md border-b border-border/45">
+                <div className="lg:hidden flex h-12 shrink-0 items-center justify-between px-3 bg-background/95 backdrop-blur-md border-b border-border/40">
                     <div className="flex items-center gap-1">
                         {showBack ? (
-                            <button onClick={() => window.history.back()} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-300 rounded-lg">
+                            <button onClick={() => window.history.back()} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-250 rounded-xl">
                                 <ChevronLeft size={20} />
                             </button>
                         ) : (
-                            <button onClick={() => setIsMobileSidebarOpen(true)} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-300 rounded-lg">
+                            <button onClick={() => setIsMobileSidebarOpen(true)} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-250 rounded-xl">
                                 <Menu size={20} />
                             </button>
                         )}
-                        <span className="text-sm font-semibold tracking-tight ml-1">Porua AI</span>
+                        <span className="text-sm font-semibold tracking-tight ml-1.5">Porua AI</span>
                     </div>
                     
                     {rightSlot && (

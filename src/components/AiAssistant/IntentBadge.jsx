@@ -61,16 +61,32 @@ const INTENT_MAP = {
     },
 };
 
+const BACKEND_INTENT_MAP = {
+    teach: 'concept',
+    solve: 'math',
+    debug: 'programming',
+    quiz: 'quiz',
+    summarize: 'general',
+    translate: 'general',
+    compare: 'concept',
+    career: 'general',
+    conversation: null,
+};
+
 /**
  * @param {string}   templateType   - templateType from the AI message (concept, math, etc.)
+ * @param {string}   [intent]       - detected intent from backend (teach, solve, debug, etc.)
  * @param {string}   [className]    - additional CSS classes
  * @param {boolean}  [showMode]     - also show the UI mode label (default: false)
  */
-export default function IntentBadge({ templateType, className = '', showMode = false }) {
-    // Don't render for conversational messages — they don't have a meaningful intent label.
-    if (!templateType || templateType === 'conversational') return null;
+export default function IntentBadge({ templateType, intent, className = '', showMode = false }) {
+    const resolvedType = (intent && BACKEND_INTENT_MAP[intent] !== undefined)
+        ? (BACKEND_INTENT_MAP[intent] || templateType)
+        : templateType;
 
-    const meta = INTENT_MAP[templateType] || INTENT_MAP.general;
+    if (!resolvedType || resolvedType === 'conversational') return null;
+
+    const meta = INTENT_MAP[resolvedType] || INTENT_MAP.general;
     const Icon = meta.icon;
 
     return (
