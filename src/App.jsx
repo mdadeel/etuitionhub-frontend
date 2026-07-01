@@ -9,10 +9,10 @@ import {
 } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
-import Navbar from "./components/shared/Navbar";
-import MobileBottomNav from "./components/shared/MobileBottomNav";
 import toast, { Toaster } from "react-hot-toast";
-import Footer from "./components/shared/Footer";
+const Navbar = lazy(() => import("./components/shared/Navbar"));
+const MobileBottomNav = lazy(() => import("./components/shared/MobileBottomNav"));
+const Footer = lazy(() => import("./components/shared/Footer"));
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChatProvider } from "./contexts/ChatContext";
@@ -21,12 +21,12 @@ import useHeartbeat from "./hooks/useHeartbeat";
 import ToastViewport from "./components/shared/ToastViewport";
 import PrivateRoute from "./components/shared/PrivateRoute";
 import PublicRoute from "./components/shared/PublicRoute";
-import FloatingChat from "./components/shared/FloatingChat";
+const FloatingChat = lazy(() => import("./components/shared/FloatingChat"));
 import { cn } from "@/lib/utils";
 import RouteErrorBoundary from "./components/shared/RouteErrorBoundary";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
 import { DynamicIslandProvider } from "./contexts/DynamicIslandProvider";
-import { DynamicIsland } from "./components/shared/DynamicIsland";
+const DynamicIsland = lazy(() => import("./components/shared/DynamicIsland").then(m => ({ default: m.DynamicIsland })));
 
 // Lazy-loaded page components for code splitting
 const Home = lazy(() => import("./pages/Home"));
@@ -76,7 +76,7 @@ const ConditionalNavbar = () => {
   const isDashboard = pathname.startsWith("/dashboard");
   const isSession = pathname.startsWith("/session");
   if (isDashboard || isSession) return null;
-  return <Navbar />;
+  return <Suspense fallback={null}><Navbar /></Suspense>;
 };
 
 const ConditionalFooter = () => {
@@ -88,7 +88,7 @@ const ConditionalFooter = () => {
   const isAiAssistant = pathname.startsWith("/ai-assistant");
   const isAuth = pathname === "/login" || pathname === "/register";
   if (isDashboard || isSession || isTutors || isTuitions || isAiAssistant || isAuth) return null;
-  return <Footer />;
+  return <Suspense fallback={null}><Footer /></Suspense>;
 };
 
 const ConditionalMobileBottomNav = () => {
@@ -96,7 +96,7 @@ const ConditionalMobileBottomNav = () => {
   const isSession = pathname.startsWith("/session");
   const isCheckout = pathname.startsWith("/checkout");
   if (isSession || isCheckout) return null;
-  return <MobileBottomNav />;
+  return <Suspense fallback={null}><MobileBottomNav /></Suspense>;
 };
 
 const ConditionalFloatingChat = () => {
@@ -106,7 +106,11 @@ const ConditionalFloatingChat = () => {
   const isAiAssistant = pathname.startsWith("/ai-assistant");
   if (isSession || isAiAssistant) return null;
   if (!dbUser) return null;
-  return <FloatingChat />;
+  return (
+    <Suspense fallback={null}>
+      <FloatingChat />
+    </Suspense>
+  );
 };
 
 const MainContent = ({ children }) => {
@@ -149,16 +153,27 @@ const HeartbeatBridge = () => {
   return null;
 };
 
+const AuthenticatedProviders = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) return children;
+  return (
+    <ChatProvider>
+      <DynamicIslandProvider>
+        <RealtimeBridge />
+        <HeartbeatBridge />
+        {children}
+      </DynamicIslandProvider>
+    </ChatProvider>
+  );
+};
+
 let App = () => {
   return (
     <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <AuthProvider>
-        <ChatProvider>
-          <DynamicIslandProvider>
-            <RealtimeBridge />
-            <HeartbeatBridge />
+        <AuthenticatedProviders>
             <BrowserRouter>
               <SessionExpiryCheck />
             <ScrollToTop />
@@ -362,8 +377,7 @@ let App = () => {
                 <ConditionalFloatingChat />
               </div>
             </BrowserRouter>
-          </DynamicIslandProvider>
-        </ChatProvider>
+        </AuthenticatedProviders>
       </AuthProvider>
     </ThemeProvider>
     </QueryClientProvider>

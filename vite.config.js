@@ -21,6 +21,8 @@ export default defineConfig({
           if (id.includes('node_modules/socket.io')) return 'vendor-socket';
           if (id.includes('node_modules/recharts')) return 'vendor-charts';
           if (id.includes('node_modules/react-hook-form') || id.includes('node_modules/react-hot-toast')) return 'vendor-forms';
+          if (id.includes('node_modules/firebase')) return 'vendor-firebase';
+          if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) return 'vendor-i18n';
         },
       },
     },

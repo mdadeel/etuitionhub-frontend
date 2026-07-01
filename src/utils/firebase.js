@@ -55,10 +55,20 @@ if (!firebaseConfig.apiKey) {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-import { getStorage } from 'firebase/storage';
-
 // Initialize Firebase Authentication
 export const auth = getAuth(app);
-export const storage = getStorage(app);
+
+// Lazy-load Storage — not needed on Login/Register pages
+let _storage;
+export const getStorageLazy = () => {
+  if (!_storage) {
+    // Dynamic import to avoid bundling firebase/storage on every page
+    return import('firebase/storage').then(({ getStorage }) => {
+      _storage = getStorage(app);
+      return _storage;
+    });
+  }
+  return Promise.resolve(_storage);
+};
 
 export default app;

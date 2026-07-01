@@ -57,3 +57,9 @@ dashboard-audit-report.md
 design.md
 design.html
 .env.vercel
+
+# Debug/HAR capture artifacts
+*.har
+capture-*.mjs
+analyze-*.mjs
+login-*.har
