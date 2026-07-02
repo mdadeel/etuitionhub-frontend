@@ -31,6 +31,9 @@ const Tutors = () => {
   const [allSubjects, setAllSubjects] = useState([]);
   const [allAreas, setAllAreas] = useState(["All"]);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [selectedGender, setSelectedGender] = useState("all");
+  const [selectedMinSalary, setSelectedMinSalary] = useState(1000);
+  const [selectedMaxSalary, setSelectedMaxSalary] = useState(20000);
   const searchQuery = searchParams.get("q") || "";
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debouncedSearch = useDebouncedValue(localSearch, 300);
@@ -71,6 +74,9 @@ const Tutors = () => {
     selectedSubjects,
     selectedArea,
     selectedLanguage,
+    selectedGender,
+    selectedMinSalary,
+    selectedMaxSalary,
     sortBy,
   ]);
 
@@ -79,10 +85,13 @@ const Tutors = () => {
     const params = {};
     if (debouncedSearch) params.q = debouncedSearch;
     if (selectedSubjects.length > 0)
-      params.subjects = selectedSubjects.join(",");
+      params.subject = selectedSubjects.join(",");
     if (selectedArea && selectedArea !== "All") params.area = selectedArea;
     if (selectedLanguage && selectedLanguage !== "all")
       params.lang = selectedLanguage;
+    if (selectedGender && selectedGender !== "all") params.gender = selectedGender;
+    if (selectedMinSalary && selectedMinSalary !== 1000) params.minSalary = selectedMinSalary;
+    if (selectedMaxSalary && selectedMaxSalary !== 20000) params.maxSalary = selectedMaxSalary;
     if (sortBy && sortBy !== "ratings") params.sort = sortBy;
     setSearchParams(params, { replace: true });
   }, [
@@ -90,19 +99,28 @@ const Tutors = () => {
     selectedSubjects,
     selectedArea,
     selectedLanguage,
+    selectedGender,
+    selectedMinSalary,
+    selectedMaxSalary,
     sortBy,
     setSearchParams,
   ]);
 
   // Restore filters from URL on mount
   useEffect(() => {
-    const subjects = searchParams.get("subjects");
+    const subject = searchParams.get("subject") || searchParams.get("subjects");
     const area = searchParams.get("area");
     const lang = searchParams.get("lang");
+    const gender = searchParams.get("gender");
+    const minSalary = searchParams.get("minSalary");
+    const maxSalary = searchParams.get("maxSalary");
     const sort = searchParams.get("sort");
-    if (subjects) setSelectedSubjects(subjects.split(","));
+    if (subject) setSelectedSubjects(subject.split(","));
     if (area) setSelectedArea(area);
     if (lang) setSelectedLanguage(lang);
+    if (gender) setSelectedGender(gender);
+    if (minSalary) setSelectedMinSalary(parseInt(minSalary));
+    if (maxSalary) setSelectedMaxSalary(parseInt(maxSalary));
     if (sort) setSortBy(sort);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -121,6 +139,12 @@ const Tutors = () => {
         if (selectedArea !== "All") params.append("location", selectedArea);
         if (selectedLanguage !== "all" && selectedLanguage !== "All")
           params.append("language", selectedLanguage);
+        if (selectedGender && selectedGender !== "all")
+          params.append("gender", selectedGender);
+        if (selectedMinSalary && selectedMinSalary !== 1000)
+          params.append("minPrice", selectedMinSalary);
+        if (selectedMaxSalary && selectedMaxSalary !== 20000)
+          params.append("maxPrice", selectedMaxSalary);
 
         params.append("page", page);
         params.append("limit", 21);
@@ -184,6 +208,9 @@ const Tutors = () => {
     selectedArea,
     sortBy,
     selectedLanguage,
+    selectedGender,
+    selectedMinSalary,
+    selectedMaxSalary,
     page,
   ]);
 
@@ -227,6 +254,9 @@ const Tutors = () => {
     setSelectedSubjects([]);
     setSelectedArea("All");
     setSelectedLanguage("all");
+    setSelectedGender("all");
+    setSelectedMinSalary(1000);
+    setSelectedMaxSalary(20000);
     setPage(1);
   };
 
@@ -381,6 +411,17 @@ const Tutors = () => {
                   ]}
                 />
 
+                <FilterSelect
+                  label="Gender"
+                  value={selectedGender}
+                  onValueChange={setSelectedGender}
+                  options={[
+                    { value: "all", label: "All" },
+                    { value: "male", label: "Male" },
+                    { value: "female", label: "Female" },
+                  ]}
+                />
+
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block">
@@ -417,7 +458,10 @@ const Tutors = () => {
                 sortBy !== "ratings" ||
                 selectedSubjects.length > 0 ||
                 selectedArea !== "All" ||
-                selectedLanguage !== "all") && (
+                selectedLanguage !== "all" ||
+                selectedGender !== "all" ||
+                selectedMinSalary !== 1000 ||
+                selectedMaxSalary !== 20000) && (
                 <button
                   onClick={handleClear}
                   className="w-full mt-6 px-3 py-3 text-sm font-medium text-muted-foreground border border-border rounded-xl hover:bg-background flex items-center justify-center gap-2 transition-colors"
@@ -461,7 +505,7 @@ const Tutors = () => {
                 <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-sm font-medium">
                   "{searchQuery}"
                 </span>
-                <SaveSearchButton query={searchQuery} filters={{ subjects: selectedSubjects, area: selectedArea, language: selectedLanguage }} />
+                <SaveSearchButton query={searchQuery} filters={{ subject: selectedSubjects, area: selectedArea, language: selectedLanguage, gender: selectedGender, minSalary: selectedMinSalary, maxSalary: selectedMaxSalary }} />
               </div>
             )}
 

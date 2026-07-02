@@ -14,7 +14,9 @@ const Login = () => {
     const { login, googleLogin } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
-    let from = location.state?.from?.pathname || '/dashboard'
+    const queryParams = new URLSearchParams(location.search)
+    const nextParam = queryParams.get('next')
+    let from = nextParam || location.state?.from?.pathname || '/dashboard'
     if (typeof from !== 'string' || !from.startsWith('/') || from.startsWith('//')) {
         from = '/dashboard'
     }

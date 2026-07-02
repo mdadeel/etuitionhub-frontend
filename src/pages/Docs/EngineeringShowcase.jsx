@@ -175,7 +175,7 @@ export default function EngineeringShowcase() {
     },
     context: {
       name: "Intelligent Context Builder",
-      icon: <GitFork className="size-5 text-purple-400" />,
+      icon: <GitFork className="size-5 text-emerald-400" />,
       purpose: "Aggregates message history, learning metrics, and NCTB syllabus guidelines into an optimized prompt token layout.",
       files: [
         "etuitionhub--backend/src/modules/ai/services/promptEngine.js",
@@ -591,7 +591,7 @@ export default function EngineeringShowcase() {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <GitFork className="size-5 text-purple-400" />
+                  <GitFork className="size-5 text-emerald-400" />
                   <div>
                     <h3 className="text-sm font-heading font-bold uppercase tracking-wide">Context Builder</h3>
                     <p className="text-xs text-slate-500 font-normal font-body mt-1">Token pruning & syllabus context</p>
@@ -647,11 +647,9 @@ export default function EngineeringShowcase() {
                     <span className="text-blue-400">Time-To-Failure: &lt;400ms retry</span>
                   </div>
                 </div>
-              )}
-
-              {activeHighlightTab === 'context' && (
+              )}               {activeHighlightTab === 'context' && (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-xs font-mono text-purple-400 uppercase tracking-widest">
+                  <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 uppercase tracking-widest">
                     <span>Token Management</span>
                     <span>•</span>
                     <span>Context Retrieval</span>
@@ -664,17 +662,17 @@ export default function EngineeringShowcase() {
                   </p>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-body text-slate-400">
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="size-4 text-purple-500 shrink-0 mt-0.5" />
+                      <CheckCircle className="size-4 text-emerald-500 shrink-0 mt-0.5" />
                       <span><strong>Syllabus Alignment:</strong> Injects Bangladesh NCTB (SSC/HSC) curriculum constraints based on user choice.</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="size-4 text-purple-500 shrink-0 mt-0.5" />
+                      <CheckCircle className="size-4 text-emerald-500 shrink-0 mt-0.5" />
                       <span><strong>Token Pruning Filters:</strong> Truncates old history elements dynamically when close to LLM context limits.</span>
                     </li>
                   </ul>
                   <div className="pt-4 border-t border-slate-900 flex justify-between items-center text-xs font-mono">
                     <span className="text-slate-500">Component: /src/modules/ai/services/contextEngine.js</span>
-                    <span className="text-purple-400">Token Saved: ~35% average</span>
+                    <span className="text-emerald-400">Token Saved: ~35% average</span>
                   </div>
                 </div>
               )}

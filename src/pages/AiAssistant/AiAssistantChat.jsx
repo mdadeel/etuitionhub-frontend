@@ -196,7 +196,6 @@ export default function AiAssistantChat() {
                     try {
                         const parsed = JSON.parse(chunk);
                         if (parsed.type === 'error') {
-                            // Backend error frame — surface it as an error message
                             streamError = parsed.error || 'The AI assistant encountered an error.';
                             return;
                         }
@@ -213,7 +212,6 @@ export default function AiAssistantChat() {
                         } else if (parsed.answer !== undefined) {
                             localStreamData += parsed.answer;
                         } else {
-                            // If it's some other JSON chunk we can't extract, stringify or use the raw chunk
                             localStreamData += typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
                         }
                     } catch {
