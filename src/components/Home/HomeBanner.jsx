@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
+import { useQuery } from '@tanstack/react-query';
+import api from '../../services/api';
+import { trackEvent } from '../../services/analytics';
 import { 
   Search, 
   ShieldCheck, 
@@ -10,69 +13,57 @@ import {
   Heart, 
   BookOpen, 
   MapPin,
-  Star
 } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import FilterSelect from '@/components/shared/FilterSelect';
+import LocationFilter from '@/components/shared/LocationFilter';
 import TutorCard from '@/components/shared/TutorCard';
 import { cn } from "@/lib/utils";
 
-const sampleTutors = [
-  {
-    _id: "hero-tutor-1",
-    displayName: "Arifur Rahman",
-    photoURL: "https://api.dicebear.com/9.x/avataaars/svg?seed=Arif",
-    qualification: "M.Sc. in Physics, BUET",
-    location: "Dhaka, Uttara",
-    subjects: ["Physics", "Mathematics", "Further Maths"],
-    isVerified: true,
-    ratings: 4.9,
-    expectedSalary: 8000,
-    experience: "5+ years",
-  },
-  {
-    _id: "hero-tutor-2",
-    displayName: "Sultana Kamal",
-    photoURL: "https://api.dicebear.com/9.x/avataaars/svg?seed=Kamal",
-    qualification: "B.Sc. in CSE, DU",
-    location: "Dhaka, Dhanmondi",
-    subjects: ["ICT", "Programming", "Mathematics"],
-    isVerified: true,
-    ratings: 4.8,
-    expectedSalary: 7000,
-    experience: "3+ years",
-  },
-  {
-    _id: "hero-tutor-3",
-    displayName: "Tanvir Ahmed",
-    photoURL: "https://api.dicebear.com/9.x/avataaars/svg?seed=Tanvir",
-    qualification: "MBBS, Dhaka Medical College",
-    location: "Dhaka, Farmgate",
-    subjects: ["Biology", "Chemistry"],
-    isVerified: true,
-    ratings: 4.9,
-    expectedSalary: 9000,
-    experience: "4+ years",
-  }
-];
 
 const HomeBanner = () => {
     const navigate = useNavigate();
+
+    const { data: tutorsData } = useQuery({
+        queryKey: ['tutors', 'hero'],
+        queryFn: async () => {
+            const res = await api.get('/api/tutors?page=1&limit=3&sort=ratings');
+            const raw = res.data?.data || res.data?.tutors || res.data;
+            return Array.isArray(raw) ? raw.slice(0, 3) : [];
+        },
+        staleTime: 120_000,
+    });
+
+    const tutors = tutorsData || [];
+
     const [searchData, setSearchData] = useState({
         subject: '',
         classLevel: '',
         location: ''
     });
+
+    const { data: availability } = useQuery({
+        queryKey: ['tutors', 'availability', searchData.location],
+        queryFn: async () => {
+            const params = new URLSearchParams();
+            if (searchData.location) params.append('city', searchData.location);
+            const res = await api.get(`/api/tutors/availability?${params.toString()}`);
+            return res.data;
+        },
+        staleTime: 60_000,
+        refetchInterval: 60_000,
+    });
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
+        if (tutors.length === 0) return;
         const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % sampleTutors.length);
+            setCurrentIndex((prev) => (prev + 1) % tutors.length);
         }, 5000); 
         return () => clearInterval(interval);
-    }, []);
+    }, [tutors.length]);
 
     const subjects = [
         "Mathematics", "English", "Physics", "Chemistry", "Biology", "ICT", "Accounting"
@@ -84,22 +75,23 @@ const HomeBanner = () => {
         "SSC", "HSC", "Admission", "English Medium"
     ];
 
-    const handleSearch = (e) => {
+const handleSearch = (e) => {
         if (e) e.preventDefault();
+        trackEvent('home_search', `subject:${searchData.subject || 'any'}`, 1);
         const params = new URLSearchParams();
-        if (searchData.subject) params.set('subjects', searchData.subject);
+        if (searchData.subject) params.set('subject', searchData.subject);
         if (searchData.classLevel) params.set('class', searchData.classLevel);
         if (searchData.location) params.set('area', searchData.location);
         navigate(`/tutors?${params.toString()}`);
     };
 
     return (
-        <section className="relative min-h-[85vh] flex items-center bg-background overflow-hidden">
-            {/* Minimal Background Atmosphere */}
-            <div className="absolute inset-0 z-0">
-                <div className="absolute top-[-10%] left-[-5%] size-[35%] rounded-full bg-primary/5 blur-[120px]" />
-                <div className="absolute bottom-[5%] right-[-5%] size-[40%] rounded-full bg-primary/5 blur-[120px]" />
-            </div>
+        <section className="relative min-h-[85vh] flex items-center bg-background overflow-hidden bg-cover bg-center"
+            style={{ backgroundImage: 'url(/images/herobackground.png)' }}>
+            {/* Soft overlay for readability */}
+            <div className="absolute inset-0 bg-background/85 backdrop-blur-[4px] z-0" />
+            {/* Soft radial glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-primary/5 blur-[120px] pointer-events-none z-0" />
 
             <div className="max-w-7xl mx-auto px-6 relative z-10 py-8 lg:py-20">
                 <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -133,6 +125,25 @@ const HomeBanner = () => {
                         {/* Search Block */}
                         <div>
                             <Card className="p-6 bg-card/90 backdrop-blur-md border-border shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-xl overflow-visible">
+                                <div className="flex items-center gap-2 mb-4 text-xs font-semibold text-muted-foreground">
+                                    <span className="relative flex size-2">
+                                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                                        <span className="relative inline-flex size-2 rounded-full bg-green-500" />
+                                    </span>
+                                    <span>
+                                        {availability ? (
+                                            <>
+                                                Live: <span className="text-foreground font-bold">{availability.count}</span> expert tutors available{" "}
+                                                <span className="text-primary font-bold">
+                                                    {availability.scope === "nationwide" ? "nationwide" : `in ${availability.scope}`}
+                                                </span>{" "}
+                                                right now
+                                            </>
+                                        ) : (
+                                            "Checking live tutor availability..."
+                                        )}
+                                    </span>
+                                </div>
                                 <div className="flex flex-col md:flex-row items-stretch md:items-end gap-4 md:gap-6 mb-4">
                                     <div className="flex-1 w-full">
                                         <FilterSelect 
@@ -155,26 +166,16 @@ const HomeBanner = () => {
                                         />
                                     </div>
                                     <div className="flex-1 w-full">
-                                        <label className="block text-xs font-heading font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">
-                                            Location
-                                        </label>
-                                        <div className="relative">
-                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-primary opacity-55" />
-                                            <input
-                                                type="text"
-                                                placeholder="Enter area or city"
-                                                className="w-full h-10 pl-9 pr-3 bg-card border border-border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 font-bold text-foreground"
-                                                value={searchData.location}
-                                                onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
-                                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                                            />
-                                        </div>
+                                        <LocationFilter
+                                            value={searchData.location}
+                                            onChange={(val) => setSearchData({ ...searchData, location: val || '' })}
+                                        />
                                     </div>
                                     <div className="w-full md:w-auto mt-2 md:mt-0">
                                         <Button 
                                             type="button"
                                             onClick={handleSearch}
-                                            className="bg-primary hover:bg-primary/90 h-10 w-full md:w-auto px-10 font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 rounded-xl"
+                                            className="bg-primary hover:bg-primary/90 h-10 px-6 font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 rounded-xl"
                                         >
                                             <Search className="size-4 mr-2" />
                                             <span>Search</span>
@@ -207,8 +208,8 @@ const HomeBanner = () => {
                             <div className="absolute -top-10 -right-10 size-48 bg-primary/10 rounded-full blur-[100px] -z-10" />
                             <div className="absolute -bottom-10 -left-10 size-64 bg-primary/5 rounded-full blur-[100px] -z-10" />
                             
-                            {sampleTutors.map((tutor, idx) => {
-                                const relativeIndex = (idx - currentIndex + sampleTutors.length) % sampleTutors.length;
+                            {tutors.map((tutor, idx) => {
+                                const relativeIndex = (idx - currentIndex + tutors.length) % tutors.length;
                                 
                                 // Only show the top cards
                                 if (relativeIndex > 2) return null;
@@ -224,7 +225,6 @@ const HomeBanner = () => {
                                         key={tutor._id}
                                         className={cn(
                                             "absolute inset-0 rounded-2xl overflow-hidden bg-card shadow-[0_20px_40px_rgba(0,0,0,0.06)] border border-border/80 transition-all duration-500",
-                                            relativeIndex === 0 ? "opacity-100" : "opacity-0 md:opacity-100"
                                         )}
                                         style={{
                                             zIndex,
