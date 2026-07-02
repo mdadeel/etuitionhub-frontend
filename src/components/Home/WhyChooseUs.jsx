@@ -1,66 +1,44 @@
 import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const ShieldIllus = () => (
-  <svg viewBox="0 0 180 160" className="w-full h-full" fill="none">
-    <path d="M90 20 L145 45 L145 90 C145 125 90 145 90 145 C90 145 35 125 35 90 L35 45 Z"
-      stroke="hsl(221 83% 53% / 0.25)" strokeWidth="2" />
-    <path d="M90 30 L135 50 L135 88 C135 118 90 135 90 135 C90 135 45 118 45 88 L45 50 Z"
-      stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5" />
-    <path d="M72 90 L84 102 L110 76" stroke="hsl(221 83% 53%)" strokeWidth="3"
-      strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
-    <rect x="65" y="30" width="8" height="10" rx="1" fill="hsl(221 83% 53% / 0.12)" />
-    <rect x="80" y="30" width="8" height="10" rx="1" fill="hsl(221 83% 53% / 0.12)" />
-    <rect x="95" y="30" width="8" height="10" rx="1" fill="hsl(221 83% 53% / 0.12)" />
-    <circle cx="40" cy="110" r="3" fill="hsl(221 83% 53% / 0.08)" />
-    <circle cx="140" cy="110" r="3" fill="hsl(221 83% 53% / 0.08)" />
-    <circle cx="50" cy="130" r="2" fill="hsl(221 83% 53% / 0.05)" />
-    <circle cx="130" cy="130" r="2" fill="hsl(221 83% 53% / 0.05)" />
+  <svg viewBox="0 0 180 160" className="w-full h-full text-primary" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M90 20 C110 30, 140 40, 145 45 C145 75, 135 110, 90 145 C45 110, 35 75, 35 45 C40 40, 70 30, 90 20 Z"
+      strokeWidth="1.5" opacity="0.3" />
+    <path d="M90 25 C108 34, 135 43, 140 47 C140 73, 130 105, 90 138 C50 105, 40 73, 40 47 C45 43, 72 34, 90 25 Z"
+      strokeWidth="1.2" />
+    <path d="M68 85 C73 90, 76 96, 80 102 C88 90, 100 78, 115 70" strokeWidth="2.5" className="text-primary" />
+    <path d="M50 30 Q 70 25 90 30" strokeWidth="0.8" opacity="0.5" strokeDasharray="2 2" />
+    <circle cx="150" cy="90" r="2" opacity="0.4" />
+    <circle cx="30" cy="110" r="3" opacity="0.3" />
   </svg>
 );
 
 const ChatIllus = () => (
-  <svg viewBox="0 0 180 160" className="w-full h-full" fill="none">
-    <rect x="15" y="30" width="100" height="55" rx="10"
-      stroke="hsl(38 95% 52% / 0.25)" strokeWidth="2" fill="hsl(38 95% 52% / 0.04)" />
-    <path d="M40 85 L25 110 L55 85" stroke="hsl(38 95% 52% / 0.2)" strokeWidth="1.5"
-      fill="hsl(38 95% 52% / 0.04)" />
-    <circle cx="42" cy="50" r="4" fill="hsl(38 95% 52% / 0.35)" />
-    <circle cx="65" cy="50" r="4" fill="hsl(38 95% 52% / 0.35)" />
-    <circle cx="88" cy="50" r="4" fill="hsl(38 95% 52% / 0.35)" />
-    <circle cx="42" cy="68" r="4" fill="hsl(38 95% 52% / 0.15)" />
-    <circle cx="65" cy="68" r="4" fill="hsl(38 95% 52% / 0.15)" />
-    <rect x="100" y="60" width="65" height="45" rx="10"
-      stroke="hsl(221 83% 53% / 0.2)" strokeWidth="2" fill="hsl(221 83% 53% / 0.04)" />
-    <path d="M125 105 L115 125 L140 105" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5"
-      fill="hsl(221 83% 53% / 0.04)" />
-    <circle cx="118" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
-    <circle cx="135" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
-    <circle cx="152" cy="77" r="3" fill="hsl(221 83% 53% / 0.35)" />
-    <path d="M90 75 Q 95 65 100 75" stroke="hsl(38 95% 52% / 0.3)" strokeWidth="1.5"
-      strokeDasharray="3 3" />
+  <svg viewBox="0 0 180 160" className="w-full h-full text-amber-500" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 40 C20 30, 110 30, 110 40 C110 50, 110 70, 110 75 C110 82, 85 82, 75 82 C60 92, 45 98, 35 102 C40 92, 43 85, 40 82 C20 82, 20 70, 20 40 Z"
+      strokeWidth="1.5" />
+    <path d="M24 44 C24 35, 106 35, 106 44 C106 52, 106 68, 106 72 C106 78, 83 78, 73 78 C59 88, 47 94, 38 97 C42 88, 44 82, 42 78 C24 78, 24 68, 24 44 Z"
+      strokeWidth="1" opacity="0.4" />
+    <line x1="40" y1="52" x2="90" y2="52" strokeWidth="1.2" opacity="0.6" />
+    <line x1="40" y1="64" x2="75" y2="64" strokeWidth="1.2" opacity="0.6" />
+    <path d="M160 80 C160 70, 80 70, 80 80 C80 90, 80 110, 80 112 C80 118, 100 118, 108 118 C120 128, 130 134, 138 138 C135 129, 133 122, 135 118 C160 118, 160 108, 160 80 Z"
+      strokeWidth="1.5" className="text-primary" />
+    <line x1="95" y1="92" x2="145" y2="92" strokeWidth="1.2" opacity="0.6" className="text-primary" />
+    <line x1="95" y1="102" x2="125" y2="102" strokeWidth="1.2" opacity="0.6" className="text-primary" />
   </svg>
 );
 
 const DeviceIllus = () => (
-  <svg viewBox="0 0 180 160" className="w-full h-full" fill="none">
-    <rect x="20" y="20" width="85" height="60" rx="4"
-      stroke="hsl(221 83% 53% / 0.25)" strokeWidth="2" fill="hsl(221 83% 53% / 0.04)" />
-    <rect x="24" y="28" width="77" height="38" rx="2"
-      stroke="hsl(221 83% 53% / 0.1)" strokeWidth="1" fill="hsl(221 83% 53% / 0.04)" />
-    <line x1="45" y1="72" x2="80" y2="72" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5" />
-    <rect x="58" y="16" width="9" height="4" rx="2" fill="hsl(221 83% 53% / 0.15)" />
-    <rect x="110" y="50" width="40" height="75" rx="6"
-      stroke="hsl(38 95% 52% / 0.25)" strokeWidth="2" fill="hsl(38 95% 52% / 0.04)" />
-    <rect x="115" y="60" width="30" height="42" rx="3"
-      stroke="hsl(38 95% 52% / 0.1)" strokeWidth="1" fill="hsl(38 95% 52% / 0.04)" />
-    <line x1="122" y1="113" x2="138" y2="113" stroke="hsl(38 95% 52% / 0.3)" strokeWidth="2" strokeLinecap="round" />
-    <line x1="127" y1="120" x2="133" y2="120" stroke="hsl(38 95% 52% / 0.15)" strokeWidth="1.5" strokeLinecap="round" />
-    <circle cx="130" cy="125" r="3" stroke="hsl(38 95% 52% / 0.2)" strokeWidth="1.5" />
-    <path d="M62 50 Q 72 45 80 50 Q 88 55 95 50" stroke="hsl(221 83% 53% / 0.15)" strokeWidth="1.5" fill="none" />
-    <circle cx="10" cy="90" r="2" fill="hsl(221 83% 53% / 0.08)" />
-    <circle cx="170" cy="30" r="2" fill="hsl(38 95% 52% / 0.08)" />
-    <circle cx="165" cy="130" r="3" fill="hsl(221 83% 53% / 0.05)" />
-    <circle cx="15" cy="140" r="2" fill="hsl(38 95% 52% / 0.05)" />
+  <svg viewBox="0 0 180 160" className="w-full h-full text-primary" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="25" y="30" width="80" height="50" rx="3" strokeWidth="1.5" />
+    <rect x="29" y="34" width="72" height="42" rx="1" strokeWidth="1" opacity="0.4" />
+    <path d="M15 80 L115 80 C115 85, 15 85, 15 80 Z" strokeWidth="1.5" />
+    <line x1="55" y1="83" x2="75" y2="83" strokeWidth="2" />
+    <rect x="110" y="55" width="40" height="75" rx="5" strokeWidth="1.5" className="text-amber-500" />
+    <rect x="114" y="63" width="32" height="58" rx="2" strokeWidth="1" opacity="0.4" className="text-amber-500" />
+    <circle cx="130" cy="126" r="3" strokeWidth="1.2" className="text-amber-500" />
+    <path d="M65 50 Q 85 45 105 60" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
+    <circle cx="105" cy="60" r="2.5" fill="currentColor" />
   </svg>
 );
 
@@ -112,73 +90,107 @@ const WhyChooseUs = () => {
   const statsRef = useAnimateOnScroll();
 
   return (
-    <section className="relative overflow-hidden py-14 md:py-20 bg-background">
-      <div ref={headingRef} className="animate-in-up max-w-6xl mx-auto px-6 mb-12">
-        <span className="text-xs font-medium text-primary/70 uppercase tracking-[0.18em]">Why Trust Us</span>
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading text-foreground tracking-tight leading-[0.95] mt-2 max-w-4xl">
-          Why parents trust us with their children's education
-        </h2>
-        <p className="text-sm md:text-base text-muted-foreground leading-relaxed mt-2 max-w-2xl">
-          We've heard the stories — tutors who don't show up, fake credentials, and hidden fees.
-          That's why we built a platform where every tutor is verified, every fee is transparent,
-          and every parent can communicate directly.
-        </p>
-      </div>
+    <section className="relative overflow-hidden py-16 md:py-24 bg-background">
+      {/* Warm glow — grounds the family illustration */}
+      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] -translate-y-1/2 rounded-full bg-amber-400/5 blur-[120px] pointer-events-none z-0" />
 
-      <div ref={featuresRef} className="animate-in-up animate-stagger max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 gap-6">
-        {blocks.map((block, idx) => {
-          const Illus = illustrations[idx];
-          const isLast = idx === 2;
-          return (
-            <div key={idx} className={`animate-in-up-child p-5 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm shadow-sm flex flex-col justify-between ${isLast ? 'col-span-2 md:col-span-1' : ''}`}>
-              <div className="flex flex-col items-center text-center space-y-3">
-                <div className="w-[120px] h-[100px] shrink-0">
-                  <Illus />
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="text-base font-heading text-foreground tracking-tight">
-                    {block.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {block.description}
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-2 pt-3 border-t border-border/10 mt-4">
-                {block.features.map((feature, fi) => {
-                  const parts = feature.split(' — ');
-                  return (
-                    <div key={fi} className="flex items-start gap-2 text-left">
-                      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" className="shrink-0 mt-0.5">
-                        <circle cx="7" cy="7" r="6" stroke={`hsl(${idx % 2 === 1 ? '38 95% 52%' : '221 83% 53%'} / 0.3)`} strokeWidth="1.5" />
-                        <path d="M4.5 7 L6.5 9 L9.5 5" stroke={`hsl(${idx % 2 === 1 ? '38 95% 52%' : '221 83% 53%'})`}
-                          strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
-                      </svg>
-                      <div className="text-[11px] text-muted-foreground leading-normal">
-                        <span className="font-semibold text-foreground">{parts[0]}</span>
-                        {parts[1] && <span className="block text-[10px] opacity-75">{parts[1]}</span>}
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          
+          {/* LEFT - Bangladeshi Family Learning Illustration */}
+          <div className="lg:col-span-5 flex justify-center items-center order-2 lg:order-1">
+            <div className="relative w-full max-w-[460px] aspect-[5/4]">
+              <img src="/images/styding.png" alt="Family learning illustration" className="w-full h-auto object-contain" />
+            </div>
+          </div>
+
+          {/* RIGHT - Text Contents & Features */}
+          <div ref={headingRef} className="lg:col-span-7 space-y-8 order-1 lg:order-2">
+            <div>
+              <span className="text-xs font-semibold text-primary uppercase tracking-[0.18em]">Why Trust Us</span>
+              <h2 className="text-2xl md:text-3xl font-heading text-foreground tracking-tight leading-tight mt-2">
+                Why parents trust us with their children's education
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed mt-3">
+                We've heard the stories — tutors who don't show up, fake credentials, and hidden fees.
+                That's why we built a platform where every tutor is verified, every fee is transparent,
+                and every parent can communicate directly.
+              </p>
+            </div>
+
+
+            {/* Connected feature cards system */}
+            <div ref={featuresRef} className="space-y-0 relative z-10">
+              {blocks.map((block, idx) => {
+                const Illus = illustrations[idx];
+                const isLast = idx === blocks.length - 1;
+                return (
+                  <div key={idx} className="relative">
+                    {/* Feature Card */}
+                    <div className="flex gap-4 p-4 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm shadow-xs hover:border-border/70 transition-colors z-10 relative">
+                      <div className="w-14 h-12 shrink-0 bg-primary/5 rounded-lg p-2 flex items-center justify-center">
+                        <Illus className="size-full" />
+                      </div>
+                      <div className="space-y-1.5 flex-1">
+                        <h3 className="text-sm font-heading font-bold text-foreground">
+                          {block.title}
+                        </h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {block.description}
+                        </p>
+                        
+                        {/* Sub-features list */}
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 border-t border-border/5 mt-2">
+                          {block.features.map((feature, fi) => {
+                            const parts = feature.split(' — ');
+                            return (
+                              <div key={fi} className="flex items-start gap-1">
+                                <svg width="10" height="10" viewBox="0 0 14 14" fill="none" className="shrink-0 mt-0.5">
+                                  <circle cx="7" cy="7" r="6" stroke="hsl(221 83% 53% / 0.3)" strokeWidth="1.5" />
+                                  <path d="M4.5 7 L6.5 9 L9.5 5" stroke="hsl(221 83% 53%)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <div className="text-[10px] text-muted-foreground leading-none">
+                                  <span className="font-semibold text-foreground/80">{parts[0]}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
 
-      <div ref={statsRef} className="animate-in-up max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-border/30">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
-          {trustStats.map((stat, idx) => (
-            <div key={idx}>
-              <span className="text-2xl md:text-3xl font-heading text-foreground tracking-tight block">
-                {stat.value}
-              </span>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mt-0.5 block">
-                {stat.label}
-              </span>
+                    {/* Visually connected paths joining feature card blocks */}
+                    {!isLast && (
+                      <div className="relative h-6 flex flex-col items-center justify-center z-0">
+                        <div className="absolute inset-y-0 w-px border-l border-dashed border-primary/30" />
+                        <div className="relative size-5 rounded-full border border-primary/20 bg-background flex items-center justify-center text-[8px] text-primary/60 shadow-xs z-10 font-bold">
+                          {idx === 0 ? "↓" : "✦"}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          </div>
+        </div>
+
+        {/* BOTTOM - Floating statistics row card */}
+        <div ref={statsRef} className="animate-in-up mt-16 max-w-5xl mx-auto">
+          <div className="bg-card border border-border/60 shadow-lg rounded-2xl p-6 md:p-8 backdrop-blur-md">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-border/20">
+              {trustStats.map((stat, idx) => (
+                <div key={idx} className="pt-4 md:pt-0 md:px-4 first:pt-0">
+                  <span className="text-2xl md:text-3xl font-heading font-bold text-primary tracking-tight block">
+                    {stat.value}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold mt-1.5 block">
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
