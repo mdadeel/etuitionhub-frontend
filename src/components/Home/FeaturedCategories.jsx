@@ -126,7 +126,7 @@ const CategoryCard = ({ cat, index }) => {
 
     return (
         <Link
-            to={`/tutors?subjects=${cat.slug}`}
+            to={`/tutors?subject=${cat.slug}`}
             aria-label={`Browse ${cat.label} tutors`}
             className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[16px]"
             style={{ animationDelay: `${100 + index * 50}ms` }}
@@ -231,10 +231,6 @@ const CategoryCard = ({ cat, index }) => {
 const FeaturedCategories = () => {
     return (
         <section className="relative overflow-hidden bg-card py-12 md:py-16">
-            {/* Decorative blobs */}
-            <div className="pointer-events-none absolute -top-32 -right-32 size-96 rounded-full bg-primary/5 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-32 -left-32 size-96 rounded-full bg-primary/5 blur-3xl" />
-
             <div className="relative z-10 mx-auto max-w-7xl px-6">
                 {/* Compact header */}
                 <div className="mb-6 flex flex-col gap-3 md:mb-8 md:flex-row md:items-end md:justify-between">
