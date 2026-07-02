@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { Venus } from 'lucide-react';
 import TutorCard from '../shared/TutorCard';
 import api from '../../services/api';
 import { TutorCardGridSkeleton } from '../shared/skeletons';
@@ -20,7 +21,7 @@ const PopularTutors = () => {
 
     return (
         <section className="py-16 bg-card relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="flex items-center justify-between mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                     <div>
                         <div className="flex items-center gap-2 mb-2">
@@ -40,11 +41,19 @@ const PopularTutors = () => {
                 )}
 
                 {!loading && tutors.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
-                        {tutors.map((tutor) => (
-                            <TutorCard key={tutor._id || tutor.id} tutor={tutor} />
-                        ))}
-                    </div>
+                    <><div className="flex items-center gap-3 mb-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+                        <Link
+                            to="/tutors?gender=female"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/60 bg-background/80 text-xs font-medium text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
+                        >
+                            <Venus className="size-3.5" />
+                            <span>Female Tutors</span>
+                        </Link>
+                    </div><div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
+                            {tutors.map((tutor) => (
+                                <TutorCard key={tutor._id || tutor.id} tutor={tutor} />
+                            ))}
+                        </div></>
                 )}
 
                 {!loading && tutors.length === 0 && (
@@ -53,6 +62,7 @@ const PopularTutors = () => {
                     </div>
                 )}
             </div>
+
         </section>
     );
 };
