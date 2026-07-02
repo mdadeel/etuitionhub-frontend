@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
+import { trackEvent } from '../../services/analytics';
+import Illustration from './illustrations/Illustration';
 
 const CallToAction = () => {
     return (
         <section className="py-20 md:py-28 bg-card relative overflow-hidden">
-            {/* Decorative background elements */}
-            <div className="absolute top-0 left-0 size-full overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-0 size-96 bg-primary/5 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 size-96 bg-accent/5 rounded-full blur-3xl"></div>
+            {/* Soft emerald glow to complement the graduation illustration */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-emerald-400/5 blur-[120px] pointer-events-none z-0" />
+
+            {/* Graduation illustration — large, prominent, bottom-right */}
+            <div className="absolute bottom-0 right-8 w-56 h-56 pointer-events-none z-0">
+                <Illustration name="graduation" className="w-full h-auto" />
             </div>
 
             <div className="max-w-5xl mx-auto px-6 relative z-10 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
@@ -45,12 +49,12 @@ const CallToAction = () => {
                         {/* CTA Buttons */}
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
                             <Button asChild size="xl" className="w-full sm:w-auto px-8 md:px-10 font-heading font-semibold text-base h-14 md:h-16 bg-gradient-to-r from-primary to-primary/90 hover:shadow-lg hover:-translate-y-1 transition-all">
-                                <Link to="/register">
+                                <Link to="/register" onClick={() => trackEvent('home_cta_click', 'create_account')}>
                                     Create Account
                                 </Link>
                             </Button>
                             <Button asChild variant="outline" size="xl" className="w-full sm:w-auto px-8 md:px-10 font-heading font-semibold text-base h-14 md:h-16 border-primary/20 hover:bg-primary/5 hover:border-primary/40 transition-all">
-                                <Link to="/tutors">
+                                <Link to="/tutors" onClick={() => trackEvent('home_cta_click', 'browse_tutors')}>
                                     Browse Tutors
                                 </Link>
                             </Button>
