@@ -1,7 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LogOut,
   ShieldCheck,
+  DoorOpen,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { getDashboardMenuItems } from "./getDashboardMenuItems";
@@ -9,10 +10,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/shared/Logo";
+import api from "../../services/api";
 
 const DashboardSidebar = ({ className = '' }) => {
   const location = useLocation();
-  const { user, dbUser, logout, orgContext, orgRole, myOrgs, switchOrg, hasPermission } = useAuth();
+  const navigate = useNavigate();
+  const { user, dbUser, logout, orgContext, orgRole, myOrgs, switchOrg, hasPermission, refreshUserFromDB } = useAuth();
   const globalRole = dbUser?.globalRole;
   const legacyRole = dbUser?.role?.toLowerCase() || 'student';
   const effectiveRole = orgContext ? orgRole : legacyRole;
@@ -48,6 +51,22 @@ const DashboardSidebar = ({ className = '' }) => {
       toast.success("Signed out successfully");
     } catch {
       toast.error("Sign out failed");
+    }
+  };
+
+  const handleLeaveOrg = async () => {
+    if (!orgContext?.orgId) return;
+    if (!confirm('Are you sure you want to leave this organization?')) return;
+    try {
+      await api.post(`/api/v1/organizations/${orgContext.orgId}/leave`);
+      toast.success('Left organization');
+      localStorage.removeItem('x-org-id');
+      if (refreshUserFromDB && user?.email) {
+        await refreshUserFromDB(user.email);
+      }
+      navigate('/dashboard');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to leave organization');
     }
   };
 
@@ -103,6 +122,15 @@ const DashboardSidebar = ({ className = '' }) => {
                 </option>
               ))}
             </select>
+            {orgContext && (
+              <button
+                onClick={handleLeaveOrg}
+                className="mt-1.5 w-full flex items-center gap-1.5 px-2 py-1.5 text-[10px] text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+              >
+                <DoorOpen className="size-3" />
+                Leave Organization
+              </button>
+            )}
           </div>
         )}
         {myOrgs?.length === 0 && !orgContext && (

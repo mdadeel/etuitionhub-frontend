@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
-import { Plus, Users, Mail, GraduationCap } from "lucide-react";
+import { Plus, Users, Mail, GraduationCap, Download, Upload, Loader2 } from "lucide-react";
 import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -10,6 +10,8 @@ const OrgStudents = () => {
   const { orgId } = useParams();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -25,6 +27,58 @@ const OrgStudents = () => {
     fetchStudents();
   }, [orgId]);
 
+  const handleExport = async () => {
+    try {
+      setExporting(true);
+      const res = await api.get(`/api/v1/organizations/${orgId}/students/export`, {
+        responseType: 'blob',
+      });
+      const url = URL.createObjectURL(new Blob([res.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `students-${orgId}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Students exported");
+    } catch {
+      toast.error("Failed to export students");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleImport = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv';
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        setImporting(true);
+        const text = await file.text();
+        const lines = text.split('\n').filter(Boolean);
+        if (lines.length < 2) {
+          toast.error("CSV must have a header row and at least one student");
+          return;
+        }
+        const students = lines.slice(1).map((line) => {
+          const cols = line.split(',').map((c) => c.replace(/^"|"$/g, '').trim());
+          return { email: cols[1] || cols[0] };
+        });
+        const res = await api.post(`/api/v1/organizations/${orgId}/students/import`, { students });
+        const { created, skipped, errors } = res.data.data;
+        toast.success(`Imported: ${created} created, ${skipped} skipped${errors?.length ? `, ${errors.length} errors` : ''}`);
+        window.location.reload();
+      } catch {
+        toast.error("Failed to import students");
+      } finally {
+        setImporting(false);
+      }
+    };
+    input.click();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -34,9 +88,19 @@ const OrgStudents = () => {
             Manage student enrollment and track academic progress.
           </p>
         </div>
-        <Button className="shadow-sm">
-          <Plus className="mr-2 h-4 w-4" /> Add Student
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" className="shadow-sm" onClick={handleExport} disabled={exporting}>
+            {exporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+            Export
+          </Button>
+          <Button variant="outline" className="shadow-sm" onClick={handleImport} disabled={importing}>
+            {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+            Import
+          </Button>
+          <Button className="shadow-sm">
+            <Plus className="mr-2 h-4 w-4" /> Add Student
+          </Button>
+        </div>
       </div>
 
       {loading ? (

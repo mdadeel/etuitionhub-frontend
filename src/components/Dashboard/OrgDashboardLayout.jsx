@@ -19,6 +19,7 @@ const OrgSubjects = lazy(() => import('./Organization/OrgSubjects'));
 const OrgAssignments = lazy(() => import('./Organization/OrgAssignments'));
 const OrgMaterials = lazy(() => import('./Organization/OrgMaterials'));
 const OrgAnnouncements = lazy(() => import('./Organization/OrgAnnouncements'));
+const OrgMessages = lazy(() => import('./Organization/OrgMessages'));
 const OrgAttendance = lazy(() => import('./Organization/OrgAttendance'));
 const OrgBranches = lazy(() => import('./Organization/OrgBranches'));
 const OrgEnrollments = lazy(() => import('./Organization/OrgEnrollments'));
@@ -29,6 +30,7 @@ const OrgResults = lazy(() => import('./Organization/OrgResults'));
 const OrgInvoices = lazy(() => import('./Organization/OrgInvoices'));
 const OrgSalaries = lazy(() => import('./Organization/OrgSalaries'));
 const OrgExpenses = lazy(() => import('./Organization/OrgExpenses'));
+const OrgAuditLogs = lazy(() => import('./Organization/OrgAuditLogs'));
 const OrgScholarships = lazy(() => import('./Organization/OrgScholarships'));
 const OrgAcademicYears = lazy(() => import('./Organization/OrgAcademicYears'));
 const OrgBatches = lazy(() => import('./Organization/OrgBatches'));
@@ -167,8 +169,16 @@ const OrgDashboardLayout = () => {
           </OrgPermissionGate>
         } 
       />
-      <Route 
-        path="attendance" 
+      <Route
+        path="messages"
+        element={
+          <OrgPermissionGate permission="message:view" redirect>
+            <OrgMessages />
+          </OrgPermissionGate>
+        }
+      />
+      <Route
+        path="attendance"
         element={
           <OrgPermissionGate permission="attendance:mark" redirect>
             <OrgAttendance />
@@ -255,8 +265,16 @@ const OrgDashboardLayout = () => {
           </OrgPermissionGate>
         } 
       />
-      <Route 
-        path="academic-years" 
+      <Route
+        path="audit-logs"
+        element={
+          <OrgPermissionGate permission="audit:view" redirect>
+            <OrgAuditLogs />
+          </OrgPermissionGate>
+        }
+      />
+      <Route
+        path="academic-years"
         element={
           <OrgPermissionGate permission="class:manage" redirect>
             <OrgAcademicYears />

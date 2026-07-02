@@ -2,18 +2,19 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
-import { 
-  Users, 
-  Mail, 
-  UserPlus, 
-  Trash2, 
+import {
+  Users,
+  Mail,
+  UserPlus,
+  Trash2,
   Loader2,
   Copy,
   CheckCircle2,
   Shield,
   XCircle,
   UserCheck,
-  AlertOctagon
+  AlertOctagon,
+  Check,
 } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
 import ModerationModal from "../ModerationModal";
@@ -36,6 +37,10 @@ const OrgMembers = () => {
   // Moderation Modal State
   const [showModerationModal, setShowModerationModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  // Inline role edit state
+  const [roleEditMember, setRoleEditMember] = useState(null);
+  const [roleEditValue, setRoleEditValue] = useState("");
 
   const fetchMembersAndRoles = useCallback(async () => {
     try {
@@ -139,6 +144,17 @@ const OrgMembers = () => {
       fetchMembersAndRoles();
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to reject request");
+    }
+  };
+
+  const handleRoleChange = async (memberId, newRoleId) => {
+    try {
+      await api.patch(`/api/v1/organizations/${orgId}/members/${memberId}`, { roleId: newRoleId });
+      toast.success("Member role updated");
+      setRoleEditMember(null);
+      fetchMembersAndRoles();
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to update role");
     }
   };
 
@@ -251,24 +267,65 @@ const OrgMembers = () => {
               label: "Actions",
               align: "right",
               render: (_, member) => (
-                <div className="flex justify-end gap-2">
-                  <button
-                    onClick={() => {
-                      setSelectedUser(member.userId);
-                      setShowModerationModal(true);
-                    }}
-                    className="p-2 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors"
-                    title="Moderate Member"
-                  >
-                    <AlertOctagon className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleRemoveMember(member._id, member.userId?.displayName)}
-                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
-                    title="Remove Member"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                <div className="flex justify-end gap-2 items-center">
+                  {roleEditMember === member._id ? (
+                    <div className="flex items-center gap-1">
+                      <select
+                        value={roleEditValue}
+                        onChange={(e) => setRoleEditValue(e.target.value)}
+                        className="text-xs px-2 py-1 bg-background border border-border rounded focus:outline-none"
+                        autoFocus
+                      >
+                        {roles.map((r) => (
+                          <option key={r._id} value={r._id}>{r.name}</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => handleRoleChange(member._id, roleEditValue)}
+                        className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-lg transition-colors"
+                        title="Save"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setRoleEditMember(null)}
+                        className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                        title="Cancel"
+                      >
+                        <XCircle className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          setRoleEditMember(member._id);
+                          setRoleEditValue(member.roleId?._id || '');
+                        }}
+                        className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg transition-colors"
+                        title="Change Role"
+                      >
+                        <Shield className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedUser(member.userId);
+                          setShowModerationModal(true);
+                        }}
+                        className="p-2 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors"
+                        title="Moderate Member"
+                      >
+                        <AlertOctagon className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleRemoveMember(member._id, member.userId?.displayName)}
+                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                        title="Remove Member"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
                 </div>
               ),
             },

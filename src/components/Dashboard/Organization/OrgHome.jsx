@@ -38,7 +38,7 @@ const OrgHome = () => {
         const tuitionList = tuitionsRes.data.data || [];
         setStats({
           totalMembers: memberList.length,
-          teachers: memberList.filter(m => m.roleId?.slug === 'teacher' || m.roleId?.slug === 'org_admin').length,
+          teachers: memberList.filter(m => ['teacher', 'admin', 'coordinator', 'owner'].includes(m.roleId?.slug)).length,
           students: memberList.filter(m => m.roleId?.slug === 'student').length,
           activeTuitions: tuitionList.filter(t => t.status === 'approved' || t.status === 'matched').length,
           totalTuitions: tuitionList.length,

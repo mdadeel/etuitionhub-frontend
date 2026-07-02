@@ -1,15 +1,23 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import { 
   Users, 
   Search, 
   Loader2,
-  AlertOctagon
+  AlertOctagon,
+  Globe,
+  Building2
 } from "lucide-react";
 import { Input } from "../../ui/input";
 import DataTable from "@/components/ui/data-table";
 import ModerationModal from "../ModerationModal";
+
+const ACCOUNT_FILTERS = [
+  { label: 'All', value: 'all' },
+  { label: 'Public', value: 'public' },
+  { label: 'Org Member', value: 'org' },
+];
 
 const GlobalUsers = () => {
   const [users, setUsers] = useState([]);
@@ -17,6 +25,7 @@ const GlobalUsers = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
+  const [accountFilter, setAccountFilter] = useState('all');
 
   const [showModerationModal, setShowModerationModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -41,6 +50,12 @@ const GlobalUsers = () => {
     return () => clearTimeout(timer);
   }, [fetchUsers]);
 
+  const filteredUsers = useMemo(() => {
+    if (accountFilter === 'public') return users.filter(u => !u.primaryOrgId);
+    if (accountFilter === 'org') return users.filter(u => u.primaryOrgId);
+    return users;
+  }, [users, accountFilter]);
+
   if (loading && users.length === 0) {
     return (
       <div className="flex items-center justify-center p-12">
@@ -64,6 +79,25 @@ const GlobalUsers = () => {
         </div>
       </div>
 
+      {/* Account Type Filter */}
+      <div className="flex gap-1.5">
+        {ACCOUNT_FILTERS.map((f) => (
+          <button
+            key={f.value}
+            onClick={() => { setAccountFilter(f.value); setPage(1); }}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+              accountFilter === f.value
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            {f.value === 'public' && <Globe className="inline size-3 mr-1" />}
+            {f.value === 'org' && <Building2 className="inline size-3 mr-1" />}
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       <DataTable
         columns={[
           {
@@ -83,6 +117,17 @@ const GlobalUsers = () => {
                   <p className="text-xs text-muted-foreground">{u.email}</p>
                 </div>
               </div>
+            ),
+          },
+          {
+            key: 'primaryOrgId',
+            label: 'Account',
+            render: (val) => (
+              <span className={`text-xs font-label font-semibold uppercase px-2 py-0.5 rounded ${
+                val ? 'bg-blue-500/10 text-blue-600' : 'bg-muted text-muted-foreground'
+              }`}>
+                {val ? 'Org' : 'Public'}
+              </span>
             ),
           },
           {
@@ -139,7 +184,7 @@ const GlobalUsers = () => {
             ),
           },
         ]}
-        data={users}
+        data={filteredUsers}
         rowKey={(u) => u._id}
         emptyState={
           <div className="flex flex-col items-center">

@@ -121,6 +121,7 @@ const ImportantMails = () => {
             setMails(mails.map(m => m._id === id ? { ...m, isRead: true, readAt: new Date().toISOString() } : m));
         } catch (error) {
             console.error(error);
+            toast.error('Failed to mark mail as read');
         }
     };
 
