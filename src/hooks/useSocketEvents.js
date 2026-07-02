@@ -1,20 +1,19 @@
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import Cookies from 'js-cookie';
 import { useRealtimeStore } from '../store/realtimeStore';
 import { queryClient } from '../lib/queryClient';
+import { useAuth } from '../contexts/AuthContext';
 
 let socketRef = null;
 
-const CONNECT_ERROR_AUTH = 'connect_error_auth';
-
 const useSocketEvents = () => {
     const ref = useRef(null);
+    const { user } = useAuth();
 
     useEffect(() => {
         ref.current = socketRef;
 
-        if (socketRef) return;
+        if (!user || socketRef) return;
 
         const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         if (backendUrl.includes('vercel')) return undefined;
@@ -80,7 +79,7 @@ const useSocketEvents = () => {
             s.off('notification:new');
             s.disconnect();
         };
-    }, []);
+    }, [user]);
 };
 
 export const reconnectSocket = () => {

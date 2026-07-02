@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useRef } from "react";
-import { User, LogOut, Menu, X, Search, Bell, Sun, Moon, Plus } from "lucide-react";
+import { User, LogOut, Menu, X, Search, Sun, Moon, Plus } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
 import NotificationBell from "./NotificationBell";
 import Logo from "./Logo";

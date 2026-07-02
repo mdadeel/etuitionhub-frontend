@@ -1,4 +1,5 @@
-import { cn } from "@/lib/utils";
+import { MapPin } from 'lucide-react';
+import FilterSelect from './FilterSelect';
 
 const DISTRICTS = [
   "Dhaka", "Chattogram", "Sylhet", "Rajshahi", "Khulna",
@@ -11,19 +12,16 @@ const DISTRICTS = [
  */
 const LocationFilter = ({ value, onChange, className }) => {
   return (
-    <div className={cn("min-w-[150px]", className)}>
-      <label className="text-xs font-medium text-muted-foreground mb-1 block">Location</label>
-      <select
-        value={value || ""}
-        onChange={(e) => onChange(e.target.value || null)}
-        className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
-      >
-        <option value="">All Locations</option>
-        {DISTRICTS.map(district => (
-          <option key={district} value={district}>{district}</option>
-        ))}
-      </select>
-    </div>
+    <FilterSelect
+      value={value}
+      onValueChange={onChange}
+      options={DISTRICTS}
+      placeholder="All Locations"
+      label="Location"
+      icon={MapPin}
+      className={className}
+      searchable={true}
+    />
   );
 };
 

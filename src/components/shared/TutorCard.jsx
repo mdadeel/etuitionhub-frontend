@@ -179,7 +179,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             type="button"
             variant="primary"
             size="sm"
-            className="font-semibold text-[10px] px-2 h-6 pointer-events-auto flex items-center justify-center gap-1 rounded-[10px] shadow-sm hover:shadow-md transition-all active:scale-95 shrink-0"
+            className="font-semibold text-xs px-3.5 h-7.5 pointer-events-auto flex items-center justify-center gap-1 rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95 shrink-0"
             onClick={(e) => {
               if (isBannerPreview) {
                 e.stopPropagation();
@@ -285,7 +285,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             type="button"
             variant="primary"
             size="sm"
-            className="font-semibold text-[11px] tracking-wider pointer-events-auto flex items-center gap-1 group/btn rounded-[10px] h-6 px-2 shadow-sm hover:shadow-[0_0_12px_hsl(var(--primary)/0.25)]"
+            className="font-semibold text-xs tracking-wider pointer-events-auto flex items-center gap-1 group/btn rounded-xl h-8 px-4 shadow-sm hover:shadow-[0_0_12px_hsl(var(--primary)/0.25)]"
             onClick={(e) => {
               if (isBannerPreview) {
                 e.stopPropagation();

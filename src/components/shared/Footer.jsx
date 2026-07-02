@@ -24,8 +24,9 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-slate-900 text-white/60 pt-12 md:pt-16 pb-8">
-            <div className="max-w-7xl mx-auto px-6">
+        <footer className="bg-slate-900 text-white/60 pt-16 md:pt-20 pb-8 relative overflow-hidden">
+            
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-8 mb-12">
                     {/* Brand Section - Warm, institutional */}
@@ -90,12 +91,12 @@ const Footer = () => {
                             "space-y-3 transition-all duration-300 ease-in-out overflow-hidden md:max-h-none md:opacity-100",
                             openSection === 'subjects' ? "max-h-64 opacity-100 mt-3" : "max-h-0 opacity-0 md:mt-0"
                         )}>
-                            <li><Link to="/tutors?subjects=Mathematics" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Mathematics</Link></li>
-                            <li><Link to="/tutors?subjects=Physics" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Physics</Link></li>
-                            <li><Link to="/tutors?subjects=English" className="text-sm text-white/60 hover:text-white transition-colors duration-300">English Medium</Link></li>
-                            <li><Link to="/tutors?subjects=Chemistry" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Chemistry</Link></li>
-                            <li><Link to="/tutors?subjects=ICT" className="text-sm text-white/60 hover:text-white transition-colors duration-300">ICT & Computing</Link></li>
-                            <li><Link to="/tutors?subjects=admission" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Admission Prep</Link></li>
+                            <li><Link to="/tutors?subject=Mathematics" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Mathematics</Link></li>
+                            <li><Link to="/tutors?subject=Physics" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Physics</Link></li>
+                            <li><Link to="/tutors?subject=English" className="text-sm text-white/60 hover:text-white transition-colors duration-300">English Medium</Link></li>
+                            <li><Link to="/tutors?subject=Chemistry" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Chemistry</Link></li>
+                            <li><Link to="/tutors?subject=ICT" className="text-sm text-white/60 hover:text-white transition-colors duration-300">ICT & Computing</Link></li>
+                            <li><Link to="/tutors?subject=admission" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Admission Prep</Link></li>
                         </ul>
                     </div>
 

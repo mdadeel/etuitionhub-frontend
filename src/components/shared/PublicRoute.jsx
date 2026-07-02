@@ -3,8 +3,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CardSkeleton } from '@/components/shared/skeletons';
-import { LineSkeleton } from '@/components/shared/skeletons';
+import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 
 function PublicRoute({ children }) {
     const { user, loading } = useAuth();
