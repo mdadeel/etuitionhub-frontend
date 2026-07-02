@@ -20,7 +20,7 @@ const COLLAPSED_LINES = 30;
 
 export default memo(function CodeBlock({ code, language, isStreaming = false, showCursor = false }) {
     const [copied, setCopied] = useState(false);
-    const [wrap, setWrap] = useState(false);
+    const [wrap, setWrap] = useState(true);
     const [expanded, setExpanded] = useState(false);
 
     const lineCount = useMemo(() => code ? code.split('\n').length : 0, [code]);
@@ -77,17 +77,19 @@ export default memo(function CodeBlock({ code, language, isStreaming = false, sh
                     )}
                 </span>
                 <div className="flex items-center gap-2">
-                    {lineCount >= LINE_NUM_THRESHOLD && (
-                        <button
-                            type="button"
-                            onClick={() => setWrap(!wrap)}
-                            className="flex items-center gap-1 text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 active:scale-95 transition-all duration-150 px-1.5 py-0.5 rounded"
-                            title={wrap ? 'Disable word wrap' : 'Enable word wrap'}
-                            aria-label={wrap ? 'Disable word wrap' : 'Enable word wrap'}
-                        >
-                            <WrapText size={12} />
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        onClick={() => setWrap(!wrap)}
+                        className={`flex items-center gap-1 text-[11px] font-semibold transition-all duration-150 px-1.5 py-0.5 rounded active:scale-95 ${
+                            wrap
+                                ? 'text-primary/70 hover:text-primary bg-primary/5'
+                                : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+                        }`}
+                        title={wrap ? 'Disable word wrap' : 'Enable word wrap'}
+                        aria-label={wrap ? 'Disable word wrap' : 'Enable word wrap'}
+                    >
+                        <WrapText size={12} />
+                    </button>
                     {isHtml && (
                         <button
                             type="button"
@@ -124,7 +126,7 @@ export default memo(function CodeBlock({ code, language, isStreaming = false, sh
             {/* Code Content */}
             <div className="w-full relative">
                 {isStreaming ? (
-                    <pre className="p-4 text-[13px] font-mono leading-relaxed overflow-x-auto whitespace-pre text-zinc-800 dark:text-zinc-100 bg-zinc-50 dark:bg-[#0d1117]">
+                    <pre className={`p-4 text-[13px] font-mono leading-relaxed ${wrap ? 'whitespace-pre-wrap break-words' : 'overflow-x-auto whitespace-pre'} text-zinc-800 dark:text-zinc-100 bg-zinc-50 dark:bg-[#0d1117]`}>
                         <code>
                             {code}
                             {showCursor && (

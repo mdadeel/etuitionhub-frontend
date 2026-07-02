@@ -57,11 +57,32 @@ function MathBlockComponent({ ...props }) {
     return <MathBlock math={math} />;
 }
 
-function MarkdownCodeBlock({ className, children }) {
-    const match = /language-(\w+)/.exec(className || '');
-    const language = match ? match[1] : '';
-    const code = String(children).replace(/\n$/, '');
-    return <CodeBlock code={code} language={language} />;
+function MarkdownPre({ children }) {
+    // Fenced code blocks in react-markdown wrap the code element inside a pre.
+    // We extract its props and render our CodeBlock component.
+    const codeElement = Array.isArray(children) ? children[0] : children;
+    if (codeElement && codeElement.props) {
+        const { className, children: codeText } = codeElement.props;
+        if (codeText !== undefined) {
+            const match = /language-(\w+)/.exec(className || '');
+            const language = match ? match[1] : '';
+            const code = String(codeText).replace(/\n$/, '');
+            return <CodeBlock code={code} language={language} />;
+        }
+    }
+    return <pre className="p-4 rounded-xl border border-border/40 bg-zinc-50 dark:bg-[#0d1117] overflow-x-auto">{children}</pre>;
+}
+
+function MarkdownCode({ children, className, ...props }) {
+    // If it is inline code (no class prefix matching language-)
+    return (
+        <code
+            className="px-1.5 py-0.5 mx-0.5 rounded bg-muted text-primary border border-border/40 font-mono text-[13px] font-semibold dark:bg-zinc-800 dark:text-zinc-100"
+            {...props}
+        >
+            {children}
+        </code>
+    );
 }
 
 function MarkdownLink({ href, children, ...props }) {
@@ -187,7 +208,8 @@ export default function MarkdownRenderer({ content, className = '' }) {
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
                 components={{
-                    code: MarkdownCodeBlock,
+                    pre: MarkdownPre,
+                    code: MarkdownCode,
                     a: MarkdownLink,
                     table: MarkdownTable,
                     thead: MarkdownThead,

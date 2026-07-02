@@ -85,7 +85,7 @@ export function Typewriter({ text, speed = 8 }) {
 
     return (
         <>
-            {parseInlineCode(displayedText, true)}
+            {parseInlineCode(displayedText, displayedText.length < text.length)}
         </>
     );
 }
@@ -213,6 +213,24 @@ function SkeletonCardWrapper() {
     return <SkeletonCard />;
 }
 
+function unescapeStr(s) {
+    if (typeof s !== 'string') return s;
+    return s.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
+
+function unescapeDeep(obj) {
+    if (typeof obj === 'string') return unescapeStr(obj);
+    if (Array.isArray(obj)) return obj.map(unescapeDeep);
+    if (typeof obj === 'object' && obj !== null) {
+        const res = {};
+        for (const key of Object.keys(obj)) {
+            res[key] = unescapeDeep(obj[key]);
+        }
+        return res;
+    }
+    return obj;
+}
+
 const AssistantMessage = memo(function AssistantMessage({
     message, isLast,
     onStartQuiz, onTrackTutorClick,
@@ -225,7 +243,7 @@ const AssistantMessage = memo(function AssistantMessage({
         if (typeof s === 'string') {
             try { s = JSON.parse(s); } catch { s = null; }
         }
-        return s;
+        return unescapeDeep(s);
     }, [message.structured]);
     const tutors = message.recommendedTutors || [];
     const tuitions = message.recommendedTuitions || [];
@@ -408,29 +426,57 @@ export default function ChatMessage({
 
     if (message.isStreaming) {
         let display = message.content || '';
+
         try {
-            display = display.replace(/\\n/g, '\n');
-            const trimmed = display.trim();
+            const raw = display;
+            const trimmed = raw.trim();
+
             if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-                display = trimmed.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '');
-                const firstBrace = display.indexOf('{');
-                const lastBrace = display.lastIndexOf('}');
-                if (firstBrace !== -1 && lastBrace > firstBrace) {
-                    display = display.slice(firstBrace, lastBrace + 1);
-                } else if (firstBrace !== -1) {
-                    // Incomplete JSON string. Try to extract main content gently.
-                    const match = display.match(/"(?:answer|content|explanation|text|easyExplanation)"\s*:\s*"((?:[^"\\]|\\.)*)(?:"|$)/);
-                    if (match && match[1]) {
-                        display = match[1].replace(/\\"/g, '"');
+                // Content fields in priority order — 'solution' handled separately for code templates
+                const TEXT_FIELDS = ['answer', 'content', 'explanation', 'text', 'easyExplanation'];
+                let extracted = null;
+
+                // ── Pass 1: valid complete JSON ──────────────────────────────────────
+                try {
+                    const parsed = JSON.parse(trimmed);
+                    const isProg = parsed.templateType === 'programming' || !!parsed.solution;
+                    if (isProg && parsed.solution) {
+                        // Wrap the solution in a fenced block so parseInlineCode renders it
+                        const explain = typeof parsed.codeExplanation === 'string' ? unescapeStr(parsed.codeExplanation) : '';
+                        const solution = typeof parsed.solution === 'string' ? unescapeStr(parsed.solution) : parsed.solution;
+                        extracted = (explain ? explain + '\n\n' : '') + '```\n' + solution + '\n```';
                     } else {
-                        // Strip leading JSON characters to hide the raw structure as it streams
-                        display = display.replace(/^[^{]*{\s*(?:"[^"]+"\s*:\s*"?)?/, '');
+                        for (const field of TEXT_FIELDS) {
+                            if (typeof parsed[field] === 'string' && parsed[field].length > 0) {
+                                extracted = unescapeStr(parsed[field]);
+                                break;
+                            }
+                        }
+                    }
+                } catch {
+                    // ── Pass 2: partial/malformed JSON — regex on the raw string ─────
+                    const unescape = (s) => s.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+
+                    const solMatch = raw.match(/"solution"\s*:\s*"((?:[^"\\]|\\.)*)(?:"|$)/);
+                    if (solMatch && solMatch[1]) {
+                        extracted = '```\n' + unescape(solMatch[1]) + '\n```';
+                    } else {
+                        for (const field of TEXT_FIELDS) {
+                            const re = new RegExp(`"${field}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)(?:"|$)`);
+                            const m = raw.match(re);
+                            if (m && m[1]) {
+                                extracted = unescape(m[1]);
+                                break;
+                            }
+                        }
                     }
                 }
+
+                display = extracted !== null ? extracted.trim() : '';
             }
-            display = display.trim();
+            // Non-JSON content (plain text / markdown) is used as-is.
         } catch {
-            display = display.trim();
+            display = (message.content || '').trim();
         }
 
         const streamingTitle = message.userInput || '';
@@ -452,7 +498,7 @@ export default function ChatMessage({
                     </h1>
                 )}
 
-                <div className="text-[15px] leading-[1.6] text-foreground/90 whitespace-pre-wrap break-words">
+                <div className="text-[15px] leading-[1.6] text-foreground/90">
                     {display ? (
                         <Typewriter text={display} />
                     ) : (

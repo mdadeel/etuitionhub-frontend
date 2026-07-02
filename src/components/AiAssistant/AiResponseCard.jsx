@@ -411,7 +411,43 @@ function MathTemplate({ data }) {
     );
 }
 
+function detectLanguage(code, subject) {
+    if (!code) return 'javascript';
+    const sub = String(subject || '').toLowerCase();
+    if (sub.includes('python')) return 'python';
+    if (sub.includes('sql') || sub.includes('database') || sub.includes('db')) return 'sql';
+    if (sub.includes('html')) return 'html';
+    if (sub.includes('css')) return 'css';
+    if (sub.includes('cpp') || sub.includes('c++') || sub.includes('c plus')) return 'cpp';
+    if (sub.includes('java')) return 'java';
+    
+    const clean = code.trim();
+    if (/^\s*import\s+.*from\s+['"]/m.test(clean) || /^\s*const\s+\w+\s*=/m.test(clean) || /^\s*let\s+\w+\s*=/m.test(clean) || /console\.log\(/i.test(clean)) {
+        return 'javascript';
+    }
+    if (/^\s*def\s+\w+\(.*\):/m.test(clean) || /^\s*import\s+\w+/m.test(clean) && (clean.includes('numpy') || clean.includes('pandas') || clean.includes('sys') || clean.includes('os'))) {
+        return 'python';
+    }
+    if (/^\s*#include\s+<\w+>/m.test(clean) || /std::cout/i.test(clean) || /using namespace std;/i.test(clean)) {
+        return 'cpp';
+    }
+    if (/^\s*public\s+class\s+\w+/m.test(clean) || /System\.out\.println/i.test(clean)) {
+        return 'java';
+    }
+    if (/^\s*<!DOCTYPE html>/i.test(clean) || /<html/i.test(clean) || (/<div/i.test(clean) && /<\/div>/i.test(clean))) {
+        return 'html';
+    }
+    if (/^\s*SELECT\s+.*\s+FROM\s+/i.test(clean) || /^\s*INSERT\s+INTO\s+/i.test(clean) || /^\s*CREATE\s+TABLE\s+/i.test(clean)) {
+        return 'sql';
+    }
+    if (/^\s*@import/m.test(clean) || /^\s*body\s*\{/m.test(clean) || /^\s*\.\w+\s*\{/m.test(clean)) {
+        return 'css';
+    }
+    return 'javascript';
+}
+
 function ProgrammingTemplate({ data }) {
+    const lang = detectLanguage(data.solution, data.recommendedSubject);
     return (
         <div>
             {data.codeExplanation && (
@@ -420,7 +456,7 @@ function ProgrammingTemplate({ data }) {
                 </div>
             )}
             
-            {data.solution && <CodeBlock code={data.solution} />}
+            {data.solution && <CodeBlock code={data.solution} language={lang} />}
             
             {(data.bestPractices?.length > 0 || data.commonMistakes?.length > 0) && (
                 <div className="mt-8 mb-6">
@@ -810,7 +846,7 @@ export default function AiResponseCard({
     const metadataStr = getMetadataLabel(resolvedType, structured.topic, structured.outputType);
 
     return (
-        <article className={cn('animate-fade-in-up w-full max-w-[850px] bg-card border border-border/60 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6', className)}>
+        <article className={cn('animate-fade-in-up w-full max-w-[850px] min-w-0 overflow-hidden bg-card border border-border/60 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6', className)}>
             {/* Header: metadata row with difficulty badge */}
             <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-3 font-medium flex-wrap">
                 <div className="flex items-center gap-2">

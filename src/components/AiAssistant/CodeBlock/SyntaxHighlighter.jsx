@@ -4,7 +4,7 @@ import { createHighlighter } from 'shiki';
 // Global singleton so we don't recreate the highlighter multiple times
 let highlighterPromise = null;
 
-export default memo(function SyntaxHighlighter({ code, language, wrap = false }) {
+export default memo(function SyntaxHighlighter({ code, language, wrap = true }) {
     const [html, setHtml] = useState(null);
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export default memo(function SyntaxHighlighter({ code, language, wrap = false })
 
     if (!html) {
         return (
-            <pre className={`p-4 text-[13px] font-mono leading-relaxed overflow-x-auto ${wrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre'} text-zinc-800 dark:text-zinc-100 bg-zinc-50 dark:bg-[#0d1117]`}>
+            <pre className={`p-4 text-[13px] font-mono leading-relaxed ${wrap ? 'whitespace-pre-wrap break-words' : 'overflow-x-auto whitespace-pre'} text-zinc-800 dark:text-zinc-100 bg-zinc-50 dark:bg-[#0d1117]`}>
                 <code>{code}</code>
             </pre>
         );
@@ -83,7 +83,7 @@ export default memo(function SyntaxHighlighter({ code, language, wrap = false })
 
     return (
         <div
-            className={`shiki-container text-[13px] font-mono leading-relaxed overflow-x-auto ${wrap ? 'whitespace-pre-wrap break-words' : ''}`}
+            className={`${wrap ? 'shiki-container-wrap' : 'shiki-container'} text-[13px] font-mono leading-relaxed ${wrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre'}`}
             dangerouslySetInnerHTML={{ __html: html }}
         />
     );
