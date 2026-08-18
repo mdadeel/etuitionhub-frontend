@@ -5,7 +5,6 @@ import { useChat } from '../contexts/ChatContext';
 import TutorCard from '../components/shared/TutorCard';
 import toast from 'react-hot-toast';
 import api from '../services/api';
-import { isValidObjectId } from '../utils/validators';
 import { Avatar } from '@/components/ui/avatar';
 import {
     ArrowLeft,
@@ -109,28 +108,14 @@ const TutorDetails = () => {
     const [existingRequest, setExistingRequest] = useState(null);
     const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
     const [cancellingRequest, setCancellingRequest] = useState(false);
-    const [demoTutors, setDemoTutors] = useState(null);
+    const [similarTutors, setSimilarTutors] = useState([]);
 
     // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
 
     useEffect(() => {
-        import('../data/demoTutors.json').then(m => setDemoTutors(m.default || m)).catch(() => {});
-    }, []);
-
-    useEffect(() => {
         const fetchTutorData = async () => {
             setLoading(true);
-
-            if (!isValidObjectId(id)) {
-                const found = demoTutors?.find(t => t._id === id);
-                if (found) {
-                    setTutor(found);
-                    setReviews([]);
-                    setLoading(false);
-                    return;
-                }
-            }
 
             try {
                 // Concurrently fetch tutor profile, reviews, bookmark status, and booking eligibility (eliminating waterfalls)
@@ -173,13 +158,7 @@ const TutorDetails = () => {
                     setIsSaved(bookmarkRes.data.isSaved);
                 }
             } catch (error) {
-                console.warn("API fetch failed, falling back to demo:", error.message);
-                const found = demoTutors?.find(t => t._id === id);
-                if (found) {
-                    setTutor(found);
-                } else {
-                    console.error("Tutor not found in API or Demo:", id);
-                }
+                console.error("Failed to fetch tutor:", error);
             } finally {
                 setLoading(false);
             }
@@ -188,7 +167,20 @@ const TutorDetails = () => {
         if (id) {
             fetchTutorData();
         }
-    }, [id, user, demoTutors]);
+    }, [id, user]);
+
+    useEffect(() => {
+        if (!tutor?._id) return;
+        const subject = Array.isArray(tutor.subjects) ? tutor.subjects[0] : undefined;
+        const params = new URLSearchParams({ limit: '4' });
+        if (subject) params.append('subject', subject);
+        api.get(`/api/tutors?${params.toString()}`)
+            .then(res => {
+                const list = Array.isArray(res.data?.data) ? res.data.data : [];
+                setSimilarTutors(list.filter(t => t._id !== tutor._id).slice(0, 3));
+            })
+            .catch(() => setSimilarTutors([]));
+    }, [tutor?._id, tutor?.subjects]);
 
     useEffect(() => {
         const checkExistingRequest = async () => {
@@ -610,26 +602,26 @@ const TutorDetails = () => {
                     </div>
                 </div>
 
-                {/* Similar Tutors */}
-                <div className="mt-8 pt-6 border-t border-border">
-                    <div className="flex items-center justify-between mb-4">
-                        <div>
-                            <h2 className="text-lg font-heading text-foreground">Similar Tutors</h2>
-                        </div>
-                        <Link to="/tutors" className="text-sm text-[#2563EB] hover:underline flex items-center gap-1">
-                            View All <ArrowRight size={14} />
-                        </Link>
-                    </div>
+                    {similarTutors.length > 0 && (
+                        <>
+                            <div className="mt-8 pt-6 border-t border-border">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h2 className="text-lg font-heading text-foreground">Similar Tutors</h2>
+                                    </div>
+                                    <Link to="/tutors" className="text-sm text-[#2563EB] hover:underline flex items-center gap-1">
+                                        View All <ArrowRight size={14} />
+                                    </Link>
+                                </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {(demoTutors || [])
-                            .filter(t => t._id !== id)
-                            .slice(0, 3)
-                            .map((item) => (
-                                <TutorCard key={item._id} tutor={item} />
-                            ))}
-                    </div>
-                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {similarTutors.map((item) => (
+                                        <TutorCard key={item._id} tutor={item} />
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    )}
             </div>
 
             {/* Message Modal */}

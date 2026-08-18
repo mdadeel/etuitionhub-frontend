@@ -77,17 +77,9 @@ const blocks = [
   },
 ];
 
-const trustStats = [
-  { value: "100%", label: "Verified Tutors" },
-  { value: "4.8/5", label: "Parent Satisfaction" },
-  { value: "<24h", label: "Response Time" },
-  { value: "95%", label: "Success Rate" },
-];
-
 const WhyChooseUs = () => {
   const headingRef = useAnimateOnScroll();
   const featuresRef = useAnimateOnScroll();
-  const statsRef = useAnimateOnScroll();
 
   return (
     <section className="relative overflow-hidden py-16 md:py-24 bg-background">
@@ -171,24 +163,6 @@ const WhyChooseUs = () => {
                   </div>
                 );
               })}
-            </div>
-          </div>
-        </div>
-
-        {/* BOTTOM - Floating statistics row card */}
-        <div ref={statsRef} className="animate-in-up mt-16 max-w-5xl mx-auto">
-          <div className="bg-card border border-border/60 shadow-lg rounded-2xl p-6 md:p-8 backdrop-blur-md">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-border/20">
-              {trustStats.map((stat, idx) => (
-                <div key={idx} className="pt-4 md:pt-0 md:px-4 first:pt-0">
-                  <span className="text-2xl md:text-3xl font-heading font-bold text-primary tracking-tight block">
-                    {stat.value}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold mt-1.5 block">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
         </div>

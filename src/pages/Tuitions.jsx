@@ -349,7 +349,7 @@ const Tuitions = () => {
                   Error
                 </h3>
                 <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  {error}
+                  {error?.message || "Something went wrong. Please try again."}
                 </p>
               </div>
             ) : tuitions.length === 0 && !loading ? (

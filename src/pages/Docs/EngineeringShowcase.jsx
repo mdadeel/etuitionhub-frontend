@@ -243,9 +243,7 @@ export default function EngineeringShowcase() {
     <div className="min-h-screen bg-[#081225] text-slate-100 font-sans selection:bg-blue-600 selection:text-white pb-20 overflow-x-hidden">
       
       {/* 1. HERO SECTION (Technical Minimalism: Clean typography, premium whitespace, dynamic grid background) */}
-      <section className="relative min-h-[85vh] flex flex-col justify-center items-center px-6 md:px-8 border-b border-slate-800/40 bg-layered overflow-hidden">
-        {/* Subtle grid background */}
-        <div className="absolute inset-0 bg-dot-pattern opacity-15 pointer-events-none" />
+      <section className="relative min-h-[85vh] flex flex-col justify-center items-center px-6 md:px-8 border-b border-slate-800/40 overflow-hidden">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-900/5 blur-[120px] pointer-events-none rounded-full" />
 
         {/* Tech Badges */}

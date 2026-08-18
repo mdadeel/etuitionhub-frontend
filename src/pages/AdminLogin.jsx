@@ -1,15 +1,26 @@
 // Admin Login Page
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import { getClientConfig } from '../config/clientConfig';
+import { isAdmin, isAdminPath, defaultRouteFor } from '../lib/authz';
 
 const AdminLogin = () => {
     const { register, handleSubmit, setValue } = useForm();
-    const { login } = useAuth();
+    const { loginAdmin } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [loading, setLoading] = useState(false);
+    // Demo-account hint flag comes from the backend /api/config (no frontend env).
+    const [showDemoAccounts, setShowDemoAccounts] = useState(false);
+
+    useEffect(() => {
+        getClientConfig()
+            .then((config) => setShowDemoAccounts(!!config.showDemoAccounts))
+            .catch(() => {}); // hide demo hint if config is unreachable
+    }, []);
 
     const onSubmit = async (data) => {
         if (!data.email || !data.password) {
@@ -21,14 +32,38 @@ const AdminLogin = () => {
         const toastId = toast.loading('Authenticating...');
 
         try {
-            await login(data.email, data.password);
+            const dbUser = await loginAdmin(data.email, data.password);
             toast.dismiss(toastId);
+
+            if (!dbUser) {
+                toast.error('Could not verify administrator access. Please try again.');
+                setLoading(false);
+                return;
+            }
+
+            if (!isAdmin(dbUser)) {
+                toast.error('This account does not have administrator access.');
+                setLoading(false);
+                return;
+            }
+
             toast.success('Admin login successful!');
-            navigate('/dashboard', { replace: true });
+
+            // Return to the protected admin route if there was one; otherwise
+            // land in the admin app — never the student dashboard.
+            const requested = location.state?.from?.pathname;
+            const from = isAdminPath(requested) ? requested : defaultRouteFor(dbUser);
+            navigate(from, { replace: true });
         } catch (err) {
             console.error('Admin login error:', err);
             toast.dismiss(toastId);
-            toast.error('Authentication failed. Verify your admin credentials.');
+            if (err.code === 'auth/user-not-found') {
+                toast.error('No admin account found with this email.');
+            } else if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                toast.error('Incorrect password.');
+            } else {
+                toast.error('Authentication failed. Verify your admin credentials.');
+            }
             setLoading(false);
         }
     };
@@ -83,7 +118,7 @@ const AdminLogin = () => {
                         </button>
                     </form>
 
-                    {import.meta.env.VITE_SHOW_DEMO_ACCOUNTS === 'true' && (
+                    {showDemoAccounts && (
                     <div className="mt-6 pt-6 border-t border-gray-700">
                         <button
                             type="button"

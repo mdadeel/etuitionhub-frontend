@@ -1,7 +1,24 @@
-import { GraduationCap, CheckCircle, Users, BookOpen, MapPin, Globe } from "lucide-react";
+import { GraduationCap, CheckCircle, Users, Globe } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import SEO from '../components/shared/SEO';
+import api from '../services/api';
 
 const About = () => {
+    const { data: stats, isLoading } = useQuery({
+        queryKey: ['about', 'stats'],
+        queryFn: async () => {
+            const [tutors, tuitions] = await Promise.all([
+                api.get('/api/tutors?limit=1'),
+                api.get('/api/tuitions?limit=1')
+            ]);
+            return [
+                { value: tutors.data?.pagination?.total, label: 'Verified Tutors', icon: Users },
+                { value: tuitions.data?.pagination?.total, label: 'Open Tuition Posts', icon: GraduationCap }
+            ];
+        },
+        staleTime: 5 * 60_000,
+    });
+
     return (
         <div className="bg-background min-h-screen py-16">
             <SEO title="About eTuitionBD | Connecting Students with Verified Tutors in Bangladesh" description="Learn how eTuitionBD helps parents and students find verified, trustworthy private tutors across Bangladesh — with no middleman fees." />
@@ -23,16 +40,13 @@ const About = () => {
                 </section>
 
                 {/* Stats */}
-                <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    {[
-                        { value: '2,500+', label: 'Active Tutors', icon: Users },
-                        { value: '15,000+', label: 'Students Matched', icon: GraduationCap },
-                        { value: '50+', label: 'Subjects', icon: BookOpen },
-                        { value: '10+', label: 'Cities', icon: MapPin }
-                    ].map((stat, i) => (
+                <section className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
+                    {(stats || []).map((stat, i) => (
                         <div key={i} className="bg-card border border-border rounded-xl p-5 text-center">
                             <stat.icon className="size-6 text-blue-600 mx-auto mb-2" />
-                            <span className="text-2xl font-bold text-foreground">{stat.value}</span>
+                            <span className="text-2xl font-bold text-foreground">
+                                {isLoading ? '…' : stat.value ?? '—'}
+                            </span>
                             <span className="text-sm text-muted-foreground block">{stat.label}</span>
                         </div>
                     ))}

@@ -26,7 +26,7 @@ const FAQ = () => {
           
           {/* LEFT - FAQ Title & Accordion */}
           <div className="lg:col-span-7 space-y-8">
-            <div ref={headingRef} className="animate-in-up text-left space-y-3">
+            <div ref={headingRef} className="text-left space-y-3">
               <span className="text-xs font-semibold text-primary uppercase tracking-[0.18em]">FAQ</span>
               <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground tracking-tight leading-tight">
                 Questions? We've got answers.
@@ -36,9 +36,9 @@ const FAQ = () => {
               </p>
             </div>
 
-            <div ref={listRef} className="animate-in-up animate-stagger space-y-3">
+            <div ref={listRef} className="space-y-3">
               {faqs.map((faq, idx) => (
-                <div key={idx} className="animate-in-up-child border border-border/30 rounded-xl overflow-hidden bg-card/30 backdrop-blur-sm transition-all duration-300 hover:border-border/50">
+                <div key={idx} className="border border-border/30 rounded-xl overflow-hidden bg-card/30 backdrop-blur-sm transition-all duration-300 hover:border-border/50">
                   <button
                     onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}
                     className="w-full flex items-center justify-between p-4 md:p-5 text-left cursor-pointer"

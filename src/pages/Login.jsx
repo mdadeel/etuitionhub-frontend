@@ -8,10 +8,11 @@ import Logo from '../components/shared/Logo'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { isAdmin } from '../lib/authz'
 
 const Login = () => {
     const { register, handleSubmit, control, formState: { errors } } = useForm({ mode: 'onChange' })
-    const { login, googleLogin } = useAuth()
+    const { login, googleLogin, refreshUserFromDB } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
@@ -32,9 +33,12 @@ const Login = () => {
         const toastId = toast.loading("Logging in...")
         try {
             await login(data.email, data.password)
+            const dbUser = await refreshUserFromDB(data.email)
             toast.dismiss(toastId)
             toast.success('Login successful!')
-            navigate(from, { replace: true })
+            // An admin logging in through the regular login must not land in
+            // the student dashboard.
+            navigate(isAdmin(dbUser) ? '/admin' : from, { replace: true })
         } catch (err) {
             console.error('Login error', err)
             toast.dismiss(toastId)
@@ -51,9 +55,10 @@ const Login = () => {
 
     const handleGoogleLogin = async () => {
         try {
-            await googleLogin()
+            const result = await googleLogin()
+            const dbUser = await refreshUserFromDB(result.user.email)
             toast.success('Logged in with Google')
-            navigate(from, { replace: true })
+            navigate(isAdmin(dbUser) ? '/admin' : from, { replace: true })
         } catch {
             toast.error('Google login failed')
         }

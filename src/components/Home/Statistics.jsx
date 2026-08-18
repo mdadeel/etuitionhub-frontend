@@ -32,7 +32,7 @@ const Statistics = () => {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div 
           ref={containerRef} 
-          className="animate-in-up grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
         >
           {capabilities.map((item, i) => (
             <div 
