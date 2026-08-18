@@ -73,7 +73,7 @@ function MarkdownPre({ children }) {
     return <pre className="p-4 rounded-xl border border-border/40 bg-zinc-50 dark:bg-[#0d1117] overflow-x-auto">{children}</pre>;
 }
 
-function MarkdownCode({ children, className, ...props }) {
+function MarkdownCode({ children, ...props }) {
     // If it is inline code (no class prefix matching language-)
     return (
         <code

@@ -301,7 +301,7 @@ export default function AiAssistantTutorTools() {
                             </div>
                         ) : error ? (
                             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
-                                {error}
+                                {error?.message || error}
                             </div>
                         ) : output ? (
                             <div className="space-y-3">
