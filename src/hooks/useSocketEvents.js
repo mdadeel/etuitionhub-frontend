@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import { useRealtimeStore } from '../store/realtimeStore';
 import { queryClient } from '../lib/queryClient';
 import { useAuth } from '../contexts/AuthContext';
+import API_URL from '../config/api';
 
 let socketRef = null;
 
@@ -15,7 +16,7 @@ const useSocketEvents = () => {
 
         if (!user || socketRef) return;
 
-        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const backendUrl = API_URL;
         if (backendUrl.includes('vercel')) return undefined;
 
         const s = io(backendUrl, {

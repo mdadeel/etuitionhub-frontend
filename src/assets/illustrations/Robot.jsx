@@ -50,7 +50,7 @@ export default function Robot({ className }) {
       </g>
 
       {/* ROBOT (Right Side) - Friendly, Cute style */}
-      <g transform="translate(280, 130)" className="animate-robot-idle">
+      <g transform="translate(280, 130)">
         {/* Robot Base/Body */}
         <rect x="40" y="110" width="80" height="80" rx="25" fill="#F3F4F6" stroke="#93C5FD" strokeWidth="1.5" />
         {/* Blue LED Belly Screen */}

@@ -1,7 +1,10 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Fonts load via <link> in index.html (preconnect + display=swap) — no
+   render-blocking @import. The CSS @import was removed so the page paints
+   before the font network round-trip completes. */
 
 /* Color scheme for native form controls and scrollbars */
 :root {
@@ -66,12 +69,16 @@ body {
     --input: 215 32% 88%;
     --ring: 221 83% 53%;
 
-    /* Soft rounded corners */
-    --radius: 8px;
+    /* Restrained radius — components 0-4px, overlays/dialogs 0-6px */
+    --radius: 4px;
 
     /* Success/Warning */
     --success: 142 71% 45%;
     --warning: 38 92% 50%;
+
+    /* Footer surface (dark, institutional) */
+    --footer: 222 47% 11%;
+    --footer-foreground: 210 40% 98%;
 
     /* 2026 Messaging Redesign Variables */
     --chat-sent: 221 83% 53%;
@@ -82,13 +89,13 @@ body {
     --chat-border: 215 32% 88%;
     --chat-muted: 215 20% 40%;
 
-    /* Refined Radius Tokens */
-    --radius-xs: 4px;
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    --radius-2xl: 24px;
+    /* Refined Radius Tokens — components 0-4px, overlays 0-6px */
+    --radius-xs: 0px;
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 6px;
+    --radius-xl: 6px;
+    --radius-2xl: 6px;
 
     /* Refined Spacing Tokens */
     --spacing-xs: 0.25rem;
@@ -103,10 +110,10 @@ body {
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
 
-    /* Animation Speeds */
-    --animation-fast: 150ms;
-    --animation-normal: 250ms;
-    --animation-slow: 400ms;
+    /* Animation Speeds — policy: 100-200ms micro-interactions */
+    --animation-fast: 100ms;
+    --animation-normal: 150ms;
+    --animation-slow: 200ms;
   }
 
   /* Dark mode - deep navy, premium contrast */
@@ -151,6 +158,10 @@ body {
     --success: 142 71% 45%;
     --warning: 38 92% 50%;
 
+    /* Footer surface (dark, institutional) */
+    --footer: 222 47% 8%;
+    --footer-foreground: 210 40% 98%;
+
     /* 2026 Messaging Redesign Variables */
     --chat-sent: 221 83% 53%;
     --chat-sent-foreground: 210 40% 98%;
@@ -163,20 +174,6 @@ body {
 }
 
     @layer utilities {
-      @keyframes bounce-slow {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-      }
-      .animate-bounce-slow {
-        animation: bounce-slow 3s ease-in-out infinite;
-      }
-      @keyframes pulse-subtle {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.65; }
-      }
-      .animate-pulse-subtle {
-        animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      }
       .scrollbar-none::-webkit-scrollbar {
         display: none;
       }
@@ -286,125 +283,6 @@ body {
 }
 
 @layer utilities {
-  /* Premium Human-Centered Card - softer corners, atmospheric depth */
-  .card-premium {
-    @apply bg-card border border-border/50 rounded-lg transition-all duration-300;
-    box-shadow: 
-      0 8px 24px rgba(0, 0, 0, 0.06),
-      0 4px 12px rgba(0, 0, 0, 0.04),
-      0 0 0 1px rgba(15, 23, 46, 0.04);
-  }
-
-  .card-premium-hover {
-    @apply card-premium hover:border-primary/20 hover:shadow-xl;
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Glass effect for layered depth - meaningful and restrained */
-  .glass-premium {
-    @apply bg-card/70 backdrop-blur-lg border border-border/30 rounded-lg;
-  }
-
-  /* Premium Button - calm, confident, not loud */
-  .btn-premium {
-    @apply inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium transition-all duration-300;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-    @apply disabled:opacity-50 disabled:pointer-events-none;
-  }
-
-  .btn-primary {
-    @apply btn-premium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98];
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
-    transform: translateY(-1px);
-  }
-
-  .btn-secondary {
-    @apply btn-premium bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/50;
-  }
-
-  .btn-ghost {
-    @apply btn-premium hover:bg-muted/50 hover:text-accent-foreground;
-  }
-
-  /* Premium Input - soft focus rings, welcoming spacing */
-  .input-premium {
-    @apply flex h-11 w-full rounded-lg border border-border/50 bg-card/50 px-4 py-2.5 text-sm;
-    @apply placeholder:text-muted-foreground/60;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
-    @apply disabled:cursor-not-allowed disabled:opacity-50;
-    transition: all 250ms ease-out;
-  }
-
-  /* Microinteraction: soft focus states */
-  .input-premium:focus {
-    @apply border-primary/30;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  }
-
-  /* Animated hover border - subtle illumination */
-  .hover-border-animate {
-    @apply relative overflow-hidden;
-  }
-
-  .hover-border-animate::after {
-    content: '';
-    @apply absolute inset-0 border-2 border-primary/0 rounded-lg transition-all duration-300;
-  }
-
-  .hover-border-animate:hover::after {
-    @apply border-primary/20;
-  }
-
-  /* Subtle card lift - soft scaling and opacity */
-  .card-lift {
-    @apply transition-all duration-300 ease-out;
-  }
-
-  .card-lift:hover {
-    @apply -translate-y-1;
-    box-shadow: 
-      0 12px 32px rgba(0, 0, 0, 0.08),
-      0 6px 16px rgba(0, 0, 0, 0.04);
-  }
-
-  /* Magnetic button effect - slight scale or lift */
-  .magnetic-button {
-    @apply transition-all duration-300 ease-out;
-  }
-
-  .magnetic-button:hover {
-    @apply scale-102 -translate-y-0.5;
-  }
-
-  /* Animated navigation indicator - directional movement */
-  .nav-indicator {
-    @apply relative;
-  }
-
-  .nav-indicator::after {
-    content: '';
-    @apply absolute -bottom-1 left-0 h-0.5 bg-primary rounded-full transition-all duration-300;
-  }
-
-  .nav-indicator.active::after {
-    @apply w-full;
-  }
-
-  /* Loading skeleton - soft, calm */
-  .skeleton-premium {
-    @apply animate-pulse bg-muted/50 rounded-lg;
-  }
-
-  /* Cinematic whitespace - deliberate negative space */
-  .section-rhythm {
-    @apply py-20 md:py-28 lg:py-36;
-  }
-
   /* Container widths - intentional alignment */
   .container-premium {
     @apply mx-auto px-4 md:px-6 lg:px-8 max-w-7xl;
@@ -412,12 +290,6 @@ body {
 
   .container-narrow {
     @apply mx-auto px-4 md:px-6 max-w-4xl;
-  }
-
-  /* Button active state - Emil's micro-interaction */
-  .btn-active {
-    transform: scale(0.97);
-    transition: transform 100ms var(--ease-out);
   }
 
   /* Text balance for headlines */
@@ -442,75 +314,21 @@ body {
     @apply pb-[calc(env(safe-area-inset-bottom)+64px)] md:pb-0;
   }
 
-  /* Editorial Typography Utilities */
-  .text-editorial {
-    @apply font-heading text-4xl md:text-6xl lg:text-7xl text-primary leading-[0.95];
-  }
-
-  .text-hero {
-    @apply font-heading text-3xl md:text-5xl text-primary leading-[1.05];
-  }
-
-  .text-section {
-    @apply font-heading text-2xl md:text-4xl text-primary leading-[1.15];
-  }
-
-  /* Premium Background Patterns - soft noise textures */
-  .bg-pattern-academic {
-    background-image: 
-      radial-gradient(circle at 1px 1px, rgba(37, 99, 235, 0.05) 1px, transparent 0);
-    background-size: 40px 40px;
-  }
-
-  /* Atmospheric Shadow System */
+  /* Atmospheric Shadow System — restrained; shadows only where elevation matters */
   .shadow-premium {
     box-shadow: 
-      0 8px 24px rgba(0, 0, 0, 0.06),
-      0 4px 12px rgba(0, 0, 0, 0.04),
-      0 0 0 1px rgba(15, 23, 46, 0.04);
+      0 4px 12px rgba(0, 0, 0, 0.05),
+      0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
   .shadow-premium-lg {
     box-shadow: 
-      0 16px 40px rgba(0, 0, 0, 0.08),
-      0 8px 20px rgba(0, 0, 0, 0.04),
-      0 0 0 1px rgba(37, 99, 235, 0.1);
-  }
-
-  /* Premium Border System - soft, not harsh */
-  .border-premium {
-    @apply border border-border/50 rounded-lg;
-  }
-
-  .border-premium-hover {
-    @apply border-premium hover:border-primary/20 hover:shadow-premium-lg;
-  }
-
-  /* Layered Background Surfaces */
-  .bg-layered {
-    @apply bg-gradient-to-b from-background to-muted/20;
-  }
-
-  .bg-elevated {
-    @apply bg-card/80 backdrop-blur-md;
-  }
-
-  /* Soft Divider */
-  .divider-soft {
-    @apply h-px bg-border/30;
-  }
-
-  /* Editorial Spacing */
-  .spacing-editorial {
-    @apply space-y-6 md:space-y-8;
-  }
-
-  .spacing-section {
-    @apply space-y-12 md:space-y-16;
+      0 8px 24px rgba(0, 0, 0, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.04);
   }
 }
 
-/* Reduced motion support */
+/* Reduced motion support — all animation/transition classes, not a subset */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -521,158 +339,33 @@ body {
     scroll-behavior: auto !important;
   }
   
-  /* Specific overrides for animations */
+  /* Ensure content is always visible — never hidden behind entrance animations */
   .animate-fade-in-up,
-  .animate-scale-in {
+  .animate-scale-in,
+  .animate-in,
+  .animate-in-up,
+  .animate-in-left,
+  .animate-in-right,
+  .scroll-reveal,
+  .animate-stagger > * {
     animation: none;
     opacity: 1;
     transform: none;
   }
   
-  /* Button interactions */
-  .btn-active {
-    transform: none;
-  }
-  
   /* Hover effects */
-  .hover\:scale-102:hover {
-    transform: none;
-  }
-  
-  .hover\:-translate-y-1:hover {
+  .hover\:scale-102:hover,
+  .hover\:-translate-y-1:hover,
+  .hover\:scale-105:hover {
     transform: none;
   }
 }
 
-/* Restrained Micro-interactions - Motion Hierarchy */
+/* Micro-interactions — 100-200ms, state/feedback only */
 @layer utilities {
-  /* Smooth hover transitions - 300ms cubic-bezier */
+  /* Input transitions (used on auth forms) — capped at 150ms */
   .transition-smooth {
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Subtle motion hierarchy - scale and lift */
-  .motion-lift {
-    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), 
-                box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .motion-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  }
-
-  /* Intelligent reveal interactions */
-  .reveal-on-hover {
-    opacity: 0.7;
-    transition: opacity 300ms ease-out, transform 300ms ease-out;
-  }
-
-  .reveal-on-hover:hover {
-    opacity: 1;
-    transform: translateY(-1px);
-  }
-
-  /* Directional movement - subtle */
-  .directional-move {
-    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .directional-move:hover {
-    transform: translateX(2px);
-  }
-
-  /* Soft scaling and opacity transitions */
-  .soft-scale {
-    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), 
-                opacity 300ms ease-out;
-  }
-
-  .soft-scale:hover {
-    transform: scale(1.02);
-  }
-
-  /* Button illumination on hover */
-  .btn-illuminate {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-illuminate::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 500ms ease-out;
-  }
-
-  .btn-illuminate:hover::before {
-    left: 100%;
-  }
-
-  /* Input focus states - soft, welcoming */
-  .input-focus-soft {
-    transition: border-color 250ms ease-out, box-shadow 250ms ease-out;
-  }
-
-  .input-focus-soft:focus {
-    border-color: rgba(37, 99, 235, 0.3);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  }
-
-  /* Card hover - subtle elevation */
-  .card-hover-elevate {
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .card-hover-elevate:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
-  }
-
-  /* Navigation indicator - directional */
-  .nav-indicator-directional {
-    position: relative;
-  }
-
-  .nav-indicator-directional::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #2563EB;
-    transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .nav-indicator-directional:hover::after {
-    width: 100%;
-  }
-
-  /* Loading states - calm, soft */
-  .loading-calm {
-    animation: pulse-calm 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  }
-
-  @keyframes pulse-calm {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-
-  /* Scroll reveal - gentle */
-  .scroll-reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 600ms ease-out, transform 600ms ease-out;
-  }
-
-  .scroll-reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @keyframes fadeInUp {
@@ -697,27 +390,13 @@ body {
     }
   }
 
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
-  }
-
+  /* Dialog/toast/loading entrance only — 200ms, content ends visible */
   .animate-fade-in-up {
-    animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeInUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  .shimmer-bg {
-    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--border)) 50%, hsl(var(--muted)) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.6s infinite linear;
+    animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }
 
@@ -749,27 +428,7 @@ body {
   display: none;
 }
 
-/* Premium Background Patterns */
-.bg-dot-pattern {
-  background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
-  background-size: 24px 24px;
-  color: rgba(0, 0, 0, 0.03);
-}
-
-.dark .bg-dot-pattern {
-  color: rgba(255, 255, 255, 0.02);
-}
-
-/* Animations */
-@keyframes pulse-ring {
-  0% { transform: scale(0.8); opacity: 0.5; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.5; }
-}
-
-.highlight-pulse {
-  animation: pulse-ring 2s infinite;
-}
+/* Premium Background Patterns — removed: decorative dot grids are banned (anti-vibe #23) */
 
 @keyframes cursor-blink {
   0%, 50% { opacity: 1; }
@@ -779,36 +438,7 @@ body {
   animation: cursor-blink 1s step-end infinite;
 }
 
-.animate-in-up {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-.animate-in-left {
-  opacity: 0;
-  transform: translateX(-40px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
-.animate-in-right {
-  opacity: 0;
-  transform: translateX(40px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
-.animate-in-up.animate-in,
-.animate-in-left.animate-in,
-.animate-in-right.animate-in {
-  opacity: 1;
-  transform: translate(0);
-}
-
-.animate-stagger > *:nth-child(1) { transition-delay: 0s; }
-.animate-stagger > *:nth-child(2) { transition-delay: 0.08s; }
-.animate-stagger > *:nth-child(3) { transition-delay: 0.16s; }
-.animate-stagger > *:nth-child(4) { transition-delay: 0.24s; }
-.animate-stagger > *:nth-child(5) { transition-delay: 0.32s; }
-.animate-stagger > *:nth-child(6) { transition-delay: 0.40s; }
-.animate-stagger > *:nth-child(7) { transition-delay: 0.48s; }
-.animate-stagger > *:nth-child(8) { transition-delay: 0.56s; }
+/* Scroll-reveal system removed — content must render visible without JS (a11y) */
 
 /* Shiki Dual Theme Support & Custom styling */
 .dark .shiki,
@@ -830,9 +460,9 @@ body {
 .shiki-container-wrap pre {
     padding: 1rem 1.25rem !important;
     margin: 0 !important;
-    border-radius: 0 0 0.75rem 0.75rem !important;
-    background-color: #f9fafb !important;
-    color: #18181b !important;
+    border-radius: 0 0 6px 6px !important;
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
     font-size: 13px !important;
     line-height: 1.625 !important;
     white-space: pre-wrap !important;
@@ -841,8 +471,8 @@ body {
 }
 
 .dark .shiki-container-wrap pre {
-    background-color: #0d1117 !important;
-    color: #f4f4f5 !important;
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
 }
 
 .dark .shiki-container-wrap pre span {
@@ -852,17 +482,17 @@ body {
 .shiki-container pre {
     padding: 1rem 1.25rem !important;
     margin: 0 !important;
-    border-radius: 0 0 0.75rem 0.75rem !important;
-    background-color: #f9fafb !important;
-    color: #18181b !important;
+    border-radius: 0 0 6px 6px !important;
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
     font-size: 13px !important;
     line-height: 1.625 !important;
     overflow-x: auto !important;
 }
 
 .dark .shiki-container pre {
-    background-color: #0d1117 !important;
-    color: #f4f4f5 !important;
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
 }
 
 .dark .shiki-container pre span {
@@ -896,50 +526,4 @@ body {
     background: rgba(156, 163, 175, 0.4);
 }
 
-/* Micro-animations for educational decorative elements */
-@keyframes twinkle-gentle {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.9; }
-}
-
-.animate-twinkle {
-  animation: twinkle-gentle 8s ease-in-out infinite;
-}
-
-@keyframes float-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-.animate-float {
-  animation: float-slow 10s ease-in-out infinite;
-}
-
-@keyframes sway-slow {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(4deg); }
-}
-
-.animate-sway {
-  animation: sway-slow 9s ease-in-out infinite;
-}
-
-@keyframes robot-idle {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-3px) rotate(1deg); }
-}
-
-.animate-robot-idle {
-  animation: robot-idle 8s ease-in-out infinite;
-}
-
-@keyframes draw-path {
-  from { stroke-dashoffset: 1000; }
-  to { stroke-dashoffset: 0; }
-}
-
-.animate-draw-path {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: draw-path 8s ease-in-out forwards;
-}
+/* Micro-animations for educational decorative elements — REMOVED: perpetual decorative animation is banned (anti-vibe #28) */

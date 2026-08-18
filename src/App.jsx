@@ -21,6 +21,7 @@ import useHeartbeat from "./hooks/useHeartbeat";
 import ToastViewport from "./components/shared/ToastViewport";
 import PrivateRoute from "./components/shared/PrivateRoute";
 import PublicRoute from "./components/shared/PublicRoute";
+import AdminRoute from "./components/shared/AdminRoute";
 const FloatingChat = lazy(() => import("./components/shared/FloatingChat"));
 import { cn } from "@/lib/utils";
 import RouteErrorBoundary from "./components/shared/RouteErrorBoundary";
@@ -48,6 +49,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentHistory = lazy(() => import("./pages/PaymentHistory"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AccessDenied = lazy(() => import("./pages/AccessDenied"));
 const PasswordReset = lazy(() => import("./pages/PasswordReset"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
@@ -63,6 +65,9 @@ const OrganizationDirectory = lazy(() => import("./pages/OrganizationDirectory")
 const OrganizationDetails = lazy(() => import("./pages/OrganizationDetails"));
 const EngineeringShowcase = lazy(() => import("./pages/Docs/EngineeringShowcase"));
 
+const AdminRoutes = lazy(() => import("./routes/AdminRoutes"));
+const SuperAdminRoutes = lazy(() => import("./routes/SuperAdminRoutes"));
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -73,7 +78,7 @@ const ScrollToTop = () => {
 
 const ConditionalNavbar = () => {
   const { pathname } = useLocation();
-  const isDashboard = pathname.startsWith("/dashboard");
+  const isDashboard = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/super-admin");
   const isSession = pathname.startsWith("/session");
   if (isDashboard || isSession) return null;
   return <Suspense fallback={null}><Navbar /></Suspense>;
@@ -81,7 +86,7 @@ const ConditionalNavbar = () => {
 
 const ConditionalFooter = () => {
   const { pathname } = useLocation();
-  const isDashboard = pathname.startsWith("/dashboard");
+  const isDashboard = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/super-admin");
   const isSession = pathname.startsWith("/session");
   const isTutors = pathname.startsWith("/tutors");
   const isTuitions = pathname.startsWith("/tuitions");
@@ -115,7 +120,7 @@ const ConditionalFloatingChat = () => {
 
 const MainContent = ({ children }) => {
   const { pathname } = useLocation();
-  const isDashboard = pathname.startsWith("/dashboard");
+  const isDashboard = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/super-admin");
   const isSession = pathname.startsWith("/session");
 
   return (
@@ -257,6 +262,26 @@ let App = () => {
                     }
                   />
                   <Route
+                    path="/admin/*"
+                    element={
+                      <RouteErrorBoundary>
+                        <AdminRoute>
+                          <AdminRoutes />
+                        </AdminRoute>
+                      </RouteErrorBoundary>
+                    }
+                  />
+                  <Route
+                    path="/super-admin/*"
+                    element={
+                      <RouteErrorBoundary>
+                        <AdminRoute>
+                          <SuperAdminRoutes />
+                        </AdminRoute>
+                      </RouteErrorBoundary>
+                    }
+                  />
+                  <Route
                     path="/checkout/:id"
                     element={
                       <RouteErrorBoundary>
@@ -368,6 +393,7 @@ let App = () => {
                       </RouteErrorBoundary>
                     }
                   />
+                  <Route path="/403" element={<RouteErrorBoundary><AccessDenied /></RouteErrorBoundary>} />
                   <Route path="*" element={<RouteErrorBoundary><NotFound /></RouteErrorBoundary>} />
                 </Routes>
                 </Suspense>

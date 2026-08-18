@@ -1,25 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
-export default function useAnimateOnScroll(once = true) {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add('animate-in');
-          if (once) observer.unobserve(el);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [once]);
-
-  return ref;
+// Scroll-reveal animation hook — intentionally neutralized.
+//
+// Design-system policy: content must render visible without JavaScript, and
+// animation is limited to hover/active/focus/expand/dialog/toast/loading.
+// The old implementation hid content behind `.animate-in-up`/`.scroll-reveal`
+// until an IntersectionObserver fired (content stayed invisible if JS never
+// ran). Callers keep using this hook for a stable ref; it performs no
+// class-mutation and never hides content.
+export default function useAnimateOnScroll() {
+  return useRef(null);
 }

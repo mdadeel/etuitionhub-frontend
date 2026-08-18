@@ -17,7 +17,7 @@ export default function CampusNight({ className }) {
       <path d="M 1060 40 A 18 18 0 1 0 1078 58 A 15 15 0 1 1 1060 40 Z" fill="currentColor" className="text-white/20 dark:text-white/10" stroke="none" />
 
       {/* Twinkling night stars */}
-      <g className="text-white/20 dark:text-white/10 animate-twinkle">
+      <g className="text-white/20 dark:text-white/10">
         <circle cx="100" cy="30" r="1" />
         <circle cx="240" cy="50" r="1.2" />
         <circle cx="450" cy="20" r="1" />
@@ -51,7 +51,7 @@ export default function CampusNight({ className }) {
       <path d="M 100 -20 Q 350 140, 600 50 T 1000 200" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" className="text-white/20 dark:text-white/10" />
       
       {/* Tiny landing paper airplane */}
-      <g className="text-white/30 dark:text-white/25 animate-float" transform="translate(995, 196) rotate(35) scale(0.65)">
+      <g className="text-white/30 dark:text-white/25" transform="translate(995, 196) rotate(35) scale(0.65)">
         <path d="M-6 -3 L6 0 L-3 3 Z M-3 3 L-1.5 0 M6 0 L-3 1" fill="currentColor" stroke="none" />
       </g>
     </svg>

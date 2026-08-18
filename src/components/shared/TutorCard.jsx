@@ -75,7 +75,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
     <Card
       hover={false}
       className={cn(
-        "group h-full flex flex-col border border-border/80 bg-card rounded-[20px] overflow-hidden shadow-premium transition-all duration-300 relative",
+        "group h-full flex flex-col border border-border/80 bg-card rounded-lg overflow-hidden shadow-premium transition-all duration-300 relative",
         isBannerPreview ? "" : "cursor-pointer hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)] hover:border-primary/30"
       )}
       onClick={isBannerPreview ? undefined : () => navigate(`/tutor/${_id}`)}
@@ -114,7 +114,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
                 alt={displayName}
                 size="md"
                 gender={tutor.gender}
-                className="size-full ring-2 ring-border/60 group-hover:ring-primary/40 transition-all rounded-[10px]"
+                className="size-full ring-2 ring-border/60 group-hover:ring-primary/40 transition-all rounded-md"
               />
             </div>
             {isVerified && (
