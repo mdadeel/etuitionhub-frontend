@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,6 +27,38 @@
           document.documentElement.classList.add('light');
         }
       } catch (e) {}
+    })();
+  </script>
+  <script>
+    // GA4 bootstrap — the measurement id comes from the backend's public
+    // GET /api/config (the frontend has NO environment variables). The same
+    // fetch result is cached on window.__ETUITION_CONFIG__ so the app's
+    // clientConfig loader reuses it instead of requesting /api/config twice.
+    // Fails silent: no config or no id → analytics simply stays a no-op.
+    (function () {
+      try {
+        var API_URL = '%MODE%' === 'development'
+          ? 'http://localhost:5000'
+          : 'https://etuitionhub-backend.vercel.app';
+        fetch(API_URL + '/api/config')
+          .then(function (res) { return res.ok ? res.json() : null; })
+          .then(function (cfg) {
+            if (!cfg) return;
+            window.__ETUITION_CONFIG__ = cfg;
+            var id = cfg.gaMeasurementId || (cfg.firebase && cfg.firebase.measurementId);
+            if (!id || typeof window.gtag === 'function') return;
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = function () { window.dataLayer.push(arguments); };
+            window.gtag('js', new Date());
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+            document.head.appendChild(s);
+            // send_page_view:false — the SPA's trackPageView() reports route changes.
+            window.gtag('config', id, { send_page_view: false });
+          })
+          .catch(function () { /* analytics unavailable — never block page render */ });
+      } catch (e) { /* never block page render */ }
     })();
   </script>
 </head>
