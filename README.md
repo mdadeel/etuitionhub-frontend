@@ -156,9 +156,6 @@ i18n foundation with English and Bengali translations (expandable via JSON local
 ```bash
 npm install
 
-# Environment
-cp .env.example .env  # Fill in VITE_FIREBASE_*, VITE_API_URL
-
 npm run dev    # Dev server
 npm run build  # Production build
 npm run lint   # Lint check
@@ -166,12 +163,24 @@ npm run lint   # Lint check
 
 ## Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `VITE_FIREBASE_API_KEY` | Firebase Auth |
-| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase Auth |
-| `VITE_FIREBASE_PROJECT_ID` | Firebase project |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Document uploads |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase |
-| `VITE_FIREBASE_APP_ID` | Firebase |
-| `VITE_API_URL` | Backend URL (default `http://localhost:5000`) |
+**The frontend has NO environment variables.** All configuration (Firebase
+web config, Google Analytics ID, UI flags) lives in the **backend** `.env` and
+is served to the browser via the public `GET /api/config` endpoint, which the
+app fetches once at boot (`src/config/clientConfig.js`).
+
+The only exception is the backend API base URL, hardcoded in
+`src/config/api.js` (`http://localhost:5000` in dev, the Vercel backend URL in
+production — change it there if your deployment domain differs).
+
+Backend-side variables that feed `/api/config`:
+
+| Backend variable | Purpose |
+|------------------|---------|
+| `FIREBASE_PROJECT_ID` | Firebase project (also used for ID-token verification) |
+| `FIREBASE_WEB_API_KEY` | Firebase web API key (public by design) |
+| `FIREBASE_WEB_AUTH_DOMAIN` | Firebase auth domain |
+| `FIREBASE_WEB_STORAGE_BUCKET` | Firebase Storage bucket (document uploads) |
+| `FIREBASE_WEB_MESSAGING_SENDER_ID` | Firebase sender id |
+| `FIREBASE_WEB_APP_ID` | Firebase web app id |
+| `GA_MEASUREMENT_ID` | Google Analytics 4 measurement id |
+| `SHOW_DEMO_ACCOUNTS` | Show demo credentials on the login page |
