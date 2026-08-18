@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
+import API_URL from '../../config/api';
 
 const VercelAlert = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const apiUrl = API_URL;
     const isVercel = apiUrl.includes('vercel');
     const dismissed = localStorage.getItem('vercelAlertDismissed');
     if (isVercel && !dismissed) {
