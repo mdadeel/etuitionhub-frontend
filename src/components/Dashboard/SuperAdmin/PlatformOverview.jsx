@@ -45,10 +45,10 @@ const PlatformOverview = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((card) => (
-          <Card key={card.label} className="p-6">
+          <Card key={card.label} className="p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-label font-semibold uppercase tracking-wider text-muted-foreground">
@@ -61,7 +61,7 @@ const PlatformOverview = () => {
           </Card>
         ))}
       </div>
-      <Card className="p-6">
+      <Card className="p-5">
         <h3 className="text-sm font-label font-semibold uppercase tracking-wider text-muted-foreground mb-4">
           Quick Actions
         </h3>

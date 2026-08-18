@@ -121,7 +121,7 @@ const AllOrganizations = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-heading font-bold">Organizations</h2>
-        <Link to="/dashboard/super-admin/org-requests">
+        <Link to="/super-admin/org-requests">
           <Button size="sm" className="flex items-center gap-1.5">
             <Building2 className="h-4 w-4" />
             Org Requests

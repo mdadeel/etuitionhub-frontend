@@ -9,6 +9,7 @@ import { getDashboardMenuItems } from "./getDashboardMenuItems";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { isAdminPath } from "../../lib/authz";
 import Logo from "@/components/shared/Logo";
 import api from "../../services/api";
 
@@ -49,6 +50,8 @@ const DashboardSidebar = ({ className = '' }) => {
     try {
       await logout();
       toast.success("Signed out successfully");
+      // Land on the login of the app the user just left (admin vs student).
+      navigate(isAdminPath(location.pathname) ? "/admin-login" : "/login", { replace: true });
     } catch {
       toast.error("Sign out failed");
     }

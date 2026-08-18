@@ -68,7 +68,7 @@ const DashAnalytics = () => {
 
             const tutors = users.filter(u => u.role === 'tutor').length;
             const students = users.filter(u => u.role === 'student').length;
-            const admins = users.filter(u => u.role === 'admin').length;
+            const admins = users.filter(u => u.globalRole === 'super_admin').length;
             const pending = tuitions.filter(t => t.status === 'pending').length;
             const approved = tuitions.filter(t => t.status === 'approved').length;
             const completed = payments.filter(p => p.status === 'confirmed');

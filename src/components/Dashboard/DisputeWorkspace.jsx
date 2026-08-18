@@ -255,7 +255,7 @@ const FileDisputeForm = ({ connections, onSuccess, onCancel }) => {
 /** Main DisputeWorkspace component */
 const DisputeWorkspace = ({ isAdminView = false }) => {
     const { dbUser } = useAuth();
-    const isAdmin = isAdminView || dbUser?.role === 'admin';
+    const isAdmin = isAdminView || dbUser?.globalRole === 'super_admin';
 
     const [disputes, setDisputes] = useState([]);
     const [connections, setConnections] = useState([]);
