@@ -1,5 +1,8 @@
 // Firebase configuration for e-tuitionBD
 //
+// The frontend has NO environment variables — the Firebase WEB config is
+// fetched once from the backend's public GET /api/config and applied here.
+//
 // SECURITY NOTE — Firebase web API key is PUBLIC BY DESIGN.
 // The `apiKey` below is the *web* API key (also called "client API key"
 // in the Firebase console). It is not a secret: it is bundled into every
@@ -25,8 +28,8 @@
 // it via Firebase console → Project Settings → General → Your apps →
 // Web app → `api_key` field → "Regenerate". Note: rotation will sign
 // users out (no grace period for the web API key, only for backend
-// JWT secrets). Then update `VITE_FIREBASE_API_KEY` in your Vercel
-// environment variables and redeploy.
+// JWT secrets). Then update `FIREBASE_WEB_API_KEY` in the backend
+// environment and redeploy.
 //
 // See: https://firebase.google.com/docs/api-keys (the official "is
 // my API key a secret?" doc) and the project's secret-rotation
@@ -34,41 +37,51 @@
 
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getClientConfig } from '../config/clientConfig';
 
-// Firebase configuration
+let app = null;
+let auth = null;
+let initPromise = null;
 
-const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID
-};
-
-
-if (!firebaseConfig.apiKey) {
-    console.warn('Firebase API key missing! Create .env.local with VITE_FIREBASE_API_KEY');
-}
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication
-export const auth = getAuth(app);
-
-// Lazy-load Storage — not needed on Login/Register pages
-let _storage;
-export const getStorageLazy = () => {
-  if (!_storage) {
-    // Dynamic import to avoid bundling firebase/storage on every page
-    return import('firebase/storage').then(({ getStorage }) => {
-      _storage = getStorage(app);
-      return _storage;
-    });
+/**
+ * Initialize Firebase once from the backend /api/config payload.
+ * Cached — concurrent callers share the same promise.
+ * @returns {Promise<{ app: object, auth: object }>}
+ */
+export const initFirebase = () => {
+  if (!initPromise) {
+    initPromise = getClientConfig()
+      .then((config) => {
+        const firebaseConfig = config.firebase;
+        if (!firebaseConfig?.apiKey || !firebaseConfig?.projectId) {
+          throw new Error('Incomplete Firebase config from /api/config');
+        }
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        return { app, auth };
+      })
+      .catch((err) => {
+        initPromise = null; // allow retry on next call
+        throw err;
+      });
   }
-  return Promise.resolve(_storage);
+  return initPromise;
 };
 
-export default app;
+/**
+ * Resolves to { app, auth } once Firebase is initialized. Every consumer must
+ * await this instead of importing a synchronous `auth` (there is none anymore —
+ * the config arrives over the network).
+ */
+export const getFirebase = () => initFirebase();
+
+/**
+ * Lazy-load Firebase Storage — not needed on Login/Register pages.
+ * @returns {Promise<Storage>}
+ */
+export const getStorageLazy = async () => {
+  const { app: firebaseApp } = await initFirebase();
+  // Dynamic import to avoid bundling firebase/storage on every page
+  const { getStorage } = await import('firebase/storage');
+  return getStorage(firebaseApp);
+};

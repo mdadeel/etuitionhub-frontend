@@ -43,7 +43,8 @@ export const resetSession = () => {
 };
 
 const reauthFromFirebase = async () => {
-    const { auth } = await import('../utils/firebase');
+    const { getFirebase } = await import('../utils/firebase');
+    const { auth } = await getFirebase();
     const fbUser = auth.currentUser;
     if (!fbUser?.email) return false;
     const idToken = await fbUser.getIdToken(true);

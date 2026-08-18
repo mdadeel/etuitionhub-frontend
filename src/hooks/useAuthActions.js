@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
-import { auth } from '../utils/firebase';
+import { getFirebase } from '../utils/firebase';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
@@ -55,6 +55,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         }
 
         try {
+            const { auth } = await getFirebase();
             let result = await createUserWithEmailAndPassword(auth, email, password);
             // Update profile in parallel with JWT creation (both fast)
             await Promise.all([
@@ -77,6 +78,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         setLoading(true);
         markAuthActionInProgress();
         try {
+            const { auth } = await getFirebase();
             const result = await signInWithEmailAndPassword(auth, email, password);
             await setJWT(result.user.email, result.user);
 
@@ -95,10 +97,31 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         }
     };
 
+    const loginAdmin = async (email, password) => {
+        setLoading(true);
+        markAuthActionInProgress();
+        try {
+            const { auth } = await getFirebase();
+            const result = await signInWithEmailAndPassword(auth, email, password);
+            await setJWT(result.user.email, result.user);
+
+            // Resolve the DB role BEFORE returning so the caller can route the
+            // user to the correct app (admin vs student) without a redirect flash.
+            const dbUser = await refreshUserFromDB(email);
+
+            setLoading(false);
+            return dbUser;
+        } catch (error) {
+            setLoading(false);
+            throw error;
+        }
+    };
+
     const googleLogin = async (selectedRole = 'student') => {
         setLoading(true);
         markAuthActionInProgress();
         try {
+            const { auth } = await getFirebase();
             let result = await signInWithPopup(auth, googleProvider);
             const email = result.user.email;
 
@@ -120,6 +143,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         setLoading(true);
         markAuthActionInProgress();
         try {
+            const { auth } = await getFirebase();
             let result = await signInWithPopup(auth, googleProvider);
             const email = result.user.email;
 
@@ -150,6 +174,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         // Reset initial auth state so next login shows loading spinner
         resetAuthState();
         try {
+            const { auth } = await getFirebase();
             await api.post('/api/auth/logout');
             // Auth cookies are httpOnly, so the backend must clear them.
             Cookies.remove('token', { path: '/' });
@@ -165,27 +190,31 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         }
     };
 
-    const resetPassword = (email) => {
+    const resetPassword = async (email) => {
         setLoading(true);
         const actionCodeSettings = {
             url: `${window.location.origin}/reset-password`,
             handleCodeInApp: true,
         };
+        const { auth } = await getFirebase();
         return sendPasswordResetEmail(auth, email, actionCodeSettings);
     };
 
-    const verifyResetCode = (oobCode) => {
+    const verifyResetCode = async (oobCode) => {
+        const { auth } = await getFirebase();
         return verifyPasswordResetCode(auth, oobCode);
     };
 
-    const confirmReset = (oobCode, newPassword) => {
+    const confirmReset = async (oobCode, newPassword) => {
         setLoading(true);
+        const { auth } = await getFirebase();
         return confirmPasswordReset(auth, oobCode, newPassword);
     };
 
     const updateUserProfile = async (updateUser) => {
         setLoading(true);
         try {
+            const { auth } = await getFirebase();
             await updateProfile(auth.currentUser, updateUser);
             setUser((preUser) => ({ ...preUser, ...updateUser }));
         } catch {
@@ -198,6 +227,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
     return {
         register,
         login,
+        loginAdmin,
         googleLogin,
         googleRegister,
         logout,

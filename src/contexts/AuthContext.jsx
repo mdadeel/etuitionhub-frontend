@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
         switchOrg: session.switchOrg,
         hasPermission: session.hasPermission,
         loading: session.loading,
+        configError: session.configError,
     };
 
     // Write-only values — only change when mutation functions are recreated
