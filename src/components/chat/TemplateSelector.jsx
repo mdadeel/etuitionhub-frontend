@@ -104,7 +104,7 @@ const TemplateSelector = ({
                         </div>
                         <div className="text-center py-6">
                             <CircleHelp size={36} className="text-destructive" />
-                            <p className="text-muted-foreground">{error}</p>
+                            <p className="text-muted-foreground">{error?.message || error}</p>
                             <button 
                                 onClick={onClose} 
                                 className="mt-4 w-full px-4 py-2 bg-destructive text-destructive/foreground hover:bg-destructive/20 rounded-lg"

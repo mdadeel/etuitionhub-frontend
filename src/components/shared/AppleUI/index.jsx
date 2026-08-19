@@ -88,7 +88,7 @@ export const AppleInput = ({ label, error, className, ...props }) => (
             )}
             {...props}
         />
-        {error && <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-red-600">{error}</p>}
+        {error && <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-red-600">{error?.message || error}</p>}
     </div>
 );
 

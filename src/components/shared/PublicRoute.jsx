@@ -2,12 +2,19 @@
 // Used for login/register pages
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { defaultRouteFor } from '../../lib/authz';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
+import ConfigError from './ConfigError';
 
 function PublicRoute({ children }) {
-    const { user, loading } = useAuth();
+    const { user, dbUser, loading, configError } = useAuth();
     const location = useLocation();
+
+    // App config (Firebase) failed to load — the login form can't work.
+    if (configError) {
+        return <ConfigError />;
+    }
 
     // Show skeleton while checking auth
     if (loading) {
@@ -29,10 +36,10 @@ function PublicRoute({ children }) {
         );
     }
 
-    // If logged in, redirect to home or dashboard
+    // If logged in, redirect to the app matching their role (admin vs student)
     if (user) {
-        const from = location.state?.from?.pathname || '/';
-        return <Navigate to={from} replace />;
+        const from = location.state?.from?.pathname;
+        return <Navigate to={from || defaultRouteFor(dbUser)} replace />;
     }
 
     return children;

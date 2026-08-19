@@ -167,7 +167,7 @@ const Checkout = () => {
                     <div className="absolute top-0 left-0 w-1 h-full bg-destructive"></div>
                     <AlertCircle size={48} className="text-destructive mx-auto mb-8 opacity-20" />
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-destructive mb-4 italic">System Alert</p>
-                    <h2 className="text-2xl font-black text-foreground tracking-tighter uppercase italic mb-12">{error}</h2>
+                    <h2 className="text-2xl font-black text-foreground tracking-tighter uppercase italic mb-12">{error?.message || error}</h2>
                     <div className="flex flex-col gap-4">
                         <Button onClick={() => navigate('/dashboard')} variant="outline" className="h-14 rounded-none border-border font-black uppercase tracking-widest text-[10px]">Return to Management</Button>
                         <Button onClick={fetchApplication} className="h-14 rounded-none font-black uppercase tracking-widest text-[10px]">Retry Synchronization</Button>

@@ -100,7 +100,7 @@ const ResetPassword = () => {
                         </div>
                         <h2 className="text-xl font-heading font-bold text-foreground mb-2">Link Expired</h2>
                         <p className="text-xs text-muted-foreground font-body mb-6 leading-relaxed">
-                            {error}
+                            {error?.message || error}
                         </p>
                         <Link
                             to="/password-reset"

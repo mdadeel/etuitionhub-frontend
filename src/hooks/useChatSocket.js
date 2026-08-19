@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getSocket } from './useSocketEvents';
+import API_URL from '../config/api';
 
 const useChatSocket = (user, dbUser, fetchConversations) => {
     const [socket, setSocket] = useState(null);
@@ -10,7 +11,7 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
     // Poll online status every 30s — Vercel-only fallback
     useEffect(() => {
         if (!user) return;
-        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const backendUrl = API_URL;
         if (!backendUrl.includes('vercel')) return;
         const fetchOnline = async () => {
             try {
@@ -30,7 +31,7 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
     useEffect(() => {
         if (!user) return;
 
-        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const backendUrl = API_URL;
         if (backendUrl.includes('vercel')) return;
 
         const existingSocket = getSocket();

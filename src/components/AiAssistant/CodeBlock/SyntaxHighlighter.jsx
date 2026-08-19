@@ -83,7 +83,7 @@ export default memo(function SyntaxHighlighter({ code, language, wrap = true }) 
 
     return (
         <div
-            className={`${wrap ? 'shiki-container-wrap' : 'shiki-container'} text-[13px] font-mono leading-relaxed ${wrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre'}`}
+            className={`shiki-container${wrap ? ' shiki-container-wrap' : ''} text-[13px] font-mono leading-relaxed ${wrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre'}`}
             dangerouslySetInnerHTML={{ __html: html }}
         />
     );

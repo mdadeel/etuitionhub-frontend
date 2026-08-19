@@ -187,7 +187,7 @@ const ChatInputBar = ({
                 </div>
 
                 {/* Text Area Container (No Voice/Mic) */}
-                <div className="flex-1 flex items-end bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 rounded-[24px] focus-within:border-blue-500/30 dark:focus-within:border-blue-500/40 focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:shadow-[0_2px_8px_rgba(37,99,235,0.03)] focus-within:ring-2 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/5 transition-all duration-200 px-4 py-1.5">
+                <div className="flex-1 flex items-end bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 rounded-lg focus-within:border-blue-500/30 dark:focus-within:border-blue-500/40 focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:shadow-[0_2px_8px_rgba(37,99,235,0.03)] focus-within:ring-2 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/5 transition-all duration-200 px-4 py-1.5">
                     <textarea
                         ref={textareaRef}
                         value={value}

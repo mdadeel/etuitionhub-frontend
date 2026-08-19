@@ -10,7 +10,6 @@ import {
     Flame,
     TrendingUp,
     Star,
-    Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -21,8 +20,6 @@ const categories = [
     {
         icon: GraduationCap,
         label: "SSC",
-        count: "850+",
-        rating: "4.8",
         slug: "ssc",
         tag: "Most popular",
         context: "Class 9–10 Preparation",
@@ -31,8 +28,6 @@ const categories = [
     {
         icon: BookOpen,
         label: "HSC",
-        count: "620+",
-        rating: "4.7",
         slug: "hsc",
         tag: "Trending",
         context: "Higher Secondary Preparation",
@@ -41,8 +36,6 @@ const categories = [
     {
         icon: Languages,
         label: "IELTS",
-        count: "340+",
-        rating: "4.6",
         slug: "ielts",
         tag: null,
         context: "International Exam Prep",
@@ -51,8 +44,6 @@ const categories = [
     {
         icon: Languages,
         label: "English",
-        count: "480+",
-        rating: "4.7",
         slug: "english-medium",
         tag: null,
         context: "Language & Literature",
@@ -61,8 +52,6 @@ const categories = [
     {
         icon: Calculator,
         label: "University",
-        count: "480+",
-        rating: "4.6",
         slug: "university",
         tag: "High demand",
         context: "Admission Preparation",
@@ -71,8 +60,6 @@ const categories = [
     {
         icon: Code,
         label: "Programming",
-        count: "290+",
-        rating: "4.9",
         slug: "programming",
         tag: null,
         context: "Coding & Web Development",
@@ -81,8 +68,6 @@ const categories = [
     {
         icon: Award,
         label: "Admission",
-        count: "310+",
-        rating: "4.5",
         slug: "admission",
         tag: null,
         context: "University Admission",
@@ -91,8 +76,6 @@ const categories = [
     {
         icon: Palette,
         label: "Arts",
-        count: "180+",
-        rating: "4.6",
         slug: "arts",
         tag: null,
         context: "Creative Studies",
@@ -128,12 +111,12 @@ const CategoryCard = ({ cat, index }) => {
         <Link
             to={`/tutors?subject=${cat.slug}`}
             aria-label={`Browse ${cat.label} tutors`}
-            className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[16px]"
+            className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg"
             style={{ animationDelay: `${100 + index * 50}ms` }}
         >
             <div
                 className={cn(
-                    "relative h-full overflow-hidden rounded-[16px] border border-border/70 bg-card",
+                    "relative h-full overflow-hidden rounded-lg border border-border/70 bg-card",
                     "transition-all duration-300 ease-out",
                     "hover:shadow-premium-md",
                     "active:scale-[0.985]"
@@ -151,7 +134,7 @@ const CategoryCard = ({ cat, index }) => {
                 {/* Border + ring accent on hover */}
                 <div
                     className={cn(
-                        "pointer-events-none absolute inset-0 rounded-[16px] border border-transparent",
+                        "pointer-events-none absolute inset-0 rounded-lg border border-transparent",
                         "transition-colors duration-300",
                         "group-hover:[border-color:var(--tw-border)]",
                         a.border
@@ -159,7 +142,7 @@ const CategoryCard = ({ cat, index }) => {
                 />
                 <div
                     className={cn(
-                        "pointer-events-none absolute inset-0 rounded-[16px] ring-1 ring-inset ring-transparent",
+                        "pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-transparent",
                         "transition-all duration-300 group-hover:ring-2",
                         a.ring
                     )}
@@ -208,17 +191,12 @@ const CategoryCard = ({ cat, index }) => {
                         </p>
                     </div>
 
-                    {/* Footer: stats */}
+                    {/* Footer: link */}
                     <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2 md:pt-2.5">
-                        <div className="flex items-center gap-1 text-[10px] md:text-[11px] font-bold text-foreground">
-                            <Users className={cn("size-3 md:size-3.5", a.text)} />
-                            {cat.count} <span className="font-normal text-muted-foreground">tutors</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[10px] md:text-[11px] font-bold text-foreground">
-                            <Star className="size-3 fill-amber-400 text-amber-500" />
-                            {cat.rating}
-                            <ArrowUpRight className={cn("size-3 ml-0.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5", a.text)} strokeWidth={2.5} />
-                        </div>
+                        <span className="text-[10px] md:text-[11px] font-bold text-foreground">
+                            Browse tutors
+                        </span>
+                        <ArrowUpRight className={cn("size-3 ml-0.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5", a.text)} strokeWidth={2.5} />
                     </div>
                 </div>
             </div>
@@ -273,12 +251,12 @@ const FeaturedCategories = () => {
                     {/* 9th cell: "View all subjects" tile */}
                     <Link
                         to="/tutors"
-                        className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[16px]"
+                        className="group relative block opacity-0 animate-scale-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg"
                         style={{ animationDelay: `${100 + categories.length * 50}ms` }}
                     >
                         <div
                             className={cn(
-                                "relative flex h-full flex-col p-3 md:p-4 overflow-hidden rounded-[16px] border border-dashed border-border bg-background/40",
+                                "relative flex h-full flex-col p-3 md:p-4 overflow-hidden rounded-lg border border-dashed border-border bg-background/40",
                                 "transition-all duration-300 ease-out",
                                 "hover:border-primary/40 hover:bg-primary/5 hover:shadow-premium-md",
                                 "active:scale-[0.985]"

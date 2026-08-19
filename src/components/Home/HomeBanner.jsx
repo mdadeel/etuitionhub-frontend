@@ -10,7 +10,6 @@ import {
   MessageCircle, 
   Users, 
   GraduationCap, 
-  Heart, 
   BookOpen, 
   MapPin,
 } from "lucide-react";
@@ -117,7 +116,9 @@ const handleSearch = (e) => {
                                     Across Bangladesh.
                                 </h1>
                                 <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl font-body font-medium">
-                                    Connect with 2,500+ verified expert tutors for personalized home and online lessons. Academic excellence, built on trust.
+                                    {availability?.count
+                                        ? `Connect with ${availability.count} verified expert tutors for personalized home and online lessons. Academic excellence, built on trust.`
+                                        : "Connect with verified expert tutors for personalized home and online lessons. Academic excellence, built on trust."}
                                 </p>
                             </div>
                         </div>
@@ -240,26 +241,28 @@ const handleSearch = (e) => {
                     </div>
                 </div>
 
-                {/* Bottom Stats Banner */}
-                <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-border/60">
-                    {[
-                        { label: "Active Tutors", value: "2,500+", icon: Users },
-                        { label: "Lessons Taught", value: "45k+", icon: BookOpen },
-                        { label: "Happy Parents", value: "15k+", icon: Heart },
-                        { label: "Cities Covered", value: "64", icon: MapPin }
-                    ].map((stat, idx) => (
-                        <div key={idx} className="flex flex-col items-center md:items-start space-y-2">
-                            <div className="flex items-center gap-3">
-                                <div className="size-10 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center">
-                                    <stat.icon size={18} className="text-primary" />
-                                </div>
-                                <div>
-                                    <p className="text-2xl font-bold text-foreground leading-none">{stat.value}</p>
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</p>
-                                </div>
+                {/* Bottom Stats */}
+                <div className="mt-24 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 pt-12 border-t border-border/60">
+                    {availability?.count ? (
+                        <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center">
+                                <Users size={18} className="text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold text-foreground leading-none">{availability.count}</p>
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Verified tutors online</p>
                             </div>
                         </div>
-                    ))}
+                    ) : null}
+                    <div className="flex items-center gap-3">
+                        <div className="size-10 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center">
+                            <ShieldCheck size={18} className="text-primary" />
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-foreground leading-none">ID-verified</p>
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Every tutor</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

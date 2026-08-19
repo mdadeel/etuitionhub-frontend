@@ -1,7 +1,8 @@
-import { Star, ShieldCheck, Award } from 'lucide-react';
+import { Star, ShieldCheck, Award, MessageSquareQuote } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import EmptyState from '../shared/EmptyState';
 import api from '../../services/api';
 import TestimonialVideo from './TestimonialVideo';
 
@@ -12,33 +13,6 @@ const avatarColors = [
 ];
 
 const testimonialIcons = [Star, ShieldCheck, Award];
-
-const MOCK_TESTIMONIALS = [
-  {
-    _id: "mock-1",
-    name: "Farhana Rahman",
-    role: "Parent",
-    school: "Viqarunnisa Noon School",
-    rating: 5,
-    quote: "Finding a qualified physics tutor for my daughter in HSC was so stressful. Through this platform, we connected with a brilliant teacher from BUET. Her grades improved from B to A+ in months!",
-  },
-  {
-    _id: "mock-2",
-    name: "Sajid Mahmud",
-    role: "HSC Student",
-    school: "Notre Dame College",
-    rating: 5,
-    quote: "I was struggling with math concepts for university admission prep. The tutor I found here is incredibly patient and explains complex calculus problems using real-world examples. Highly recommended!",
-  },
-  {
-    _id: "mock-3",
-    name: "Dr. Imtiaz Ahmed",
-    role: "Parent",
-    school: "Scholastica",
-    rating: 5,
-    quote: "Excellent experience. The platform made it simple to find an experienced English medium tutor for my son. The direct messaging and verified credential checks give absolute peace of mind.",
-  }
-];
 
 const Testimonials = () => {
   const headingRef = useAnimateOnScroll();
@@ -54,7 +28,8 @@ const Testimonials = () => {
     staleTime: 120_000,
   });
 
-  const items = data && data.length > 0 ? data : MOCK_TESTIMONIALS;
+  const items = (data || []).slice(0, 3);
+  const spotlightVideo = items[1]?.videoURL || null;
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-background via-primary/[0.01] to-background py-16 md:py-24">
@@ -67,7 +42,7 @@ const Testimonials = () => {
       </svg>
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div ref={headingRef} className="animate-in-up text-center mb-16">
+        <div ref={headingRef} className="text-center mb-16">
           <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Testimonials</span>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold tracking-tight text-foreground mt-2 text-wrap-balance">
             Real outcomes from real families
@@ -75,11 +50,11 @@ const Testimonials = () => {
           <p className="text-sm text-muted-foreground mt-2">Hear from students and parents who found perfect tutors</p>
         </div>
 
-        <div ref={listRef} className="animate-in-up animate-stagger">
+        <div ref={listRef} className="">
           {isLoading ? (
             <div className="grid md:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="p-6 rounded-[20px] border border-border/50 bg-card/50">
+                <div key={i} className="p-6 rounded-lg border border-border/50 bg-card/50">
                   <div className="space-y-3 animate-pulse">
                     <div className="flex gap-1">
                       {[1, 2, 3, 4, 5].map((j) => (
@@ -93,10 +68,16 @@ const Testimonials = () => {
                 </div>
               ))}
             </div>
+          ) : items.length === 0 ? (
+            <EmptyState
+              icon={MessageSquareQuote}
+              title="No testimonials yet"
+              description="Student and parent experiences will appear here once they're shared."
+            />
           ) : (
             <div className="grid md:grid-cols-3 gap-6 items-center">
-              {items.slice(0, 3).map((t, idx) => {
-                if (idx === 1) return null;
+              {items.map((t, idx) => {
+                if (idx === 1 && spotlightVideo) return null;
                 const Icon = testimonialIcons[idx];
                 const color = avatarColors[idx] || avatarColors[0];
                 const name = t.name || 'Anonymous';
@@ -106,7 +87,7 @@ const Testimonials = () => {
                 const rating = t.rating || 5;
 
                 return (
-                  <div key={t._id || idx} className="animate-in-up-child relative p-6 rounded-[20px] border border-border/50 bg-card/50 backdrop-blur-sm shadow-sm hover:shadow-premium-md hover:border-primary/20 transition-all duration-300 group flex flex-col justify-between min-h-[250px] z-10">
+                  <div key={t._id || idx} className="relative p-6 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm shadow-sm hover:shadow-premium-md hover:border-primary/20 transition-all duration-300 group flex flex-col justify-between min-h-[250px] z-10">
                     <div className="absolute top-4 right-4 opacity-[0.08] group-hover:opacity-[0.12] transition-opacity">
                       <Icon size={36} />
                     </div>
@@ -140,12 +121,12 @@ const Testimonials = () => {
               })}
               
               {/* Video Testimonial Spotlit Card */}
-              {items.length >= 2 && (
-                <div className="relative p-1.5 rounded-[22px] bg-gradient-to-br from-primary/20 to-accent/20 shadow-xl ring-4 ring-primary/10 overflow-hidden transform lg:scale-105 transition-all duration-300 z-10">
+              {spotlightVideo && (
+                <div className="relative p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 shadow-xl ring-4 ring-primary/10 overflow-hidden transform lg:scale-105 transition-all duration-300 z-10">
                   <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-[8px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full z-20 shadow-sm animate-pulse">
                     Video Spotlight
                   </div>
-                  <TestimonialVideo videoUrl={items[1]?.videoURL} />
+                  <TestimonialVideo videoUrl={spotlightVideo} />
                 </div>
               )}
             </div>

@@ -37,7 +37,7 @@ const OrgBatches = lazy(() => import('./Organization/OrgBatches'));
 
 const OrgDashboardLayout = () => {
   const { orgId } = useParams();
-  const { myOrgs, switchOrg, orgContext, loading } = useAuth();
+  const { myOrgs, switchOrg, orgContext, dbUser, loading } = useAuth();
 
   useEffect(() => {
     if (!loading && orgId) {
@@ -54,8 +54,10 @@ const OrgDashboardLayout = () => {
 
   if (loading) return null;
 
-  // Validate that the user actually belongs to this org
-  const isMember = myOrgs.some(o => o.orgId === orgId || o.slug === orgId);
+  // Validate that the user actually belongs to this org.
+  // Super admin bypasses membership — they manage every org (backend RBAC agrees).
+  const isSuperAdmin = dbUser?.globalRole === 'super_admin';
+  const isMember = isSuperAdmin || myOrgs.some(o => o.orgId === orgId || o.slug === orgId);
   if (!isMember) {
     return <Navigate to="/dashboard" replace />;
   }

@@ -9,7 +9,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const ImportantMails = () => {
     const { dbUser } = useAuth();
-    const isAdmin = dbUser?.role === 'admin';
+    const isAdmin = dbUser?.globalRole === 'super_admin';
     const [mailTab, setMailTab] = useState('received');
     const [mails, setMails] = useState([]);
     const [loading, setLoading] = useState(true);

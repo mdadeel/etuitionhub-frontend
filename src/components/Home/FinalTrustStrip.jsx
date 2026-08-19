@@ -1,8 +1,7 @@
-import { ShieldCheck, Clock, MessageCircle } from 'lucide-react';
+import { ShieldCheck, MessageCircle } from 'lucide-react';
 
 const trustItems = [
   { icon: ShieldCheck, label: 'Verified', description: 'All tutors verified by our team' },
-  { icon: Clock, label: 'No-show replace in 24h', description: 'Free replacement if tutor doesn\'t show' },
   { icon: MessageCircle, label: 'Direct contact', description: 'Message tutors directly, no middlemen' },
 ];
 

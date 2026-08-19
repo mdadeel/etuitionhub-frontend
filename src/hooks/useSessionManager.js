@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../utils/firebase';
+import { getFirebase } from '../utils/firebase';
 import api, { resetSession } from '../services/api';
 import Cookies from 'js-cookie';
 import { AUTH_COOKIE_OPTIONS } from '../utils/cookieOptions';
@@ -20,6 +20,9 @@ const useSessionManager = () => {
     const orgContextRef = useRef(null);
 
     const [loading, setLoading] = useState(true);
+    // Set when the backend /api/config fetch or Firebase init fails — lets the
+    // route guards show a retry panel instead of hanging on the loading skeleton.
+    const [configError, setConfigError] = useState(null);
 
     // Flag to prevent onAuthStateChanged from duplicating work done by auth actions.
     // When an auth action (login/register/googleLogin) calls setJWT + fetches user,
@@ -110,7 +113,16 @@ const useSessionManager = () => {
     }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        let unsubscribe = null;
+        let cancelled = false;
+
+        // Firebase is initialized asynchronously from the backend /api/config
+        // (the frontend has no env vars). Subscribe to auth state only after it
+        // resolves; surface a retryable error if config/Firebase init fails.
+        getFirebase()
+            .then(({ auth }) => {
+                if (cancelled) return;
+                unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             // After initial auth check, don't set loading=true on subsequent firings.
             // This prevents PrivateRoute from unmounting/remounting Dashboard (full-page refresh).
             if (initialAuthDoneRef.current) {
@@ -193,12 +205,20 @@ const useSessionManager = () => {
                 localStorage.removeItem('x-org-id');
             }
 
-            initialAuthDoneRef.current = true;
-            setLoading(false);
-        });
+                    initialAuthDoneRef.current = true;
+                    setLoading(false);
+                });
+            })
+            .catch((err) => {
+                if (cancelled) return;
+                logError('useSessionManager', 'failed to init firebase from /api/config', err);
+                setConfigError('Could not load app configuration. Check your connection and try again.');
+                setLoading(false);
+            });
 
         return () => {
-            unsubscribe();
+            cancelled = true;
+            if (unsubscribe) unsubscribe();
         };
     }, [setJWT, refreshUserFromDB]);
 
@@ -218,16 +238,14 @@ const useSessionManager = () => {
     }, [myOrgs]);
 
     const hasPermission = useCallback((permission) => {
-        // Super admin has all permissions
+        // Super admin has all permissions (canonical signal — role:'admin' is vestigial)
         if (dbUser?.globalRole === 'super_admin') return true;
-        // Legacy fallback
-        if (!orgContext && userRole === 'admin') return true;
         // Check org permissions
         if (orgMember && orgMember.role && orgMember.role.permissions) {
             return orgMember.role.permissions.includes(permission);
         }
         return false;
-    }, [dbUser, orgContext, orgMember, userRole]);
+    }, [dbUser, orgMember]);
 
     return {
         user,
@@ -244,6 +262,7 @@ const useSessionManager = () => {
         hasPermission,
         loading,
         setLoading,
+        configError,
         setJWT,
         refreshUserFromDB,
         checkUserExists,

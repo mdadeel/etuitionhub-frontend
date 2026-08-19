@@ -62,7 +62,7 @@ export function useAnalyticsFallback() {
                 // count by role
                 var students = users.filter(u => u.role === 'student').length;
                 var tutors = users.filter(u => u.role === 'tutor').length;
-                var admins = users.filter(u => u.role === 'admin').length;
+                var admins = users.filter(u => u.globalRole === 'super_admin').length;
 
                 // count by status
                 var pending = tuitions.filter(t => t.status === 'pending').length;

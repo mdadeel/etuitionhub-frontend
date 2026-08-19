@@ -1,3 +1,5 @@
+import { getClientConfig } from '../config/clientConfig';
+
 const IS_DEV = import.meta.env.DEV;
 
 export function trackEvent(action, label, value) {
@@ -20,13 +22,9 @@ export function trackEvent(action, label, value) {
       page_path: window.location.pathname,
     });
   }
-
-  if (typeof window.fbq === 'function') {
-    window.fbq('track', action, { label, value });
-  }
 }
 
-export function trackPageView(path) {
+export async function trackPageView(path) {
   const url = path || window.location.pathname + window.location.search;
 
   if (IS_DEV) {
@@ -34,12 +32,10 @@ export function trackPageView(path) {
   }
 
   if (typeof window.gtag === 'function') {
-    window.gtag('config', import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX', {
+    // GA measurement id comes from the backend /api/config (no frontend env).
+    const config = await getClientConfig().catch(() => null);
+    window.gtag('config', config?.gaMeasurementId || 'G-XXXXXXXXXX', {
       page_path: url,
     });
-  }
-
-  if (typeof window.fbq === 'function') {
-    window.fbq('track', 'PageView');
   }
 }

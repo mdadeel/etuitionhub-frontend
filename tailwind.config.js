@@ -48,13 +48,22 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        success: '#22c55e',
-        warning: '#f59e0b',
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        footer: {
+          DEFAULT: "hsl(var(--footer))",
+          foreground: "hsl(var(--footer-foreground))",
+        },
       },
+      // Restrained radius scale — components 0-4px, overlays/dialogs 0-6px.
+      // lg = var(--radius) (4px), md = 2px, sm = 0; xl/2xl/3xl = 6px (overlay tier).
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "6px",
+        "2xl": "6px",
+        "3xl": "6px",
       },
       boxShadow: {
         'premium': '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
@@ -65,11 +74,17 @@ export default {
         '18': '4.5rem',
         '22': '5.5rem',
       },
+      // Animation policy: cap all transitions at 100-200ms (design-system mandate).
+      // Legacy duration-* classes are retargeted here so no component change is needed.
       transitionDuration: {
+        '75': '75ms',
+        '100': '100ms',
         '150': '150ms',
         '200': '200ms',
-        '250': '250ms',
-        '300': '300ms',
+        '250': '200ms',
+        '300': '200ms',
+        '500': '200ms',
+        '700': '200ms',
       },
       animation: {
         'fade-in': 'fadeIn 200ms ease-out',

@@ -245,7 +245,24 @@ export default function ChatInput({
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0] || null;
-        if (file) setAttachmentFile(file);
+        if (file) {
+            // Read the file as base64 so it can actually be sent with the
+            // message. A raw File has no `.data` property, so storing it
+            // directly made the attachment silently drop (`data: undefined`).
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUrl = reader.result;
+                const isImage = file.type.startsWith('image/');
+                setAttachmentFile({
+                    type: isImage ? 'image' : 'pdf',
+                    name: file.name,
+                    data: dataUrl ? String(dataUrl).split(',')[1] || '' : '',
+                    size: file.size,
+                });
+            };
+            reader.onerror = () => setAttachmentFile(null);
+            reader.readAsDataURL(file);
+        }
         // Reset so the same file can be re-selected later.
         e.target.value = '';
     };
@@ -328,7 +345,7 @@ function pickRecognitionLang() {
                 {attachmentFile && (
                     <div className="px-2.5 pt-1.5 pb-2">
                         <span className="inline-flex items-center gap-2 rounded-xl border border-border/40 bg-muted/40 px-3 py-1.5 text-xs font-medium transition-all duration-200">
-                            {attachmentFile.type?.startsWith('image/') ? (
+                            {attachmentFile.type === 'image' ? (
                                 <ImageIcon size={13} className="text-primary/75" />
                             ) : (
                                 <FileText size={13} className="text-primary/75" />
