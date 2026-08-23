@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Component } from 'react';
+import { Component, lazy, Suspense } from 'react';
 import {
     BookOpen, Target, Brain, Globe, AlertTriangle, ClipboardList,
     Sigma, ListChecks, FileText, CheckCircle2, ChevronDown,
@@ -11,7 +11,15 @@ import ConversationalBubble from './ConversationalBubble';
 import PoruaLogo from './PoruaLogo';
 import { Typewriter } from './ChatMessage';
 import CodeBlock from './CodeBlock';
-import MarkdownRenderer from './MarkdownRenderer';
+
+const LazyMarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
+function MarkdownRenderer(props) {
+    return (
+        <Suspense fallback={<div className="h-8 w-full animate-pulse bg-muted/40 rounded" />}>
+            <LazyMarkdownRenderer {...props} />
+        </Suspense>
+    );
+}
 
 class RendererBoundary extends Component {
     constructor(props) {

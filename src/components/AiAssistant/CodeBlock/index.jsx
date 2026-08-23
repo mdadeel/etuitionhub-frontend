@@ -1,6 +1,7 @@
-import { memo, useState, useMemo } from 'react';
+import { memo, useState, useMemo, lazy, Suspense } from 'react';
 import { Copy, Check, ExternalLink, WrapText, ChevronDown, ChevronUp } from 'lucide-react';
-import SyntaxHighlighter from './SyntaxHighlighter';
+
+const SyntaxHighlighter = lazy(() => import('./SyntaxHighlighter'));
 
 function isHtmlCode(code) {
     if (!code || typeof code !== 'string') return false;
@@ -144,19 +145,23 @@ export default memo(function CodeBlock({ code, language, isStreaming = false, sh
                             ))}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <SyntaxHighlighter
-                                code={displayCode}
-                                language={language}
-                                wrap={wrap}
-                            />
+                            <Suspense fallback={<div className="h-8 w-full animate-pulse bg-muted/40 rounded" />}>
+                                <SyntaxHighlighter
+                                    code={displayCode}
+                                    language={language}
+                                    wrap={wrap}
+                                />
+                            </Suspense>
                         </div>
                     </div>
                 ) : (
-                    <SyntaxHighlighter
-                        code={displayCode}
-                        language={language}
-                        wrap={wrap}
-                    />
+                    <Suspense fallback={<div className="h-8 w-full animate-pulse bg-muted/40 rounded" />}>
+                        <SyntaxHighlighter
+                            code={displayCode}
+                            language={language}
+                            wrap={wrap}
+                        />
+                    </Suspense>
                 )}
             </div>
 
