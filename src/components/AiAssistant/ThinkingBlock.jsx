@@ -1,7 +1,15 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { ChevronDown, ChevronUp, Brain } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import MarkdownRenderer from './MarkdownRenderer';
+
+const LazyMarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
+function MarkdownRenderer(props) {
+    return (
+        <Suspense fallback={<div className="h-8 w-full animate-pulse bg-muted/40 rounded" />}>
+            <LazyMarkdownRenderer {...props} />
+        </Suspense>
+    );
+}
 
 export default function ThinkingBlock({ thinking, className = '' }) {
     const [expanded, setExpanded] = useState(false);

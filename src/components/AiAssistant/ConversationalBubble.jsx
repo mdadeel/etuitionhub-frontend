@@ -7,7 +7,16 @@ import { Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import PoruaLogo from './PoruaLogo';
 import { Typewriter } from './ChatMessage';
-import MarkdownRenderer from './MarkdownRenderer';
+import { lazy, Suspense } from 'react';
+
+const LazyMarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
+function MarkdownRenderer(props) {
+    return (
+        <Suspense fallback={<div className="h-8 w-full animate-pulse bg-muted/40 rounded" />}>
+            <LazyMarkdownRenderer {...props} />
+        </Suspense>
+    );
+}
 
 /**
  * @param {Object}   props
