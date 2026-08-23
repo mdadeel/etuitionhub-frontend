@@ -184,3 +184,14 @@ Backend-side variables that feed `/api/config`:
 | `FIREBASE_WEB_APP_ID` | Firebase web app id |
 | `GA_MEASUREMENT_ID` | Google Analytics 4 measurement id |
 | `SHOW_DEMO_ACCOUNTS` | Show demo credentials on the login page |
+
+## Deployment
+
+- **Vercel:** `etuitionhub-frontend` deploys from `master` via Vercel Git integration (push to master → auto-deploy). Each deployment gets a unique URL plus the stable alias `etuitionhub-frontend.vercel.app`.
+- **API wiring:** the frontend hardcodes the backend URL in `src/config/api.js` (dev: `http://localhost:5000`, prod: `https://etuitionhub-backend.vercel.app`). If the backend domain changes, update that file and redeploy.
+
+### Rollback
+
+- **App revert:** `vercel rollback <deployment-url> --token=$VERCEL_TOKEN` (find the last READY
+  deployment with `vercel ls`), or Vercel dashboard → Deployments → ⋯ → Rollback.
+- **Env changes:** the frontend has no Vercel env vars (all config is served from `GET /api/config`). A rollback is a redeploy of the previous commit, not a data restore.
