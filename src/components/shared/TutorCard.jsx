@@ -64,8 +64,11 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
     qualification,
     location,
     subjects = [],
-    isVerified,
   } = tutor;
+  // ponytail: isVerified fallback until all tutor payloads include verificationStatus
+  const isVerified = tutor.verificationStatus
+    ? tutor.verificationStatus === 'verified_basic' || tutor.verificationStatus === 'verified_premium'
+    : !!tutor.isVerified;
   const rating = tutor.ratings || tutor.rating || 4.8;
   const salary = tutor.expectedSalary || 5000;
   const experience = tutor.experience || "1-2 years";

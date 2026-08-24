@@ -75,6 +75,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
         onClick={handleBookmark}
         className="absolute top-4 right-4 z-10 size-8 flex items-center justify-center rounded-full bg-slate-100/80 hover:bg-primary/10 hover:text-primary dark:bg-slate-900/80 dark:hover:bg-primary/20 text-muted-foreground transition-all duration-200"
         title={isSaved ? "Unsave" : "Save"}
+        aria-label={isSaved ? "Unsave tuition" : "Save tuition"}
       >
         <Bookmark
           size={16}
