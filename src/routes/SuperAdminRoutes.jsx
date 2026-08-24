@@ -14,6 +14,10 @@ const AdminTutors = lazy(() => import('../components/Dashboard/AdminTutors'));
 const DashTuitions = lazy(() => import('../components/Dashboard/DashTuitions'));
 const AdminVerifications = lazy(() => import('../components/Dashboard/AdminVerifications'));
 const SubscriptionManagement = lazy(() => import('../components/Dashboard/SuperAdmin/SubscriptionManagement'));
+// Merged from the collapsed /admin route set (AdminRoutes now redirects to /super-admin).
+const AdminWithdrawals = lazy(() => import('../pages/AdminWithdrawals'));
+const DashPayments = lazy(() => import('../components/Dashboard/DashPayments'));
+const AdminContacts = lazy(() => import('../components/Dashboard/AdminContacts'));
 
 const SuperAdminRoutes = () => {
   const { dbUser, loading } = useAuth();
@@ -35,6 +39,9 @@ const SuperAdminRoutes = () => {
         <Route path="tutors" element={<AdminTutors />} />
         <Route path="tuitions" element={<DashTuitions />} />
         <Route path="verifications" element={<AdminVerifications />} />
+        <Route path="withdrawals" element={<AdminWithdrawals />} />
+        <Route path="payments" element={<DashPayments />} />
+        <Route path="contacts" element={<AdminContacts />} />
         <Route path="subscriptions" element={<SubscriptionManagement />} />
         <Route path="audit-logs" element={<AdminAuditLogs />} />
         <Route path="settings" element={<DashSettings />} />

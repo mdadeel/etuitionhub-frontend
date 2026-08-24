@@ -72,8 +72,6 @@ const Dashboard = () => {
               <Navigate to="/super-admin" replace />
             ) : orgContext ? (
               <Navigate to={`/dashboard/org/${orgContext.orgId || orgContext.slug}`} replace />
-            ) : role === "admin" ? (
-              <Navigate to="/admin" replace />
             ) : role === "tutor" ? (
               <TutorDashboard />
             ) : (

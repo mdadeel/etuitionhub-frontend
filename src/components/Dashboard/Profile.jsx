@@ -240,12 +240,20 @@ const Profile = () => {
                                         Rating
                                     </p>
                                     <div className="flex items-baseline gap-1.5">
-                                        <p className="text-lg font-black text-foreground tracking-tighter">
-                                            4.9
-                                        </p>
-                                        <p className="text-[10px] text-muted-foreground font-bold">
-                                            (128 reviews)
-                                        </p>
+                                        {dbUser?.ratings > 0 ? (
+                                            <p className="text-lg font-black text-foreground tracking-tighter">
+                                                {Number(dbUser.ratings).toFixed(1)}
+                                            </p>
+                                        ) : (
+                                            <p className="text-lg font-black text-foreground tracking-tighter">
+                                                New
+                                            </p>
+                                        )}
+                                        {dbUser?.reviewCount > 0 && (
+                                            <p className="text-[10px] text-muted-foreground font-bold">
+                                                ({dbUser.reviewCount} {dbUser.reviewCount === 1 ? 'review' : 'reviews'})
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>

@@ -29,8 +29,10 @@ describe('defaultRouteFor', () => {
         expect(defaultRouteFor({ globalRole: 'super_admin', role: 'admin' })).toBe('/super-admin');
     });
 
-    it('returns /admin for legacy admin (no super_admin)', () => {
-        expect(defaultRouteFor({ globalRole: 'user', role: 'admin' })).toBe('/admin');
+    it('returns /dashboard for legacy admin without super_admin (collapse)', () => {
+        // /admin was collapsed into /super-admin; a legacy role:'admin' without
+        // globalRole is not a real admin and must not route into the admin app.
+        expect(defaultRouteFor({ globalRole: 'user', role: 'admin' })).toBe('/dashboard');
     });
 
     it('returns /dashboard for student', () => {

@@ -131,9 +131,9 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
       { path: "/super-admin/tutors", label: "Tutors", icon: ShieldCheck, group: "Users & Content" },
       { path: "/super-admin/tuitions", label: "Tuitions", icon: FileText, group: "Users & Content" },
       { path: "/super-admin/verifications", label: "Verifications", icon: ClipboardCheck, group: "Users & Content" },
-      { path: "/admin/withdrawals", label: "Withdrawals", icon: ArrowDownToLine, group: "Finance" },
-      { path: "/admin/payments", label: "Payments", icon: DollarSign, group: "Finance" },
-      { path: "/admin/contacts", label: "Contacts", icon: Mail, group: "Operations" },
+      { path: "/super-admin/withdrawals", label: "Withdrawals", icon: ArrowDownToLine, group: "Finance" },
+      { path: "/super-admin/payments", label: "Payments", icon: DollarSign, group: "Finance" },
+      { path: "/super-admin/contacts", label: "Contacts", icon: Mail, group: "Operations" },
       { path: "/super-admin/audit-logs", label: "Audit Logs", icon: History, group: "Operations" },
       { path: "/dashboard/disputes", label: "Disputes", icon: Scale, group: "Operations" },
       ...(orgContext ? buildOrgMenu(orgContext, hasPermission) : []),
@@ -142,19 +142,6 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
 
   if (orgContext) {
     return buildOrgMenu(orgContext, hasPermission);
-  }
-
-  if (legacyRole === 'admin') {
-    return [
-      { path: "/admin", label: "Overview", icon: LayoutDashboard, group: "Management" },
-      { path: "/admin/users", label: "Users", icon: Users, group: "Management" },
-      { path: "/admin/withdrawals", label: "Withdrawals", icon: ArrowDownToLine, group: "Finance" },
-      { path: "/admin/payments", label: "Payments", icon: DollarSign, group: "Finance" },
-      { path: "/admin/settings", label: "Settings", icon: Settings, group: "Operations" },
-      { path: "/admin/audit-logs", label: "Audit Logs", icon: History, group: "Operations" },
-      { path: "/admin/contacts", label: "Contacts", icon: Mail, group: "Operations" },
-      { path: "/dashboard/disputes", label: "Disputes", icon: Scale, group: "Operations" },
-    ];
   }
 
   if (legacyRole === 'tutor') {

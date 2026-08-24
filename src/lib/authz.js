@@ -9,9 +9,9 @@ export const isAdmin = (dbUser) =>
   dbUser?.globalRole === 'super_admin';
 
 export const defaultRouteFor = (dbUser) => {
+  // /admin was collapsed into /super-admin (AdminRoutes redirects); a legacy
+  // role:'admin' without globalRole is not a real admin — send to the user app.
   if (dbUser?.globalRole === 'super_admin') return '/super-admin';
-  // ponytail: legacy role:'admin' → /admin is intentional for unmigrated records; remove after User.role==='admin' audit.
-  if (dbUser?.role === 'admin') return '/admin';
   return '/dashboard';
 };
 
