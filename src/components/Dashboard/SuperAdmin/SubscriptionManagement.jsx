@@ -259,12 +259,8 @@ const SubscriptionManagement = () => {
     );
   }
 
-  return (
+    return (
     <div className="max-w-6xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Subscription Management</h1>
-        <p className="text-muted-foreground text-sm mt-1">Manage platform plans and view all organization subscriptions.</p>
-      </div>
 
       {/* Plans Section */}
       <div>
