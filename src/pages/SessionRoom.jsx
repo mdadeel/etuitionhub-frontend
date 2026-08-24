@@ -232,7 +232,7 @@ export default function SessionRoom() {
 
                 {/* My Video (PiP) */}
                 {stream && (
-                    <div className="absolute bottom-24 right-8 w-48 h-32 bg-black rounded-lg overflow-hidden border-2 border-gray-700 shadow-xl">
+                    <div className="absolute bottom-24 right-3 w-28 h-20 sm:right-8 sm:w-48 sm:h-32 bg-black rounded-lg overflow-hidden border-2 border-gray-700 shadow-xl">
                         <video playsInline muted ref={myVideo} autoPlay className="size-full object-cover" />
                     </div>
                 )}
