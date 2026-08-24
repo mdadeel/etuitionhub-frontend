@@ -15,7 +15,7 @@ const TutorsByCity = () => {
     queryKey: ['tutors', 'city', city],
     queryFn: async () => {
       const res = await api.get(`/api/tutors?location=${encodeURIComponent(cityName)}`);
-      return res.data || [];
+      return res.data?.data ?? res.data ?? [];
     },
     staleTime: 120_000,
   });
