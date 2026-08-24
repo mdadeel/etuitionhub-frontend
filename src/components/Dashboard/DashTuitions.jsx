@@ -71,8 +71,8 @@ const DashTuitions = () => {
             const data = res.data;
             setTuitions(Array.isArray(data) ? data : (data?.data || []));
             if (data?.pagination) {
-                setTotalPages(data.pagination.pages);
-                setTotalTuitions(data.pagination.total);
+                setTotalPages(data.pagination.totalPages ?? data.pagination.pages ?? 1);
+                setTotalTuitions(data.pagination.totalItems ?? data.pagination.total ?? 0);
             }
         } catch (err) {
             toast.error(err?.response?.data?.error || 'Failed to load tuitions');
@@ -98,7 +98,7 @@ const DashTuitions = () => {
         }
 
         try {
-            await api.patch(`/api/tuitions/${id}`, { status: 'approved' });
+            await api.patch(`/api/tuitions/${id}/status`, { status: 'approved' });
             toast.success('Tuition approved');
             await loadTuitions();
         } catch {
@@ -116,7 +116,7 @@ const DashTuitions = () => {
         }
 
         try {
-            await api.patch(`/api/tuitions/${id}`, { status: 'rejected' });
+            await api.delete(`/api/tuitions/${id}`);
             toast.success('Tuition rejected');
             await loadTuitions();
         } catch {

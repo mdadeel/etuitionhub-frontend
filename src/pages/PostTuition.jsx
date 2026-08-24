@@ -88,12 +88,10 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
         salary: parsedSalary,
         medium,
         location,
-        student_email: user.email,
         gender,
         days_per_week: parsedDays,
         available_days: availableDays,
         description: description || undefined,
-        status: "pending",
       });
       toast.success("Tuition posted successfully!");
       setSubject("");

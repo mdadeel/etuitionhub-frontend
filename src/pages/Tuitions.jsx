@@ -107,8 +107,9 @@ const Tuitions = () => {
     return Array.from(subjectsSet);
   }, [filterOptions?.subjects]);
 
-  const totalPages = pagination?.totalPages || 1;
-  const hasMore = pagination ? pagination.page < totalPages : false;
+  const totalPages = pagination?.totalPages ?? pagination?.pages ?? 1;
+  const currentPage = pagination?.currentPage ?? pagination?.page ?? page;
+  const hasMore = pagination ? currentPage < totalPages : false;
 
   const handleClearAll = () => {
     setSearchParams({});
