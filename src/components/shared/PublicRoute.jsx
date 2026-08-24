@@ -1,6 +1,10 @@
-// Public Route component - redirects logged in users to home
-// Used for login/register pages
-import { Navigate, useLocation } from 'react-router-dom';
+// Public Route component - handles login/register pages
+// If a session is already active, shows an explicit "continue or sign out"
+// interstitial instead of silently redirecting — this is what lets an admin
+// reach /admin-login even when a stale student session is sitting in the
+// browser. Redirects on explicit user action only.
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { defaultRouteFor } from '../../lib/authz';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,8 +12,10 @@ import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 import ConfigError from './ConfigError';
 
 function PublicRoute({ children }) {
-    const { user, dbUser, loading, configError } = useAuth();
+    const { user, dbUser, loading, configError, logout } = useAuth();
+    const navigate = useNavigate();
     const location = useLocation();
+    const [signingOut, setSigningOut] = useState(false);
 
     // App config (Firebase) failed to load — the login form can't work.
     if (configError) {
@@ -36,10 +42,55 @@ function PublicRoute({ children }) {
         );
     }
 
-    // If logged in, redirect to the app matching their role (admin vs student)
+    // Logged in: offer explicit choice instead of a silent redirect.
+    // dbUser may still be null briefly if the profile fetch failed — in that
+    // case fall back to the displayName on the Firebase user.
     if (user) {
-        const from = location.state?.from?.pathname;
-        return <Navigate to={from || defaultRouteFor(dbUser)} replace />;
+        const displayName = dbUser?.displayName || user.displayName || user.email;
+        const roleLabel = dbUser?.globalRole === 'super_admin'
+            ? 'Super Admin'
+            : dbUser?.role || '';
+        const continueTarget = defaultRouteFor(dbUser);
+
+        const handleSignOut = async () => {
+            setSigningOut(true);
+            await logout();
+            // logout() clears user — this component re-renders and shows children.
+        };
+
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background px-4">
+                <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-premium">
+                    <h1 className="text-xl font-heading font-bold text-foreground mb-2">
+                        You're already signed in
+                    </h1>
+                    <p className="text-sm text-muted-foreground mb-5">
+                        Signed in as <span className="font-medium text-foreground">{displayName}</span>
+                        {roleLabel ? <span className="text-muted-foreground"> ({roleLabel})</span> : null}.
+                        {location.pathname === '/admin-login'
+                            ? ' Continue as this user, or sign out to use a different account.'
+                            : ''}
+                    </p>
+                    <div className="flex flex-col gap-2">
+                        <button
+                            type="button"
+                            onClick={handleSignOut}
+                            disabled={signingOut}
+                            className="h-11 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                        >
+                            {signingOut ? 'Signing out…' : 'Sign out'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => navigate(continueTarget, { replace: true })}
+                            className="h-11 rounded-xl bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                        >
+                            Continue to {continueTarget === '/dashboard' ? 'Dashboard' : 'Admin Dashboard'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return children;

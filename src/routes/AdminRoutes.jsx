@@ -16,7 +16,9 @@ const AdminRoutes = () => {
 
   if (loading) return null;
 
-  if (dbUser?.role !== 'admin' && dbUser?.globalRole !== 'super_admin') {
+  // Canonical admin check (mirrors backend User.js): globalRole super_admin.
+  // The legacy role:'admin' field is vestigial and must not gate access.
+  if (dbUser?.globalRole !== 'super_admin') {
     return <Navigate to="/403" replace />;
   }
 

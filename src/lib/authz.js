@@ -2,8 +2,11 @@
 // The backend remains the source of truth for permissions; these only
 // decide which app (admin vs student) the frontend routes the user to.
 
+// Canonical admin signal — mirrors the backend model (User.js: role:'admin'
+// is vestigial; globalRole === 'super_admin' is the only trusted check).
+// Never rely on the legacy role field for authorization.
 export const isAdmin = (dbUser) =>
-  dbUser?.globalRole === 'super_admin' || dbUser?.role === 'admin';
+  dbUser?.globalRole === 'super_admin';
 
 export const defaultRouteFor = (dbUser) => {
   if (dbUser?.globalRole === 'super_admin') return '/super-admin';
