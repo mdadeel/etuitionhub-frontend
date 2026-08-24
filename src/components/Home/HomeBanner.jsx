@@ -92,7 +92,7 @@ const handleSearch = (e) => {
             {/* Soft radial glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-primary/5 blur-[120px] pointer-events-none z-0" />
 
-            <div className="max-w-7xl mx-auto px-6 relative z-10 py-8 lg:py-20">
+            <div className="w-full px-4 md:px-6 lg:px-8 relative z-10 py-8 lg:py-20">
                 <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
                     {/* LEFT - Content & Search */}

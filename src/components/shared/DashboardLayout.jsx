@@ -275,7 +275,7 @@ const DashboardLayout = ({ children }) => {
 
         {/* Main Content */}
         <div className="flex-grow p-4 md:p-6 lg:p-8">
-          <div className="max-w-[1600px] mx-auto">
+          <div className="w-full">
             <Suspense fallback={<RouteFallback />}>
               {children}
             </Suspense>

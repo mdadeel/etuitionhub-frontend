@@ -124,7 +124,7 @@ const OrganizationDetails = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10">
+      <div className="w-full px-4 md:px-6 lg:px-8 -mt-24 relative z-10">
         <div className="bg-card rounded-2xl shadow-xl border border-border p-6 md:p-10 mb-8 flex flex-col md:flex-row gap-8 items-start">
           
           {/* Logo */}

@@ -124,7 +124,7 @@ const Tuitions = () => {
         description="Browse available tuition jobs and teaching opportunities across Bangladesh. Filter by class, subject, and location to find the perfect match."
         keywords="tuition jobs, teaching jobs, tutor wanted, bangladesh tuitions, home tutor jobs"
       />
-      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col flex-1 min-h-0 w-full">
+      <div className="w-full px-4 md:px-6 lg:px-8 py-6 flex flex-col flex-1 min-h-0">
         {/* Header */}
         <div
           className={cn(

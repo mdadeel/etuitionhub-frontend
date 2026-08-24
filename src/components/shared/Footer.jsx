@@ -26,7 +26,7 @@ const Footer = () => {
     return (
         <footer className="bg-slate-900 text-white/60 pt-16 md:pt-20 pb-8 relative overflow-hidden">
             
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-8 mb-12">
                     {/* Brand Section - Warm, institutional */}

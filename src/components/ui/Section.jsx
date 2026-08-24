@@ -31,7 +31,7 @@ const Section = ({
       )}
       {...props}
     >
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="w-full px-4 md:px-6 lg:px-8">
         {children}
       </div>
     </section>

@@ -21,7 +21,7 @@ const FAQ = () => {
       {/* Soft violet glow — grounds the student-thinking illustration */}
       <div className="absolute top-1/2 right-0 w-[500px] h-[500px] -translate-y-1/2 rounded-full bg-violet-400/5 blur-[120px] pointer-events-none z-0" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           {/* LEFT - FAQ Title & Accordion */}

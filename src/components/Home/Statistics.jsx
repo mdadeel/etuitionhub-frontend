@@ -29,7 +29,7 @@ const Statistics = () => {
 
   return (
     <section className="relative overflow-hidden py-10 md:py-14 bg-card border-y border-border/40">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
         <div 
           ref={containerRef} 
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"

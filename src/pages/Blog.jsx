@@ -15,7 +15,7 @@ const Blog = () => {
                  style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
             </div>
 
-            <div className="max-w-7xl mx-auto relative z-10">
+            <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
                 <div className="mb-24">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-12 h-1 bg-primary"></div>

@@ -21,7 +21,7 @@ const PopularTutors = () => {
 
     return (
         <section className="py-16 bg-card relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
                 <div className="flex items-center justify-between mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                     <div>
                         <div className="flex items-center gap-2 mb-2">

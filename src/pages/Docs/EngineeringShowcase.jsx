@@ -291,7 +291,7 @@ export default function EngineeringShowcase() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 space-y-36 mt-20">
+      <div className="w-full px-4 md:px-6 lg:px-8 space-y-36 mt-20">
 
         {/* 2. CENTERPIECE: "How One Message Travels" Simulation Flow (12 Steps) */}
         <section id="journey" className="scroll-mt-20">

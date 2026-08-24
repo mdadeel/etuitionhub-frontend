@@ -209,7 +209,7 @@ const CategoryCard = ({ cat, index }) => {
 const FeaturedCategories = () => {
     return (
         <section className="relative overflow-hidden bg-card py-12 md:py-16">
-            <div className="relative z-10 mx-auto max-w-7xl px-6">
+            <div className="relative z-10 w-full px-4 md:px-6 lg:px-8">
                 {/* Compact header */}
                 <div className="mb-6 flex flex-col gap-3 md:mb-8 md:flex-row md:items-end md:justify-between">
                     <div
