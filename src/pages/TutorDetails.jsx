@@ -479,7 +479,7 @@ const TutorDetails = () => {
                                     <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
                                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Rating</p>
                                         <div className="flex items-center gap-1">
-                                            <p className="text-base sm:text-lg font-heading text-foreground font-bold">{tutor.ratings || '4.9'}</p>
+                                            <p className="text-base sm:text-lg font-heading text-foreground font-bold">{tutor.ratings > 0 ? tutor.ratings : 'New'}</p>
                                             <Star size={14} className="fill-amber-400 text-amber-400" aria-hidden="true" />
                                         </div>
                                     </div>

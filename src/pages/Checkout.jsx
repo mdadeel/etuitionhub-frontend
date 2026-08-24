@@ -3,6 +3,7 @@ import { useParams, useNavigate, Navigate } from "react-router-dom"
 import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
 import api from '../services/api';
+import { getClientConfig } from '../config/clientConfig';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import {
     Banknote,
@@ -30,6 +31,19 @@ const PAYMENT_METHODS = [
 
 const isDemoMethod = (methodId) => ['bkash', 'nagad', 'rocket'].includes(methodId);
 
+// Whether the backend runs in payments demo mode (PAYMENTS_DEMO_MODE=true).
+// Off by default — production manual payments are verified by an admin, so the
+// "auto-verified for testing" banner must NOT show there.
+let paymentsDemoModePromise = null;
+const getPaymentsDemoMode = () => {
+  if (!paymentsDemoModePromise) {
+    paymentsDemoModePromise = getClientConfig()
+      .then((cfg) => !!(cfg?.payments?.demoMode))
+      .catch(() => false); // config failure → assume production, no demo banner
+  }
+  return paymentsDemoModePromise;
+};
+
 /**
  * Checkout Page
  * Refactored to "Technical Emerald Minimalism"
@@ -51,6 +65,15 @@ const Checkout = () => {
         notes: ''
     });
     const [screenshotFile, setScreenshotFile] = useState(null);
+    const [demoMode, setDemoMode] = useState(false);
+
+    useEffect(() => {
+        let active = true;
+        getPaymentsDemoMode().then((demo) => {
+            if (active) setDemoMode(demo);
+        });
+        return () => { active = false; };
+    }, []);
 
     const fetchApplication = async () => {
         try {
@@ -236,7 +259,7 @@ const Checkout = () => {
                                         </button>
                                     ))}
                                 </div>
-                                {isDemoMethod(formData.paymentMethod) && (
+                                {demoMode && isDemoMethod(formData.paymentMethod) && (
                                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                                         <div className="flex items-center gap-2 text-yellow-800">
                                             <AlertCircle className="size-5" />

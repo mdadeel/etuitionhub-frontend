@@ -11,13 +11,15 @@ import { Badge } from "@/components/ui/badge";
  * Refactored to "Technical Emerald Minimalism"
  */
 const PaymentHistory = () => {
-    const { user } = useAuth();
+    const { user, dbUser } = useAuth();
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchPayments = async () => {
         try {
-            const role = (() => { try { return JSON.parse(localStorage.getItem('etuitionhub_user')||'{}')?.role || ''; } catch { return ''; } })();
+            // Role comes from the server-fetched dbUser (authoritative), never from
+            // localStorage — a tampered or stale client value must not pick the endpoint.
+            const role = (dbUser?.role || '').toLowerCase();
             const endpoint = role === 'tutor' ? `/api/payments/tutor/${user.email}` : `/api/payments/student/${user.email}`;
             const res = await api.get(endpoint);
             const data = Array.isArray(res.data) ? res.data : (res.data.payments || res.data.data || []);
@@ -34,7 +36,7 @@ const PaymentHistory = () => {
         if (!user?.email) return;
         fetchPayments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
+    }, [user, dbUser?.role]);
 
     if (loading) {
         return (

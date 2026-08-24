@@ -206,16 +206,17 @@ const OrganizationDetails = () => {
                     </Button>
                   </div>
                 )}
-                <Button variant="outline">
-                  Contact
-                </Button>
+                {(organization.profile?.publicEmail || organization.contact?.email) && (
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      window.location.href = `mailto:${organization.profile?.publicEmail || organization.contact?.email}`;
+                    }}
+                  >
+                    Contact
+                  </Button>
+                )}
               </div>
-            </div>
-
-            <div className="mt-6 prose prose-slate dark:prose-invert max-w-none">
-              <p className="text-foreground/80 leading-relaxed text-lg">
-                {organization.profile?.description || "This organization has not provided a description yet."}
-              </p>
             </div>
           </div>
         </div>
@@ -224,10 +225,10 @@ const OrganizationDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-card rounded-2xl border border-border p-8">
-              <h2 className="text-xl font-bold text-foreground mb-6 font-heading">Available Tuitions</h2>
-              <div className="text-center py-12 border-2 border-dashed border-border rounded-xl">
-                <p className="text-muted-foreground">This organization has not posted any public tuitions yet.</p>
-              </div>
+              <h2 className="text-xl font-bold text-foreground mb-4 font-heading">About Us</h2>
+              <p className="text-foreground/80 leading-relaxed text-lg whitespace-pre-line">
+                {organization.profile?.description || "This organization has not provided a description yet."}
+              </p>
             </div>
           </div>
 

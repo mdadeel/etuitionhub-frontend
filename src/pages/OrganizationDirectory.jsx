@@ -45,12 +45,21 @@ const OrganizationDirectory = () => {
   const [joinTarget, setJoinTarget] = useState(null); // { orgId, orgName }
 
   const handleJoin = async (orgId, orgName) => {
+    if (!user) {
+      toast.error("Please log in to request to join an organization");
+      return;
+    }
     setJoinTarget({ orgId, orgName });
     setJoinMessage("");
   };
 
   const confirmJoin = async () => {
     if (!joinTarget) return;
+    if (!user) {
+      toast.error("Please log in to request to join an organization");
+      setJoinTarget(null);
+      return;
+    }
     try {
       const res = await api.post(`/api/v1/organizations/${joinTarget.orgId}/join-request`, {
         message: joinMessage
@@ -271,6 +280,14 @@ const OrganizationDirectory = () => {
                         className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg text-center text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-1"
                       >
                         Open Dashboard
+                        <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    ) : !user ? (
+                      <Link
+                        to="/login"
+                        className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-1"
+                      >
+                        Login to Join
                         <ArrowRight className="h-3 w-3" />
                       </Link>
                     ) : (org.settings?.joinMode || 'approval_required') !== 'invite_only' ? (

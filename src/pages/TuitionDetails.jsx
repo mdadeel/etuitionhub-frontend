@@ -247,7 +247,11 @@ const TuitionDetails = () => {
                         <div className="bg-card p-6 rounded-lg border border-border">
                             <div className="flex flex-wrap items-center gap-2 mb-4">
                                 <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] text-xs font-medium rounded-full">Class {tuition.class_name}</span>
-                                <span className="px-2 py-1 bg-[#059669]/10 text-[#059669] text-xs font-medium rounded-full">Verified</span>
+                                {tuition.status === 'approved' ? (
+                                    <span className="px-2 py-1 bg-[#059669]/10 text-[#059669] text-xs font-medium rounded-full">Verified</span>
+                                ) : (
+                                    <span className="px-2 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium rounded-full capitalize">{tuition.status}</span>
+                                )}
                                 {tuition.curriculum && (
                                     <span className="px-2 py-1 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-medium rounded-full capitalize">{tuition.curriculum.replace(/_/g, ' ')}</span>
                                 )}
@@ -349,7 +353,7 @@ const TuitionDetails = () => {
                                     </p>
                                     <div className="flex flex-wrap gap-4 pt-2">
                                         <div className="flex items-center gap-1 text-xs font-medium text-[#2563EB]">
-                                            <CheckCircle size={12} /> Verified
+                                            <CheckCircle size={12} /> {tuition.status === 'approved' ? 'Verified' : 'Pending Verification'}
                                         </div>
                                         <div className="flex items-center gap-1 text-xs font-medium text-[#2563EB]">
                                             <Lock size={12} /> Privacy
