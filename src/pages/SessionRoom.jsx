@@ -106,7 +106,6 @@ export default function SessionRoom() {
         });
 
         const s = socket.current;
-        const userId = user?.email || dbUser?.email || "anonymous";
 
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((currentStream) => {
             setStream(currentStream);
@@ -114,7 +113,7 @@ export default function SessionRoom() {
                 myVideo.current.srcObject = currentStream;
             }
 
-            s.emit('join-room', bookingId, userId);
+            s.emit('join-room', bookingId);
 
             s.on('user-connected', (newUserId) => {
                 // Another user joined, we can initiate a call to them

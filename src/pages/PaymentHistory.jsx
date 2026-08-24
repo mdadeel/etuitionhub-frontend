@@ -17,8 +17,11 @@ const PaymentHistory = () => {
 
     const fetchPayments = async () => {
         try {
-            const res = await api.get(`/api/payments/student/${user.email}`);
-            setPayments(res.data);
+            const role = (() => { try { return JSON.parse(localStorage.getItem('etuitionhub_user')||'{}')?.role || ''; } catch { return ''; } })();
+            const endpoint = role === 'tutor' ? `/api/payments/tutor/${user.email}` : `/api/payments/student/${user.email}`;
+            const res = await api.get(endpoint);
+            const data = Array.isArray(res.data) ? res.data : (res.data.payments || res.data.data || []);
+            setPayments(data);
         // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error('Log recovery failure: Could not sync transaction history.');
@@ -116,6 +119,8 @@ const PaymentHistory = () => {
                                                         pending_verification: { label: 'PENDING', class: 'text-amber-500 border-amber-500/20 bg-amber-500/5' },
                                                         confirmed: { label: 'CONFIRMED', class: 'text-primary border-primary bg-primary/5' },
                                                         commission_applied: { label: 'COMMISSION SET', class: 'text-primary border-primary bg-primary/5' },
+                                                        escrow_hold: { label: 'ESCROW', class: 'text-amber-600 border-amber-500/20 bg-amber-500/5' },
+                                                        billing_generated: { label: 'INVOICED', class: 'text-amber-600 border-amber-500/20 bg-amber-500/5' },
                                                         available_for_withdrawal: { label: 'AVAILABLE', class: 'text-primary border-primary bg-primary/5' },
                                                         withdrawn: { label: 'WITHDRAWN', class: 'text-primary border-primary bg-primary/5' },
                                                         rejected: { label: 'REJECTED', class: 'text-destructive border-destructive/20 bg-destructive/5' }
