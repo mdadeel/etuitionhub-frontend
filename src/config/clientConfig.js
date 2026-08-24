@@ -9,7 +9,7 @@ let configPromise = null;
  * Returns a promise resolving to the client config:
  * { firebase: { apiKey, authDomain, projectId, storageBucket,
  *               messagingSenderId, appId, measurementId },
- *   gaMeasurementId, showDemoAccounts }
+ *   gaMeasurementId }
  *
  * Single-flight: concurrent callers share one fetch. On failure the cache is
  * cleared so the next call retries (used by auth bootstrap + retry UI).

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const ADMIN_EMAIL = 'demoadmin@etuition.com';
-const ADMIN_PASSWORD = 'password123';
+const ADMIN_EMAIL = 'admin@etuition.com';
+const ADMIN_PASSWORD = 'adeel1212';
 
 test('admin can log in and reach the dashboard', async ({ page }) => {
   // Clear any stale auth state

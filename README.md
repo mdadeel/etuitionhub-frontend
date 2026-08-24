@@ -183,7 +183,6 @@ Backend-side variables that feed `/api/config`:
 | `FIREBASE_WEB_MESSAGING_SENDER_ID` | Firebase sender id |
 | `FIREBASE_WEB_APP_ID` | Firebase web app id |
 | `GA_MEASUREMENT_ID` | Google Analytics 4 measurement id |
-| `SHOW_DEMO_ACCOUNTS` | Show demo credentials on the login page |
 
 ## Deployment
 

@@ -2,25 +2,16 @@
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { getClientConfig } from '../config/clientConfig';
 import { isAdmin, isAdminPath, defaultRouteFor } from '../lib/authz';
 
 const AdminLogin = () => {
-    const { register, handleSubmit, setValue } = useForm();
+    const { register, handleSubmit } = useForm();
     const { loginAdmin } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [loading, setLoading] = useState(false);
-    // Demo-account hint flag comes from the backend /api/config (no frontend env).
-    const [showDemoAccounts, setShowDemoAccounts] = useState(false);
-
-    useEffect(() => {
-        getClientConfig()
-            .then((config) => setShowDemoAccounts(!!config.showDemoAccounts))
-            .catch(() => {}); // hide demo hint if config is unreachable
-    }, []);
 
     const onSubmit = async (data) => {
         if (!data.email || !data.password) {
@@ -68,12 +59,6 @@ const AdminLogin = () => {
         }
     };
 
-    const fillDemoAdmin = () => {
-        setValue('email', 'demoadmin@etuition.com');
-        setValue('password', 'password123');
-        toast.success('Demo Admin credentials filled. Click Login.');
-    };
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4">
             <div className="w-full max-w-md">
@@ -117,21 +102,6 @@ const AdminLogin = () => {
                             {loading ? 'Authenticating...' : 'Access Dashboard'}
                         </button>
                     </form>
-
-                    {showDemoAccounts && (
-                    <div className="mt-6 pt-6 border-t border-gray-700">
-                        <button
-                            type="button"
-                            onClick={fillDemoAdmin}
-                            className="w-full h-10 bg-gray-700 border border-gray-600 text-gray-300 font-medium text-sm rounded-lg hover:bg-gray-600 hover:text-white transition-all flex items-center justify-center gap-2"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" />
-                            </svg>
-                            Use Demo Admin Account
-                        </button>
-                    </div>
-                    )}
 
                     <p className="text-center mt-6 text-sm text-muted-foreground">
                         Not an admin? <Link to="/login" className="text-teal-400 hover:underline">Return to User Login</Link>
