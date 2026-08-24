@@ -11,6 +11,7 @@ import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { isAdminPath } from "../../lib/authz";
 import Logo from "@/components/shared/Logo";
+import RoleBadge from "@/components/shared/RoleBadge";
 import api from "../../services/api";
 
 const DashboardSidebar = ({ className = '' }) => {
@@ -21,20 +22,16 @@ const DashboardSidebar = ({ className = '' }) => {
   const legacyRole = dbUser?.role?.toLowerCase() || 'student';
   const effectiveRole = orgContext ? orgRole : legacyRole;
 
-  const getRoleInfo = () => {
-    if (globalRole === 'super_admin') return { label: "Super Admin", variant: "error" };
-    if (orgContext) {
-      if (orgRole === 'org_admin') return { label: "Org Admin", variant: "primary" };
-      if (orgRole === 'teacher') return { label: "Org Teacher", variant: "primary" };
-      return { label: "Org Student", variant: "secondary" };
-    }
-    const r = legacyRole;
-    if (r === "admin") return { label: "Admin", variant: "error" };
-    if (r === "tutor") return { label: "Tutor", variant: "primary" };
-    return { label: "Student", variant: "secondary" };
+  // Account role is rendered via <RoleBadge>; this only handles the org-scoped
+  // role shown when the user is acting within an organization.
+  const getOrgRoleInfo = () => {
+    if (!orgContext) return null;
+    if (orgRole === 'org_admin') return { label: "Org Admin", variant: "primary" };
+    if (orgRole === 'teacher') return { label: "Org Teacher", variant: "primary" };
+    return { label: "Org Student", variant: "secondary" };
   };
 
-  const roleInfo = getRoleInfo();
+  const orgRoleInfo = getOrgRoleInfo();
 
   const menuItems = getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyRole, hasPermission });
 
@@ -102,9 +99,15 @@ const DashboardSidebar = ({ className = '' }) => {
             <span className="text-[11px] font-semibold text-foreground truncate">
               {user?.displayName || "User"}
             </span>
-            <span className="text-[10px] text-muted-foreground mt-0.5">
-              {roleInfo.label}
-            </span>
+            {orgContext ? (
+              <span className="text-[10px] text-muted-foreground mt-0.5">
+                {orgRoleInfo?.label}
+              </span>
+            ) : (
+              <div className="mt-0.5">
+                <RoleBadge globalRole={dbUser?.globalRole} role={dbUser?.role} />
+              </div>
+            )}
           </div>
         </div>
 

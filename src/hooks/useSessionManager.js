@@ -2,8 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getFirebase } from '../utils/firebase';
 import api, { resetSession } from '../services/api';
-import Cookies from 'js-cookie';
-import { AUTH_COOKIE_OPTIONS } from '../utils/cookieOptions';
 import toast from 'react-hot-toast';
 import { logError } from '../utils/devLogger';
 
@@ -45,17 +43,12 @@ const useSessionManager = () => {
         try {
             const idToken = firebaseUser ? await firebaseUser.getIdToken() : null;
             // Server sets httpOnly cookie via Set-Cookie header — no client-side cookie needed.
-            let res = await api.post('/api/auth/jwt', { 
-                email, 
+            await api.post('/api/auth/jwt', {
+                email,
                 idToken,
                 displayName: firebaseUser?.displayName || '',
                 photoURL: firebaseUser?.photoURL || ''
             });
-            if (res.data.token) {
-                // SECURITY: Do NOT set Cookies here — the server's httpOnly Set-Cookie handles auth.
-                // Client-side js-cookie cannot set httpOnly, so this was creating an XSS-vulnerable cookie.
-                return res.data.token;
-            }
         } catch (error) {
             toast.error('Authentication failed. Please try again.');
             throw error;

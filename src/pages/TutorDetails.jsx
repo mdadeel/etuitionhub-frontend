@@ -394,10 +394,10 @@ const TutorDetails = () => {
                                             </p>
                                         </div>
 
-                                        <CredibilityBadge 
+                                        <CredibilityBadge
+                                            verificationStatus={tutor.verificationStatus}
                                             requestsReceived={tutor.requestsReceived || 0}
                                             requestsRespondedCount={tutor.requestsRespondedCount || 0}
-                                            profileCompleteness={tutor.profileCompleteness || 0}
                                             reviewCount={tutor.reviewCount || 0}
                                             rating={tutor.ratings || 0}
                                         />

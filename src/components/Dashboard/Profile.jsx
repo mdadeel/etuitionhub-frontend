@@ -22,6 +22,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import RoleBadge from '@/components/shared/RoleBadge';
 import { cn } from '@/lib/utils';
 import {
     BANGLADESH_DIVISIONS,
@@ -156,9 +157,7 @@ const Profile = () => {
                                 <p className="text-sm text-muted-foreground mt-1">Manage your teaching credentials and public tutor profile.</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20">
-                                    {dbUser?.role?.charAt(0).toUpperCase() + dbUser?.role?.slice(1) || 'User'}
-                                </span>
+                                <RoleBadge globalRole={dbUser?.globalRole} role={dbUser?.role} />
                             </div>
                         </div>
                     </div>
@@ -494,9 +493,7 @@ const Profile = () => {
                                 <p className="text-sm text-muted-foreground mt-1">Manage your personal information and profile details.</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20">
-                                    {dbUser?.role?.charAt(0).toUpperCase() + dbUser?.role?.slice(1) || 'User'}
-                                </span>
+                                <RoleBadge globalRole={dbUser?.globalRole} role={dbUser?.role} />
                             </div>
                         </div>
                     </div>
