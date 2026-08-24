@@ -66,7 +66,11 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // ponytail: app-shell-only precache — 453 lazy JS chunks (13MB) must not
+        // download on every fresh visit (BD low-bandwidth mandate); browser HTTP
+        // cache handles repeat loads. No /api runtime caching: StaleWhileRevalidate
+        // served stale lists after mutations and cached PII-bearing authed responses.
+        globPatterns: ['index.html', 'assets/*.css', 'manifest.webmanifest', 'favicon.ico', 'pwa-192x192.png', 'pwa-512x512.png'],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         runtimeCaching: [
           {
@@ -76,16 +80,6 @@ export default defineConfig({
               cacheName: 'google-fonts-cache',
               expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 }
             }
-          },
-          {
-            urlPattern: ({ url }) => url.pathname.startsWith('/api/tutors'),
-            handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'api-tutors', expiration: { maxEntries: 50, maxAgeSeconds: 60 * 30 } }
-          },
-          {
-            urlPattern: ({ url }) => url.pathname.startsWith('/api/tuitions'),
-            handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'api-tuitions', expiration: { maxEntries: 50, maxAgeSeconds: 60 * 30 } }
           }
         ]
       }
