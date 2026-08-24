@@ -14,6 +14,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // ponytail: markdown/katex/highlighter ride in this lazy chunk via their AiAssistant importers;
+          // a separate vendor-ai-md split is a no-op under rolldown-vite (merged back into sole importer).
+          if (id.includes('pages/AiAssistant') || id.includes('components/AiAssistant')) return 'ai-assistant';
           if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/') || id.includes('node_modules/react-router')) return 'vendor-react';
           if (id.includes('node_modules/@tanstack/react-query')) return 'vendor-query';
           if (id.includes('node_modules/lucide-react')) return 'vendor-icons';
