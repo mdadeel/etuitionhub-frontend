@@ -157,16 +157,16 @@ const FilterSelect = ({
                 onClick={() => setIsOpen(!isOpen)}
                     className={cn(
                         'w-full flex items-center justify-between gap-2 h-10 px-3 bg-card border border-border rounded-xl text-sm transition-all',
-                        'hover:border-emerald-500/30 focus:outline-none focus:ring-2 focus:ring-emerald-500/10',
+                        'hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10',
                         hasValue ? 'text-foreground font-bold' : 'text-muted-foreground'
                     )}
                 >
                 <div className="flex items-center gap-2 min-w-0">
-                    {Icon && <Icon size={14} className={cn("shrink-0 opacity-55", hasValue && "text-emerald-500 opacity-100")} />}
+                    {Icon && <Icon size={14} className={cn("shrink-0 opacity-55", hasValue && "text-primary opacity-100")} />}
                     {multi && selectedValues.length > 0 ? (
                         <div className="flex items-center gap-1 flex-wrap">
                             {selectedValues.slice(0, 3).map(v => (
-                                <span key={v} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-emerald-50 text-[10px] font-bold text-emerald-700 border border-emerald-100 rounded">
+                                <span key={v} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 text-[10px] font-bold text-primary border border-primary/20 rounded">
                                     {getOptionLabel(v)}
                                     <X
                                         size={10}
@@ -176,7 +176,7 @@ const FilterSelect = ({
                                 </span>
                             ))}
                             {selectedValues.length > 3 && (
-                                <span className="text-[10px] text-slate-400 font-bold">
+                                <span className="text-[10px] text-muted-foreground font-bold">
                                     +{selectedValues.length - 3}
                                 </span>
                             )}
@@ -190,28 +190,28 @@ const FilterSelect = ({
 
             {isOpen && (
                 <div className={cn(
-                    "absolute left-0 z-[101] w-full min-w-[200px] bg-white border border-slate-200 shadow-xl rounded-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100",
+                    "absolute left-0 z-[101] w-full min-w-[200px] bg-popover text-popover-foreground border border-border shadow-md rounded-lg overflow-hidden animate-in fade-in zoom-in-95 duration-100",
                     isUpward ? "bottom-full mb-1 origin-bottom" : "top-full mt-1 origin-top"
                 )}>
                     {searchable && (
-                        <div className="p-2 border-b border-slate-100 bg-slate-50/50">
+                        <div className="p-2 border-b border-border bg-muted/50">
                             <div className="relative">
-                                <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                 <input
                                     ref={searchInputRef}
                                     type="text"
                                     placeholder="Search..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-7 pr-3 h-8 text-xs bg-white border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500/30 text-slate-700"
+                                    className="w-full pl-7 pr-3 h-8 text-xs bg-popover border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/30 text-foreground"
                                 />
                             </div>
                         </div>
                     )}
-                    <ul className="max-h-60 overflow-y-auto py-1.5 scrollbar-thin scrollbar-thumb-slate-200">
+                    <ul className="max-h-60 overflow-y-auto py-1.5 scrollbar-thin scrollbar-thumb-border">
                         {loadingAsync ? (
                             <li className="px-3 py-4 text-xs text-muted-foreground text-center">
-                                <div className="size-4 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-2" />
+                                <div className="size-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-2" />
                                 Loading...
                             </li>
                         ) : displayOptions.length === 0 ? (
@@ -228,20 +228,20 @@ const FilterSelect = ({
                                         className={cn(
                                             'flex items-center justify-between px-3 py-2 text-sm cursor-pointer transition-all mx-1.5 rounded-lg mb-0.5 last:mb-0',
                                             selected 
-                                                ? 'bg-emerald-50 text-emerald-700 font-bold' 
-                                                : 'text-slate-600 hover:bg-slate-50 hover:text-emerald-600'
+                                                ? 'bg-primary/10 text-primary font-bold' 
+                                                : 'text-foreground hover:bg-muted hover:text-primary'
                                         )}
                                     >
                                         <span className="truncate">{optLabel}</span>
                                         {multi ? (
                                             <div className={cn(
                                                 'size-4 rounded border flex items-center justify-center transition-colors',
-                                                selected ? 'bg-emerald-600 border-emerald-600' : 'border-slate-300'
+                                                selected ? 'bg-primary border-primary' : 'border-border'
                                             )}>
                                                 {selected && <Check size={10} className="text-white" />}
                                             </div>
                                         ) : selected ? (
-                                            <Check size={14} className="text-emerald-600" />
+                                            <Check size={14} className="text-primary-foreground" />
                                         ) : null}
                                     </li>
                                 );

@@ -322,7 +322,7 @@ function pickRecognitionLang() {
     return (
         <div
             className={cn(
-                'group relative w-full rounded-2xl border bg-white dark:bg-background/95 backdrop-blur-xl transition-all duration-300 ease-in-out',
+                'group relative w-full rounded-2xl border bg-card backdrop-blur-xl transition-all duration-300 ease-in-out',
                 focused
                     ? 'border-primary/25 ring-4 ring-primary/5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.25)]'
                     : 'border-border/40 shadow-[0_8px_30px_rgb(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)]',
