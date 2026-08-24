@@ -37,13 +37,12 @@ const OrganizationDetails = () => {
 
     const checkJoinStatus = async () => {
       try {
-        const res = await api.get(`/api/v1/organizations/${organization._id}/join-requests?status=pending`);
-        const myRequest = res.data.data?.find(r => r.userId?._id === user._id || r.userId === user._id);
-        if (myRequest) {
+        const res = await api.get(`/api/v1/organizations/${organization._id}/join-requests/my`);
+        if (res.data.data) {
           setJoinStatus('pending');
         }
       } catch {
-        // User might not have permission to view join requests - that's fine
+        // Not pending or not authed - fine
       }
     };
 
@@ -82,8 +81,8 @@ const OrganizationDetails = () => {
   const handleWithdrawRequest = async () => {
     try {
       setJoining(true);
-      const res = await api.get(`/api/v1/organizations/${organization._id}/join-requests?status=pending`);
-      const myRequest = res.data.data?.find(r => r.userId?._id === user._id || r.userId === user._id);
+      const res = await api.get(`/api/v1/organizations/${organization._id}/join-requests/my`);
+      const myRequest = res.data.data;
       if (myRequest) {
         await api.delete(`/api/v1/organizations/${organization._id}/join-requests/${myRequest._id}`);
         setJoinStatus(null);
