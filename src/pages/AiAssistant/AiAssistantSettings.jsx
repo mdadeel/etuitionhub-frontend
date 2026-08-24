@@ -182,7 +182,7 @@ export default function AiAssistantSettings() {
                                                     'text-xs font-bold uppercase tracking-widest',
                                                     isActive ? 'text-primary' : 'text-foreground'
                                                 )}>{opt.label}</p>
-                                                <p className="text-[10px] text-muted-foreground mt-1 font-medium leading-tight">{opt.description}</p>
+                                                <p className="text-xs text-muted-foreground mt-1 font-medium leading-tight">{opt.description}</p>
                                             </div>
                                         </button>
                                     );

@@ -252,7 +252,7 @@ export default function SessionRoom() {
             </div>
 
             {/* Chat Sidebar */}
-            <div className="w-full md:w-80 bg-gray-800 border-l border-gray-700 flex flex-col h-screen max-h-screen">
+            <div className="w-full md:w-80 bg-gray-800 border-l border-gray-700 flex flex-col h-[50vh] md:h-screen md:max-h-screen">
                 <div className="p-4 border-b border-gray-700 flex items-center gap-2">
                     <MessageSquare className="size-5" />
                     <h3 className="font-medium">Session Chat</h3>

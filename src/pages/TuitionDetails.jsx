@@ -280,18 +280,18 @@ const TuitionDetails = () => {
                                 {tuition.subject} Tutor Required
                             </h1>
 
-                            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
                                 <div>
                                     <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
                                         <Banknote size={12} className="text-[#2563EB]" /> Salary
                                     </p>
                                     <p className="text-lg font-heading text-foreground">৳{tuition.salary}</p>
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
                                         <MapPin size={12} className="text-[#2563EB]" /> Location
                                     </p>
-                                    <p className="text-base font-medium text-foreground">{tuition.location}</p>
+                                    <p className="text-base font-medium text-foreground truncate" title={tuition.location}>{tuition.location}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">

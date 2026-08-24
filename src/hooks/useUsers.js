@@ -13,12 +13,9 @@ export function useUsers(filters = {}) {
     const fetchUsers = useCallback(async () => {
         setIsLoading(true);
         setFetchError(null);
-        console.log('loading users...'); // debug - keep for now
-
         try {
             var res = await api.get('/api/users');
             setUserList(res.data);
-            // console.log('users:', res.data.length);
         } catch (err) {
             logError('useUsers', 'user fetch failed', err.message);
             setFetchError(err.response?.data?.error || 'failed to load');

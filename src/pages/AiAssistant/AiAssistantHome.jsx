@@ -180,7 +180,7 @@ export default function AiAssistantHome() {
                             loading={false}
                             placeholder={`Ask anything about ${subjectLabel(subject)}...`}
                         />
-                        <p className="hidden md:block text-[10px] text-center text-muted-foreground mt-3 px-4 leading-relaxed drop-shadow-sm">
+                        <p className="hidden md:block text-xs text-center text-muted-foreground mt-3 px-4 leading-relaxed">
                             Porua AI specializes in education. It can make mistakes — always verify important info.
                         </p>
                     </div>

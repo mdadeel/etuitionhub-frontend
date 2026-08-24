@@ -16,12 +16,9 @@ export function useAnalytics() {
     const fetchStats = useCallback(async () => {
         setIsLoading(true);
         setFetchError(null);
-        console.log('fetching analytics...'); // debug
-
         try {
             var res = await api.get('/api/analytics/stats'); // var here
             setStats(res.data);
-            // console.log('stats loaded:', res.data);
         } catch (err) {
             logError('useAnalytics', 'analytics fetch failed', err.message);
             setFetchError(err.response?.data?.error || 'failed to load');
@@ -47,7 +44,6 @@ export function useAnalyticsFallback() {
 
     useEffect(() => {
         const fetchData = async () => {
-            console.log('using fallback analytics'); // debug
             try {
                 var [usersRes, tuitionsRes, paymentsRes] = await Promise.all([
                     api.get('/api/users'),
