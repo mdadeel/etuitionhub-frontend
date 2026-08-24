@@ -53,6 +53,10 @@ const FloatingChat = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [hasMore, setHasMore] = useState(false);
+    const [nextCursor, setNextCursor] = useState(null);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [sending, setSending] = useState(false);
     const [replyingToMessage, setReplyingToMessage] = useState(null);
     const [editingMessage, setEditingMessage] = useState(null);
@@ -60,34 +64,44 @@ const FloatingChat = () => {
 
     const scrollToBottom = useCallback(() => {
         setTimeout(() => {
-            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+            messagesEndRef.current?.scrollIntoView({ behavior: reduceMotion ? 'instant' : 'smooth' });
         }, 80);
     }, []);
+
+    const fetchMessages = useCallback(async (cursor = null, append = false) => {
+        if (!floatingActiveConv) return;
+        if (append) setLoadingMore(true);
+        else { setLoading(true); setError(null); setMessages([]); setHasMore(false); setNextCursor(null); }
+        if (!append && socket) {
+            socket.emit('join-room', floatingActiveConv._id);
+        }
+        try {
+            const params = new URLSearchParams({ limit: '50' });
+            if (cursor) params.set('cursor', cursor);
+            const res = await api.get(`/api/messages/${floatingActiveConv._id}?${params.toString()}`);
+            const msgs = Array.isArray(res.data) ? res.data : (res.data.messages || []);
+            const filtered = msgs.filter(m => m && m.text);
+            if (append) setMessages(prev => [...filtered, ...prev]);
+            else setMessages(filtered);
+            setHasMore(Boolean(res.data?.hasMore));
+            setNextCursor(res.data?.nextCursor || null);
+            if (!append) {
+                scrollToBottom();
+                if (floatingActiveConv.unreadCount > 0) markAsRead(floatingActiveConv._id);
+            }
+        } catch (err) {
+            if (!append) setError(err?.response?.data?.error || err?.response?.data?.message || 'Failed to load messages');
+            console.error('Error fetching messages:', err);
+        } finally {
+            if (append) setLoadingMore(false);
+            else setLoading(false);
+        }
+    }, [floatingActiveConv, socket, scrollToBottom, markAsRead]);
 
     // Fetch messages when a conversation is selected
     useEffect(() => {
         if (!floatingActiveConv) return;
-
-        const fetchMessages = async () => {
-            setLoading(true);
-            setMessages([]);
-            if (socket) {
-                socket.emit('join-room', floatingActiveConv._id, user.uid);
-            }
-            try {
-                const res = await api.get(`/api/messages/${floatingActiveConv._id}`);
-                const msgs = Array.isArray(res.data) ? res.data : (res.data.messages || []);
-                setMessages(msgs.filter(m => m && m.text));
-                scrollToBottom();
-                if (floatingActiveConv.unreadCount > 0) {
-                    markAsRead(floatingActiveConv._id);
-                }
-            } catch (error) {
-                console.error('Error fetching messages:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchMessages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [floatingActiveConv]);
@@ -258,7 +272,7 @@ const FloatingChat = () => {
         ? floatingActiveConv.participants.find(p => p.email !== user?.email)
         : null;
 
-    const isOtherOnline = otherParticipant && (onlineUsers.has(otherParticipant._id) || onlineUsers.has(otherParticipant.uid));
+    const isOtherOnline = otherParticipant && (onlineUsers.has(String(otherParticipant._id)) || onlineUsers.has(String(otherParticipant.uid)));
 
     const myParticipantId = floatingActiveConv
         ? (() => {
@@ -370,7 +384,21 @@ const FloatingChat = () => {
                                         <div className="h-full flex items-center justify-center">
                                             <div className="size-6 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
                                         </div>
-                                    ) : messages.length === 0 ? (
+                                    ) : error ? (
+                                        <div className="h-full flex flex-col items-center justify-center text-center p-6">
+                                            <p className="text-sm text-red-500">{error}</p>
+                                            <button onClick={() => fetchMessages()} className="mt-3 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-full hover:bg-blue-700">Retry</button>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {hasMore && (
+                                                <div className="flex justify-center pb-2">
+                                                    <button onClick={() => nextCursor && fetchMessages(nextCursor, true)} disabled={loadingMore} className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50">
+                                                        {loadingMore ? 'Loading…' : 'Load more'}
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {messages.length === 0 ? (
                                         <div className="h-full flex flex-col items-center justify-center text-center p-6 animate-in fade-in zoom-in-95 duration-300">
                                             <div className="size-16 rounded-full overflow-hidden mb-4 border border-slate-100 dark:border-slate-800 shadow-md ring-4 ring-slate-50 dark:ring-slate-900/50 shrink-0">
                                                 {otherParticipant?.photoURL
@@ -446,6 +474,8 @@ const FloatingChat = () => {
                                                 );
                                             });
                                         })()
+                                    )}
+                                        </>
                                     )}
 
                                     {/* Typing Indicator */}
