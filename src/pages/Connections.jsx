@@ -12,6 +12,8 @@ const ConnectionsPage = () => {
   const [activeTab, setActiveTab] = useState('requests'); // requests, connections
   const [pendingRequests, setPendingRequests] = useState([]);
   const [acceptedConnections, setAcceptedConnections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [viewerRole] = useState('student');  // could be 'tutor' or 'student' (placeholder)
   const navigate = useNavigate();
 
@@ -19,9 +21,10 @@ const ConnectionsPage = () => {
     try {
       const res = await api.get(`/api/connections?status=pending`);
       setPendingRequests(res.data || []);
+      return null;
     } catch (err) {
       console.error('Failed to load pending requests:', err);
-      // Don't show toast here as it might be noisy
+      return err;
     }
   };
 
@@ -29,14 +32,25 @@ const ConnectionsPage = () => {
     try {
       const res = await api.get('/api/connections?status=accepted');
       setAcceptedConnections(res.data || []);
+      return null;
     } catch (err) {
       console.error('Failed to load accepted connections:', err);
+      return err;
     }
   };
 
+  const loadAll = async () => {
+    setLoading(true);
+    setLoadError(null);
+    const [pendingErr, acceptedErr] = await Promise.all([loadPendingRequests(), loadAcceptedConnections()]);
+    if (pendingErr || acceptedErr) {
+      setLoadError('Could not load your connections. Check your connection and try again.');
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    loadPendingRequests();
-    loadAcceptedConnections();
+    loadAll();
   }, []);
 
   return (
@@ -76,7 +90,24 @@ const ConnectionsPage = () => {
 
       {activeTab === 'requests' && (
         <div className="p-6">
-          {pendingRequests.length > 0 ? (
+          {loading ? (
+            <div className="space-y-4">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-24 rounded-lg border border-border bg-card animate-pulse" />
+              ))}
+            </div>
+          ) : loadError ? (
+            <div className="text-center py-12">
+              <h3 className="font-semibold text-foreground">Something went wrong</h3>
+              <p className="text-muted-foreground mt-1">{loadError}</p>
+              <button
+                onClick={loadAll}
+                className="mt-6 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-sm font-medium"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : pendingRequests.length > 0 ? (
             <div className="space-y-4">
               {pendingRequests.map(request => (
                 <ConnectionRequestCard
