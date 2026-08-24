@@ -69,7 +69,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
   const isVerified = tutor.verificationStatus
     ? tutor.verificationStatus === 'verified_basic' || tutor.verificationStatus === 'verified_premium'
     : !!tutor.isVerified;
-  const rating = tutor.ratings || tutor.rating || 4.8;
+  const rating = tutor.ratings || tutor.rating || 0;
   const salary = tutor.expectedSalary || 5000;
   const experience = tutor.experience || "1-2 years";
 
@@ -137,11 +137,15 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
         </div>
 
         <div className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground truncate">
-          <span className="flex items-center gap-1 shrink-0">
-            <Star size={12} className="fill-amber-500 text-amber-500 shrink-0" />
-            <span className="font-bold text-foreground">{rating.toFixed(1)}</span>
-          </span>
-          <span className="shrink-0">•</span>
+          {rating > 0 && (
+            <>
+              <span className="flex items-center gap-1 shrink-0">
+                <Star size={12} className="fill-amber-500 text-amber-500 shrink-0" />
+                <span className="font-bold text-foreground">{rating.toFixed(1)}</span>
+              </span>
+              <span className="shrink-0">•</span>
+            </>
+          )}
           <span className="flex items-center gap-1 shrink-0">
              <MapPin size={12} className="text-primary shrink-0" />
              <span className="truncate">{(location || "N/A").split(",")[0]}</span>
@@ -219,10 +223,16 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
                 )}
               </div>
               <div className="flex items-center gap-1 mt-0.5">
-                <Star size={12} className="fill-amber-500 text-amber-500 shrink-0" />
-                <span className="text-[11px] font-bold text-foreground">
-                  {rating.toFixed(1)}
-                </span>
+                {rating > 0 ? (
+                  <>
+                    <Star size={12} className="fill-amber-500 text-amber-500 shrink-0" />
+                    <span className="text-[11px] font-bold text-foreground">
+                      {rating.toFixed(1)}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-[11px] font-bold text-foreground">New</span>
+                )}
               </div>
             </div>
             <div className="flex-1 min-w-0 pr-8">

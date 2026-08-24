@@ -474,7 +474,7 @@ const TutorDetails = () => {
                                     </div>
                                     <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
                                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Experience</p>
-                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold truncate" title={tutor.experience}>{tutor.experience || 'Verified'}</p>
+                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold truncate" title={tutor.experience}>{tutor.experience || 'Not specified'}</p>
                                     </div>
                                     <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
                                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Rating</p>

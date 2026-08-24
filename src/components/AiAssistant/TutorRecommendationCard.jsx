@@ -37,7 +37,7 @@ export default function TutorRecommendationCard({ tutors = [], subject, onTrackC
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {tutors.map((tutor) => {
-                    const rating = tutor.ratings || tutor.rating || 4.8;
+                    const rating = tutor.ratings || tutor.rating || 0;
                     return (
                         <Link
                             key={tutor._id}
@@ -68,10 +68,14 @@ export default function TutorRecommendationCard({ tutors = [], subject, onTrackC
                                     )}
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
-                                    <span className="flex items-center gap-0.5 text-amber-500 font-semibold">
-                                        <Star size={10} className="fill-current" />
-                                        {rating.toFixed(1)}
-                                    </span>
+                                    {rating > 0 ? (
+                                        <span className="flex items-center gap-0.5 text-amber-500 font-semibold">
+                                            <Star size={10} className="fill-current" />
+                                            {rating.toFixed(1)}
+                                        </span>
+                                    ) : (
+                                        <span className="font-semibold">New</span>
+                                    )}
                                     {tutor.location && (
                                         <>
                                             <span>·</span>
