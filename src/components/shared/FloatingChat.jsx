@@ -291,40 +291,40 @@ const FloatingChat = () => {
             
             {/* ── Chat Window ── */}
             {isFloatingOpen && (
-                <div className="mb-4 w-[380px] max-w-[calc(100vw-24px)] h-[540px] max-h-[calc(100vh-120px)] bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800/80 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15)] dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.5)] rounded-2xl flex flex-col overflow-hidden transition-all duration-355 animate-in fade-in zoom-in-95 duration-200">
+                <div className="mb-4 w-[380px] max-w-[calc(100vw-24px)] h-[540px] max-h-[calc(100vh-120px)] bg-background border border-border shadow-lg rounded-2xl flex flex-col overflow-hidden transition-all duration-355 animate-in fade-in zoom-in-95 duration-200">
 
                     {/* Header */}
                     {floatingActiveConv ? (
                         /* Active Chat Header */
-                        <div className="shrink-0 px-4 py-3 bg-white dark:bg-slate-800 border-b border-slate-200/60 dark:border-slate-700/80 flex items-center gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                        <div className="shrink-0 px-4 py-3 bg-card border-b border-border flex items-center gap-3 shadow-sm">
                             <button
                                 onClick={() => { setFloatingActiveConv(null); setMessages([]); }}
-                                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-550 dark:text-slate-400"
+                                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded-full text-muted-foreground"
                                 title="Back to conversations"
                             >
                                 <ArrowLeft size={18} strokeWidth={2.5} />
                             </button>
                             <div className="relative shrink-0">
-                                <Avatar src={otherParticipant?.photoURL} alt={otherParticipant?.displayName} size="sm" className="size-9 ring-2 ring-slate-100 dark:ring-slate-700 shadow-sm" />
+                                <Avatar src={otherParticipant?.photoURL} alt={otherParticipant?.displayName} size="sm" className="size-9 ring-2 ring-border shadow-sm" />
                                 <div className={cn(
-                                    "absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-white dark:border-slate-800 transition-all duration-300",
-                                    isOtherOnline ? "bg-green-500 animate-pulse" : "bg-slate-350 dark:bg-slate-650"
+                                    "absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background transition-all duration-300",
+                                    isOtherOnline ? "bg-success animate-pulse" : "bg-muted-foreground"
                                 )} />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="font-bold text-sm text-slate-900 dark:text-slate-50 truncate leading-none">
+                                <p className="font-bold text-sm text-foreground truncate leading-none">
                                     {otherParticipant?.displayName}
                                 </p>
                                 <p className="text-[11px] font-medium leading-none mt-1">
                                     {isOtherOnline
-                                        ? <span className="text-green-500 font-semibold">{STRINGS.online}</span>
-                                        : <span className="text-slate-400 dark:text-slate-500">{STRINGS.offline}</span>
+                                        ? <span className="text-success font-semibold">{STRINGS.online}</span>
+                                        : <span className="text-muted-foreground">{STRINGS.offline}</span>
                                     }
                                 </p>
                             </div>
                             <button
                                 onClick={() => setIsFloatingOpen(false)}
-                                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400"
+                                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded-full text-muted-foreground"
                                 title="Close chat"
                             >
                                 <X size={18} strokeWidth={2.5} />
@@ -332,15 +332,15 @@ const FloatingChat = () => {
                         </div>
                     ) : (
                         /* Conversation List Header */
-                        <div className="shrink-0 px-4 py-3.5 bg-white dark:bg-slate-800 border-b border-slate-200/60 dark:border-slate-700/80 flex items-center justify-between shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-                            <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 tracking-tight">{STRINGS.messages}</h3>
+                        <div className="shrink-0 px-4 py-3.5 bg-card border-b border-border flex items-center justify-between shadow-sm">
+                            <h3 className="font-bold text-base text-foreground tracking-tight">{STRINGS.messages}</h3>
                             <div className="flex items-center gap-1.5">
-                                <button className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400" title="New message">
+                                <button className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded-full text-muted-foreground" title="New message">
                                     <Edit size={16} strokeWidth={2.5} />
                                 </button>
                                 <button
                                     onClick={() => setIsFloatingOpen(false)}
-                                    className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400"
+                                    className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded-full text-muted-foreground"
                                     title="Close chat"
                                 >
                                     <X size={18} strokeWidth={2.5} />
@@ -353,14 +353,14 @@ const FloatingChat = () => {
                     <div className="flex-1 overflow-hidden flex flex-col">
                         {!floatingActiveConv ? (
                             /* Conversation List */
-                            <div className="flex-1 overflow-y-auto py-2 bg-slate-50 dark:bg-[#0F172A]">
+                            <div className="flex-1 overflow-y-auto py-2 bg-background">
                                 {conversations.length === 0 ? (
-                                    <div className="h-full flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 p-8 text-center animate-in fade-in duration-300">
-                                        <div className="size-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-sm mb-3.5">
-                                            <MessageSquare size={20} className="text-slate-400 dark:text-slate-500" />
+                                    <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center animate-in fade-in duration-300">
+                                        <div className="size-12 bg-card rounded-full flex items-center justify-center border border-border shadow-sm mb-3.5">
+                                            <MessageSquare size={20} className="text-muted-foreground" />
                                         </div>
-                                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{STRINGS.noConversationsTitle}</p>
-                                        <p className="text-xs mt-1 text-slate-400 dark:text-slate-500 leading-normal max-w-[200px] mx-auto">
+                                        <p className="text-sm font-semibold text-foreground">{STRINGS.noConversationsTitle}</p>
+                                        <p className="text-xs mt-1 text-muted-foreground leading-normal max-w-[200px] mx-auto">
                                             {STRINGS.noConversationsBody}
                                         </p>
                                     </div>
@@ -379,39 +379,39 @@ const FloatingChat = () => {
                         ) : (
                             /* Chat Messages */
                             <>
-                                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 bg-gradient-to-b from-slate-50/50 to-slate-100/50 dark:from-slate-950/40 dark:to-slate-900/40 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+                                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 bg-background scrollbar-thin scrollbar-thumb-border">
                                     {loading ? (
                                         <div className="h-full flex items-center justify-center">
-                                            <div className="size-6 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                                            <div className="size-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
                                         </div>
                                     ) : error ? (
                                         <div className="h-full flex flex-col items-center justify-center text-center p-6">
-                                            <p className="text-sm text-red-500">{error}</p>
-                                            <button onClick={() => fetchMessages()} className="mt-3 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-full hover:bg-blue-700">Retry</button>
+                                            <p className="text-sm text-destructive">{error}</p>
+                                            <button onClick={() => fetchMessages()} className="mt-3 px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90">Retry</button>
                                         </div>
                                     ) : (
                                         <>
                                             {hasMore && (
                                                 <div className="flex justify-center pb-2">
-                                                    <button onClick={() => nextCursor && fetchMessages(nextCursor, true)} disabled={loadingMore} className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50">
+                                                    <button onClick={() => nextCursor && fetchMessages(nextCursor, true)} disabled={loadingMore} className="text-xs font-medium text-primary hover:underline disabled:opacity-50">
                                                         {loadingMore ? 'Loading…' : 'Load more'}
                                                     </button>
                                                 </div>
                                             )}
                                             {messages.length === 0 ? (
                                         <div className="h-full flex flex-col items-center justify-center text-center p-6 animate-in fade-in zoom-in-95 duration-300">
-                                            <div className="size-16 rounded-full overflow-hidden mb-4 border border-slate-100 dark:border-slate-800 shadow-md ring-4 ring-slate-50 dark:ring-slate-900/50 shrink-0">
+                                            <div className="size-16 rounded-full overflow-hidden mb-4 border border-border shadow-md ring-4 ring-background shrink-0">
                                                 {otherParticipant?.photoURL
                                                     ? <img src={otherParticipant.photoURL} className="size-full object-cover" alt="" />
-                                                    : <div className="size-full bg-gradient-to-tr from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-slate-400 font-bold text-lg">{otherParticipant?.displayName?.[0]}</div>
+                                                    : <div className="size-full bg-muted text-muted-foreground flex items-center justify-center font-bold text-lg">{otherParticipant?.displayName?.[0]}</div>
                                                 }
                                             </div>
-                                            <h4 className="font-bold text-sm text-slate-900 dark:text-slate-50">{otherParticipant?.displayName}</h4>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-[200px] leading-normal">
+                                            <h4 className="font-bold text-sm text-foreground">{otherParticipant?.displayName}</h4>
+                                            <p className="text-xs text-muted-foreground mt-1 max-w-[200px] leading-normal">
                                                 {STRINGS.emptyThreadBody}
                                             </p>
-                                            <div className="mt-4 px-3 py-1.5 bg-white dark:bg-slate-800/80 rounded-full border border-slate-100 dark:border-slate-700/50 text-[10px] text-slate-450 flex items-center gap-1.5 shadow-sm">
-                                                <span className="size-1.5 bg-green-500 rounded-full animate-pulse" />
+                                            <div className="mt-4 px-3 py-1.5 bg-card rounded-full border border-border text-[10px] text-muted-foreground flex items-center gap-1.5 shadow-sm">
+                                                <span className="size-1.5 bg-success rounded-full animate-pulse" />
                                                 Active session ready
                                             </div>
                                         </div>
@@ -450,7 +450,7 @@ const FloatingChat = () => {
                                                     <React.Fragment key={msg._id || idx}>
                                                         {showDateGroup && (
                                                                 <div className="flex justify-center my-3">
-                                                                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-2.5 py-0.5 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.01)]">
+                                                                    <span className="text-[10px] font-semibold text-muted-foreground bg-card border border-border px-2.5 py-0.5 rounded-full shadow-sm">
                                                                         {dateGroup}
                                                                     </span>
                                                                 </div>
@@ -481,16 +481,16 @@ const FloatingChat = () => {
                                     {/* Typing Indicator */}
                                     {otherIsTyping && (
                                         <div className="flex items-end gap-2 ml-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                            <div className="size-5 rounded-full overflow-hidden shrink-0 border border-slate-100 dark:border-slate-700/80 mb-0.5">
+                                            <div className="size-5 rounded-full overflow-hidden shrink-0 border border-border mb-0.5">
                                                 {otherParticipant?.photoURL
                                                     ? <img src={otherParticipant.photoURL} className="size-full object-cover" alt="" />
-                                                    : <div className="size-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[9px] font-bold">{otherParticipant?.displayName?.[0]}</div>
+                                                    : <div className="size-full bg-muted flex items-center justify-center text-[9px] font-bold">{otherParticipant?.displayName?.[0]}</div>
                                                 }
                                             </div>
-                                            <div className="bg-white dark:bg-slate-800 border border-slate-150 dark:border-slate-700/80 rounded-2xl rounded-bl-sm px-3.5 py-2 flex items-center gap-1 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
-                                                <span className="size-1.5 bg-blue-500/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                                <span className="size-1.5 bg-blue-500/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                                <span className="size-1.5 bg-blue-500/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                            <div className="bg-card border border-border rounded-2xl rounded-bl-sm px-3.5 py-2 flex items-center gap-1 shadow-sm">
+                                                <span className="size-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                <span className="size-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                <span className="size-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                             </div>
                                         </div>
                                     )}
@@ -522,14 +522,14 @@ const FloatingChat = () => {
             {/* ── Floating Trigger Button ── */}
             <button
                 onClick={() => setIsFloatingOpen(!isFloatingOpen)}
-                className="size-14 bg-gradient-to-tr from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_24px_rgba(37,99,235,0.45)] flex items-center justify-center relative"
+                className="size-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg flex items-center justify-center relative"
                 title={isFloatingOpen ? "Close messages" : "Open messages"}
             >
                 {isFloatingOpen ? <X size={22} strokeWidth={2.5} /> : <Bot size={24} strokeWidth={2} />}
 
                 {/* Unread Badge */}
                 {!isFloatingOpen && unreadTotal > 0 && (
-                    <div className="absolute -top-1.5 -right-1.5 size-5.5 bg-red-500 border-2 border-white dark:border-slate-900 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-md animate-pulse">
+                    <div className="absolute -top-1.5 -right-1.5 size-5.5 bg-destructive border-2 border-background rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-md animate-pulse">
                         {unreadTotal > 99 ? '99+' : unreadTotal}
                     </div>
                 )}
