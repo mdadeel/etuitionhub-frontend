@@ -63,6 +63,8 @@ export const AuthProvider = ({ children }) => {
         hasPermission: session.hasPermission,
         loading: session.loading,
         configError: session.configError,
+        dbUserError: session.dbUserError,
+        retryDbUser: session.retryDbUser,
     };
 
     // Write-only values — only change when mutation functions are recreated

@@ -17,7 +17,7 @@ const RouteFallback = () => (
 
 const DashboardLayout = ({ children }) => {
   const { t } = useTranslation();
-  const { user, dbUser, loading, orgContext } = useAuth();
+  const { user, dbUser, loading, configError, dbUserError, retryDbUser, orgContext } = useAuth();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const globalRole = dbUser?.globalRole;
@@ -177,12 +177,27 @@ const DashboardLayout = ({ children }) => {
     setIsMobileMenuOpen(false);
   }, [location]);
 
+  if (configError) {
+    return <div className="flex items-center justify-center min-h-[50vh] p-8 text-destructive">Could not load app config: {configError}</div>;
+  }
+
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  // Inline loading state - show dashboard skeleton
-  if (loading || (user && !dbUser)) {
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
+
+  if (user && !dbUser) {
+    if (dbUserError) {
+      return (
+        <div className="flex flex-col items-center justify-center p-8 gap-4 min-h-[50vh]">
+          <p className="text-destructive">{dbUserError.message || 'Failed to load profile'}</p>
+          <button type="button" onClick={retryDbUser} className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Retry</button>
+        </div>
+      );
+    }
     return <DashboardSkeleton />;
   }
 

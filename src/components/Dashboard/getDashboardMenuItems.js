@@ -160,6 +160,7 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
   if (legacyRole === 'tutor') {
     return [
       { path: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Teaching" },
+      { path: "/dashboard/profile", label: "Profile", icon: User, group: "Account" },
       { path: "/dashboard/sessions", label: "Sessions", icon: Calendar, group: "Teaching" },
       { path: "/dashboard/verification", label: "Verification", icon: ShieldCheck, group: "Account" },
       { path: "/dashboard/wallet", label: "Wallet", icon: Wallet, group: "Finance" },
@@ -171,6 +172,7 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
 
   return [
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Learning" },
+    { path: "/dashboard/profile", label: "Profile", icon: User, group: "Account" },
     { path: "/dashboard/billing", label: "Billing", icon: Banknote, group: "Finance" },
     { path: "/dashboard/relationships", label: "Relationships", icon: Users, group: "Connections" },
     { path: "/dashboard/bookmarks", label: "Bookmarks", icon: Bookmark, group: "Connections" },

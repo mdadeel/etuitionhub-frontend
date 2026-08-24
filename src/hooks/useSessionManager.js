@@ -23,6 +23,7 @@ const useSessionManager = () => {
     // Set when the backend /api/config fetch or Firebase init fails — lets the
     // route guards show a retry panel instead of hanging on the loading skeleton.
     const [configError, setConfigError] = useState(null);
+    const [dbUserError, setDbUserError] = useState(null);
 
     // Flag to prevent onAuthStateChanged from duplicating work done by auth actions.
     // When an auth action (login/register/googleLogin) calls setJWT + fetches user,
@@ -66,6 +67,7 @@ const useSessionManager = () => {
             let res = await api.get(`/api/users/${email}`);
             setDbUser(res.data);
             setUserRole(res.data.role);
+            setDbUserError(null);
 
             try {
                 let orgRes = await api.get(`/api/users/${email}/organizations`);
@@ -87,10 +89,21 @@ const useSessionManager = () => {
             }
 
             return res.data;
-        } catch {
+        } catch (err) {
+            setDbUserError({
+                status: err.response?.status || null,
+                message: err.response?.data?.error || err.message || 'Failed to load profile',
+                code: err.code || null,
+            });
             return null;
         }
     }, []); // No dependencies — reads orgContext via ref
+
+    const retryDbUser = useCallback(async () => {
+        const email = user?.email;
+        if (email) return refreshUserFromDB(email);
+        return null;
+    }, [user, refreshUserFromDB]);
 
     const checkUserExists = useCallback(async (email) => {
         try {
@@ -147,6 +160,7 @@ const useSessionManager = () => {
                 } else {
                     setDbUser(null);
                     setUserRole(null);
+                    setDbUserError(null);
                 }
                 return;
             }
@@ -172,6 +186,7 @@ const useSessionManager = () => {
                     let res = await api.get(`/api/users/${currentUser.email}`);
                     setDbUser(res.data);
                     setUserRole(res.data.role);
+                    setDbUserError(null);
 
                     try {
                         let orgRes = await api.get(`/api/users/${currentUser.email}/organizations`);
@@ -193,11 +208,19 @@ const useSessionManager = () => {
                     if (error.response?.status === 404) {
                         setDbUser(null);
                         setUserRole(null);
+                        setDbUserError(null);
+                    } else {
+                        setDbUserError({
+                            status: error.response?.status || null,
+                            message: error.response?.data?.error || error.message || 'Failed to load profile',
+                            code: error.code || null,
+                        });
                     }
                 }
             } else {
                 setDbUser(null);
                 setUserRole(null);
+                setDbUserError(null);
                 setMyOrgs([]);
                 setOrgContext(null);
                 setOrgMember(null);
@@ -263,8 +286,10 @@ const useSessionManager = () => {
         loading,
         setLoading,
         configError,
+        dbUserError,
         setJWT,
         refreshUserFromDB,
+        retryDbUser,
         checkUserExists,
         markAuthActionInProgress,
         resetAuthState,

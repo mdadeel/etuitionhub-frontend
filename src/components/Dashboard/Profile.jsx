@@ -90,6 +90,7 @@ const Profile = () => {
 
     const onSubmitAccount = async (e) => {
         e.preventDefault();
+        if (!user?.email) { toast.error('Not signed in'); return; }
         setLoading(true);
         if (nameInput.length < 3) {
             toast.error('Please use a name with at least 3 characters');
@@ -98,14 +99,14 @@ const Profile = () => {
         }
 
         try {
-            await api.patch(`/api/users/by-email/${user?.email}`, {
+            await api.patch(`/api/users/by-email/${encodeURIComponent(user.email)}`, {
                 displayName: nameInput,
                 photoURL: photoInput,
                 mobileNumber: mobileInput
             });
 
             toast.success('Account profile updated successfully');
-            await refreshUserFromDB(user?.email);
+            await refreshUserFromDB(user.email);
             await updateUserProfile({ displayName: nameInput, photoURL: photoInput });
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to update profile');
@@ -116,6 +117,7 @@ const Profile = () => {
 
     const onSubmitTutor = async (e) => {
         e.preventDefault();
+        if (!user?.email) { toast.error('Not signed in'); return; }
         setLoading(true);
         try {
             const updateData = {
@@ -133,9 +135,9 @@ const Profile = () => {
                 experience,
             };
 
-            await api.patch(`/api/users/by-email/${user?.email}`, updateData);
+            await api.patch(`/api/users/by-email/${encodeURIComponent(user.email)}`, updateData);
             toast.success('Tutor professional profile updated successfully');
-            await refreshUserFromDB(user?.email);
+            await refreshUserFromDB(user.email);
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to update professional profile');
         } finally {
