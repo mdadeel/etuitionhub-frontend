@@ -171,21 +171,21 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
 
     const logout = async () => {
         setLoading(true);
-        // Reset initial auth state so next login shows loading spinner
         resetAuthState();
         try {
-            const { auth } = await getFirebase();
             await api.post('/api/auth/logout');
-            // Auth cookies are httpOnly, so the backend must clear them.
+        } catch {
+            // ignore 401 / network — still clear local state (fail-open)
+        } finally {
             Cookies.remove('token', { path: '/' });
             Cookies.remove('refreshToken', { path: '/' });
-            await signOut(auth);
+            try {
+                const { auth } = await getFirebase();
+                await signOut(auth);
+            } catch { /* ignore signOut failure - state already cleared */ }
             setDbUser(null);
             setUserRole(null);
             setUser(null);
-        } catch {
-            toast.error('Logout failed. Please try again.');
-        } finally {
             setLoading(false);
         }
     };

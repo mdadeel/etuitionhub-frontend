@@ -1,6 +1,7 @@
 import axios from 'axios';
 import API_URL from '../config/api';
 import toast from 'react-hot-toast';
+import { isAdminPath } from '../lib/authz';
 
 function getCsrfToken() {
     const match = document.cookie.match(/(?:^|;\s*)csrf-token=([^;]*)/);
@@ -29,9 +30,11 @@ const processQueue = (error) => {
 const redirectToLogin = () => {
     if (redirectPending) return;
     redirectPending = true;
-    if (!window.location.pathname.includes('/login')) {
-        toast.error('Session expired. Please login again.', { duration: 4000 });
-        setTimeout(() => { window.location.href = '/login'; }, 200);
+    const path = window.location.pathname;
+    const target = isAdminPath(path) ? '/admin-login' : '/login';
+    if (!path.includes('/login')) {
+        toast.error('Session expired. Please sign in again.', { duration: 4000 });
+        setTimeout(() => { window.location.href = target; }, 200);
     }
 };
 

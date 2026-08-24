@@ -8,12 +8,12 @@ import Logo from "./Logo";
 import { Button } from "../ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { toast } from "react-hot-toast";
-import Cookies from "js-cookie";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import useDebouncedValue from "../../hooks/useDebouncedValue";
 import API_URL from "../../config/api";
 import PoruaLogo from "../AiAssistant/PoruaLogo";
+import { isAdminPath } from "../../lib/authz";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -137,16 +137,9 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = async () => {
-    const toastId = toast.loading("Logging out...");
-    try {
-      await logout();
-      toast.dismiss(toastId);
-      toast.success("Session ended.");
-      setTimeout(() => navigate("/login"), 500);
-    } catch (error) {
-      toast.error(`Error: ${error.message}`);
-      toast.dismiss(toastId);
-    }
+    await logout();
+    toast.success("Session ended.");
+    navigate(isAdminPath(location.pathname) ? "/admin-login" : "/login", { replace: true });
   };
 
   // Dynamic navigation links

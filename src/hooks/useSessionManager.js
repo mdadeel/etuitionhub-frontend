@@ -170,11 +170,12 @@ const useSessionManager = () => {
             setUser(currentUser);
 
             // If an auth action just completed its own setJWT + user fetch,
-            // skip the duplicate work. Reset the flag for next time.
+            // skip the duplicate work. Don't clear loading here — let
+            // loginAdmin's blocking refreshUserFromDB clear it (prevents
+            // AdminRoute 403 flash with dbUser still null).
             if (authActionCompletedRef.current) {
                 authActionCompletedRef.current = false;
                 initialAuthDoneRef.current = true;
-                setLoading(false);
                 return;
             }
 
