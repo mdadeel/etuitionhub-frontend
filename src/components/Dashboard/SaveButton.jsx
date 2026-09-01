@@ -32,6 +32,7 @@ const SaveButton = ({ type, id, isAuthenticated, size = 'md', className }) => {
   const toggle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!id) return;
     if (!isAuthenticated) {
       if (saved) { removeAnonBookmark(type, id); setSaved(false); }
       else { addAnonBookmark(type, id); setSaved(true); }
