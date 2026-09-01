@@ -78,6 +78,7 @@ const AiAssistantSettings = lazy(() => import("./pages/AiAssistant/AiAssistantSe
 const OrganizationDirectory = lazy(() => import("./pages/OrganizationDirectory"));
 const OrganizationDetails = lazy(() => import("./pages/OrganizationDetails"));
 const EngineeringShowcase = lazy(() => import("./pages/Docs/EngineeringShowcase"));
+const TestimonialsPage = lazy(() => import("./pages/TestimonialsPage"));
 
 const AdminRoutes = lazy(() => import("./routes/AdminRoutes"));
 const SuperAdminRoutes = lazy(() => import("./routes/SuperAdminRoutes"));
@@ -246,6 +247,7 @@ let App = () => {
                   <Route path="/tuition/:id" element={<RouteErrorBoundary><TuitionDetails /></RouteErrorBoundary>} />
                   <Route path="/about" element={<RouteErrorBoundary><About /></RouteErrorBoundary>} />
                   <Route path="/contact" element={<RouteErrorBoundary><Contact /></RouteErrorBoundary>} />
+                  <Route path="/testimonials" element={<RouteErrorBoundary><TestimonialsPage /></RouteErrorBoundary>} />
                   <Route path="/terms" element={<RouteErrorBoundary><Terms /></RouteErrorBoundary>} />
                   <Route path="/privacy" element={<RouteErrorBoundary><Privacy /></RouteErrorBoundary>} />
                   <Route path="/post-tuition" element={<RouteErrorBoundary><PostTuition /></RouteErrorBoundary>} />

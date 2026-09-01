@@ -527,7 +527,11 @@
       "heading": "Real Stories from Real Parents",
       "subheading": "See how verified tutors on eTuitionBD help students achieve academic breakthroughs.",
       "empty_title": "No testimonials yet",
-      "empty_desc": "Be the first to share your experience."
+      "empty_desc": "Be the first to share your experience.",
+      "page_seo_title": "Testimonials — eTuitionBD",
+      "page_seo_desc": "What students and parents say about eTuitionBD tutors",
+      "page_title": "All testimonials",
+      "page_subtitle": "Read stories from students, parents, and tutors using eTuitionBD"
     },
     "poruaTeaser": {
       "badge": "24/7 AI Study Companion",
@@ -563,7 +567,10 @@
       "back": "Back",
       "cancel": "Cancel",
       "login_required": "Login required",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "prev": "Previous",
+      "next": "Next",
+      "page": "Page"
     },
     "save": {
       "save": "Save",
