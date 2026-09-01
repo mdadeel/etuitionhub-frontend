@@ -39,7 +39,7 @@ const ConfirmDetailsPanel = ({ connection, onConfirmed }) => {
       <button
         onClick={handleConfirm}
         disabled={submitting}
-        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-50"
+        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-success text-white rounded-md hover:bg-success disabled:opacity-50"
       >
         <CheckCircle size={16} />
         {submitting ? 'Confirming…' : 'Confirm details'}

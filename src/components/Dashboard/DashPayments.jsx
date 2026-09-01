@@ -186,7 +186,7 @@ const DashPayments = () => {
             />
 
             {/* Matrix Filters */}
-            <div className="flex flex-wrap bg-background p-1.5 rounded-lg gap-2 border border-border w-fit backdrop-blur-md">
+            <div className="flex flex-wrap bg-background p-1.5 rounded-lg gap-2 border border-border w-fit">
                 {[
                     { id: 'pending_verification', label: 'Verify' },
                     { id: 'confirmed', label: 'Verified' },
@@ -262,7 +262,7 @@ const DashPayments = () => {
                     },
                     {
                         key: 'grossAmount',
-                        label: 'Yield',
+                        label: 'Amount',
                         render: (v) => <p className="text-xs md:text-sm font-heading font-black text-foreground tabular-nums italic">৳{v}</p>,
                     },
                     {

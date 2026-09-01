@@ -34,7 +34,8 @@ export default memo(function SyntaxHighlighter({ code, language, wrap = true }) 
                 if (!highlighterPromise) {
                     highlighterPromise = createHighlighter({
                         themes: ['github-dark', 'github-light'],
-                        langs: ['javascript', 'typescript', 'jsx', 'tsx', 'html', 'css', 'json', 'python', 'bash', 'sql', 'markdown']
+                        // Core languages only — others load on demand via loadLanguage()
+                        langs: ['javascript', 'python', 'bash', 'json', 'markdown']
                     });
                 }
                 const highlighter = await highlighterPromise;

@@ -3,12 +3,13 @@ import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import {
-    Calendar, Plus, Trash2, Clock, Database, Loader2, Check,
-    Edit2, Save, X
+    Calendar, Plus, Trash2, Clock, Loader2, Check,
+    Edit2, Save, X, Link2, CheckCircle2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DAY_NAMES, DAY_NAMES_FULL, generateBookingLink } from '@/lib/slotBooking';
 
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAYS_OF_WEEK = DAY_NAMES_FULL; // Sunday-first, matches backend dayOfWeek 0-6
 
 const TIME_SLOTS = [
     '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
@@ -16,18 +17,20 @@ const TIME_SLOTS = [
     '18:00', '19:00', '20:00', '21:00', '22:00',
 ];
 
-/** Single day availability card */
+/** Single day availability card (backend shape: dayOfWeek + slots array) */
 const DayCard = ({ dayData, onDelete, onUpdate }) => {
     const [editing, setEditing] = useState(false);
-    const [startTime, setStartTime] = useState(dayData.startTime || '09:00');
-    const [endTime, setEndTime] = useState(dayData.endTime || '17:00');
+    const [startTime, setStartTime] = useState(dayData.slots?.[0]?.startTime || '09:00');
+    const [endTime, setEndTime] = useState(dayData.slots?.[0]?.endTime || '17:00');
     const [saving, setSaving] = useState(false);
 
     const handleSave = async () => {
         if (startTime >= endTime) { toast.error('Start time must be before end time'); return; }
         setSaving(true);
         try {
-            await api.put(`/api/tutors/availability/${dayData.day}`, { startTime, endTime });
+            await api.put(`/api/tutors/availability/${dayData.dayOfWeek}`, {
+                slots: [{ startTime, endTime }],
+            });
             toast.success('Availability updated');
             onUpdate();
             setEditing(false);
@@ -38,14 +41,18 @@ const DayCard = ({ dayData, onDelete, onUpdate }) => {
         }
     };
 
+    const slotLabel = dayData.slots?.length
+        ? dayData.slots.map((s) => `${s.startTime} – ${s.endTime}`).join(', ')
+        : '—';
+
     return (
         <div className="bg-card border border-border rounded-xl p-5 flex items-center justify-between gap-4 hover:border-primary/20 transition-colors group">
             <div className="flex items-center gap-4 min-w-0">
                 <div className="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
                     <Calendar size={16} />
                 </div>
-                <div>
-                    <p className="text-sm font-bold text-foreground">{dayData.day}</p>
+                <div className="min-w-0">
+                    <p className="text-sm font-bold text-foreground">{DAYS_OF_WEEK[dayData.dayOfWeek]}</p>
                     {editing ? (
                         <div className="flex items-center gap-2 mt-2">
                             <select
@@ -65,9 +72,9 @@ const DayCard = ({ dayData, onDelete, onUpdate }) => {
                             </select>
                         </div>
                     ) : (
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
                             <Clock size={10} className="inline mr-1" />
-                            {dayData.startTime} – {dayData.endTime}
+                            {slotLabel}
                         </p>
                     )}
                 </div>
@@ -77,6 +84,7 @@ const DayCard = ({ dayData, onDelete, onUpdate }) => {
                 {editing ? (
                     <>
                         <button
+                            type="button"
                             onClick={handleSave}
                             disabled={saving}
                             className="size-8 flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all disabled:opacity-50 active:scale-[0.98]"
@@ -84,6 +92,7 @@ const DayCard = ({ dayData, onDelete, onUpdate }) => {
                             {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                         </button>
                         <button
+                            type="button"
                             onClick={() => setEditing(false)}
                             className="size-8 flex items-center justify-center rounded-lg border border-border hover:bg-muted transition-colors"
                         >
@@ -93,13 +102,15 @@ const DayCard = ({ dayData, onDelete, onUpdate }) => {
                 ) : (
                     <>
                         <button
+                            type="button"
                             onClick={() => setEditing(true)}
                             className="size-8 flex items-center justify-center rounded-lg border border-transparent hover:border-border hover:bg-muted transition-all opacity-0 group-hover:opacity-100"
                         >
                             <Edit2 size={13} className="text-muted-foreground" />
                         </button>
                         <button
-                            onClick={() => onDelete(dayData.day)}
+                            type="button"
+                            onClick={() => onDelete(dayData.dayOfWeek)}
                             className="size-8 flex items-center justify-center rounded-lg border border-transparent hover:border-red-200 hover:bg-red-50 text-red-500 transition-all opacity-0 group-hover:opacity-100"
                         >
                             <Trash2 size={13} />
@@ -111,22 +122,27 @@ const DayCard = ({ dayData, onDelete, onUpdate }) => {
     );
 };
 
-/** Add new day form */
+/** Add new day form (backend shape: dayOfWeek + slots array) */
 const AddDayForm = ({ existingDays, onSuccess, onCancel }) => {
-    const [day, setDay] = useState('');
+    const [dayOfWeek, setDayOfWeek] = useState(null);
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('17:00');
     const [saving, setSaving] = useState(false);
 
-    const availableDays = DAYS_OF_WEEK.filter(d => !existingDays.includes(d));
+    const availableDays = DAYS_OF_WEEK
+        .map((name, idx) => ({ name, idx }))
+        .filter(({ idx }) => !existingDays.includes(idx));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!day) { toast.error('Select a day'); return; }
+        if (dayOfWeek === null) { toast.error('Select a day'); return; }
         if (startTime >= endTime) { toast.error('Start time must be before end time'); return; }
         setSaving(true);
         try {
-            await api.post('/api/tutors/availability', { day, startTime, endTime });
+            await api.post('/api/tutors/availability', {
+                dayOfWeek,
+                slots: [{ startTime, endTime }],
+            });
             toast.success('Availability added');
             onSuccess();
         } catch (err) {
@@ -142,12 +158,12 @@ const AddDayForm = ({ existingDays, onSuccess, onCancel }) => {
                 <div className="flex-1 min-w-32">
                     <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Day</label>
                     <select
-                        value={day}
-                        onChange={e => setDay(e.target.value)}
+                        value={dayOfWeek === null ? '' : dayOfWeek}
+                        onChange={e => setDayOfWeek(e.target.value === '' ? null : Number(e.target.value))}
                         className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:border-primary"
                     >
                         <option value="">Select day...</option>
-                        {availableDays.map(d => <option key={d} value={d}>{d}</option>)}
+                        {availableDays.map(({ name, idx }) => <option key={idx} value={idx}>{name}</option>)}
                     </select>
                 </div>
                 <div className="flex-1 min-w-24">
@@ -200,13 +216,14 @@ const TutorAvailability = ({ tutorId }) => {
     const [availability, setAvailability] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [linkCopied, setLinkCopied] = useState(false);
 
     const load = useCallback(async () => {
         if (!targetId) return;
         setLoading(true);
         try {
             const res = await api.get(`/api/tutors/${targetId}/availability`);
-            setAvailability(res.data || []);
+            setAvailability(Array.isArray(res.data) ? res.data : []);
         } catch {
             toast.error('Failed to load availability');
         } finally {
@@ -216,18 +233,31 @@ const TutorAvailability = ({ tutorId }) => {
 
     useEffect(() => { load(); }, [load]);
 
-    const handleDelete = async (day) => {
-        if (!confirm(`Remove ${day} from your availability?`)) return;
+    const handleDelete = async (dayOfWeek) => {
+        if (!confirm(`Remove ${DAYS_OF_WEEK[dayOfWeek]} from your availability?`)) return;
         try {
-            await api.delete(`/api/tutors/availability/${day}`);
-            toast.success(`${day} removed`);
+            await api.delete(`/api/tutors/availability/${dayOfWeek}`);
+            toast.success(`${DAYS_OF_WEEK[dayOfWeek]} removed`);
             load();
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to remove');
         }
     };
 
-    const existingDays = availability.map(a => a.day);
+    const handleCopyLink = async () => {
+        if (!targetId) return;
+        const url = `${window.location.origin}${generateBookingLink(targetId)}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            setLinkCopied(true);
+            toast.success('Booking link copied — share it with students');
+            setTimeout(() => setLinkCopied(false), 2000);
+        } catch {
+            toast.error('Could not copy link');
+        }
+    };
+
+    const existingDays = availability.map(a => a.dayOfWeek);
 
     return (
         <div className="space-y-8 animate-in fade-in-up duration-700">
@@ -241,15 +271,31 @@ const TutorAvailability = ({ tutorId }) => {
                     <p className="text-xs text-muted-foreground">Set the days and times you are available for tutoring sessions.</p>
                 </div>
 
-                {existingDays.length < 7 && (
+                <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setShowAddForm(v => !v)}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-xs font-heading font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-all active:scale-[0.98]"
+                        onClick={handleCopyLink}
+                        className={cn(
+                            'flex items-center gap-2 px-4 py-2.5 text-xs font-heading font-bold uppercase tracking-wider rounded-lg border transition-all active:scale-[0.98]',
+                            linkCopied
+                                ? 'border-success/40 bg-success/10 text-success'
+                                : 'border-border bg-card text-foreground hover:border-primary/30 hover:bg-primary/5'
+                        )}
+                        title="Copy a public link students can open to book a slot"
                     >
-                        <Plus size={14} />
-                        Add Day
+                        {linkCopied ? <CheckCircle2 size={14} /> : <Link2 size={14} />}
+                        {linkCopied ? 'Copied!' : 'Share Booking Link'}
                     </button>
-                )}
+
+                    {existingDays.length < 7 && (
+                        <button
+                            onClick={() => setShowAddForm(v => !v)}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-xs font-heading font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-all active:scale-[0.98]"
+                        >
+                            <Plus size={14} />
+                            Add Day
+                        </button>
+                    )}
+                </div>
             </header>
 
             {showAddForm && (
@@ -274,17 +320,17 @@ const TutorAvailability = ({ tutorId }) => {
                 <div className="space-y-3">
                     {/* Summary grid */}
                     <div className="grid grid-cols-7 gap-1 mb-2">
-                        {DAYS_OF_WEEK.map(d => {
-                            const isSet = existingDays.includes(d);
+                        {DAYS_OF_WEEK.map((name, idx) => {
+                            const isSet = existingDays.includes(idx);
                             return (
                                 <div
-                                    key={d}
+                                    key={name}
                                     className={cn(
                                         'flex flex-col items-center gap-1 py-2 rounded-lg text-[9px] font-label font-semibold uppercase tracking-wider transition-colors',
                                         isSet ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-muted text-muted-foreground/40'
                                     )}
                                 >
-                                    <span>{d.slice(0, 3)}</span>
+                                    <span>{DAY_NAMES[idx]}</span>
                                     {isSet && <div className="size-1.5 rounded-full bg-primary" />}
                                 </div>
                             );
@@ -294,7 +340,7 @@ const TutorAvailability = ({ tutorId }) => {
                     {/* Day cards */}
                     {availability.map(a => (
                         <DayCard
-                            key={a.day}
+                            key={a.dayOfWeek}
                             dayData={a}
                             onDelete={handleDelete}
                             onUpdate={load}

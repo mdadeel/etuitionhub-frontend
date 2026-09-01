@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
 const ShieldIllus = () => (
@@ -14,7 +15,7 @@ const ShieldIllus = () => (
 );
 
 const ChatIllus = () => (
-  <svg viewBox="0 0 180 160" className="w-full h-full text-amber-500" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+  <svg viewBox="0 0 180 160" className="w-full h-full text-warning" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20 40 C20 30, 110 30, 110 40 C110 50, 110 70, 110 75 C110 82, 85 82, 75 82 C60 92, 45 98, 35 102 C40 92, 43 85, 40 82 C20 82, 20 70, 20 40 Z"
       strokeWidth="1.5" />
     <path d="M24 44 C24 35, 106 35, 106 44 C106 52, 106 68, 106 72 C106 78, 83 78, 73 78 C59 88, 47 94, 38 97 C42 88, 44 82, 42 78 C24 78, 24 68, 24 44 Z"
@@ -34,9 +35,9 @@ const DeviceIllus = () => (
     <rect x="29" y="34" width="72" height="42" rx="1" strokeWidth="1" opacity="0.4" />
     <path d="M15 80 L115 80 C115 85, 15 85, 15 80 Z" strokeWidth="1.5" />
     <line x1="55" y1="83" x2="75" y2="83" strokeWidth="2" />
-    <rect x="110" y="55" width="40" height="75" rx="5" strokeWidth="1.5" className="text-amber-500" />
-    <rect x="114" y="63" width="32" height="58" rx="2" strokeWidth="1" opacity="0.4" className="text-amber-500" />
-    <circle cx="130" cy="126" r="3" strokeWidth="1.2" className="text-amber-500" />
+    <rect x="110" y="55" width="40" height="75" rx="5" strokeWidth="1.5" className="text-warning" />
+    <rect x="114" y="63" width="32" height="58" rx="2" strokeWidth="1" opacity="0.4" className="text-warning" />
+    <circle cx="130" cy="126" r="3" strokeWidth="1.2" className="text-warning" />
     <path d="M65 50 Q 85 45 105 60" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.6" />
     <circle cx="105" cy="60" r="2.5" fill="currentColor" />
   </svg>
@@ -44,48 +45,45 @@ const DeviceIllus = () => (
 
 const illustrations = [ShieldIllus, ChatIllus, DeviceIllus];
 
-const blocks = [
-  {
-    title: "Verified Credentials",
-    description: "Every tutor's academic documents are manually checked. We verify qualifications, experience, and background to ensure your child learns from genuine educators.",
-    features: [
-      "Document Verification — Academic credentials checked",
-      "Background Check — Identity verification complete",
-      "Experience Validated — Teaching history confirmed",
-      "Reference Checks — Past employer verification",
-    ],
-  },
-  {
-    title: "Direct Connection",
-    description: "No middlemen, no agents. Message tutors directly, discuss your child's needs, and build a relationship based on trust and transparency.",
-    features: [
-      "Direct Messaging — Communicate without intermediaries",
-      "Transparent Fees — No hidden charges or commissions",
-      "Parent-Tutor Match — Find the right fit for your child",
-      "Quick Response — Average 18-minute reply time",
-    ],
-  },
-  {
-    title: "Online & Offline",
-    description: "Choose the learning mode that works best for your family. Whether it's in-person sessions at home or online classes, we support your preference.",
-    features: [
-      "Online Classes — Learn from anywhere",
-      "In-Person Sessions — Home tutoring available",
-      "Flexible Budget — ৳2,000 to ৳15,000/month",
-      "Personalized Care — Tailored to your child",
-    ],
-  },
-];
-
 const WhyChooseUs = () => {
+  const { t } = useTranslation();
+  const blocks = [
+    {
+      title: t('whyChooseUs.block1_title'),
+      description: t('whyChooseUs.block1_desc'),
+      features: [
+        { label: t('whyChooseUs.block1_f1_label'), note: t('whyChooseUs.block1_f1_note') },
+        { label: t('whyChooseUs.block1_f2_label'), note: t('whyChooseUs.block1_f2_note') },
+        { label: t('whyChooseUs.block1_f3_label'), note: t('whyChooseUs.block1_f3_note') },
+        { label: t('whyChooseUs.block1_f4_label'), note: t('whyChooseUs.block1_f4_note') },
+      ],
+    },
+    {
+      title: t('whyChooseUs.block2_title'),
+      description: t('whyChooseUs.block2_desc'),
+      features: [
+        { label: t('whyChooseUs.block2_f1_label'), note: t('whyChooseUs.block2_f1_note') },
+        { label: t('whyChooseUs.block2_f2_label'), note: t('whyChooseUs.block2_f2_note') },
+        { label: t('whyChooseUs.block2_f3_label'), note: t('whyChooseUs.block2_f3_note') },
+        { label: t('whyChooseUs.block2_f4_label'), note: t('whyChooseUs.block2_f4_note') },
+      ],
+    },
+    {
+      title: t('whyChooseUs.block3_title'),
+      description: t('whyChooseUs.block3_desc'),
+      features: [
+        { label: t('whyChooseUs.block3_f1_label'), note: t('whyChooseUs.block3_f1_note') },
+        { label: t('whyChooseUs.block3_f2_label'), note: t('whyChooseUs.block3_f2_note') },
+        { label: t('whyChooseUs.block3_f3_label'), note: t('whyChooseUs.block3_f3_note') },
+        { label: t('whyChooseUs.block3_f4_label'), note: t('whyChooseUs.block3_f4_note') },
+      ],
+    },
+  ];
   const headingRef = useAnimateOnScroll();
   const featuresRef = useAnimateOnScroll();
 
   return (
     <section className="relative overflow-hidden py-16 md:py-24 bg-background">
-      {/* Warm glow — grounds the family illustration */}
-      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] -translate-y-1/2 rounded-full bg-amber-400/5 blur-[120px] pointer-events-none z-0" />
-
       <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
@@ -99,27 +97,24 @@ const WhyChooseUs = () => {
           {/* RIGHT - Text Contents & Features */}
           <div ref={headingRef} className="lg:col-span-7 space-y-8 order-1 lg:order-2">
             <div>
-              <span className="text-xs font-semibold text-primary uppercase tracking-[0.18em]">Why Trust Us</span>
+              <span className="text-xs font-semibold text-primary uppercase tracking-[0.18em]">{t('whyChooseUs.badge')}</span>
               <h2 className="text-2xl md:text-3xl font-heading text-foreground tracking-tight leading-tight mt-2">
-                Why parents trust us with their children's education
+                {t('whyChooseUs.heading')}
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed mt-3">
-                We've heard the stories — tutors who don't show up, fake credentials, and hidden fees.
-                That's why we built a platform where every tutor is verified, every fee is transparent,
-                and every parent can communicate directly.
+                {t('whyChooseUs.intro')}
               </p>
             </div>
 
 
-            {/* Connected feature cards system */}
-            <div ref={featuresRef} className="space-y-0 relative z-10">
+            {/* Feature cards — editorial list, no decorative connectors */}
+            <div ref={featuresRef} className="space-y-4 relative z-10">
               {blocks.map((block, idx) => {
                 const Illus = illustrations[idx];
-                const isLast = idx === blocks.length - 1;
                 return (
                   <div key={idx} className="relative">
                     {/* Feature Card */}
-                    <div className="flex gap-4 p-4 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm shadow-xs hover:border-border/70 transition-colors z-10 relative">
+                    <div className="flex gap-4 p-4 rounded-xl border border-border/40 bg-card/60 hover:border-border/70 transition-colors z-10 relative">
                       <div className="w-14 h-12 shrink-0 bg-primary/5 rounded-lg p-2 flex items-center justify-center">
                         <Illus className="size-full" />
                       </div>
@@ -130,36 +125,24 @@ const WhyChooseUs = () => {
                         <p className="text-xs text-muted-foreground leading-relaxed">
                           {block.description}
                         </p>
-                        
+
                         {/* Sub-features list */}
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 border-t border-border/5 mt-2">
-                          {block.features.map((feature, fi) => {
-                            const parts = feature.split(' — ');
-                            return (
-                              <div key={fi} className="flex items-start gap-1">
-                                <svg width="10" height="10" viewBox="0 0 14 14" fill="none" className="shrink-0 mt-0.5">
-                                  <circle cx="7" cy="7" r="6" stroke="hsl(221 83% 53% / 0.3)" strokeWidth="1.5" />
-                                  <path d="M4.5 7 L6.5 9 L9.5 5" stroke="hsl(221 83% 53%)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                <div className="text-[10px] text-muted-foreground leading-none">
-                                  <span className="font-semibold text-foreground/80">{parts[0]}</span>
-                                </div>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-2 border-t border-border/10 mt-2">
+                          {block.features.map((feature, fi) => (
+                            <div key={fi} className="flex items-start gap-1.5">
+                              <svg width="10" height="10" viewBox="0 0 14 14" fill="none" className="shrink-0 mt-0.5 text-primary">
+                                <circle cx="7" cy="7" r="6" stroke="currentColor" strokeOpacity="0.3" strokeWidth="1.5" />
+                                <path d="M4.5 7 L6.5 9 L9.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                              <div className="text-[11px] leading-snug">
+                                <span className="font-semibold text-foreground/80 block">{feature.label}</span>
+                                <span className="text-muted-foreground">{feature.note}</span>
                               </div>
-                            );
-                          })}
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
-
-                    {/* Visually connected paths joining feature card blocks */}
-                    {!isLast && (
-                      <div className="relative h-6 flex flex-col items-center justify-center z-0">
-                        <div className="absolute inset-y-0 w-px border-l border-dashed border-primary/30" />
-                        <div className="relative size-5 rounded-full border border-primary/20 bg-background flex items-center justify-center text-[8px] text-primary/60 shadow-xs z-10 font-bold">
-                          {idx === 0 ? "↓" : "✦"}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 );
               })}

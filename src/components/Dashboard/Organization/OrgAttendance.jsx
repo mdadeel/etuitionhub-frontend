@@ -5,9 +5,12 @@ import { Calendar, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-rea
 import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const OrgAttendance = () => {
   const { orgId } = useParams();
+  const { hasPermission } = useAuth();
+  const canMark = hasPermission('attendance:mark');
   const [summary, setSummary] = useState(null);
   const [lowAttendance, setLowAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +53,7 @@ const OrgAttendance = () => {
             className="border rounded-md px-3 py-2 text-sm"
             aria-label="Select Date"
           />
-          <Button>Mark Attendance</Button>
+          {canMark && <Button>Mark Attendance</Button>}
         </div>
       </div>
 

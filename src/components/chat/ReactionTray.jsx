@@ -100,7 +100,7 @@ const ReactionTray = ({ onReact, onClose, anchorRect, isMe }) => {
                     className="emoji-animate size-9 rounded-full hover:bg-muted/60 transition-all text-xl leading-none flex items-center justify-center relative group hover:scale-125 active:scale-95"
                 >
                     <span className="drop-shadow-sm select-none">{emoji}</span>
-                    <span className="absolute -top-7 bg-foreground/90 text-background text-[9px] font-medium px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none capitalize">
+                    <span className="absolute -top-7 bg-foreground/90 text-background text-[11px] font-medium px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none capitalize">
                         {emoji === '👍' ? 'Like' : emoji === '❤️' ? 'Love' : emoji === '😂' ? 'Haha' : emoji === '😮' ? 'Wow' : emoji === '😢' ? 'Sad' : 'Pray'}
                     </span>
                 </button>

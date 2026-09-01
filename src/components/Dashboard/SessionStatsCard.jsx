@@ -9,7 +9,7 @@ const SessionStatsCard = () => {
         return (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="p-4 bg-card border border-border rounded-2xl animate-pulse">
+                    <div key={i} className="p-4 bg-card border border-border rounded-lg animate-pulse">
                         <div className="size-8 bg-muted rounded-lg mb-3" />
                         <div className="h-5 bg-muted rounded w-12 mb-1" />
                         <div className="h-3 bg-muted rounded w-16" />
@@ -40,7 +40,7 @@ const SessionStatsCard = () => {
             label: 'Scheduled',
             value: stats.scheduledSessions || 0,
             icon: Clock,
-            color: 'text-blue-600',
+            color: 'text-primary',
             bg: 'bg-blue-50',
         },
         {
@@ -73,7 +73,7 @@ const SessionStatsCard = () => {
                 return (
                     <div
                         key={card.label}
-                        className="p-4 bg-card border border-border rounded-2xl hover:border-primary/20 transition-colors"
+                        className="p-4 bg-card border border-border rounded-lg hover:border-primary/20 transition-colors"
                     >
                         <div className={cn("size-8 rounded-lg flex items-center justify-center mb-3", card.bg)}>
                             <CardIcon size={16} className={card.color} />

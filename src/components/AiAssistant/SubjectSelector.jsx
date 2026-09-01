@@ -40,7 +40,7 @@ export default function SubjectSelector({ className = '', compact = false }) {
         <div className={cn('flex flex-col gap-1', className)}>
             {!compact && (
                 <div className="pr-2 pb-2 pt-1">
-                    <p className="text-[10px] font-label font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                    <p className="text-[11px] font-label font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                         Subject
                     </p>
                 </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { useTuitionsQuery } from "../hooks/queries/useTuitionsQuery";
 import { useTuitionFilters } from "../hooks/useTuitionFilters";
 import useDebouncedValue from "../hooks/useDebouncedValue";
@@ -23,6 +24,7 @@ import { TuitionCardGridSkeleton } from "@/components/shared/skeletons";
 
 const Tuitions = () => {
   const [, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   const [page, setPage] = useState(1);
 
@@ -120,10 +122,10 @@ const Tuitions = () => {
 
   return (
     <div className="bg-background lg:h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
-      <SEO 
-        title="Tuition Jobs - Find Teaching Opportunities" 
-        description="Browse available tuition jobs and teaching opportunities across Bangladesh. Filter by class, subject, and location to find the perfect match."
-        keywords="tuition jobs, teaching jobs, tutor wanted, bangladesh tuitions, home tutor jobs"
+      <SEO
+        title={t('tuitions.seo_title')}
+        description={t('tuitions.seo_desc')}
+        keywords={t('tuitions.seo_keywords')}
       />
       <div className="w-full px-4 md:px-6 lg:px-8 py-6 flex flex-col flex-1 min-h-0">
         {/* Header */}
@@ -138,10 +140,10 @@ const Tuitions = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="md:block hidden">
               <h1 className="text-xl font-heading text-foreground">
-                Available Tuition Jobs
+                {t('tuitions.title')}
               </h1>
               <p className="text-sm text-muted-foreground">
-                Find the perfect teaching opportunity that matches your skills.
+                {t('tuitions.subtitle')}
               </p>
             </div>
             <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
@@ -149,7 +151,7 @@ const Tuitions = () => {
                 <span className="text-lg font-heading text-foreground">
                   {pagination?.totalItems || 0}
                 </span>
-                <span className="text-xs text-muted-foreground">Jobs Available</span>
+                <span className="text-xs text-muted-foreground">{t('tuitions.jobs_available')}</span>
               </div>
 
               {/* Mobile Filters Inline Trigger */}
@@ -157,14 +159,14 @@ const Tuitions = () => {
                 onClick={() => setIsMobileFiltersOpen(true)}
                 className="lg:hidden px-3 py-1.5 bg-card border border-border rounded-xl shadow-sm flex items-center justify-center gap-2 hover:bg-muted active:scale-[0.98] transition-all relative self-stretch"
               >
-                <Filter size={16} className="text-[#2563EB]" />
+                <Filter size={16} className="text-primary" />
                 <span className="text-xs text-muted-foreground font-semibold">
-                  Filters
+                  {t('tuitions.filters')}
                 </span>
                 {(filters.subjects.length > 0 ||
                   filters.classFilter ||
                   filters.locationFilter) && (
-                  <span className="absolute -top-1 -right-1 size-5 bg-[#2563EB] text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-card shadow-sm">
+                  <span className="absolute -top-1 -right-1 size-5 bg-primary text-white text-[11px] font-bold flex items-center justify-center rounded-full border border-card shadow-sm">
                     {(filters.subjects.length > 0 ? 1 : 0) +
                       (filters.classFilter ? 1 : 0) +
                       (filters.locationFilter ? 1 : 0)}
@@ -181,8 +183,8 @@ const Tuitions = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search tuitions..."
-              className="w-full pl-9 pr-4 h-11 bg-card border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm text-foreground placeholder:text-muted-foreground"
+              placeholder={t('tuitions.search_placeholder')}
+              className="w-full pl-9 pr-4 h-11 bg-card border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 shadow-sm text-foreground placeholder:text-muted-foreground"
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
             />
@@ -203,14 +205,14 @@ const Tuitions = () => {
           >
             <div
               className={cn(
-                "bg-card w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-2xl lg:border lg:border-border lg:w-full lg:shadow-sm transition-transform duration-300 overflow-y-auto custom-scrollbar",
+                "bg-card w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-lg lg:border lg:border-border lg:w-full lg:shadow-sm transition-transform duration-300 overflow-y-auto custom-scrollbar",
                 isMobileFiltersOpen
                   ? "translate-x-0"
                   : "-translate-x-full lg:translate-x-0",
               )}
             >
               <div className="flex items-center justify-between mb-6 lg:hidden">
-                <h3 className="text-lg font-heading">Filters</h3>
+                <h3 className="text-lg font-heading">{t('tuitions.filters')}</h3>
                 <button
                   onClick={() => setIsMobileFiltersOpen(false)}
                   className="p-2 hover:bg-background rounded-full"
@@ -219,42 +221,42 @@ const Tuitions = () => {
                 </button>
               </div>
               <h3 className="hidden lg:flex text-sm font-medium text-foreground mb-4 flex items-center gap-2">
-                <Filter size={14} /> Filters
+                <Filter size={14} /> {t('tuitions.filters')}
               </h3>
 
               <div className="space-y-4">
                 <FilterSelect
-                  label="Sort by"
+                  label={t('tuitions.sort_by')}
                   value={filters.sortBy}
                   onValueChange={(val) => updateFilter("sortBy", val)}
                   icon={SlidersHorizontal}
                   options={[
-                    { value: "newest", label: "Latest First" },
-                    { value: "oldest", label: "Oldest First" },
-                    { value: "salary-high", label: "Salary: High to Low" },
-                    { value: "salary-low", label: "Salary: Low to High" },
+                    { value: "newest", label: t('tuitions.sort_newest') },
+                    { value: "oldest", label: t('tuitions.sort_oldest') },
+                    { value: "salary-high", label: t('tuitions.sort_salary_high') },
+                    { value: "salary-low", label: t('tuitions.sort_salary_low') },
                   ]}
                 />
 
                 <FilterSelect
-                  label="Class"
+                  label={t('tuitions.class_label')}
                   value={filters.classFilter || "all"}
                   onValueChange={(val) =>
                     updateFilter("classFilter", val === "all" ? "" : val)
                   }
                   icon={LayoutGrid}
-                  placeholder="All Classes"
+                  placeholder={t('tuitions.all_classes')}
                   options={["all", ...(filterOptions?.classes || [])]}
                 />
 
                 <FilterSelect
-                  label="Location"
+                  label={t('tuitions.location_label')}
                   value={filters.locationFilter || "all"}
                   onValueChange={(val) =>
                     updateFilter("locationFilter", val === "all" ? "" : val)
                   }
                   icon={MapPin}
-                  placeholder="All Locations"
+                  placeholder={t('tuitions.all_locations')}
                   options={[
                     "all",
                     ...(filterOptions?.locations?.filter((loc) => !!loc) || []),
@@ -264,14 +266,14 @@ const Tuitions = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-sm font-medium text-muted-foreground block">
-                      Subjects
+                      {t('tuitions.subjects')}
                     </label>
                     {filters.subjects.length > 0 && (
                       <button
                         onClick={() => updateFilter("subjects", [])}
-                        className="text-xs text-[#2563EB] hover:underline"
+                        className="text-xs text-primary hover:underline"
                       >
-                        Reset
+                        {t('tuitions.reset')}
                       </button>
                     )}
                   </div>
@@ -288,7 +290,7 @@ const Tuitions = () => {
                         }}
                         className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
                           filters.subjects.includes(subject)
-                            ? "bg-[#2563EB] text-white"
+                            ? "bg-primary text-white"
                             : "bg-background text-muted-foreground hover:bg-muted border border-border"
                         }`}
                       >
@@ -304,15 +306,15 @@ const Tuitions = () => {
                   onClick={handleClearAll}
                   className="w-full mt-4 px-3 py-2 text-sm text-muted-foreground border border-border rounded-xl hover:bg-background flex items-center justify-center gap-2 transition-colors"
                 >
-                  <X size={14} /> Clear Filters
+                  <X size={14} /> {t('tuitions.clear_filters')}
                 </button>
               )}
 
               <button
                 onClick={() => setIsMobileFiltersOpen(false)}
-                className="w-full mt-4 px-3 py-3 bg-[#2563EB] text-white rounded-xl font-medium text-sm lg:hidden"
+                className="w-full mt-4 px-3 py-3 bg-primary text-white rounded-xl font-medium text-sm lg:hidden"
               >
-                Apply Filters
+                {t('tuitions.apply_filters')}
               </button>
             </div>
           </aside>
@@ -324,7 +326,7 @@ const Tuitions = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <input
                 type="search"
-                placeholder="Search tuitions..."
+                placeholder={t('tuitions.search_placeholder')}
                 value={localSearch}
                 onChange={(e) => setLocalSearch(e.target.value)}
                 className="w-full pl-9 pr-4 h-10 rounded-xl text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
@@ -337,8 +339,8 @@ const Tuitions = () => {
 
             {filters.search && (
               <div className="mb-4 flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Searching for:</span>
-                <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-sm font-medium">
+                <span className="text-sm text-muted-foreground">{t('tuitions.searching_for')}</span>
+                <span className="px-2 py-1 bg-primary/10 text-primary rounded-lg text-sm font-medium">
                   "{filters.search}"
                 </span>
               </div>
@@ -346,11 +348,11 @@ const Tuitions = () => {
 
             {error ? (
               <div className="py-12 text-center">
-                <h3 className="text-lg font-heading text-red-600 mb-2">
-                  Error
+                <h3 className="text-lg font-heading text-destructive mb-2">
+                  {t('tuitions.error_title')}
                 </h3>
                 <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  {error?.message || "Something went wrong. Please try again."}
+                  {error?.message || t('tuitions.error_generic')}
                 </p>
               </div>
             ) : tuitions.length === 0 && !loading ? (
@@ -374,10 +376,10 @@ const Tuitions = () => {
                   <div className="px-4 pb-6 flex justify-center">
                     <button
                       onClick={handleClearAll}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] text-white rounded-xl text-sm font-medium hover:bg-[#1D4ED8] active:scale-[0.98] transition-all shadow-sm"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 active:scale-[0.98] transition-all shadow-sm"
                     >
                       <RefreshCw size={14} />
-                      Reset Filters
+                      {t('tuitions.reset_filters')}
                     </button>
                   </div>
                 )}
@@ -404,15 +406,15 @@ const Tuitions = () => {
                   <div className="flex justify-center mt-8">
                     <button
                       onClick={() => setPage((prev) => prev + 1)}
-                      className="px-6 py-3 bg-[#2563EB] text-white font-medium rounded-xl hover:bg-[#1D4ED8] active:scale-[0.98] transition-all shadow-md"
+                      className="px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-all shadow-md"
                     >
-                      Load More Tuitions
+                      {t('tuitions.load_more')}
                     </button>
                   </div>
                 )}
                 {!hasMore && tuitions.length > 0 && !loading && (
                   <div className="py-8 text-center text-sm text-muted-foreground border-t border-border mt-8">
-                    No more tuition jobs available
+                    {t('tuitions.no_more')}
                   </div>
                 )}
               </div>

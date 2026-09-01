@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -19,7 +19,7 @@ const OrgEnrollments = () => {
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [enrollRes, studentsRes, coursesRes] = await Promise.all([
         api.get(`/api/v1/organizations/${orgId}/enrollments`),
@@ -34,9 +34,9 @@ const OrgEnrollments = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
-  useEffect(() => { fetchData(); }, [orgId]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -54,7 +54,7 @@ const OrgEnrollments = () => {
     }
   };
 
-  const getStatusColor = (s) => ({ active: 'bg-green-100 text-green-700', pending: 'bg-yellow-100 text-yellow-700', completed: 'bg-blue-100 text-blue-700', dropped: 'bg-red-100 text-red-700' }[s] || 'bg-gray-100 text-gray-700');
+  const getStatusColor = (s) => ({ active: 'bg-green-100 text-green-700', pending: 'bg-yellow-100 text-yellow-700', completed: 'bg-primary/10 text-primary', dropped: 'bg-red-100 text-red-700' }[s] || 'bg-gray-100 text-gray-700');
 
   return (
     <div className="space-y-6">

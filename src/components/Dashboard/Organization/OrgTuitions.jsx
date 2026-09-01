@@ -86,7 +86,7 @@ const OrgTuitions = () => {
                   <div className="space-y-1">
                     <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
                       tuition.status === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                      tuition.status === 'matched' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                      tuition.status === 'matched' ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary' :
                       tuition.status === 'completed' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' :
                       'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                     }`}>

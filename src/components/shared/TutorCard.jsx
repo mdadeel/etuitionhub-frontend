@@ -78,7 +78,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
     <Card
       hover={false}
       className={cn(
-        "group h-full flex flex-col border border-border/80 bg-card rounded-lg overflow-hidden shadow-premium transition-all duration-300 relative",
+        "group h-full flex flex-col border border-border/80 bg-card rounded-lg relative",
         isBannerPreview ? "" : "cursor-pointer hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)] hover:border-primary/30"
       )}
       onClick={isBannerPreview ? undefined : () => navigate(`/tutor/${_id}`)}
@@ -99,7 +99,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
         title={isSaved ? "Unsave" : "Save"}
         aria-label={isSaved ? "Unsave tutor" : "Save tutor"}
       >
-        <div className={cn("size-8 flex items-center justify-center rounded-full bg-slate-100/80 hover:bg-primary/10 hover:text-primary dark:bg-slate-900/80 dark:hover:bg-primary/20 transition-colors", isSaved ? "text-primary" : "")}>
+        <div className={cn("size-8 flex items-center justify-center rounded-full bg-muted/80 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 transition-colors", isSaved ? "text-primary" : "")}>
           <Bookmark
             size={16}
             className={cn(isSaved ? "fill-primary" : "")}
@@ -121,7 +121,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               />
             </div>
             {isVerified && (
-              <span className="absolute -bottom-1 -right-1 size-3.5 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-card" title="Verified Profile">
+              <span className="absolute -bottom-1 -right-1 size-3.5 bg-success text-white rounded-full flex items-center justify-center ring-2 ring-card" title="Verified Profile">
                 <Check className="size-2 stroke-[3]" />
               </span>
             )}
@@ -136,42 +136,42 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground truncate">
+        <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground truncate">
           {rating > 0 && (
             <>
-              <span className="flex items-center gap-1 shrink-0">
-                <Star size={12} className="fill-amber-500 text-amber-500 shrink-0" />
+              <span className="flex items-center gap-0.5 shrink-0">
+                <Star size={10} className="fill-warning text-warning shrink-0" />
                 <span className="font-bold text-foreground">{rating.toFixed(1)}</span>
               </span>
-              <span className="shrink-0">•</span>
+              <span className="shrink-0">·</span>
             </>
           )}
-          <span className="flex items-center gap-1 shrink-0">
-             <MapPin size={12} className="text-primary shrink-0" />
+          <span className="flex items-center gap-0.5 shrink-0">
+             <MapPin size={10} className="text-primary shrink-0" />
              <span className="truncate">{(location || "N/A").split(",")[0]}</span>
           </span>
-          <span className="shrink-0">•</span>
+          <span className="shrink-0">·</span>
           <span className="truncate">{experience}</span>
         </div>
 
-        <div className="flex flex-nowrap overflow-hidden gap-1 mt-2.5">
+        <div className="flex flex-nowrap overflow-hidden gap-1 mt-2">
           {subjects.slice(0, 2).map((sub) => (
             <span
               key={`sub-mob-${sub}`}
-              className="text-[10px] font-semibold px-2 py-0.5 rounded bg-muted/60 text-muted-foreground border border-border/40 whitespace-nowrap truncate max-w-[80px]"
+              className="text-[10px] font-medium px-1.5 py-px rounded bg-muted/60 text-muted-foreground border border-border/40 whitespace-nowrap truncate max-w-[72px]"
               title={sub}
             >
               <Highlight text={sub} query={searchQuery} />
             </span>
           ))}
           {subjects.length > 2 && (
-            <span className="text-[10px] text-muted-foreground font-bold whitespace-nowrap px-1 py-0.5 rounded bg-muted/30 border border-border/30">
+            <span className="text-[10px] text-muted-foreground font-bold whitespace-nowrap px-1 py-px rounded bg-muted/30 border border-border/30">
               +{subjects.length - 2}
             </span>
           )}
         </div>
 
-        <div className="mt-2.5">
+        <div className="mt-2">
           <TrustBadges tutor={tutor} />
         </div>
 
@@ -180,7 +180,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             <span className="text-[16px] font-bold text-foreground tracking-tight leading-none truncate">
               ৳{salary.toLocaleString()}
             </span>
-            <span className="text-[10px] text-muted-foreground font-semibold shrink-0">/mo</span>
+            <span className="text-[11px] text-muted-foreground font-semibold shrink-0">/mo</span>
           </div>
           <Button
             type="button"
@@ -217,7 +217,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
                   />
                 </div>
                 {isVerified && (
-                  <span className="absolute -bottom-0.5 -right-0.5 size-5 bg-emerald-500 text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card" title="Verified Profile">
+                  <span className="absolute -bottom-0.5 -right-0.5 size-5 bg-success text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card" title="Verified Profile">
                     <Check className="size-3 stroke-[3]" />
                   </span>
                 )}
@@ -225,7 +225,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               <div className="flex items-center gap-1 mt-0.5">
                 {rating > 0 ? (
                   <>
-                    <Star size={12} className="fill-amber-500 text-amber-500 shrink-0" />
+                    <Star size={12} className="fill-warning text-warning shrink-0" />
                     <span className="text-[11px] font-bold text-foreground">
                       {rating.toFixed(1)}
                     </span>
@@ -249,14 +249,14 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             {subjects.slice(0, 2).map((sub) => (
               <span
                 key={`sub-${sub}`}
-                className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-muted/50 text-muted-foreground border border-border/40 transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary/20"
+                className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-muted/50 text-muted-foreground border border-border/40 transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary/20"
               >
                 <Highlight text={sub} query={searchQuery} />
               </span>
             ))}
             {subjects.length > 2 && (
               <span
-                className="text-[10px] text-muted-foreground font-bold px-2 py-0.5 cursor-help"
+                className="text-[11px] text-muted-foreground font-bold px-2 py-0.5 cursor-help"
                 title={subjects.slice(2).join(", ")}
               >
                 +{subjects.length - 2}
@@ -291,7 +291,7 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               <span className="text-xl font-bold text-foreground tracking-tight">
                 ৳{salary.toLocaleString()}
               </span>
-              <span className="text-[10px] text-muted-foreground font-semibold">/mo</span>
+              <span className="text-[11px] text-muted-foreground font-semibold">/mo</span>
             </div>
           </div>
           <Button

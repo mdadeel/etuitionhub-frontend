@@ -214,23 +214,23 @@ body {
     letter-spacing: -0.02em;
   }
 
-  /* Bold editorial headlines */
+  /* Bold editorial headlines — fluid via clamp() so 320px → 1920px scales without overflow */
   h1 {
-    font-size: 3.5rem;
+    font-size: clamp(2rem, 1rem + 3.2vw, 3.5rem);
     line-height: 0.95;
     font-weight: 700;
     letter-spacing: -0.035em;
   }
 
   h2 {
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.5rem);
     line-height: 1.05;
     font-weight: 600;
     letter-spacing: -0.025em;
   }
 
   h3 {
-    font-size: 1.875rem;
+    font-size: clamp(1.25rem, 1.05rem + 1vw, 1.875rem);
     line-height: 1.15;
     font-weight: 600;
     letter-spacing: -0.02em;

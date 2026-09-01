@@ -92,7 +92,7 @@ const SessionConfirmationList = () => {
                 </div>
                 <div className="space-y-3">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className="flex items-center gap-4 p-4 border border-border/50 rounded-2xl">
+                        <div key={i} className="flex items-center gap-4 p-4 border border-border/50 rounded-lg">
                             <Skeleton className="size-10 rounded-full shrink-0" />
                             <div className="flex-1 space-y-1.5">
                                 <LineSkeleton width="1/2" className="h-4" />
@@ -114,13 +114,13 @@ const SessionConfirmationList = () => {
                     <h2 className="text-xl font-bold text-foreground">Session Confirmations</h2>
                     <p className="text-sm text-muted-foreground mt-1">Review and confirm sessions logged by your tutors.</p>
                 </div>
-                <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                <div className="size-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
                     <Clock size={24} />
                 </div>
             </div>
 
             {sessions.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground bg-background rounded-2xl border border-border">
+                <div className="py-12 text-center text-muted-foreground bg-background rounded-lg border border-border">
                     <CheckCircle size={32} className="mx-auto mb-3 opacity-20" />
                     <p className="text-sm font-medium text-foreground">No pending sessions</p>
                     <p className="text-xs mt-1">All caught up! Sessions logged by tutors will appear here for confirmation.</p>
@@ -137,7 +137,7 @@ const SessionConfirmationList = () => {
                             <div
                                 key={session._id}
                                 className={cn(
-                                    "p-5 border rounded-2xl transition-all",
+                                    "p-5 border rounded-lg transition-all",
                                     timeInfo.expired
                                         ? "bg-muted border-border opacity-70"
                                         : "bg-card border-border"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -19,7 +19,7 @@ const OrgResults = () => {
   const [marks, setMarks] = useState([{ studentId: '', marksObtained: '', totalMarks: '' }]);
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [resultsRes, examsRes] = await Promise.all([
         api.get(`/api/v1/organizations/${orgId}/results`),
@@ -32,9 +32,9 @@ const OrgResults = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
-  useEffect(() => { fetchData(); }, [orgId]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const addRow = () => setMarks([...marks, { studentId: '', marksObtained: '', totalMarks: '' }]);
   const removeRow = (i) => setMarks(marks.filter((_, idx) => idx !== i));

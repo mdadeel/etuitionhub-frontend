@@ -144,7 +144,7 @@ export default function AiAssistantSettings() {
                     {/* Left Column */}
                     <div className="space-y-8">
                         {/* Appearance */}
-                        <Card className="p-6 md:p-8 space-y-6 rounded-2xl border-border/40 bg-card/30 backdrop-blur-sm shadow-none" hover={false}>
+                        <Card className="p-6 md:p-8 space-y-6 rounded-lg border-border/40 bg-card shadow-none" hover={false}>
                             <div className="flex items-center gap-4">
                                 <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                                     <Sun size={20} className="text-primary" />
@@ -163,7 +163,7 @@ export default function AiAssistantSettings() {
                                             key={opt.id}
                                             onClick={() => setTheme(opt.id)}
                                             className={cn(
-                                                'flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all group',
+                                                'flex flex-col items-center gap-3 p-5 rounded-lg border-2 transition-all group',
                                                 isActive
                                                     ? 'border-primary bg-primary/5 shadow-inner'
                                                     : 'border-border/40 hover:border-primary/30 hover:bg-muted/30'
@@ -191,7 +191,7 @@ export default function AiAssistantSettings() {
                         </Card>
 
                         {/* Language */}
-                        <Card className="p-6 md:p-8 space-y-6 rounded-2xl border-border/40 bg-card/30 backdrop-blur-sm shadow-none" hover={false}>
+                        <Card className="p-6 md:p-8 space-y-6 rounded-lg border-border/40 bg-card shadow-none" hover={false}>
                             <div className="flex items-center gap-4">
                                 <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                                     <Globe size={20} className="text-primary" />
@@ -209,7 +209,7 @@ export default function AiAssistantSettings() {
                                             key={opt.id}
                                             onClick={() => setLanguage(opt.id)}
                                             className={cn(
-                                                'flex items-center gap-4 p-5 rounded-2xl border-2 transition-all group',
+                                                'flex items-center gap-4 p-5 rounded-lg border-2 transition-all group',
                                                 isActive
                                                     ? 'border-primary bg-primary/5 shadow-inner'
                                                     : 'border-border/40 hover:border-primary/30 hover:bg-muted/30'
@@ -221,7 +221,7 @@ export default function AiAssistantSettings() {
                                                     'text-sm font-bold uppercase tracking-widest',
                                                     isActive ? 'text-primary' : 'text-foreground'
                                                 )}>{opt.label}</p>
-                                                <p className="text-[10px] text-muted-foreground mt-0.5 font-medium italic">
+                                                <p className="text-[11px] text-muted-foreground mt-0.5 font-medium italic">
                                                     {opt.id === 'bn' ? 'Default for many subjects' : 'Global standard'}
                                                 </p>
                                             </div>
@@ -235,7 +235,7 @@ export default function AiAssistantSettings() {
                     {/* Right Column */}
                     <div className="space-y-8">
                         {/* AI Preferences */}
-                        <Card className="p-6 md:p-8 space-y-6 rounded-2xl border-border/40 bg-card/30 backdrop-blur-sm shadow-none" hover={false}>
+                        <Card className="p-6 md:p-8 space-y-6 rounded-lg border-border/40 bg-card shadow-none" hover={false}>
                             <div className="flex items-center gap-4">
                                 <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                                     <Sparkles size={20} className="text-primary" />
@@ -253,7 +253,7 @@ export default function AiAssistantSettings() {
                                             key={opt.id}
                                             onClick={() => setAiModel(opt.id)}
                                             className={cn(
-                                                'w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition-all text-left group',
+                                                'w-full flex items-center gap-4 p-5 rounded-lg border-2 transition-all text-left group',
                                                 isActive
                                                     ? 'border-primary bg-primary/5 shadow-inner'
                                                     : 'border-border/40 hover:border-primary/30 hover:bg-muted/30'
@@ -280,26 +280,26 @@ export default function AiAssistantSettings() {
 
                         {/* About & Stats */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Card className="p-6 bg-primary/[0.03] border-primary/10 rounded-2xl" hover={false}>
-                                <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2">Platform</h4>
+                            <Card className="p-6 bg-primary/[0.03] border-primary/10 rounded-lg" hover={false}>
+                                <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.2em] mb-2">Platform</h4>
                                 <p className="text-sm font-bold text-foreground">Porua AI v1.0</p>
-                                <p className="text-[10px] text-muted-foreground mt-1 font-medium">Build #2026.06.08</p>
+                                <p className="text-[11px] text-muted-foreground mt-1 font-medium">Build #2026.06.08</p>
                             </Card>
-                            <Card className="p-6 bg-muted/20 border-border/40 rounded-2xl" hover={false}>
-                                <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">Accuracy</h4>
+                            <Card className="p-6 bg-muted/20 border-border/40 rounded-lg" hover={false}>
+                                <h4 className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">Accuracy</h4>
                                 <p className="text-sm font-bold text-foreground">Self-Correction</p>
-                                <p className="text-[10px] text-muted-foreground mt-1 font-medium italic">AI can make mistakes.</p>
+                                <p className="text-[11px] text-muted-foreground mt-1 font-medium italic">AI can make mistakes.</p>
                             </Card>
                         </div>
 
                         {/* System Status */}
-                        <Card className="p-6 rounded-2xl border-border/40 bg-card/30 backdrop-blur-sm shadow-none" hover={false}>
+                        <Card className="p-6 rounded-lg border-border/40 bg-card shadow-none" hover={false}>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                                     <span className="text-xs font-bold uppercase tracking-widest text-foreground">API Status: Operational</span>
                                 </div>
-                                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest">Latency: 24ms</span>
+                                <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest">Latency: 24ms</span>
                             </div>
                         </Card>
                     </div>

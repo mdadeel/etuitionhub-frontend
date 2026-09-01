@@ -7,7 +7,7 @@ const DashboardPageHeader = ({ category, title, subtitle, action, className }) =
         {category && (
           <div className="flex items-center gap-2">
             <div className="w-5 h-1 bg-primary rounded-full" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{category}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{category}</span>
           </div>
         )}
         <h2 className="text-xl md:text-2xl font-heading font-bold tracking-tight text-foreground">{title}</h2>

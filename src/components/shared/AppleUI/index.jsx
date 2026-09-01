@@ -9,7 +9,7 @@ export const AppleCard = ({ children, className, hover = true, moveOnHover = fal
         className={cn(
             "relative transition-all duration-300 rounded-none",
             tonal ? "bg-background border border-border/40" : "bg-card border border-border",
-            glass && !tonal && "bg-card/90 backdrop-blur-md",
+            glass && !tonal && "bg-card/90",
             hover && (tonal ? "hover:bg-muted" : "hover:border-primary/40 hover:shadow-sm"),
             hover && moveOnHover && "hover:-translate-y-0.5",
             className
@@ -39,11 +39,11 @@ export const AppleButton = ({
         secondary: "bg-muted text-foreground border border-border hover:bg-muted/80",
         outline: "bg-transparent border border-foreground text-foreground hover:bg-foreground hover:text-background",
         ghost: "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
-        glass: "bg-card/60 backdrop-blur-md border border-border text-foreground hover:bg-card/80"
+        glass: "bg-card/60 border border-border text-foreground hover:bg-card/80"
     };
 
     const sizes = {
-        sm: "px-4 py-2 text-[10px] tracking-wider uppercase font-heading font-black",
+        sm: "px-4 py-2 text-[11px] tracking-wider uppercase font-heading font-black",
         md: "px-6 py-3 text-xs tracking-widest uppercase font-heading font-black",
         lg: "px-8 py-4 text-xs tracking-[0.15em] uppercase font-heading font-black",
         icon: "p-2.5"
@@ -79,16 +79,16 @@ export const AppleButton = ({
  */
 export const AppleInput = ({ label, error, className, ...props }) => (
     <div className="space-y-2 w-full">
-        {label && <label className="text-[10px] font-heading font-black uppercase tracking-widest text-muted-foreground">{label}</label>}
+        {label && <label className="text-[11px] font-heading font-black uppercase tracking-widest text-muted-foreground">{label}</label>}
         <input 
             className={cn(
                 "w-full bg-card border border-border focus:border-primary focus:ring-0 focus:outline-none transition-all duration-200 px-4 py-3 rounded-none text-sm placeholder:text-muted-foreground/40",
-                error && "border-red-500 focus:border-red-500",
+                error && "border-destructive focus:border-destructive",
                 className
             )}
             {...props}
         />
-        {error && <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-red-600">{error?.message || error}</p>}
+        {error && <p className="text-[11px] font-heading font-bold uppercase tracking-wider text-destructive">{error?.message || error}</p>}
     </div>
 );
 
@@ -98,17 +98,17 @@ export const AppleInput = ({ label, error, className, ...props }) => (
 export const AppleBadge = ({ children, className, variant = 'default' }) => {
     const variants = {
         default: "bg-muted text-foreground border-border",
-        success: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30",
-        warning: "bg-orange-500/10 text-orange-700 border-orange-500/20 dark:bg-orange-500/25 dark:text-orange-400 dark:border-orange-500/30",
-        error: "bg-red-500/10 text-red-700 border-red-500/20 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30",
+        success: "bg-success/10 text-success border-success/20 dark:bg-success/20 dark:text-success dark:border-success/30",
+        warning: "bg-warning/10 text-warning border-warning/20 dark:bg-warning/25 dark:text-warning dark:border-warning/30",
+        error: "bg-destructive/10 text-destructive border-destructive/20 dark:bg-destructive/20 dark:text-destructive dark:border-destructive/30",
         primary: "bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary dark:border-primary/30",
-        muted: "bg-background text-muted-foreground border-border dark:bg-slate-900/40 dark:text-slate-400",
-        glass: "bg-card/10 backdrop-blur-md border border-white/20 text-white"
+        muted: "bg-background text-muted-foreground border-border dark:bg-muted/40 dark:text-muted-foreground",
+        glass: "bg-card/10 border border-white/20 text-white"
     };
 
     return (
         <span className={cn(
-            "px-2.5 py-1 text-[10px] font-heading font-black uppercase tracking-wider rounded-none border shadow-none whitespace-nowrap",
+            "px-2.5 py-1 text-[11px] font-heading font-black uppercase tracking-wider rounded-none border shadow-none whitespace-nowrap",
             variants[variant],
             className
         )}>

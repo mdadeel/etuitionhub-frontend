@@ -62,10 +62,18 @@ const useSessionManager = () => {
             setUserRole(res.data.role);
             setDbUserError(null);
 
+            // Cache user data
+            localStorage.setItem('cached-db-user', JSON.stringify({ email, data: res.data }));
+            localStorage.setItem('cached-user-role', res.data.role);
+
             try {
                 let orgRes = await api.get(`/api/users/${email}/organizations`);
                 const orgs = orgRes.data.data || [];
                 setMyOrgs(orgs);
+                
+                // Cache organization data
+                localStorage.setItem('cached-my-orgs', JSON.stringify(orgs));
+
                 // Auto-select first org if context is empty, or maintain current context
                 // Use ref to avoid stale closure and unnecessary re-subscriptions
                 if (orgs.length > 0 && !orgContextRef.current) {
@@ -83,6 +91,37 @@ const useSessionManager = () => {
 
             return res.data;
         } catch (err) {
+            const isNetworkError = !err.response || err.code === 'ERR_NETWORK';
+            if (isNetworkError) {
+                const cachedUserStr = localStorage.getItem('cached-db-user');
+                if (cachedUserStr) {
+                    try {
+                        const cachedUser = JSON.parse(cachedUserStr);
+                        if (cachedUser && cachedUser.email === email) {
+                            setDbUser(cachedUser.data);
+                            setUserRole(cachedUser.data.role);
+
+                            const cachedOrgsStr = localStorage.getItem('cached-my-orgs');
+                            if (cachedOrgsStr) {
+                                const cachedOrgs = JSON.parse(cachedOrgsStr);
+                                setMyOrgs(cachedOrgs);
+                                if (cachedOrgs.length > 0) {
+                                    const savedOrgId = localStorage.getItem('x-org-id');
+                                    let targetOrg = cachedOrgs.find(o => o.orgId === savedOrgId) || cachedOrgs[0];
+                                    setOrgContext(targetOrg);
+                                    setOrgMember(targetOrg);
+                                    setOrgRole(targetOrg.role?.slug || 'student');
+                                }
+                            }
+                            setDbUserError(null);
+                            toast.success('Running in offline/fallback mode using cached profile.', { id: 'offline-mode-toast' });
+                            return cachedUser.data;
+                        }
+                    } catch (cacheErr) {
+                        logError('useSessionManager', 'failed to parse cached user data', cacheErr);
+                    }
+                }
+            }
             setDbUserError({
                 status: err.response?.status || null,
                 message: err.response?.data?.error || err.message || 'Failed to load profile',
@@ -129,98 +168,188 @@ const useSessionManager = () => {
             .then(({ auth }) => {
                 if (cancelled) return;
                 unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            // After initial auth check, don't set loading=true on subsequent firings.
-            // This prevents PrivateRoute from unmounting/remounting Dashboard (full-page refresh).
-            if (initialAuthDoneRef.current) {
-                setUser(currentUser);
-                // Auth action already handled its own work
-                if (authActionCompletedRef.current) {
-                    authActionCompletedRef.current = false;
-                    return;
-                }
-                // Token refresh or silent auth event — update user but don't show spinner
-                if (currentUser?.email) {
-                    // CRITICAL: Reset sessionDead BEFORE setJWT to break deadlock.
-                    // If sessionDead is true, the request interceptor blocks api.post(),
-                    // which means setJWT() can never succeed, which means resetSession()
-                    // can never be called. By resetting first, we allow setJWT() to proceed.
-                    resetSession();
-                    setJWT(currentUser.email, currentUser)
-                        .then(() => {
-                            refreshUserFromDB(currentUser.email).catch(() => {});
-                        })
-                        .catch(() => {});
-                } else {
-                    setDbUser(null);
-                    setUserRole(null);
-                    setDbUserError(null);
-                }
-                return;
-            }
-
-            // Initial auth check — show loading spinner
-            setLoading(true);
-            setUser(currentUser);
-
-            // If an auth action just completed its own setJWT + user fetch,
-            // skip the duplicate work. Don't clear loading here — let
-            // loginAdmin's blocking refreshUserFromDB clear it (prevents
-            // AdminRoute 403 flash with dbUser still null).
-            if (authActionCompletedRef.current) {
-                authActionCompletedRef.current = false;
-                initialAuthDoneRef.current = true;
-                return;
-            }
-
-            if (currentUser?.email) {
-                resetSession();
-                await setJWT(currentUser.email, currentUser);
-
-                try {
-                    let res = await api.get(`/api/users/${currentUser.email}`);
-                    setDbUser(res.data);
-                    setUserRole(res.data.role);
-                    setDbUserError(null);
-
-                    try {
-                        let orgRes = await api.get(`/api/users/${currentUser.email}/organizations`);
-                        const orgs = orgRes.data.data || [];
-                        setMyOrgs(orgs);
-                        if (orgs.length > 0) {
-                            const savedOrgId = localStorage.getItem('x-org-id');
-                            let targetOrg = orgs.find(o => o.orgId === savedOrgId);
-                            if (!targetOrg) targetOrg = orgs[0];
-                            setOrgContext(targetOrg);
-                            setOrgMember(targetOrg);
-                            setOrgRole(targetOrg.role?.slug || 'student');
-                            localStorage.setItem('x-org-id', targetOrg.orgId);
+                    // After initial auth check, don't set loading=true on subsequent firings.
+                    // This prevents PrivateRoute from unmounting/remounting Dashboard (full-page refresh).
+                    if (initialAuthDoneRef.current) {
+                        setUser(currentUser);
+                        // Auth action already handled its own work
+                        if (authActionCompletedRef.current) {
+                            authActionCompletedRef.current = false;
+                            return;
                         }
-                    } catch (err) {
-                        logError('useSessionManager', 'failed to fetch user organizations', err);
+                        // Token refresh or silent auth event — update user but don't show spinner
+                        if (currentUser?.email) {
+                            // CRITICAL: Reset sessionDead BEFORE setJWT to break deadlock.
+                            // If sessionDead is true, the request interceptor blocks api.post(),
+                            // which means setJWT() can never succeed, which means resetSession()
+                            // can never be called. By resetting first, we allow setJWT() to proceed.
+                            resetSession();
+                            setJWT(currentUser.email, currentUser)
+                                .then(() => {
+                                    refreshUserFromDB(currentUser.email).catch(() => {});
+                                })
+                                .catch(() => {});
+                        } else {
+                            setDbUser(null);
+                            setUserRole(null);
+                            setDbUserError(null);
+                        }
+                        return;
                     }
-                } catch (error) {
-                    if (error.response?.status === 404) {
+
+                    // Initial auth check — show loading spinner
+                    setLoading(true);
+                    setUser(currentUser);
+
+                    // If an auth action just completed its own setJWT + user fetch,
+                    // skip the duplicate work. Don't clear loading here — let
+                    // loginAdmin's blocking refreshUserFromDB clear it (prevents
+                    // AdminRoute 403 flash with dbUser still null).
+                    if (authActionCompletedRef.current) {
+                        authActionCompletedRef.current = false;
+                        initialAuthDoneRef.current = true;
+                        return;
+                    }
+
+                    if (currentUser?.email) {
+                        resetSession();
+                        
+                        let jwtSuccess = false;
+                        try {
+                            await setJWT(currentUser.email, currentUser);
+                            jwtSuccess = true;
+                        } catch (jwtError) {
+                            const isNetworkError = !jwtError.response || jwtError.code === 'ERR_NETWORK';
+                            if (isNetworkError) {
+                                const cachedUserStr = localStorage.getItem('cached-db-user');
+                                if (cachedUserStr) {
+                                    try {
+                                        const cachedUser = JSON.parse(cachedUserStr);
+                                        if (cachedUser && cachedUser.email === currentUser.email) {
+                                            setDbUser(cachedUser.data);
+                                            setUserRole(cachedUser.data.role);
+
+                                            const cachedOrgsStr = localStorage.getItem('cached-my-orgs');
+                                            if (cachedOrgsStr) {
+                                                const cachedOrgs = JSON.parse(cachedOrgsStr);
+                                                setMyOrgs(cachedOrgs);
+                                                if (cachedOrgs.length > 0) {
+                                                    const savedOrgId = localStorage.getItem('x-org-id');
+                                                    let targetOrg = cachedOrgs.find(o => o.orgId === savedOrgId) || cachedOrgs[0];
+                                                    setOrgContext(targetOrg);
+                                                    setOrgMember(targetOrg);
+                                                    setOrgRole(targetOrg.role?.slug || 'student');
+                                                }
+                                            }
+                                            setDbUserError(null);
+                                            toast.success('Running in offline/fallback mode using cached profile.', { id: 'offline-mode-toast' });
+                                            initialAuthDoneRef.current = true;
+                                            setLoading(false);
+                                            return;
+                                        }
+                                    } catch (cacheErr) {
+                                        logError('useSessionManager', 'failed to parse cached user data', cacheErr);
+                                    }
+                                }
+                            }
+                            toast.error('Authentication failed. Please try again.');
+                            initialAuthDoneRef.current = true;
+                            setLoading(false);
+                            return;
+                        }
+
+                        if (jwtSuccess) {
+                            try {
+                                let res = await api.get(`/api/users/${currentUser.email}`);
+                                setDbUser(res.data);
+                                setUserRole(res.data.role);
+                                setDbUserError(null);
+
+                                // Cache user data
+                                localStorage.setItem('cached-db-user', JSON.stringify({ email: currentUser.email, data: res.data }));
+                                localStorage.setItem('cached-user-role', res.data.role);
+
+                                try {
+                                    let orgRes = await api.get(`/api/users/${currentUser.email}/organizations`);
+                                    const orgs = orgRes.data.data || [];
+                                    setMyOrgs(orgs);
+                                    
+                                    // Cache organization data
+                                    localStorage.setItem('cached-my-orgs', JSON.stringify(orgs));
+
+                                    if (orgs.length > 0) {
+                                        const savedOrgId = localStorage.getItem('x-org-id');
+                                        let targetOrg = orgs.find(o => o.orgId === savedOrgId);
+                                        if (!targetOrg) targetOrg = orgs[0];
+                                        setOrgContext(targetOrg);
+                                        setOrgMember(targetOrg);
+                                        setOrgRole(targetOrg.role?.slug || 'student');
+                                        localStorage.setItem('x-org-id', targetOrg.orgId);
+                                    }
+                                } catch (err) {
+                                    logError('useSessionManager', 'failed to fetch user organizations', err);
+                                }
+                            } catch (error) {
+                                const isNetworkError = !error.response || error.code === 'ERR_NETWORK';
+                                if (isNetworkError) {
+                                    const cachedUserStr = localStorage.getItem('cached-db-user');
+                                    if (cachedUserStr) {
+                                        try {
+                                            const cachedUser = JSON.parse(cachedUserStr);
+                                            if (cachedUser && cachedUser.email === currentUser.email) {
+                                                setDbUser(cachedUser.data);
+                                                setUserRole(cachedUser.data.role);
+
+                                                const cachedOrgsStr = localStorage.getItem('cached-my-orgs');
+                                                if (cachedOrgsStr) {
+                                                    const cachedOrgs = JSON.parse(cachedOrgsStr);
+                                                    setMyOrgs(cachedOrgs);
+                                                    if (cachedOrgs.length > 0) {
+                                                        const savedOrgId = localStorage.getItem('x-org-id');
+                                                        let targetOrg = cachedOrgs.find(o => o.orgId === savedOrgId) || cachedOrgs[0];
+                                                        setOrgContext(targetOrg);
+                                                        setOrgMember(targetOrg);
+                                                        setOrgRole(targetOrg.role?.slug || 'student');
+                                                    }
+                                                }
+                                                setDbUserError(null);
+                                                toast.success('Running in offline/fallback mode using cached profile.', { id: 'offline-mode-toast' });
+                                                initialAuthDoneRef.current = true;
+                                                setLoading(false);
+                                                return;
+                                            }
+                                        } catch (cacheErr) {
+                                            logError('useSessionManager', 'failed to parse cached user data', cacheErr);
+                                        }
+                                    }
+                                }
+
+                                if (error.response?.status === 404) {
+                                    setDbUser(null);
+                                    setUserRole(null);
+                                    setDbUserError(null);
+                                } else {
+                                    setDbUserError({
+                                        status: error.response?.status || null,
+                                        message: error.response?.data?.error || error.message || 'Failed to load profile',
+                                        code: error.code || null,
+                                    });
+                                }
+                            }
+                        }
+                    } else {
                         setDbUser(null);
                         setUserRole(null);
                         setDbUserError(null);
-                    } else {
-                        setDbUserError({
-                            status: error.response?.status || null,
-                            message: error.response?.data?.error || error.message || 'Failed to load profile',
-                            code: error.code || null,
-                        });
+                        setMyOrgs([]);
+                        setOrgContext(null);
+                        setOrgMember(null);
+                        setOrgRole(null);
+                        localStorage.removeItem('x-org-id');
+                        localStorage.removeItem('cached-db-user');
+                        localStorage.removeItem('cached-user-role');
+                        localStorage.removeItem('cached-my-orgs');
                     }
-                }
-            } else {
-                setDbUser(null);
-                setUserRole(null);
-                setDbUserError(null);
-                setMyOrgs([]);
-                setOrgContext(null);
-                setOrgMember(null);
-                setOrgRole(null);
-                localStorage.removeItem('x-org-id');
-            }
 
                     initialAuthDoneRef.current = true;
                     setLoading(false);

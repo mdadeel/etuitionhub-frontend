@@ -1,8 +1,10 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { lazy, Suspense } from "react";
 import DashboardLayout from "../components/shared/DashboardLayout";
 import { DashboardSkeleton } from "@/components/shared/skeletons";
+import SEO from '@/components/shared/SEO';
 
 // Lazy-loaded role-specific components — only downloaded when the route matches
 const StudentDashboard = lazy(() => import("../components/Dashboard/StudentDashboard"));
@@ -22,19 +24,21 @@ const HireRequests = lazy(() => import("../components/Dashboard/HireRequests"));
 const ActiveRelationships = lazy(() => import("../components/Dashboard/ActiveRelationships"));
 const SavedSearchAlerts = lazy(() => import("../components/Dashboard/SavedSearchAlerts"));
 const SessionConfirmationList = lazy(() => import("../components/Dashboard/SessionConfirmationList"));
+const SessionCalendar = lazy(() => import("../components/Dashboard/SessionCalendar"));
 const TemplateManager = lazy(() => import("../components/Dashboard/TemplateManager"));
 
 /**
  * Dashboard Component — role-aware routing hub
  */
 const Dashboard = () => {
+  const { t } = useTranslation();
   const { user, dbUser, loading, configError, dbUserError, retryDbUser, orgContext } = useAuth();
 
   const role = dbUser?.role?.toLowerCase() || (loading ? "" : "student");
   const globalRole = dbUser?.globalRole;
 
   if (configError) {
-    return <div className="flex items-center justify-center min-h-[50vh] p-8 text-destructive">Could not load app config: {configError}</div>;
+    return <div className="flex items-center justify-center min-h-[50vh] p-8 text-destructive">{t('dashboard.load_error')}: {configError}</div>;
   }
 
   if (!user) {
@@ -49,8 +53,8 @@ const Dashboard = () => {
     if (dbUserError) {
       return (
         <div className="flex flex-col items-center justify-center p-8 gap-4 min-h-[50vh]">
-          <p className="text-destructive">{dbUserError.message || 'Failed to load profile'}</p>
-          <button type="button" onClick={retryDbUser} className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Retry</button>
+          <p className="text-destructive">{dbUserError.message || t('dashboard.profile_error')}</p>
+          <button type="button" onClick={retryDbUser} className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('dashboard.retry')}</button>
         </div>
       );
     }
@@ -59,6 +63,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
+      <SEO title="Dashboard | eTuitionBD" noIndex />
       <Routes>
         {/* Multi-Tenant Dashboard Routes */}
         <Route path="org/:orgId/*" element={<OrgDashboardLayout />} />
@@ -138,7 +143,11 @@ const Dashboard = () => {
           path="session-confirmations"
           element={role === "tutor" ? <Navigate to="/dashboard" replace /> : <SessionConfirmationList />}
         />
-        
+
+        <Route
+          path="calendar"
+          element={<SessionCalendar />}
+        />
         <Route
           path="templates"
           element={role === "student" ? <Navigate to="/dashboard" replace /> : <TemplateManager />}

@@ -47,7 +47,7 @@ export default function AiAssistantLayout({ children, showBack = false, rightSlo
             {/* Main content - add padding bottom for MobileBottomNav (h-14 = 56px) */}
             <div className="flex-1 min-w-0 min-h-0 flex flex-col h-full relative pb-14 lg:pb-0">
                 {/* Mobile Header (inline, sits under global Navbar) */}
-                <div className="lg:hidden flex h-12 shrink-0 items-center justify-between px-3 bg-background/95 backdrop-blur-md border-b border-border/40">
+                <div className="lg:hidden flex h-12 shrink-0 items-center justify-between px-3 bg-background border-b border-border/40">
                     <div className="flex items-center gap-1">
                         {showBack ? (
                             <button onClick={() => window.history.back()} className="p-2 -ml-1 text-foreground hover:bg-muted active:scale-95 transition-all duration-250 rounded-xl">

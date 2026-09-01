@@ -11,7 +11,7 @@ const Highlight = ({ text = "", query = "" }) => {
         regex.test(part) ? (
           <mark
             key={`${i}-${part}`}
-            className="bg-[#2563EB]/20 text-[#2563EB] rounded px-0.5"
+            className="bg-primary/20 text-primary rounded px-0.5"
           >
             {part}
           </mark>

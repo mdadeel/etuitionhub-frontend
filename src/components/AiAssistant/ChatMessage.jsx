@@ -121,7 +121,7 @@ const UserBubble = memo(function UserBubble({
             <div className="flex flex-col items-end gap-1.5 max-w-[85%]">
                 <div
                     className={cn(
-                        'w-fit max-w-full rounded-2xl rounded-tr-sm px-5 py-3 text-[14px] leading-[22px]',
+                        'w-fit max-w-full rounded-lg rounded-tr-sm px-5 py-3 text-[14px] leading-[22px]',
                         'bg-primary text-primary-foreground shadow-md shadow-primary/10',
                     )}
                 >
@@ -129,7 +129,7 @@ const UserBubble = memo(function UserBubble({
                 </div>
                 <div className="flex items-center gap-2.5 px-0.5">
                     {timestamp && (
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/45 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/45 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             {timestamp}
                         </span>
                     )}
@@ -137,7 +137,7 @@ const UserBubble = memo(function UserBubble({
                         <button
                             type="button"
                             onClick={onEdit}
-                            className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/40 hover:text-primary transition-all duration-150 opacity-0 group-hover:opacity-100 active:scale-95"
+                            className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/40 hover:text-primary transition-all duration-150 opacity-0 group-hover:opacity-100 active:scale-95"
                             title="Edit message"
                         >
                             Edit
@@ -193,14 +193,14 @@ function EditInput({ initialValue, onSave, onCancel }) {
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground active:scale-95 transition-all duration-150"
+                    className="px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground active:scale-95 transition-all duration-150"
                 >
                     Cancel
                 </button>
                 <button
                     type="button"
                     onClick={() => { if (value.trim()) onSave?.(value.trim()); }}
-                    className="px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider bg-primary text-primary-foreground rounded-lg hover:bg-primary/95 active:scale-95 transition-all duration-150 shadow-sm shadow-primary/10"
+                    className="px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider bg-primary text-primary-foreground rounded-lg hover:bg-primary/95 active:scale-95 transition-all duration-150 shadow-sm shadow-primary/10"
                 >
                     Save
                 </button>
@@ -289,7 +289,7 @@ const AssistantMessage = memo(function AssistantMessage({
                     />
                     <div className="flex items-center gap-2">
                         {timestamp && (
-                            <span className="text-[10px] font-label text-muted-foreground/50 opacity-0 group-hover:opacity-60 transition-opacity duration-200">
+                            <span className="text-[11px] font-label text-muted-foreground/50 opacity-0 group-hover:opacity-60 transition-opacity duration-200">
                                 {timestamp}
                             </span>
                         )}
@@ -347,7 +347,7 @@ const AssistantMessage = memo(function AssistantMessage({
             </AiResponseCard>
             <div className="flex items-center gap-2 pl-1">
                 {timestamp && (
-                    <span className="text-[10px] font-label text-muted-foreground/50 opacity-0 group-hover:opacity-60 transition-opacity duration-200">
+                    <span className="text-[11px] font-label text-muted-foreground/50 opacity-0 group-hover:opacity-60 transition-opacity duration-200">
                         {timestamp}
                     </span>
                 )}
@@ -482,7 +482,7 @@ export default function ChatMessage({
         const streamingTitle = message.userInput || '';
 
         return (
-            <article className="w-full max-w-[850px] bg-card border border-border/60 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 animate-fade-in-up">
+            <article className="w-full max-w-[850px] bg-card border border-border/60 rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6 animate-fade-in-up">
                 <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-3 font-medium flex-wrap">
                     <div className="flex items-center gap-2">
                         <span className="flex items-center justify-center size-5 rounded-md bg-primary/10 text-primary">

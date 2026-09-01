@@ -28,8 +28,8 @@ const FilterBar = ({
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                         type="text"
-                        placeholder="SEARCH_BY_SUBJECT_OR_COORDINATES..."
-                        className="h-14 pl-12 rounded-none border-border bg-background font-bold focus-visible:ring-primary uppercase text-[11px] tracking-widest text-foreground"
+                        placeholder="Search by subject, class, or location…"
+                        className="h-14 pl-12 rounded-none border-border bg-background font-bold focus-visible:ring-primary text-sm tracking-normal text-foreground"
                         value={filters.search}
                         onChange={(e) => onFilterChange('search', e.target.value)}
                     />
@@ -41,12 +41,12 @@ const FilterBar = ({
                         value={filters.sortBy}
                         onValueChange={(value) => onFilterChange('sortBy', value)}
                         icon={SlidersHorizontal}
-                        placeholder="SORT_STRATEGY"
+                        placeholder="Sort by"
                         options={[
-                            { value: 'newest', label: 'Latest Operations' },
-                            { value: 'oldest', label: 'Historical Order' },
-                            { value: 'salary-high', label: 'Yield: High-Low' },
-                            { value: 'salary-low', label: 'Yield: Low-High' },
+                            { value: 'newest', label: 'Newest' },
+                            { value: 'oldest', label: 'Oldest' },
+                            { value: 'salary-high', label: 'Fee: High to Low' },
+                            { value: 'salary-low', label: 'Fee: Low to High' },
                         ]}
                     />
                 </div>
@@ -54,39 +54,39 @@ const FilterBar = ({
 
             {/* Parameter Clusters */}
             <div className="relative z-10 flex flex-wrap items-center gap-10 pt-8 border-t border-border">
-                {/* Class Protocol Cluster */}
+                {/* Class filter */}
                 <div className="flex items-center gap-4">
                     <FilterSelect
-                        label="Class Node"
+                        label="Class"
                         value={filters.classFilter}
                         onValueChange={(value) => onFilterChange('classFilter', value)}
                         icon={LayoutGrid}
-                        placeholder="ALL_PROTOCOLS"
+                        placeholder="All Classes"
                         options={['all', ...classOptions]}
                     />
                 </div>
 
-                {/* Spatial Area Cluster */}
+                {/* Location filter */}
                 <div className="flex items-center gap-4">
                     <FilterSelect
-                        label="Spatial Area"
+                        label="Location"
                         value={filters.locationFilter}
                         onValueChange={(value) => onFilterChange('locationFilter', value)}
                         icon={MapPin}
-                        placeholder="ALL_ZONES"
+                        placeholder="All Locations"
                         options={['all', ...locationOptions.filter(loc => !!loc)]}
                     />
                 </div>
 
-                {/* Clear Matrix Signal */}
+                {/* Clear filters */}
                 {showClearButton && (
                     <Button
                         variant="ghost"
-                        className="ml-auto h-auto p-0 flex items-center gap-2 text-[10px] font-black text-muted-foreground hover:text-destructive transition-colors uppercase tracking-[0.3em]"
+                        className="ml-auto h-auto p-0 flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-destructive transition-colors"
                         onClick={onClear}
                     >
                         <X size={14} />
-                        Reset Matrix
+                        Reset Filters
                     </Button>
                 )}
             </div>

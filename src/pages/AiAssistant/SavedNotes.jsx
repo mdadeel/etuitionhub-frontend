@@ -117,7 +117,7 @@ export default function SavedNotes() {
                           : JSON.stringify(note.content).slice(0, 200)}
                       </p>
                     )}
-                    <p className="text-[10px] text-muted-foreground/50 mt-2">
+                    <p className="text-[11px] text-muted-foreground/50 mt-2">
                       {new Date(note.createdAt).toLocaleDateString('en-BD', {
                         year: 'numeric',
                         month: 'short',

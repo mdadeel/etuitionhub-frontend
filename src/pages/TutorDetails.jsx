@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import TutorCard from '../components/shared/TutorCard';
@@ -21,8 +22,15 @@ import {
     Trash2
 } from 'lucide-react';
 import SEO from '../components/shared/SEO';
+import { Helmet } from 'react-helmet-async';
+import {
+    breadcrumbJsonLd,
+    serializeJsonLd,
+} from '../lib/jsonLd';
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
+import { hasAnonBookmark, addAnonBookmark, removeAnonBookmark } from '../lib/anonBookmarks';
 import WhatsAppShareButton from '../components/shared/WhatsAppShareButton';
+import Breadcrumb from '../components/shared/Breadcrumb';
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton, CircleSkeleton } from "@/components/shared/skeletons";
 import CredibilityBadge from '@/components/CredibilityBadge';
@@ -86,6 +94,7 @@ function TutorDetailsSkeleton() {
 const TutorDetails = () => {
     const { id } = useParams();
     const { user } = useAuth();
+    const { t } = useTranslation();
     const [tutor, setTutor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [reviews, setReviews] = useState([]);
@@ -98,6 +107,12 @@ const TutorDetails = () => {
     const [sendingMessage, setSendingMessage] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+
+    // Report Tutor State
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportReason, setReportReason] = useState('');
+    const [reportDescription, setReportDescription] = useState('');
+    const [submittingReport, setSubmittingReport] = useState(false);
     
     // Hire Request State
     const [isHireModalOpen, setIsHireModalOpen] = useState(false);
@@ -156,6 +171,9 @@ const TutorDetails = () => {
 
                 if (bookmarkRes?.data) {
                     setIsSaved(bookmarkRes.data.isSaved);
+                } else if (!user && tutorRes.data?._id) {
+                    // Anonymous visitors: saved state comes from localStorage.
+                    setIsSaved(hasAnonBookmark("tutor", tutorRes.data._id));
                 }
             } catch (error) {
                 console.error("Failed to fetch tutor:", error);
@@ -203,11 +221,11 @@ const TutorDetails = () => {
         setCancellingRequest(true);
         try {
             await api.delete(`/api/hire-requests/${existingRequest._id}`);
-            toast.success('Hire request cancelled');
+            toast.success(t('tutorDetails.toast_hire_cancelled'));
             setExistingRequest(null);
             setIsStatusModalOpen(false);
         } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to cancel request');
+            toast.error(err.response?.data?.error || t('tutorDetails.toast_cancel_failed'));
         } finally {
             setCancellingRequest(false);
         }
@@ -236,7 +254,7 @@ const TutorDetails = () => {
                 receiverId: tutor._id,
                 text: messageText
             });
-            toast.success('Message sent successfully!');
+            toast.success(t('tutorDetails.toast_message_sent'));
             setIsMessageModalOpen(false);
             setMessageText('');
             
@@ -251,7 +269,7 @@ const TutorDetails = () => {
             
         // eslint-disable-next-line no-unused-vars
         } catch (err) {
-            toast.error('Failed to send message');
+            toast.error(t('tutorDetails.toast_message_failed'));
         } finally {
             setSendingMessage(false);
         }
@@ -259,6 +277,17 @@ const TutorDetails = () => {
 
     const handleSave = async () => {
         if (!user) {
+            // Anonymous: toggle the device-local interest list, then prompt login.
+            if (tutor?._id) {
+                const wasSaved = hasAnonBookmark("tutor", tutor._id);
+                if (wasSaved) {
+                    removeAnonBookmark("tutor", tutor._id);
+                    setIsSaved(false);
+                } else {
+                    addAnonBookmark("tutor", tutor._id);
+                    setIsSaved(true);
+                }
+            }
             setShowLoginModal(true);
             return;
         }
@@ -267,22 +296,47 @@ const TutorDetails = () => {
             if (isSaved) {
                 await api.delete(`/api/bookmarks/${tutor._id}`);
                 setIsSaved(false);
-                toast.success('Tutor removed from saved');
+                toast.success(t('tutorDetails.toast_removed_saved'));
             } else {
                 await api.post(`/api/bookmarks/${tutor._id}`);
                 setIsSaved(true);
-                toast.success('Tutor saved');
+                toast.success(t('tutorDetails.toast_saved'));
             }
         // eslint-disable-next-line no-unused-vars
         } catch (err) {
-            toast.error('Failed to save tutor');
+            toast.error(t('tutorDetails.toast_save_failed'));
+        }
+    };
+
+    const handleSubmitReport = async (e) => {
+        e.preventDefault();
+        if (!user) { setShowLoginModal(true); return; }
+        if (!reportReason) {
+            toast.error(t('tutorDetails.report_reason_required'));
+            return;
+        }
+        setSubmittingReport(true);
+        try {
+            await api.post('/api/v1/moderation/reports', {
+                reportedId: tutor._id,
+                reasonCategory: reportReason,
+                description: reportDescription,
+            });
+            toast.success(t('tutorDetails.report_submitted'));
+            setIsReportModalOpen(false);
+            setReportReason('');
+            setReportDescription('');
+        } catch (err) {
+            toast.error(err.response?.data?.error || t('tutorDetails.report_failed'));
+        } finally {
+            setSubmittingReport(false);
         }
     };
 
     const handleHireRequest = async (e) => {
         e.preventDefault();
         if (!hireMessage.trim()) {
-            toast.error('Please provide a message for your hire request.');
+            toast.error(t('tutorDetails.toast_hire_message_required'));
             return;
         }
 
@@ -294,7 +348,7 @@ const TutorDetails = () => {
                 proposedRate: hireRate ? Number(hireRate) : undefined,
                 subjects: selectedSubjects
             });
-            toast.success('Hire request sent successfully!');
+            toast.success(t('tutorDetails.toast_hire_sent'));
             const created = res.data?.data || res.data;
             setExistingRequest({
                 _id: created._id,
@@ -309,7 +363,7 @@ const TutorDetails = () => {
             setHireRate('');
             setSelectedSubjects([]);
         } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to send hire request');
+            toast.error(err.response?.data?.error || t('tutorDetails.toast_hire_failed'));
         } finally {
             setSubmittingHire(false);
         }
@@ -318,7 +372,7 @@ const TutorDetails = () => {
     const handleSubmitReview = async (e) => {
         e.preventDefault();
         if (!newReview.comment.trim()) {
-            toast.error('Please write a review');
+            toast.error(t('tutorDetails.toast_review_required'));
             return;
         }
         setSubmitting(true);
@@ -330,10 +384,10 @@ const TutorDetails = () => {
             });
             setReviews([res.data, ...reviews]);
             setNewReview({ rating: 5, comment: '' });
-            toast.success('Review submitted');
+            toast.success(t('tutorDetails.toast_review_submitted'));
         // eslint-disable-next-line no-unused-vars
         } catch (err) {
-            toast.error('Failed to submit review');
+            toast.error(t('tutorDetails.toast_review_failed'));
         } finally {
             setSubmitting(false);
         }
@@ -344,35 +398,50 @@ const TutorDetails = () => {
     if (!tutor) {
         return (
             <div className="max-w-xl mx-auto px-4 py-20 text-center bg-background min-h-screen flex flex-col items-center justify-center">
-                <h2 className="text-xl font-heading text-foreground mb-2">Profile Not Found</h2>
-                <p className="text-sm text-muted-foreground mb-6">We couldn't find the tutor you are looking for.</p>
-                <Link to="/tutors" className="px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8]">
-                    Back to Tutors
+                <h2 className="text-xl font-heading text-foreground mb-2">{t('tutorDetails.not_found_title')}</h2>
+                <p className="text-sm text-muted-foreground mb-6">{t('tutorDetails.not_found_desc')}</p>
+                <Link to="/tutors" className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                    {t('tutorDetails.back_to_tutors')}
                 </Link>
             </div>
         );
     }
 
-    const firstName = tutor.displayName ? tutor.displayName.split(' ')[0] : 'Tutor';
+    const firstName = tutor.displayName ? tutor.displayName.split(' ')[0] : t('tutorDetails.default_name');
 
     return (
         <>
         <div className="bg-background min-h-screen py-8">
-            <SEO 
-                title={`Book ${tutor.displayName} - Expert Tutor`}
-                description={`Learn with ${tutor.displayName}, an experienced tutor in ${tutor.location}. Subject expertise: ${Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'Various'}.`}
+            <SEO
+                title={t('tutorDetails.seo_title', { name: tutor.displayName })}
+                description={t('tutorDetails.seo_desc', { name: tutor.displayName, location: tutor.location, subjects: Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'Various' })}
             />
+            <Helmet>
+                <script type="application/ld+json">
+                    {serializeJsonLd(breadcrumbJsonLd([
+                        { name: t('nav.find_tutors', 'Find Tutors'), url: '/tutors' },
+                        { name: tutor.displayName || 'Tutor', url: `/tutor/${tutor._id}` },
+                    ])).__html}
+                </script>
+            </Helmet>
             <div className="max-w-6xl mx-auto px-4">
-
+                <Breadcrumb
+                    className="mb-4"
+                    items={[
+                        { label: t('nav.home', 'Home'), to: '/' },
+                        { label: t('nav.find_tutors', 'Find Tutors'), to: '/tutors' },
+                        { label: tutor.displayName || 'Tutor' },
+                    ]}
+                />
 
                 <div className="space-y-4">
                     {/* Identity Card */}
-                    <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+                    <div className="bg-card p-6 rounded-lg border border-border shadow-sm">
                         <div className="flex flex-col lg:flex-row gap-6 lg:justify-between lg:items-center">
                             {/* Left Column: Avatar & Primary Content */}
                             <div className="flex flex-col sm:flex-row gap-6 flex-grow">
                                 <div className="relative shrink-0 mx-auto sm:mx-0">
-                                    <div className="size-28 rounded-2xl overflow-hidden border border-border">
+                                    <div className="size-28 rounded-lg overflow-hidden border border-border">
                                         <Avatar
                                             src={tutor.photoURL}
                                             alt={tutor.displayName || 'Tutor'}
@@ -386,11 +455,11 @@ const TutorDetails = () => {
                                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                                         <div className="text-center sm:text-left">
                                             <h1 className="text-xl sm:text-2xl font-heading text-foreground mb-1">
-                                                {tutor.displayName || 'Tutor'}
+                                                {tutor.displayName || t('tutorDetails.default_name')}
                                             </h1>
                                             <p className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-2">
-                                                <GraduationCap size={16} className="text-[#2563EB]" aria-hidden="true" />
-                                                {tutor.qualification || 'Verified Educator'}
+                                                <GraduationCap size={16} className="text-primary" aria-hidden="true" />
+                                                {tutor.qualification || t('tutorDetails.default_qualification')}
                                             </p>
                                         </div>
 
@@ -408,58 +477,65 @@ const TutorDetails = () => {
                                         <div className="flex flex-wrap items-center gap-2">
                                             <div className="flex-1 min-w-[120px]">
                                                 {!user ? (
-                                                    <Link to="/login" className="block w-full px-4 py-2 bg-[#2563EB] text-white hover:bg-[#1D4ED8] font-semibold rounded-xl text-xs sm:text-sm transition-all text-center shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-98">
-                                                        Login to Message
+                                                    <Link to="/login" className="block w-full px-4 py-2 bg-primary text-white hover:bg-primary/90 font-semibold rounded-xl text-xs sm:text-sm transition-all text-center shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-98">
+                                                        {t('tutorDetails.login_to_message')}
                                                     </Link>
                                                 ) : (
                                                     <button
                                                         id="contact-tutor-btn"
                                                         onClick={handleContact}
-                                                        className="w-full px-4 py-2 bg-[#2563EB] text-white font-semibold rounded-xl hover:bg-[#1D4ED8] flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
+                                                        className="w-full px-4 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
                                                     >
-                                                        <Send size={14} aria-hidden="true" /> Message
+                                                        <Send size={14} aria-hidden="true" /> {t('tutorDetails.message')}
                                                     </button>
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-[120px]">
                                                 {!user ? (
-                                                    <button onClick={() => setShowLoginModal(true)} className="w-full px-4 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950">
-                                                        Request to Hire
+                                                    <button onClick={() => setShowLoginModal(true)} className="w-full px-4 py-2 bg-success text-white font-semibold rounded-xl hover:bg-success flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background">
+                                                        {t('tutorDetails.request_to_hire')}
                                                     </button>
                                                 ) : existingRequest ? (
                                                     <button
                                                         onClick={() => setIsStatusModalOpen(true)}
-                                                        className="w-full px-4 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-semibold rounded-xl flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
+                                                        className="w-full px-4 py-2 bg-success/15 dark:bg-success/30 text-success dark:text-success/80 font-semibold rounded-xl flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
                                                     >
-                                                        <CheckCircle2 size={14} aria-hidden="true" /> Sent
+                                                        <CheckCircle2 size={14} aria-hidden="true" /> {t('tutorDetails.sent')}
                                                     </button>
                                                 ) : (
                                                     <button
                                                         onClick={() => setIsHireModalOpen(true)}
-                                                        className="w-full px-4 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
+                                                        className="w-full px-4 py-2 bg-success text-white font-semibold rounded-xl hover:bg-success flex items-center justify-center gap-1.5 text-xs sm:text-sm transition-all shadow-sm active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
                                                     >
-                                                        Request to Hire
+                                                        {t('tutorDetails.request_to_hire')}
                                                     </button>
                                                 )}
                                             </div>
                                             <button
                                                 onClick={handleSave}
-                                                title={isSaved ? 'Remove from saved' : 'Save Profile'}
-                                                aria-label={isSaved ? 'Remove from saved' : 'Save Profile'}
-                                                className={`p-2 border rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 ${
+                                                title={isSaved ? t('tutorDetails.remove_from_saved') : t('tutorDetails.save_profile')}
+                                                aria-label={isSaved ? t('tutorDetails.remove_from_saved') : t('tutorDetails.save_profile')}
+                                                className={`p-2 border rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 ${
                                                     isSaved
-                                                        ? 'border-red-200 text-red-500 bg-red-50 hover:bg-red-100 dark:bg-rose-950/30 dark:border-rose-900/50 dark:text-rose-400 dark:hover:bg-rose-900/50 dark:hover:text-rose-300'
+                                                        ? 'border-destructive/20 text-destructive bg-destructive/10 hover:bg-destructive/10 dark:bg-destructive/15 dark:border-destructive/30 dark:text-destructive/80 dark:hover:bg-destructive/20 dark:hover:text-destructive'
                                                         : 'border-border text-muted-foreground hover:bg-muted/50 dark:hover:bg-muted/20 dark:hover:text-foreground'
                                                 }`}
                                             >
-                                                <Heart size={16} className={isSaved ? 'fill-red-500 text-red-500' : ''} aria-hidden="true" />
+                                                <Heart size={16} className={isSaved ? 'fill-destructive text-destructive' : ''} aria-hidden="true" />
                                             </button>
                                             <WhatsAppShareButton 
                                                 tutor={tutor} 
-                                                className="p-2 border rounded-xl shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 hover:bg-muted/50 dark:hover:bg-muted/20 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-600/30 dark:hover:border-emerald-500/30" 
+                                                className="p-2 border rounded-xl shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background hover:bg-muted/50 dark:hover:bg-muted/20 hover:text-success dark:hover:text-success hover:border-success/30 dark:hover:border-success/30" 
                                                 variant="outline" 
                                                 iconOnly={true} 
                                             />
+                                            <button
+                                                onClick={() => setIsReportModalOpen(true)}
+                                                className="text-[11px] font-semibold text-muted-foreground hover:text-destructive underline-offset-2 hover:underline px-1 cursor-pointer transition-colors"
+                                                aria-label={t('tutorDetails.report')}
+                                            >
+                                                {t('tutorDetails.report')}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -468,26 +544,26 @@ const TutorDetails = () => {
                             {/* stats Column with 2x2 grid */}
                             <div className="lg:w-80 lg:shrink-0 pt-6 lg:pt-0 border-t lg:border-t-0 border-border lg:pl-6">
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Monthly Fee</p>
-                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold">৳{tutor.expectedSalary || 'Negotiable'}</p>
+                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-lg transition-all duration-300 hover:border-primary/20">
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('tutorDetails.monthly_fee')}</p>
+                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold">৳{tutor.expectedSalary || t('tutorDetails.negotiable')}</p>
                                     </div>
-                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Experience</p>
-                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold truncate" title={tutor.experience}>{tutor.experience || 'Not specified'}</p>
+                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-lg transition-all duration-300 hover:border-primary/20">
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('tutorDetails.experience')}</p>
+                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold truncate" title={tutor.experience}>{tutor.experience || t('tutorDetails.not_specified')}</p>
                                     </div>
-                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Rating</p>
+                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-lg transition-all duration-300 hover:border-primary/20">
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('tutorDetails.rating')}</p>
                                         <div className="flex items-center gap-1">
-                                            <p className="text-base sm:text-lg font-heading text-foreground font-bold">{tutor.ratings > 0 ? tutor.ratings : 'New'}</p>
-                                            <Star size={14} className="fill-amber-400 text-amber-400" aria-hidden="true" />
+                                            <p className="text-base sm:text-lg font-heading text-foreground font-bold">{tutor.ratings > 0 ? tutor.ratings : t('tutorDetails.new')}</p>
+                                            <Star size={14} className="fill-warning text-warning" aria-hidden="true" />
                                         </div>
                                     </div>
-                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-2xl transition-all duration-300 hover:border-primary/20">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Location</p>
-                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold truncate flex items-center gap-1" title={tutor.location || 'N/A'}>
-                                            <MapPin size={14} className="text-[#2563EB] shrink-0" aria-hidden="true" />
-                                            <span>{(tutor.location || 'N/A').split(',')[0]}</span>
+                                    <div className="bg-muted/40 dark:bg-muted/15 border border-border/50 p-3.5 rounded-lg transition-all duration-300 hover:border-primary/20">
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{t('tutorDetails.location')}</p>
+                                        <p className="text-base sm:text-lg font-heading text-foreground font-bold truncate flex items-center gap-1" title={tutor.location || t('tutorDetails.na')}>
+                                            <MapPin size={14} className="text-primary shrink-0" aria-hidden="true" />
+                                            <span>{(tutor.location || t('tutorDetails.na')).split(',')[0]}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -497,9 +573,9 @@ const TutorDetails = () => {
 
                     {/* Subjects & Availability */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-card p-6 rounded-2xl border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
+                        <div className="bg-card p-6 rounded-lg border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
                             <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
-                                <Award size={14} className="text-[#2563EB]" aria-hidden="true" /> Subjects
+                                <Award size={14} className="text-primary" aria-hidden="true" /> {t('tutorDetails.subjects')}
                             </h2>
                             <div className="flex flex-wrap gap-2">
                                 {Array.isArray(tutor.subjects) ? tutor.subjects.map((subject, idx) => (
@@ -507,14 +583,14 @@ const TutorDetails = () => {
                                         {subject}
                                     </span>
                                 )) : (
-                                    <span className="text-muted-foreground text-xs">No subjects listed</span>
+                                    <span className="text-muted-foreground text-xs">{t('tutorDetails.no_subjects')}</span>
                                 )}
                             </div>
                         </div>
 
-                        <div className="bg-card p-6 rounded-2xl border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
+                        <div className="bg-card p-6 rounded-lg border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
                             <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
-                                <Calendar size={14} className="text-[#2563EB]" aria-hidden="true" /> Availability
+                                <Calendar size={14} className="text-primary" aria-hidden="true" /> {t('tutorDetails.availability')}
                             </h2>
                             <div className="flex flex-wrap gap-2">
                                 {Array.isArray(tutor.availableDays) ? tutor.availableDays.map((day, idx) => (
@@ -522,56 +598,60 @@ const TutorDetails = () => {
                                         {day}
                                     </span>
                                 )) : (
-                                    <span className="text-muted-foreground text-xs">Contact for availability</span>
+                                    <span className="text-muted-foreground text-xs">{t('tutorDetails.contact_availability')}</span>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {/* About Section */}
-                    <div className="bg-card p-6 rounded-2xl border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
-                        <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">About the Tutor</h2>
+                    <div className="bg-card p-6 rounded-lg border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
+                        <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">{t('tutorDetails.about_title')}</h2>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                            {tutor.displayName} is a qualified educator specialized in {Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'their field'}.
-                            With {tutor.experience || 'years'} of experience, they provide structured learning for students in {tutor.location || 'their area'}.
+                            {t('tutorDetails.about_p1', {
+                                name: tutor.displayName,
+                                subjects: Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : t('tutorDetails.their_field'),
+                                experience: tutor.experience || t('tutorDetails.years'),
+                                location: tutor.location || t('tutorDetails.their_area'),
+                            })}
                         </p>
                         <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                            Committed to academic excellence and student growth, {firstName} focuses on building strong conceptual foundations.
+                            {t('tutorDetails.about_p2', { firstName })}
                         </p>
                     </div>
 
                     {/* Reviews Section */}
-                    <div className="bg-card p-6 rounded-2xl border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
+                    <div className="bg-card p-6 rounded-lg border border-border/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/10">
                         <h3 className="text-lg font-heading mb-4 flex items-center gap-2">
-                            Reviews ({reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : '0'})
+                            {t('tutorDetails.reviews_title', { count: reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : '0' })}
                         </h3>
-                        
+
                         {reviews.length > 0 ? (
                             <div className="space-y-4">
                                 {reviews.map(review => (
                                     <div key={review._id} className="p-4 border border-border/60 rounded-xl bg-muted/20">
                                         <div className="flex items-center gap-2">
                                             <span className="font-medium text-foreground truncate max-w-[140px] sm:max-w-none" title={review.studentEmail}>{review.studentEmail}</span>
-                                            <span className="text-amber-500" aria-label={`${review.rating} out of 5 stars`}>{'★'.repeat(review.rating)}</span>
+                                            <span className="text-warning" aria-label={t('tutorDetails.stars_aria', { rating: review.rating })}>{'★'.repeat(review.rating)}</span>
                                         </div>
                                         <p className="text-muted-foreground mt-2 text-sm">{review.comment}</p>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-muted-foreground text-sm">No reviews yet.</p>
+                            <p className="text-muted-foreground text-sm">{t('tutorDetails.no_reviews')}</p>
                         )}
 
                         {user && canReview ? (
                             <form onSubmit={handleSubmitReview} className="mt-6 pt-4 border-t border-border">
-                                <h4 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">Write a Review</h4>
+                                <h4 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">{t('tutorDetails.write_review')}</h4>
                                 <div className="flex items-center gap-2 mb-3">
-                                    <label className="text-sm text-muted-foreground" htmlFor="review-rating-select">Rating:</label>
+                                    <label className="text-sm text-muted-foreground" htmlFor="review-rating-select">{t('tutorDetails.rating_label')}</label>
                                     <select 
                                         id="review-rating-select"
                                         value={newReview.rating} 
                                         onChange={(e) => setNewReview({...newReview, rating: parseInt(e.target.value)})}
-                                        className="border border-border rounded-lg px-2 py-1 text-sm bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 cursor-pointer"
+                                        className="border border-border rounded-lg px-2 py-1 text-sm bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background cursor-pointer"
                                     >
                                         {[1,2,3,4,5].map(n => (
                                             <option key={n} value={n}>{n} ★</option>
@@ -580,23 +660,23 @@ const TutorDetails = () => {
                                 </div>
                                 <textarea
                                     value={newReview.comment}
-                                    aria-label="Review Comments"
+                                    aria-label={t('tutorDetails.review_comments_aria')}
                                     onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
-                                    placeholder="Write your review…"
-                                    className="w-full border border-border rounded-xl p-3 text-sm mb-3 bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
+                                    placeholder={t('tutorDetails.review_placeholder')}
+                                    className="w-full border border-border rounded-xl p-3 text-sm mb-3 bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
                                     rows={3}
                                 />
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={submitting}
-                                    className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary/95 disabled:opacity-50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer"
+                                    className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary/95 disabled:opacity-50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 cursor-pointer"
                                 >
-                                    {submitting ? 'Submitting…' : 'Submit Review'}
+                                    {submitting ? t('tutorDetails.submitting') : t('tutorDetails.submit_review')}
                                 </button>
                             </form>
                         ) : user && (
                             <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground">
-                                You can only write a review after completing a session with this tutor.
+                                {t('tutorDetails.review_restriction')}
                             </div>
                         )}
                     </div>
@@ -607,10 +687,10 @@ const TutorDetails = () => {
                             <div className="mt-8 pt-6 border-t border-border">
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
-                                        <h2 className="text-lg font-heading text-foreground">Similar Tutors</h2>
+                                        <h2 className="text-lg font-heading text-foreground">{t('tutorDetails.similar_tutors')}</h2>
                                     </div>
-                                    <Link to="/tutors" className="text-sm text-[#2563EB] hover:underline flex items-center gap-1">
-                                        View All <ArrowRight size={14} />
+                                    <Link to="/tutors" className="text-sm text-primary hover:underline flex items-center gap-1">
+                                        {t('tutorDetails.view_all')} <ArrowRight size={14} />
                                     </Link>
                                 </div>
 
@@ -627,35 +707,35 @@ const TutorDetails = () => {
             {/* Message Modal */}
             {isMessageModalOpen && (
                 <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-card w-full max-w-md rounded-2xl border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                    <div className="bg-card w-full max-w-md rounded-lg border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-heading text-foreground">Message {firstName}</h3>
-                            <button onClick={() => setIsMessageModalOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
+                            <h3 className="text-lg font-heading text-foreground">{t('tutorDetails.message_title', { firstName })}</h3>
+                            <button onClick={() => setIsMessageModalOpen(false)} aria-label={t('tutorDetails.close')} className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
                                 &times;
                             </button>
                         </div>
                         <form onSubmit={handleSendMessage}>
                             <textarea
                                 value={messageText}
-                                aria-label={`Message to ${firstName}`}
+                                aria-label={t('tutorDetails.message_aria', { firstName })}
                                 onChange={(e) => setMessageText(e.target.value)}
-                                placeholder={`Hi ${firstName}, I'd like to talk about…`}
-                                className="w-full h-32 bg-background border border-border rounded-xl p-3 text-sm text-foreground mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 resize-none transition-all"
+                                placeholder={t('tutorDetails.message_placeholder', { firstName })}
+                                className="w-full h-32 bg-background border border-border rounded-xl p-3 text-sm text-foreground mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background resize-none transition-all"
                             />
                             <div className="flex gap-3 justify-end">
                                 <button
                                     type="button"
                                     onClick={() => setIsMessageModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer"
+                                    className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 cursor-pointer"
                                 >
-                                    Cancel
+                                    {t('tutorDetails.cancel')}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={sendingMessage || !messageText.trim()}
-                                    className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary/95 disabled:opacity-50 flex items-center gap-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 shadow-sm cursor-pointer"
+                                    className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary/95 disabled:opacity-50 flex items-center gap-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 shadow-sm cursor-pointer"
                                 >
-                                    {sendingMessage ? 'Sending…' : <><Send size={14} aria-hidden="true" /> Send Message</>}
+                                    {sendingMessage ? t('tutorDetails.sending') : <><Send size={14} aria-hidden="true" /> {t('tutorDetails.send_message')}</>}
                                 </button>
                             </div>
                         </form>
@@ -666,10 +746,10 @@ const TutorDetails = () => {
             {/* Hire Request Modal */}
             {isHireModalOpen && (
                 <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-card w-full max-w-md rounded-2xl border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                    <div className="bg-card w-full max-w-md rounded-lg border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-heading text-foreground">Request to Hire {firstName}</h3>
-                            <button onClick={() => setIsHireModalOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
+                            <h3 className="text-lg font-heading text-foreground">{t('tutorDetails.hire_title', { firstName })}</h3>
+                            <button onClick={() => setIsHireModalOpen(false)} aria-label={t('tutorDetails.close')} className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
                                 &times;
                             </button>
                         </div>
@@ -677,7 +757,7 @@ const TutorDetails = () => {
                             <div className="space-y-4">
                                 {/* Subject Selector */}
                                 <div>
-                                    <label className="block text-xs font-semibold text-muted-foreground mb-2">Subject(s)</label>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-2">{t('tutorDetails.subject_s')}</label>
                                     <div className="flex flex-wrap gap-2">
                                         {Array.isArray(tutor.subjects) && tutor.subjects.map((subject) => (
                                             <button
@@ -692,7 +772,7 @@ const TutorDetails = () => {
                                                 }}
                                                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                                                     selectedSubjects.includes(subject)
-                                                        ? 'bg-emerald-600 text-white'
+                                                        ? 'bg-success text-white'
                                                         : 'bg-background text-muted-foreground hover:bg-muted border border-border'
                                                 }`}
                                             >
@@ -704,31 +784,31 @@ const TutorDetails = () => {
 
                                 {/* Message */}
                                 <div>
-                                    <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="hire-message-textarea">Message</label>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="hire-message-textarea">{t('tutorDetails.message_label')}</label>
                                     <textarea
                                         id="hire-message-textarea"
                                         value={hireMessage}
                                         onChange={(e) => setHireMessage(e.target.value)}
-                                        placeholder={`Hi ${firstName}, I'd like to hire you for…`}
+                                        placeholder={t('tutorDetails.hire_placeholder', { firstName })}
                                         maxLength={500}
-                                        className="w-full h-24 bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 resize-none transition-all"
+                                        className="w-full h-24 bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background resize-none transition-all"
                                     />
-                                    <p className="text-[10px] text-muted-foreground mt-1 text-right">{hireMessage.length}/500</p>
+                                    <p className="text-[11px] text-muted-foreground mt-1 text-right">{hireMessage.length}/500</p>
                                 </div>
 
                                 {/* Proposed Rate */}
                                 <div>
-                                    <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="proposed-rate-input">Proposed Monthly Rate (৳)</label>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-1" htmlFor="proposed-rate-input">{t('tutorDetails.proposed_rate')}</label>
                                     <input
                                         id="proposed-rate-input"
                                         type="number"
                                         value={hireRate}
                                         onChange={(e) => setHireRate(e.target.value)}
-                                        placeholder={tutor.expectedSalary ? `e.g. ${tutor.expectedSalary}` : 'e.g. 5000'}
-                                        className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 transition-all"
+                                        placeholder={tutor.expectedSalary ? `e.g. ${tutor.expectedSalary}` : t('tutorDetails.rate_placeholder')}
+                                        className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background transition-all"
                                     />
                                     {tutor.expectedSalary && (
-                                        <p className="text-[10px] text-muted-foreground mt-1">Tutor's listed rate: ৳{tutor.expectedSalary.toLocaleString()}/mo</p>
+                                        <p className="text-[11px] text-muted-foreground mt-1">{t('tutorDetails.listed_rate', { rate: tutor.expectedSalary.toLocaleString() })}</p>
                                     )}
                                 </div>
                             </div>
@@ -736,16 +816,16 @@ const TutorDetails = () => {
                                 <button
                                     type="button"
                                     onClick={() => setIsHireModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer"
+                                    className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 cursor-pointer"
                                 >
-                                    Cancel
+                                    {t('tutorDetails.cancel')}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submittingHire || !hireMessage.trim()}
-                                    className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 shadow-sm cursor-pointer"
+                                    className="px-5 py-2.5 bg-success text-white text-sm font-semibold rounded-xl hover:bg-success disabled:opacity-50 flex items-center gap-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 shadow-sm cursor-pointer"
                                 >
-                                    {submittingHire ? 'Sending…' : 'Send Request'}
+                                    {submittingHire ? t('tutorDetails.sending') : t('tutorDetails.send_request')}
                                 </button>
                             </div>
                         </form>
@@ -757,27 +837,27 @@ const TutorDetails = () => {
         {/* Hire Request Status Modal */}
         {isStatusModalOpen && existingRequest && (
             <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="bg-card w-full max-w-sm rounded-2xl border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                <div className="bg-card w-full max-w-sm rounded-lg border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-heading text-foreground">Hire Request Sent</h3>
-                        <button onClick={() => setIsStatusModalOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
+                        <h3 className="text-lg font-heading text-foreground">{t('tutorDetails.hire_request_sent')}</h3>
+                        <button onClick={() => setIsStatusModalOpen(false)} aria-label={t('tutorDetails.close')} className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
                             &times;
                         </button>
                     </div>
                     <div className="space-y-3 text-sm">
-                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <div className="flex items-center gap-2 text-success dark:text-success font-semibold">
                             <CheckCircle2 size={16} aria-hidden="true" />
-                            <span>Status: {existingRequest.status === 'countered' ? 'Countered by Tutor' : 'Pending'}</span>
+                            <span>{t('tutorDetails.status_label')}: {existingRequest.status === 'countered' ? t('tutorDetails.status_countered') : t('tutorDetails.status_pending')}</span>
                         </div>
                         {existingRequest.proposedRate && (
                             <div className="flex justify-between text-muted-foreground">
-                                <span>Your Proposed Rate</span>
+                                <span>{t('tutorDetails.your_proposed_rate')}</span>
                                 <span className="font-semibold text-foreground">৳{existingRequest.proposedRate.toLocaleString()}/mo</span>
                             </div>
                         )}
                         {existingRequest.subjects?.length > 0 && (
                             <div>
-                                <span className="text-muted-foreground">Subjects</span>
+                                <span className="text-muted-foreground">{t('tutorDetails.subjects')}</span>
                                 <div className="flex flex-wrap gap-1.5 mt-1">
                                     {existingRequest.subjects.map((s, i) => (
                                         <span key={i} className="px-2 py-0.5 bg-muted rounded-md text-xs font-medium text-foreground">{s}</span>
@@ -790,23 +870,80 @@ const TutorDetails = () => {
                         <button
                             onClick={handleCancelRequest}
                             disabled={cancellingRequest}
-                            className="flex-1 px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-all flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer disabled:opacity-50"
+                            className="flex-1 px-4 py-2 text-sm font-semibold text-destructive dark:text-destructive border border-destructive/20 dark:border-destructive/40 hover:bg-destructive/10 dark:hover:bg-destructive/15 rounded-xl transition-all flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 cursor-pointer disabled:opacity-50"
                         >
                             <Trash2 size={14} aria-hidden="true" />
-                            {cancellingRequest ? 'Cancelling…' : 'Cancel Request'}
+                            {cancellingRequest ? t('tutorDetails.cancelling') : t('tutorDetails.cancel_request')}
                         </button>
                         <button
                             onClick={() => setIsStatusModalOpen(false)}
-                            className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 active:scale-95 cursor-pointer"
+                            className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 cursor-pointer"
                         >
-                            Close
+                            {t('tutorDetails.close')}
                         </button>
                     </div>
                 </div>
             </div>
         )}
 
-        <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="save this tutor" />
+        {/* Report Tutor Modal */}
+        {isReportModalOpen && (
+            <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="bg-card w-full max-w-md rounded-lg border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-heading text-foreground">{t('tutorDetails.report_title', { name: tutor?.displayName || '' })}</h3>
+                        <button onClick={() => setIsReportModalOpen(false)} aria-label={t('tutorDetails.close')} className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
+                            &times;
+                        </button>
+                    </div>
+                    <form onSubmit={handleSubmitReport}>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">
+                            {t('tutorDetails.report_reason')}
+                        </label>
+                        <select
+                            value={reportReason}
+                            onChange={(e) => setReportReason(e.target.value)}
+                            aria-label={t('tutorDetails.report_reason')}
+                            className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
+                        >
+                            <option value="">{t('tutorDetails.report_select')}</option>
+                            <option value="harassment">{t('tutorDetails.report_harassment')}</option>
+                            <option value="fraud">{t('tutorDetails.report_fraud')}</option>
+                            <option value="inappropriate">{t('tutorDetails.report_inappropriate')}</option>
+                            <option value="other">{t('tutorDetails.report_other')}</option>
+                        </select>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">
+                            {t('tutorDetails.report_description')}
+                        </label>
+                        <textarea
+                            value={reportDescription}
+                            onChange={(e) => setReportDescription(e.target.value)}
+                            placeholder={t('tutorDetails.report_desc_placeholder')}
+                            aria-label={t('tutorDetails.report_description')}
+                            className="w-full h-24 bg-background border border-border rounded-xl p-3 text-sm text-foreground mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background resize-none"
+                        />
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                type="button"
+                                onClick={() => setIsReportModalOpen(false)}
+                                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 cursor-pointer"
+                            >
+                                {t('tutorDetails.cancel')}
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={submittingReport || !reportReason}
+                                className="px-5 py-2.5 bg-destructive text-white text-sm font-semibold rounded-xl hover:bg-destructive/90 disabled:opacity-50 flex items-center gap-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 shadow-sm cursor-pointer"
+                            >
+                                {submittingReport ? t('tutorDetails.reporting') : t('tutorDetails.submit_report')}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        )}
+
+        <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action={t('tutorDetails.save_this_tutor')} />
         </>
     );
 };

@@ -10,7 +10,7 @@ export default function ComingSoon({ title, subtitle }) {
     <div className="space-y-6 animate-fade-in-up">
       <DashboardPageHeader title={title} subtitle={subtitle} />
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="size-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+        <div className="size-16 rounded-lg bg-muted flex items-center justify-center mb-4">
           <Construction className="size-8 text-muted-foreground" />
         </div>
         <h3 className="text-lg font-heading font-bold text-foreground mb-1">

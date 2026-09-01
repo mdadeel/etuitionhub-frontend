@@ -155,7 +155,7 @@ const DashboardLayout = ({ children }) => {
     }
 
     return (
-      <nav className="hidden md:flex items-center gap-1.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+      <nav className="hidden md:flex items-center gap-1.5 text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
         {items.map((item, idx) => (
           <Fragment key={idx}>
             {idx > 0 && <ChevronRight size={10} />}
@@ -234,7 +234,7 @@ const DashboardLayout = ({ children }) => {
 
       <main className="flex-1 h-full overflow-x-hidden relative flex flex-col safe-bottom overflow-y-auto">
         {/* Dashboard Top Navbar */}
-        <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
+        <header className="sticky top-0 z-50 bg-card border-b border-border">
           <div className="flex items-center justify-between h-14 px-6">
             {/* Left: Mobile menu toggle + Greeting + Breadcrumb */}
             <div className="flex items-center gap-4">

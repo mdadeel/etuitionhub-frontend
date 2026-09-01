@@ -26,7 +26,7 @@ const OrgBatches = () => {
   }, [orgId]);
 
   const getStatusColor = (s) => ({
-    active: 'bg-green-100 text-green-700', upcoming: 'bg-blue-100 text-blue-700',
+    active: 'bg-green-100 text-green-700', upcoming: 'bg-primary/10 text-primary',
     completed: 'bg-gray-100 text-gray-700', cancelled: 'bg-red-100 text-red-700'
   }[s] || 'bg-gray-100 text-gray-700');
 

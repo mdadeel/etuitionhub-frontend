@@ -93,7 +93,7 @@ const OrgTutors = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center justify-between">
                   <span>{tutor.userId?.displayName || 'Tutor'}</span>
-                  <span className="text-xs font-normal px-2 py-1 bg-blue-100 text-blue-700 rounded-full">Teacher</span>
+                  <span className="text-xs font-normal px-2 py-1 bg-primary/10 text-primary rounded-full">Teacher</span>
                 </CardTitle>
                 <CardDescription className="flex items-center gap-1">
                   <Mail className="h-3 w-3" /> {tutor.userId?.email}

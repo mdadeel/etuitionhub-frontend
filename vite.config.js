@@ -11,17 +11,18 @@ const __dirname = path.dirname(__filename)
 // https://vite.dev/config/
 export default defineConfig({
   build: {
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // ponytail: markdown/katex/highlighter ride in this lazy chunk via their AiAssistant importers;
-          // a separate vendor-ai-md split is a no-op under rolldown-vite (merged back into sole importer).
-          if (id.includes('pages/AiAssistant') || id.includes('components/AiAssistant')) return 'ai-assistant';
+          // ponytail: pages are already lazy-loaded; let Vite split components naturally
+          if (id.includes('pages/AiAssistant')) return 'ai-assistant';
           if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/') || id.includes('node_modules/react-router')) return 'vendor-react';
           if (id.includes('node_modules/@tanstack/react-query')) return 'vendor-query';
           if (id.includes('node_modules/lucide-react')) return 'vendor-icons';
-          if (id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge') || id.includes('node_modules/class-variance-authority')) return 'vendor-utils';
+          if (id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge') || id.includes('node_modules/class-variance-authority') || id.includes('node_modules/zustand')) return 'vendor-utils';
           if (id.includes('node_modules/socket.io')) return 'vendor-socket';
+          if (id.includes('node_modules/simple-peer') || id.includes('node_modules/wrtc')) return 'vendor-webrtc';
           if (id.includes('node_modules/recharts')) return 'vendor-charts';
           if (id.includes('node_modules/react-hook-form') || id.includes('node_modules/react-hot-toast')) return 'vendor-forms';
           if (id.includes('node_modules/firebase')) return 'vendor-firebase';

@@ -11,7 +11,7 @@ import { Calendar, Clock, Video, MapPin, Loader2, Users } from 'lucide-react';
 const STATUS_CONFIG = {
   pending: { label: 'Pending', variant: 'outline', className: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
   accepted: { label: 'Confirmed', variant: 'outline', className: 'bg-green-500/10 text-green-600 border-green-500/20' },
-  completed: { label: 'Completed', variant: 'outline', className: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
+  completed: { label: 'Completed', variant: 'outline', className: 'bg-primary/10 text-primary border-primary/20' },
   cancelled: { label: 'Cancelled', variant: 'outline', className: 'bg-red-500/10 text-red-600 border-red-500/20' },
 };
 

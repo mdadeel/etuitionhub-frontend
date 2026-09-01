@@ -206,7 +206,7 @@ const ImportantMails = () => {
                             Compose
                         </Button>
                     )}
-                    <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                    <div className="size-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
                         <Mail size={24} />
                     </div>
                 </div>
@@ -247,7 +247,7 @@ const ImportantMails = () => {
 
             {/* Compose Form */}
             {showCompose && isAdmin && (
-                <div className="mb-5 p-5 border border-primary/20 rounded-2xl bg-primary/5 space-y-4">
+                <div className="mb-5 p-5 border border-primary/20 rounded-lg bg-primary/5 space-y-4">
                     <div className="flex items-center justify-between">
                         <p className="text-xs font-label font-semibold uppercase tracking-wider text-primary">Compose Mail</p>
                         <label className="flex items-center gap-2 cursor-pointer">
@@ -361,7 +361,7 @@ const ImportantMails = () => {
                     <Loader2 size={20} className="animate-spin text-muted-foreground" />
                 </div>
             ) : mails.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground bg-background rounded-2xl border border-border">
+                <div className="py-12 text-center text-muted-foreground bg-background rounded-lg border border-border">
                     <MailOpen size={32} className="mx-auto mb-3 opacity-20" />
                     <p className="text-sm font-medium text-foreground">
                         {mailTab === 'sent' ? 'No sent mails' : 'No received mails'}
@@ -378,7 +378,7 @@ const ImportantMails = () => {
 
                         if (isPendingDelete) {
                             return (
-                                <div key={mail._id} className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/30 rounded-2xl">
+                                <div key={mail._id} className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/30 rounded-lg">
                                     <span className="text-sm text-red-600 dark:text-red-400 font-medium flex items-center gap-2">
                                         <AlertCircle size={16} /> Mail marked for deletion (30s remaining)
                                     </span>
@@ -403,7 +403,7 @@ const ImportantMails = () => {
                                     setExpandedMail(isExpanded ? null : mail._id);
                                 }}
                                 className={cn(
-                                    "border rounded-2xl transition-all relative group overflow-hidden cursor-pointer",
+                                    "border rounded-lg transition-all relative group overflow-hidden cursor-pointer",
                                     mailTab === 'received' && !mail.isRead
                                         ? "bg-primary/5 border-primary/20 shadow-sm"
                                         : "bg-card border-border hover:border-border/80"
@@ -425,7 +425,7 @@ const ImportantMails = () => {
                                                     </h3>
                                                     <span className={cn(
                                                         "text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider",
-                                                        mail.type === 'admin' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                                                        mail.type === 'admin' && "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
                                                         mail.type === 'system' && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
                                                         mail.type === 'promo' && "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
                                                         mail.type === 'booking' && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",

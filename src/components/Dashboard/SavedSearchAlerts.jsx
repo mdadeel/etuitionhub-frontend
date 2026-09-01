@@ -16,7 +16,7 @@ const SavedSearchAlerts = () => {
     const fetchAlerts = async () => {
         try {
             const res = await api.get('/api/search-alerts');
-            setAlerts(res.data);
+            setAlerts(res.data?.data || []);
         } catch (error) {
             console.error('Failed to fetch search alerts', error);
             toast.error('Could not load saved searches');
@@ -69,11 +69,11 @@ const SavedSearchAlerts = () => {
                         <Skeleton className="h-5 w-32 rounded-lg" />
                         <Skeleton className="h-3 w-48 rounded-lg" />
                     </div>
-                    <Skeleton className="size-12 rounded-2xl" />
+                    <Skeleton className="size-12 rounded-lg" />
                 </div>
                 <div className="space-y-3">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="flex items-center gap-3 p-4 border border-border/50 rounded-2xl">
+                        <div key={i} className="flex items-center gap-3 p-4 border border-border/50 rounded-lg">
                             <Skeleton className="size-6 rounded-lg shrink-0" />
                             <div className="flex-1 space-y-1.5">
                                 <LineSkeleton width="2/3" className="h-4" />
@@ -94,13 +94,13 @@ const SavedSearchAlerts = () => {
                     <h2 className="text-xl font-bold text-foreground">Saved Searches</h2>
                     <p className="text-sm text-muted-foreground mt-1">Manage your saved search alerts.</p>
                 </div>
-                <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                <div className="size-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
                     <Bookmark size={24} />
                 </div>
             </div>
 
             {alerts.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground bg-background rounded-2xl border border-border">
+                <div className="py-12 text-center text-muted-foreground bg-background rounded-lg border border-border">
                     <BookmarkCheck size={32} className="mx-auto mb-3 opacity-20" />
                     <p className="text-sm font-medium text-foreground">No saved searches</p>
                     <p className="text-xs mt-1">Save a search from the search page to get started.</p>
@@ -112,7 +112,7 @@ const SavedSearchAlerts = () => {
 
                         if (isPendingDelete) {
                             return (
-                                <div key={alert._id} className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-2xl">
+                                <div key={alert._id} className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-lg">
                                     <span className="text-sm text-red-600 font-medium flex items-center gap-2">
                                         <AlertCircle size={16} /> Search alert marked for deletion (30s remaining)
                                     </span>
@@ -133,7 +133,7 @@ const SavedSearchAlerts = () => {
                             <div
                                 key={alert._id}
                                 className={cn(
-                                    "p-5 border rounded-2xl transition-all relative group overflow-hidden",
+                                    "p-5 border rounded-lg transition-all relative group overflow-hidden",
                                     "bg-card border-border"
                                 )}
                             >

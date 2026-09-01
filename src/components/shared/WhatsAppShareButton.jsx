@@ -1,7 +1,7 @@
 import { Share2 } from 'lucide-react';
 
 const WhatsAppShareButton = ({ tutor, className = '', variant = 'default', iconOnly = false }) => {
-  const url = `${window.location.origin}/tutors/${tutor?._id}`;
+  const url = `${window.location.origin}/tutor/${tutor?._id}`;
   const text = encodeURIComponent(
     `Check out ${tutor?.displayName || 'this tutor'} on eTuitionBD: ${url}`
   );

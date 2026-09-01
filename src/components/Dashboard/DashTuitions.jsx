@@ -219,7 +219,7 @@ const DashTuitions = () => {
                     },
                     {
                         key: 'salary',
-                        label: 'Yield',
+                        label: 'Fee',
                         align: 'center',
                         render: (val) => (
                             <span className="text-xs md:text-sm font-heading font-bold text-primary tabular-nums">৳{val}</span>

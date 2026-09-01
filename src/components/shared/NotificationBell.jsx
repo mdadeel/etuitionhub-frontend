@@ -51,6 +51,7 @@ const NotificationBell = () => {
     const {
         notifications,
         unreadCount,
+        refetch,
         markAsRead,
         markAllAsRead,
         deleteNotification,
@@ -112,7 +113,7 @@ const NotificationBell = () => {
                             e.stopPropagation();
                             handleAction(notif._id, action.action, action.link);
                         }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/95 text-[10px] font-bold tracking-wide transition-all shadow-sm active:scale-95"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/95 text-[11px] font-bold tracking-wide transition-all shadow-sm active:scale-95"
                     >
                         {action.label}
                         <ExternalLink size={10} />
@@ -150,7 +151,7 @@ const NotificationBell = () => {
                             )}>
                                 {notif.title}
                             </p>
-                            <span className="text-[9px] whitespace-nowrap text-muted-foreground mt-0.5">
+                            <span className="text-[11px] whitespace-nowrap text-muted-foreground mt-0.5">
                                 {formatRelativeTime(notif.createdAt)}
                             </span>
                         </div>
@@ -172,7 +173,7 @@ const NotificationBell = () => {
                         )}
                         <button
                             onClick={() => deleteNotification(notif._id)}
-                            className="p-1.5 border border-border rounded-lg bg-card text-muted-foreground hover:text-red-500 hover:border-red-500/20 transition-all active:scale-95 shadow-sm"
+                            className="p-1.5 border border-border rounded-lg bg-card text-muted-foreground hover:text-destructive hover:border-destructive/20 transition-all active:scale-95 shadow-sm"
                             title="Delete"
                         >
                             <Trash2 size={12} />
@@ -191,8 +192,12 @@ const NotificationBell = () => {
             <button
                 type="button"
                 onClick={() => {
-                    setIsOpen(!isOpen);
-                    if (!isOpen) setExpanded(false);
+                    const nextOpen = !isOpen;
+                    setIsOpen(nextOpen);
+                    if (nextOpen) {
+                        setExpanded(false);
+                        refetch(1);
+                    }
                 }}
                 className={cn(
                     "p-2 rounded-lg transition-all relative",
@@ -203,14 +208,14 @@ const NotificationBell = () => {
             >
                 <Bell size={20} className={cn(isOpen && "animate-pulse")} />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 rounded-full flex items-center justify-center text-[9px] font-bold bg-primary text-primary-foreground border border-background shadow-sm">
+                    <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 rounded-full flex items-center justify-center text-[11px] font-bold bg-primary text-primary-foreground border border-background shadow-sm">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] w-[360px] bg-card border border-border rounded-xl shadow-premium-lg z-50 animate-fade-in-up overflow-hidden">
+                <div className="absolute right-0 top-[calc(100%+8px)] w-[360px] bg-card border border-border rounded-xl z-50 animate-fade-in-up overflow-hidden">
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3.5 border-b border-border">
                         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">

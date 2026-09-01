@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback, Suspense, lazy } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -27,13 +28,13 @@ import SessionStatsCard from "./SessionStatsCard";
 const PostTuition = lazy(() => import("../../pages/PostTuition"));
  
 const tabs = [
-  { id: "overview", label: "Overview", icon: Activity },
-  { id: "post-job", label: "Post Job", icon: Plus },
-  { id: "my-jobs", label: "My Requests", icon: Database },
-  { id: "applications", label: "Applications", icon: FileText },
-  { id: "booked", label: "Engagements", icon: UserCheck },
-  { id: "payments", label: "Payments", icon: Banknote },
-  { id: "assignments", label: "Assignments", icon: Search },
+  { id: "overview", label: "overview", icon: Activity },
+  { id: "post-job", label: "post_job", icon: Plus },
+  { id: "my-jobs", label: "my_jobs", icon: Database },
+  { id: "applications", label: "applications", icon: FileText },
+  { id: "booked", label: "engagements", icon: UserCheck },
+  { id: "payments", label: "payments", icon: Banknote },
+  { id: "assignments", label: "assignments", icon: Search },
 ];
  
 /**
@@ -41,6 +42,7 @@ const tabs = [
  */
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
@@ -69,10 +71,10 @@ const StudentDashboard = () => {
       setMyTuitions(res.data || []);
     } catch (err) {
       console.error("Failed to fetch tuitions:", err);
-      toast.error("Failed to load your requests");
+      toast.error(t("student.load_requests_failed"));
       setMyTuitions([]);
     }
-  }, [user?.email]);
+  }, [user?.email, t]);
  
   // Fetch bookings for this student
   const fetchBookings = useCallback(async () => {
@@ -82,10 +84,10 @@ const StudentDashboard = () => {
       setBookings(res.data || []);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);
-      toast.error("Failed to load bookings");
+      toast.error(t("student.load_bookings_failed"));
       setBookings([]);
     }
-  }, [user?.email]);
+  }, [user?.email, t]);
  
   // Fetch applications for student's tuitions
   const fetchApplications = useCallback(async () => {
@@ -95,10 +97,10 @@ const StudentDashboard = () => {
       setApplications(res.data || []);
     } catch (err) {
       console.error("Failed to fetch applications:", err);
-      toast.error("Failed to load applications");
+      toast.error(t("student.load_applications_failed"));
       setApplications([]);
     }
-  }, [user?.email]);
+  }, [user?.email, t]);
  
   // Initial data fetch
   useEffect(() => {
@@ -134,37 +136,37 @@ const StudentDashboard = () => {
   const handleApprove = (id) => navigate(`/checkout/${id}`);
  
   const handleReject = async (id) => {
-    if (!confirm("Reject this application?")) return;
+    if (!confirm(t("student.confirm_reject"))) return;
     try {
       await api.patch(`/api/applications/${id}`, { status: "rejected" });
-      toast.success("Application rejected");
+      toast.success(t("student.app_rejected"));
       setApplications((prev) =>
         prev.map((a) => (a._id === id ? { ...a, status: "rejected" } : a)),
       );
     } catch {
-      toast.error("Failed to reject application");
+      toast.error(t("student.reject_failed"));
     }
   };
- 
+
   const handleDeleteTuition = async (tid) => {
-    if (!confirm("Delete this request?")) return;
+    if (!confirm(t("student.confirm_delete"))) return;
     try {
       await api.delete(`/api/tuitions/${tid}`);
-      toast.success("Request deleted");
+      toast.success(t("student.request_deleted"));
       await refreshData();
     } catch {
-      toast.error("Failed to delete request");
+      toast.error(t("student.delete_failed"));
     }
   };
  
   return (
     <div className="space-y-10 animate-in fade-in duration-700 animate-fade-in-up">
       <AppleHeader
-        title={`Hello, ${user?.displayName?.split(" ")[0]}`}
-        subtitle="Manage your tutoring requests and find the perfect match for your studies."
+        title={t("student.hello", { name: user?.displayName?.split(" ")[0] })}
+        subtitle={t("student.subtitle")}
         badge={
           <span className="px-3 py-1 text-xs font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20">
-            Student Dashboard
+            {t("student.dashboard_badge")}
           </span>
         }
       />
@@ -190,7 +192,7 @@ const StudentDashboard = () => {
                   activeTab === tab.id ? "text-primary" : "opacity-50"
                 }
               />
-              {tab.label}
+              {t(`student.tab_${tab.label}`)}
             </button>
           ))}
         </div>
@@ -216,14 +218,14 @@ const StudentDashboard = () => {
                 <Database size={24} />
               </div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">
-                Active Requests
+                {t("student.active_requests")}
               </p>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
                   {myTuitions.length}
                 </span>
                 <span className="text-xs font-semibold text-muted-foreground">
-                  Requests
+                  {t("student.requests")}
                 </span>
               </div>
             </Card>
@@ -233,14 +235,14 @@ const StudentDashboard = () => {
                 <FileText size={24} />
               </div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">
-                Tutor Applications
+                {t("student.tutor_applications")}
               </p>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
                   {applications.length}
                 </span>
                 <span className="text-xs font-semibold text-muted-foreground">
-                  Applications
+                  {t("student.applications")}
                 </span>
               </div>
             </Card>
@@ -253,14 +255,14 @@ const StudentDashboard = () => {
                 <UserCheck size={24} />
               </div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">
-                Engagements
+                {t("student.engagements")}
               </p>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
                   {bookings.filter((b) => b.isAccepted).length}
                 </span>
                 <span className="text-xs font-semibold text-muted-foreground">
-                  Sessions
+                  {t("student.sessions")}
                 </span>
               </div>
             </Card>
@@ -269,7 +271,7 @@ const StudentDashboard = () => {
         ))}
       {/* Post Job Tab */}
       {activeTab === "post-job" && (
-        <Suspense fallback={<div className="p-8 text-center text-muted-foreground text-sm italic">Loading...</div>}>
+        <Suspense fallback={<div className="p-8 text-center text-muted-foreground text-sm italic">{t("student.loading")}</div>}>
           <PostTuition
             isDashboard={true}
             onSuccess={async () => {
@@ -285,11 +287,11 @@ const StudentDashboard = () => {
         <DataTable
           rowKey={(row) => row._id}
           data={myTuitions}
-          emptyState={<p className="italic">No active requests.</p>}
+          emptyState={<p className="italic">{t("student.no_active_requests")}</p>}
           columns={[
             {
               key: "subject",
-              label: "Subject",
+              label: t("student.subject"),
               render: (_, row) => (
                 <>
                   <p className="text-sm font-bold text-foreground">{row.subject}</p>
@@ -299,23 +301,23 @@ const StudentDashboard = () => {
             },
             {
               key: "salary",
-              label: "Budget",
+              label: t("student.budget"),
               render: (val) => (
                 <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
               ),
             },
             {
               key: "status",
-              label: "Status",
+              label: t("student.status"),
               render: (val) => (
                 <Badge variant={val === "approved" ? "success" : "default"} className="rounded-lg">
-                  {val === "approved" ? "Active" : "Pending"}
+                  {val === "approved" ? t("student.active") : t("student.pending")}
                 </Badge>
               ),
             },
             {
               key: "_id",
-              label: "Actions",
+              label: t("student.actions"),
               align: "right",
               render: (_, row) => (
                 <div className="flex justify-end gap-3">
@@ -323,13 +325,13 @@ const StudentDashboard = () => {
                     onClick={() => navigate(`/tuition/${row._id}`)}
                     className="text-xs font-bold text-primary hover:underline"
                   >
-                    View
+                    {t("student.view")}
                   </button>
                   <button
                     onClick={() => handleDeleteTuition(row._id)}
                     className="text-xs font-bold text-red-600 hover:underline"
                   >
-                    Remove
+                    {t("student.remove")}
                   </button>
                 </div>
               ),
@@ -349,7 +351,7 @@ const StudentDashboard = () => {
                 strokeWidth={1}
               />
               <p className="text-sm font-medium text-muted-foreground italic">
-                No incoming applications yet.
+                {t("student.no_applications")}
               </p>
             </Card>
           ) : (
@@ -383,7 +385,7 @@ const StudentDashboard = () => {
                     </div>
                     <div className="flex justify-between items-center pt-4 border-t border-border">
                       <span className="text-xs font-semibold text-muted-foreground">
-                        Expected Salary
+                        {t("student.expected_salary")}
                       </span>
                       <span className="text-lg font-bold text-primary tabular-nums">
                         ৳{app.expectedSalary}
@@ -398,13 +400,13 @@ const StudentDashboard = () => {
                         className="flex-1 h-10 rounded-lg text-xs active:scale-[0.98]"
                         onClick={() => handleReject(app._id)}
                       >
-                        Decline
+                        {t("student.decline")}
                       </Button>
                       <Button
                         className="flex-1 h-10 rounded-lg text-xs active:scale-[0.98]"
                         onClick={() => handleApprove(app._id)}
                       >
-                        Approve
+                        {t("student.approve")}
                       </Button>
                     </div>
                   )}
@@ -420,11 +422,11 @@ const StudentDashboard = () => {
         <DataTable
           rowKey={(row) => row._id}
           data={bookings}
-          emptyState={<p className="italic">No verified engagements yet.</p>}
+          emptyState={<p className="italic">{t("student.no_engagements")}</p>}
           columns={[
             {
               key: "tutor_name",
-              label: "Tutor Name",
+              label: t("student.tutor_name"),
               render: (_, row) => (
                 <p className="text-sm font-bold text-foreground">
                   {row.tutor_name || row.tutorName}
@@ -433,14 +435,14 @@ const StudentDashboard = () => {
             },
             {
               key: "subject",
-              label: "Subject",
+              label: t("student.subject"),
               render: (val) => (
                 <span className="text-sm font-semibold text-muted-foreground">{val}</span>
               ),
             },
             {
               key: "mobile",
-              label: "Contact",
+              label: t("student.contact"),
               align: "center",
               render: (val) => (
                 <a
@@ -453,12 +455,12 @@ const StudentDashboard = () => {
             },
             {
               key: "_id",
-              label: "Verification",
+              label: t("student.verification"),
               align: "right",
               render: (_, row) => (
                 <div className="flex flex-col items-end gap-2">
                   <Badge variant="success" className="rounded-lg">
-                    Active
+                    {t("student.active")}
                   </Badge>
                   {row.isAccepted && (
                     <Button
@@ -466,7 +468,7 @@ const StudentDashboard = () => {
                       className="h-7 px-3 text-xs rounded-lg active:scale-[0.98]"
                       onClick={() => navigate(`/session/${row._id}`)}
                     >
-                      Join Room
+                      {t("student.join_room")}
                     </Button>
                   )}
                 </div>

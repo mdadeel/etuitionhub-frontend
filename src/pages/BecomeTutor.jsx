@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useTranslation } from 'react-i18next';
 import toast from "react-hot-toast";
 import api from "../services/api";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 
 const BecomeTutor = () => {
+  const { t } = useTranslation();
   const {
     user,
     dbUser,
@@ -87,10 +89,7 @@ const BecomeTutor = () => {
     }
 
     if (userRole === "tutor") {
-      toast(
-        "You are already a tutor. Update your profile from the dashboard instead.",
-        { icon: "ℹ️" },
-      );
+      toast(t('becomeTutor.toast_already_tutor'), { icon: "ℹ️" });
       navigate("/dashboard/my-profile");
       return;
     }
@@ -103,7 +102,7 @@ const BecomeTutor = () => {
       !location ||
       !gender
     ) {
-      toast.error("Please fill in all required fields");
+      toast.error(t('becomeTutor.toast_fill_fields'));
       return;
     }
 
@@ -122,12 +121,12 @@ const BecomeTutor = () => {
         role: "tutor",
       });
 
-      toast.success("Tutor profile created successfully!");
+      toast.success(t('becomeTutor.toast_success'));
       await refreshUserFromDB(user.email);
       navigate("/dashboard");
     } catch (err) {
       toast.error(
-        err.response?.data?.error || "Failed to create tutor profile",
+        err.response?.data?.error || t('becomeTutor.toast_failed'),
       );
     } finally {
       setSubmitting(false);
@@ -138,8 +137,8 @@ const BecomeTutor = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="size-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
-          <span className="text-sm text-muted-foreground">Loading...</span>
+          <div className="size-8 border-2 border-primary/20 border-t-blue-600 rounded-full animate-spin"></div>
+          <span className="text-sm text-muted-foreground">{t('becomeTutor.loading')}</span>
         </div>
       </div>
     );
@@ -147,30 +146,28 @@ const BecomeTutor = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <SEO title="Apply to Become a Verified Tutor | eTuitionBD" description="Join 2,500+ verified tutors in Bangladesh. Apply to teach on eTuitionBD and connect with students directly. Free to join." />
+      <SEO title={t('becomeTutor.seo_title')} description={t('becomeTutor.seo_desc')} />
       <div className="container-narrow px-6 py-8">
         {/* Header */}
         <div className="mb-8 text-center md:text-left">
           <h1 className="text-2xl md:text-3xl font-heading text-foreground mb-2">
-            Become a tutor
+            {t('becomeTutor.title')}
           </h1>
           <p className="text-sm text-muted-foreground max-w-lg mx-auto md:mx-0">
-            Create your professional tutor profile and start connecting with
-            students across Bangladesh.
+            {t('becomeTutor.subtitle')}
           </p>
         </div>
 
         {!user ? (
-          <div className="bg-card border border-border rounded-2xl p-10 md:p-14 text-center shadow-sm">
+          <div className="bg-card border border-border rounded-lg p-10 md:p-16 text-center shadow-sm">
             <div className="size-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-primary/[0.02]">
               <Briefcase size={28} className="text-primary/60" />
             </div>
             <h2 className="text-xl font-heading text-foreground mb-3">
-              Create an account first
+              {t('becomeTutor.not_logged_in_title')}
             </h2>
             <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
-              You need a verified account to register as a tutor on our
-              platform.
+              {t('becomeTutor.not_logged_in_desc')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
@@ -179,28 +176,27 @@ const BecomeTutor = () => {
                 size="lg"
                 className="w-full sm:w-auto px-8"
               >
-                <Link to="/login">Sign In</Link>
+                <Link to="/login">{t('becomeTutor.sign_in')}</Link>
               </Button>
               <Button asChild size="lg" className="w-full sm:w-auto px-8">
-                <Link to="/register">Create Account</Link>
+                <Link to="/register">{t('becomeTutor.create_account')}</Link>
               </Button>
             </div>
           </div>
         ) : isAlreadyTutor ? (
-          <div className="bg-card border border-border rounded-2xl p-10 md:p-14 text-center shadow-sm">
+          <div className="bg-card border border-border rounded-lg p-10 md:p-16 text-center shadow-sm">
             <div className="size-16 bg-success/5 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-success/[0.02]">
               <ShieldCheck size={28} className="text-success" />
             </div>
             <h2 className="text-xl font-heading text-foreground mb-3">
-              You're already a tutor
+              {t('becomeTutor.already_tutor_title')}
             </h2>
             <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
-              Your tutor profile is active. You can manage your availability and
-              applications from your dashboard.
+              {t('becomeTutor.already_tutor_desc')}
             </p>
             <Button asChild size="lg" className="px-8">
               <Link to="/dashboard/my-profile" className="gap-2">
-                Update Profile <ArrowRight size={18} />
+                {t('becomeTutor.update_profile')} <ArrowRight size={18} />
               </Link>
             </Button>
           </div>
@@ -217,22 +213,22 @@ const BecomeTutor = () => {
                     className={`size-8 flex items-center justify-center rounded-full text-xs font-semibold transition-all duration-300 ${
                       step >= s
                         ? "bg-primary text-white shadow-md ring-4 ring-primary/10"
-                        : "bg-muted text-slate-400"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {step > s ? <CheckCircle size={16} /> : s}
                   </div>
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 ${
-                      step >= s ? "text-foreground" : "text-slate-400"
+                    className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-300 ${
+                      step >= s ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
-                    {s === 1 ? "Basic Info" : "Details"}
+                    {s === 1 ? t('becomeTutor.step_basic') : t('becomeTutor.step_details')}
                   </span>
                   {s === 1 && (
                     <div
                       className={`absolute left-full top-4 w-8 md:w-12 h-0.5 -translate-x-1/2 transition-colors duration-300 ${
-                        step > 1 ? "bg-primary" : "bg-slate-200"
+                        step > 1 ? "bg-primary" : "bg-muted"
                       }`}
                     />
                   )}
@@ -242,47 +238,47 @@ const BecomeTutor = () => {
 
             <form
               onSubmit={handleSubmit}
-              className="bg-card border border-border rounded-2xl p-6 md:p-10 space-y-8 shadow-sm"
+              className="bg-card border border-border rounded-lg p-6 md:p-10 space-y-8 shadow-sm"
             >
               {step === 1 && (
                 <div className="space-y-6">
                   <div className="space-y-2.5">
                     <Label className="text-sm font-semibold text-foreground ml-1">
-                      Full Name
+                      {t('becomeTutor.full_name')}
                     </Label>
                     <Input
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your full name"
-                      className="h-11 bg-card border-border text-foreground focus:border-primary focus:ring-primary/10 placeholder:text-slate-400"
+                      placeholder={t('becomeTutor.full_name_placeholder')}
+                      className="h-11 bg-card border-border text-foreground focus:border-primary focus:ring-primary/10 placeholder:text-muted-foreground"
                       required
                     />
                   </div>
 
                   <div className="space-y-2.5">
                     <Label className="text-sm font-semibold text-foreground ml-1">
-                      Phone Number
+                      {t('becomeTutor.phone')}
                     </Label>
                     <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                       <Input
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="01XXXXXXXXX"
-                        className="h-11 pl-11 bg-card border-border text-foreground focus:border-primary focus:ring-primary/10 placeholder:text-slate-400"
+                        placeholder={t('becomeTutor.phone_placeholder')}
+                        className="h-11 pl-11 bg-card border-border text-foreground focus:border-primary focus:ring-primary/10 placeholder:text-muted-foreground"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2.5">
                     <Label className="text-sm font-semibold text-foreground ml-1">
-                      Academic Qualification
+                      {t('becomeTutor.qualification')}
                     </Label>
                     <Textarea
                       value={qualification}
                       onChange={(e) => setQualification(e.target.value)}
-                      placeholder="e.g. BSc in Mathematics, University of Dhaka. Mention your current status."
-                      className="min-h-[120px] py-3 resize-none bg-card border-border text-foreground focus:border-primary focus:ring-primary/10 placeholder:text-slate-400"
+                      placeholder={t('becomeTutor.qualification_placeholder')}
+                      className="min-h-[120px] py-3 resize-none bg-card border-border text-foreground focus:border-primary focus:ring-primary/10 placeholder:text-muted-foreground"
                       required
                     />
                   </div>
@@ -293,7 +289,7 @@ const BecomeTutor = () => {
                     size="lg"
                     className="w-full gap-2 group"
                   >
-                    Continue{" "}
+                    {t('becomeTutor.continue')}{" "}
                     <ArrowRight
                       size={18}
                       className="group-hover:translate-x-0.5 transition-transform"
@@ -307,7 +303,7 @@ const BecomeTutor = () => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-semibold text-foreground ml-1">
-                        Subjects You Teach ({subjects.length} selected)
+                        {t('becomeTutor.subjects_label', { count: subjects.length })}
                       </Label>
                       {subjects.length > 0 && (
                         <button
@@ -315,11 +311,11 @@ const BecomeTutor = () => {
                           onClick={() => setSubjects([])}
                           className="text-xs text-primary hover:underline font-medium"
                         >
-                          Clear all
+                          {t('becomeTutor.clear_all')}
                         </button>
                       )}
                     </div>
-                    <div className="flex flex-wrap gap-2.5 p-5 bg-background/50 rounded-2xl border border-border">
+                    <div className="flex flex-wrap gap-2.5 p-5 bg-background/50 rounded-lg border border-border">
                       {SUBJECT_OPTIONS.map((subject) => {
                         const isSelected = subjects.includes(subject);
                         return (
@@ -343,9 +339,9 @@ const BecomeTutor = () => {
                   {/* Availability & Preferences */}
                   <div className="space-y-4">
                     <Label className="text-sm font-semibold text-foreground ml-1">
-                      Available Days ({availableDays.length} selected)
+                      {t('becomeTutor.available_days', { count: availableDays.length })}
                     </Label>
-                    <div className="flex flex-wrap gap-2.5 p-5 bg-background/50 rounded-2xl border border-border">
+                    <div className="flex flex-wrap gap-2.5 p-5 bg-background/50 rounded-lg border border-border">
                       {WEEK_DAYS.map((day) => {
                         const isSelected = availableDays.includes(day);
                         return (
@@ -369,7 +365,7 @@ const BecomeTutor = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2.5">
                       <Label className="text-sm font-semibold text-foreground ml-1">
-                        Gender
+                        {t('becomeTutor.gender')}
                       </Label>
                       <select
                         value={gender}
@@ -383,7 +379,7 @@ const BecomeTutor = () => {
                         }}
                         required
                       >
-                        <option value="">Select gender</option>
+                        <option value="">{t('becomeTutor.gender_placeholder')}</option>
                         {GENDER_OPTIONS.map((g) => (
                           <option key={g} value={g}>
                             {g}
@@ -394,7 +390,7 @@ const BecomeTutor = () => {
 
                     <div className="space-y-2.5">
                       <Label className="text-sm font-semibold text-foreground ml-1">
-                        Language Preference
+                        {t('becomeTutor.language')}
                       </Label>
                       <select
                         value={languagePreference}
@@ -417,28 +413,28 @@ const BecomeTutor = () => {
 
                     <div className="space-y-2.5">
                       <Label className="text-sm font-semibold text-foreground ml-1">
-                        Expected Monthly Salary
+                        {t('becomeTutor.salary')}
                       </Label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-sm">
                           ৳
                         </span>
                         <Input
                           value={expectedSalary}
                           onChange={(e) => setExpectedSalary(e.target.value)}
                           type="number"
-                          placeholder="5000"
-                          className="h-11 pl-8 bg-card border-border text-foreground focus:border-primary focus:ring-primary/10 placeholder:text-slate-400"
+                          placeholder={t('becomeTutor.salary_placeholder')}
+                          className="h-11 pl-8 bg-card border-border text-foreground focus:border-primary focus:ring-primary/10 placeholder:text-muted-foreground"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2.5">
                       <Label className="text-sm font-semibold text-foreground ml-1">
-                        Preferred Division
+                        {t('becomeTutor.division')}
                       </Label>
                       <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
                         <select
                           value={location}
                           onChange={(e) => setLocation(e.target.value)}
@@ -451,7 +447,7 @@ const BecomeTutor = () => {
                           }}
                           required
                         >
-                          <option value="">Select division</option>
+                          <option value="">{t('becomeTutor.division_placeholder')}</option>
                           {BANGLADESH_DIVISIONS.map((d) => (
                             <option key={d} value={d}>
                               {d}
@@ -470,7 +466,7 @@ const BecomeTutor = () => {
                       onClick={() => setStep(1)}
                       className="w-full sm:w-auto px-10 h-12"
                     >
-                      Back
+                      {t('becomeTutor.back')}
                     </Button>
                     <Button
                       type="submit"
@@ -479,8 +475,8 @@ const BecomeTutor = () => {
                       className="flex-1 w-full h-12"
                     >
                       {submitting
-                        ? "Creating Profile..."
-                        : "Create Tutor Profile"}
+                        ? t('becomeTutor.creating')
+                        : t('becomeTutor.create_profile')}
                     </Button>
                   </div>
                 </div>

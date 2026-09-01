@@ -25,7 +25,7 @@ export function TuitionCardSkeleton({ className, ...props }) {
         </div>
       </div>
       <div className="px-6 pb-6">
-        <Skeleton className="h-12 w-full rounded-2xl" />
+        <Skeleton className="h-12 w-full rounded-lg" />
       </div>
     </CardSkeleton>
   );

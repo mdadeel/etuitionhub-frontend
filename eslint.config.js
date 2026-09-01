@@ -28,17 +28,5 @@ export default defineConfig([
       'react-hooks/preserve-manual-memoization': 'off',
     },
   },
-  {
-    // Vendored registry code — Vercel AI Elements components and the ui
-    // primitives they pulled in export hooks, contexts, variants and helpers
-    // alongside components by design. The fast-refresh rule is HMR-only and
-    // not applicable to vendored code.
-    files: [
-      'src/components/ai-elements/**/*.{js,jsx}',
-      'src/components/ui/{button-group,input-group,command,collapsible,hover-card,dropdown-menu,scroll-area,spinner}.jsx',
-    ],
-    rules: {
-      'react-refresh/only-export-components': 'off',
-    },
-  },
+
 ])

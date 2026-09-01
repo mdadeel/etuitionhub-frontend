@@ -13,7 +13,7 @@ import EmptyState from '../shared/EmptyState';
 const STATUS_COLORS = {
     pending_verification: 'bg-amber-500/10 text-amber-700 border-amber-500/20',
     confirmed: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20',
-    commission_applied: 'bg-blue-500/10 text-blue-700 border-blue-500/20',
+    commission_applied: 'bg-primary/10 text-primary border-primary/20',
     available_for_withdrawal: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20',
     withdrawn: 'bg-zinc-500/10 text-zinc-700 border-zinc-500/20',
     rejected: 'bg-red-500/10 text-red-700 border-red-500/20',
@@ -118,7 +118,7 @@ const BalanceCard = ({ icon: Icon, label, amount, accent, subtitle }) => {
     const colors = {
         emerald: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20',
         amber: 'text-amber-700 bg-amber-500/10 border-amber-500/20',
-        blue: 'text-blue-700 bg-blue-500/10 border-blue-500/20',
+        blue: 'text-primary bg-primary/10 border-primary/20',
         zinc: 'text-zinc-700 bg-zinc-500/10 border-zinc-500/20',
     };
     return (

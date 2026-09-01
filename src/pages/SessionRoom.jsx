@@ -6,6 +6,7 @@ import api from '../services/api';
 import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../contexts/AuthContext';
+import SEO from '@/components/shared/SEO';
 
 export default function SessionRoom() {
     const { id: bookingId } = useParams();
@@ -13,6 +14,7 @@ export default function SessionRoom() {
     const { user, dbUser } = useAuth();
 
     const PeerRef = useRef(null);
+    const [peerLibLoaded, setPeerLibLoaded] = useState(false);
     const [stream, setStream] = useState();
     const [receivingCall, setReceivingCall] = useState(false);
     const [callerSignal, setCallerSignal] = useState();
@@ -88,15 +90,22 @@ export default function SessionRoom() {
     };
 
     useEffect(() => {
-
-
         // No WebRTC on Vercel (serverless, no persistent connections)
         if (API_URL.includes('vercel')) {
             console.log('SessionRoom: WebRTC/Video not available on Vercel');
             return;
         }
 
-        import('simple-peer').then(m => { PeerRef.current = m.default; }).catch(() => {});
+        import('simple-peer').then(m => {
+            PeerRef.current = m.default;
+            setPeerLibLoaded(true);
+        }).catch((err) => {
+            console.error('Failed to load WebRTC Peer library:', err);
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!peerLibLoaded) return;
 
         socket.current = io(API_URL, {
             withCredentials: true,
@@ -149,7 +158,7 @@ export default function SessionRoom() {
             }
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [bookingId, user, dbUser]);
+    }, [peerLibLoaded, bookingId, user, dbUser]);
 
 
 
@@ -213,6 +222,7 @@ export default function SessionRoom() {
 
     return (
         <div className="min-h-screen bg-gray-900 text-white flex flex-col md:flex-row">
+          <SEO title="Session Room | eTuitionBD" noIndex />
             {/* Main Video Area */}
             <div className="flex-1 flex flex-col items-center justify-center p-4 relative">
                 {callAccepted && !callEnded ? (
@@ -222,7 +232,7 @@ export default function SessionRoom() {
                         {receivingCall && !callAccepted ? (
                             <div className="text-center">
                                 <h3 className="text-xl mb-4">Someone is joining the session...</h3>
-                                <Button onClick={answerCall} className="bg-green-600 hover:bg-green-700">Accept Connection</Button>
+                                <Button onClick={answerCall} className="bg-success hover:bg-success/90">Accept Connection</Button>
                             </div>
                         ) : (
                             <h2 className="text-2xl text-gray-400">Waiting for others to join...</h2>
@@ -238,11 +248,11 @@ export default function SessionRoom() {
                 )}
 
                 {/* Controls */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-gray-800/80 backdrop-blur-md px-6 py-3 rounded-full">
-                    <Button variant="outline" size="icon" className={`rounded-full ${!micOn && 'bg-red-500 text-white border-red-500 hover:bg-red-600'}`} onClick={toggleMic}>
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-gray-800/80 px-6 py-3 rounded-full">
+                    <Button variant="outline" size="icon" className={`rounded-full ${!micOn && 'bg-destructive text-white border-destructive hover:bg-destructive/90'}`} onClick={toggleMic}>
                         {micOn ? <Mic className="size-5" /> : <MicOff className="size-5" />}
                     </Button>
-                    <Button variant="outline" size="icon" className={`rounded-full ${!videoOn && 'bg-red-500 text-white border-red-500 hover:bg-red-600'}`} onClick={toggleVideo}>
+                    <Button variant="outline" size="icon" className={`rounded-full ${!videoOn && 'bg-destructive text-white border-destructive hover:bg-destructive/90'}`} onClick={toggleVideo}>
                         {videoOn ? <Video className="size-5" /> : <VideoOff className="size-5" />}
                     </Button>
                     <Button variant="destructive" size="icon" className="rounded-full size-12" onClick={leaveCall}>
@@ -261,7 +271,7 @@ export default function SessionRoom() {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex flex-col ${msg.sender === 'Me' ? 'items-end' : 'items-start'}`}>
-                            <div className={`px-4 py-2 rounded-2xl max-w-[85%] ${msg.sender === 'Me' ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-gray-700 text-white rounded-tl-sm'}`}>
+                            <div className={`px-4 py-2 rounded-lg max-w-[85%] ${msg.sender === 'Me' ? 'bg-primary text-white rounded-tr-sm' : 'bg-gray-700 text-white rounded-tl-sm'}`}>
                                 <p className="text-sm">{msg.text}</p>
                             </div>
                             <span className="text-xs text-gray-400 mt-1">{msg.time}</span>
@@ -276,9 +286,9 @@ export default function SessionRoom() {
                             value={messageInput}
                             onChange={(e) => setMessageInput(e.target.value)}
                             placeholder="Type a message..."
-                            className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                            className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
                         />
-                        <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700">Send</Button>
+                        <Button type="submit" size="sm" className="bg-primary hover:bg-primary/90">Send</Button>
                     </form>
                 </div>
             </div>

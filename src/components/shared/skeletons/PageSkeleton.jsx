@@ -30,7 +30,7 @@ export function PageSkeleton({ className, ...props }) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="space-y-3 border border-border/50 rounded-2xl p-6">
+            <div key={i} className="space-y-3 border border-border/50 rounded-lg p-6">
               <Skeleton className="size-12 rounded-xl" />
               <Skeleton className="h-5 w-2/3 rounded-lg" />
               <LineSkeleton width="full" className="h-3" />

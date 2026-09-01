@@ -10,7 +10,7 @@ function SectionHeader({ icon: Icon, label }) {
             <span className="flex items-center justify-center size-6 rounded-md bg-primary/10 text-primary shrink-0">
                 <Icon size={13} strokeWidth={2.4} />
             </span>
-            <h4 className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+            <h4 className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                 {label}
             </h4>
         </div>
@@ -37,7 +37,7 @@ export default function LessonPlanCard({ data }) {
         <div className="space-y-5 animate-fade-in-up">
             {/* Header */}
             <div className="pb-3 border-b border-border/40">
-                <p className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-primary mb-1">
+                <p className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-primary mb-1">
                     Lesson Plan
                 </p>
                 <h3 className="text-lg font-heading font-bold text-foreground">
@@ -70,7 +70,7 @@ export default function LessonPlanCard({ data }) {
                                 className="flex gap-3 rounded-lg border border-border/50 bg-muted/20 px-3 py-2.5"
                             >
                                 <div className="shrink-0 flex flex-col items-center gap-1">
-                                    <span className="size-5 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold">
+                                    <span className="size-5 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[11px] font-bold">
                                         {i + 1}
                                     </span>
                                     {i < data.classOutline.length - 1 && (
@@ -81,7 +81,7 @@ export default function LessonPlanCard({ data }) {
                                     <div className="flex items-baseline gap-2">
                                         <p className="text-sm font-semibold text-foreground">{item.section}</p>
                                         {item.minutes && (
-                                            <span className="text-[10px] font-label text-muted-foreground shrink-0">
+                                            <span className="text-[11px] font-label text-muted-foreground shrink-0">
                                                 {item.minutes} min
                                             </span>
                                         )}

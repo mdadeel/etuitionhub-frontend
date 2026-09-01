@@ -21,7 +21,7 @@ const Stat = ({
     <div className={cn(variants[variant], className)} {...props}>
       {Icon && variant === 'horizontal' && (
         <div className="size-12 bg-muted rounded-xl flex items-center justify-center border border-border">
-          <Icon className="size-6 text-[#2563EB]" />
+          <Icon className="size-6 text-primary" />
         </div>
       )}
       

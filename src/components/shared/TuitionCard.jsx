@@ -59,7 +59,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
   return (
     <>
     <div
-      className={`group flex flex-col p-5 bg-card border border-border/80 rounded-2xl hover:shadow-premium hover:border-primary/30 transition-all duration-300 cursor-pointer relative ${className}`}
+      className={`group flex flex-col p-5 bg-card border border-border/80 rounded-lg hover:border-primary/30 transition-all duration-300 cursor-pointer relative ${className}`}
       onClick={handleViewDetails}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -73,7 +73,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
       <button
         type="button"
         onClick={handleBookmark}
-        className="absolute top-4 right-4 z-10 size-8 flex items-center justify-center rounded-full bg-slate-100/80 hover:bg-primary/10 hover:text-primary dark:bg-slate-900/80 dark:hover:bg-primary/20 text-muted-foreground transition-all duration-200"
+        className="absolute top-4 right-4 z-10 size-8 flex items-center justify-center rounded-full bg-muted/80 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 text-muted-foreground transition-all duration-200"
         title={isSaved ? "Unsave" : "Save"}
         aria-label={isSaved ? "Unsave tuition" : "Save tuition"}
       >
@@ -89,7 +89,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
         <div className="flex items-center gap-1.5 mb-2">
           <Avatar size="xs" className="size-5 rounded-full">
             <AvatarImage src={tuition.poster.photoURL} alt={tuition.poster.name} />
-            <AvatarFallback className="text-[10px] font-medium rounded-full">
+            <AvatarFallback className="text-[11px] font-medium rounded-full">
               {tuition.poster.name?.charAt(0)?.toUpperCase() || '?'}
             </AvatarFallback>
           </Avatar>
@@ -129,13 +129,13 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
           </span>
         </div>
         {tuition.mode === 'online' && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-500 font-medium">Online</span>
+          <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">Online</span>
         )}
         {tuition.mode === 'home' && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">Home</span>
+          <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-success/10 text-success font-medium">Home</span>
         )}
         {tuition.mode === 'both' && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-500/10 text-teal-500 font-medium">Both</span>
+          <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-teal-500/10 text-teal-500 font-medium">Both</span>
         )}
       </div>
 

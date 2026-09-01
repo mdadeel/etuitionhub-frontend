@@ -26,7 +26,7 @@ const OrgInvoices = () => {
   }, [orgId]);
 
   const getStatusColor = (s) => ({
-    paid: 'bg-green-100 text-green-700', sent: 'bg-blue-100 text-blue-700',
+    paid: 'bg-green-100 text-green-700', sent: 'bg-primary/10 text-primary',
     overdue: 'bg-red-100 text-red-700', draft: 'bg-gray-100 text-gray-700',
     partially_paid: 'bg-yellow-100 text-yellow-700'
   }[s] || 'bg-gray-100 text-gray-700');

@@ -6,6 +6,7 @@ import { Lock, Eye, EyeOff, ArrowLeft, CheckCircle } from 'lucide-react';
 import Logo from '../components/shared/Logo';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import SEO from '@/components/shared/SEO';
 import PasswordStrength from '../components/shared/PasswordStrength';
 
 const ResetPassword = () => {
@@ -71,10 +72,11 @@ const ResetPassword = () => {
     // Loading state while verifying the reset code
     if (verifying) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden bg-pattern-academic">
+            <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
+                <SEO title="Set New Password | eTuitionBD" noIndex />
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
                 <div className="w-full max-w-md z-10">
-                    <div className="bg-card border border-border rounded-xl shadow-premium overflow-hidden p-5 sm:p-6 text-center">
+                    <div className="bg-card border border-border rounded-xl  overflow-hidden p-5 sm:p-6 text-center">
                         <div className="flex justify-center mb-3">
                             <Logo textSize="text-xl" boxSize="size-12" iconSize="size-8" />
                         </div>
@@ -89,10 +91,11 @@ const ResetPassword = () => {
     // Error state
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden bg-pattern-academic">
+            <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
+                <SEO title="Set New Password | eTuitionBD" noIndex />
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
                 <div className="w-full max-w-md z-10">
-                    <div className="bg-card border border-border rounded-xl shadow-premium overflow-hidden p-5 sm:p-6 text-center">
+                    <div className="bg-card border border-border rounded-xl  overflow-hidden p-5 sm:p-6 text-center">
                         <div className="size-12 bg-destructive/10 text-destructive rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -117,11 +120,12 @@ const ResetPassword = () => {
     // Success state
     if (resetSuccess) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden bg-pattern-academic">
+            <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
+                <SEO title="Set New Password | eTuitionBD" noIndex />
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
                 <div className="w-full max-w-md z-10">
-                    <div className="bg-card border border-border rounded-xl shadow-premium overflow-hidden p-5 sm:p-6 text-center">
-                        <div className="size-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-card border border-border rounded-xl  overflow-hidden p-5 sm:p-6 text-center">
+                        <div className="size-12 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto mb-4">
                             <CheckCircle className="size-6" />
                         </div>
                         <h2 className="text-xl font-heading font-bold text-foreground mb-2">Password Reset Complete</h2>
@@ -142,11 +146,12 @@ const ResetPassword = () => {
 
     // Form state
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden bg-pattern-academic">
+        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
+            <SEO title="Set New Password | eTuitionBD" noIndex />
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
 
             <div className="w-full max-w-md z-10">
-                <div className="bg-card border border-border rounded-xl shadow-premium overflow-hidden p-5 sm:p-6">
+                <div className="bg-card border border-border rounded-xl  overflow-hidden p-5 sm:p-6">
 
                     <div className="text-center mb-4">
                         <div className="flex justify-center mb-3">
@@ -179,6 +184,7 @@ const ResetPassword = () => {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                         {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}

@@ -23,7 +23,7 @@ const RESOLUTION_TYPES = [
 
 const STATUS_CONFIG = {
     open: { label: 'Open', color: 'text-amber-700 bg-amber-500/10 border-amber-500/20' },
-    under_review: { label: 'Under Review', color: 'text-blue-700 bg-blue-500/10 border-blue-500/20' },
+    under_review: { label: 'Under Review', color: 'text-primary bg-primary/10 border-primary/20' },
     resolved: { label: 'Resolved', color: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20' },
     closed: { label: 'Closed', color: 'text-muted-foreground bg-muted border-border' },
 };

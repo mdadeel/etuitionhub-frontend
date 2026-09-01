@@ -11,7 +11,7 @@ const Section = ({
     default: 'bg-background',
     white: 'bg-card',
     subtle: 'bg-muted',
-    dark: 'bg-[#0F172E]',
+    dark: 'bg-footer',
   };
 
   const spacings = {

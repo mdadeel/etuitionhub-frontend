@@ -24,7 +24,7 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-slate-900 text-white/60 pt-16 md:pt-20 pb-8 relative overflow-hidden">
+        <footer className="bg-footer text-white/60 pt-16 md:pt-20 pb-8 relative overflow-hidden">
             
             <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
                 {/* Main Footer Content */}
@@ -49,7 +49,7 @@ const Footer = () => {
                                     href="https://github.com/mdadeel" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="size-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+                                    className="size-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors duration-200"
                                     aria-label="GitHub"
                                 >
                                     <Github className="size-4" />
@@ -58,7 +58,7 @@ const Footer = () => {
                                     href="https://linkedin.com/in/shahnawasadee1" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="size-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+                                    className="size-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors duration-200"
                                     aria-label="LinkedIn"
                                 >
                                     <Linkedin className="size-4" />
@@ -67,7 +67,7 @@ const Footer = () => {
                                     href="https://instagram.com/shahnawas.adeel" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="size-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+                                    className="size-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors duration-200"
                                     aria-label="Instagram"
                                 >
                                     <Instagram className="size-4" />
@@ -196,6 +196,10 @@ const Footer = () => {
                     <p className="text-sm text-white/40 text-center md:text-left">
                         © 2026 e-tuitionBD. All rights reserved.
                     </p>
+                    <div className="flex items-center gap-6 text-sm">
+                        <Link to="/terms" className="text-white/40 hover:text-white transition-colors duration-300">Terms of Service</Link>
+                        <Link to="/privacy" className="text-white/40 hover:text-white transition-colors duration-300">Privacy Policy</Link>
+                    </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-white/40">Built with</span>
                         <Heart className="size-4 text-primary fill-primary animate-pulse" />

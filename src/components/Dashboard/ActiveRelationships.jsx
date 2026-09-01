@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { Loader2, Users, UserX } from 'lucide-react';
 import ActiveRelationshipCard from './ActiveRelationshipCard';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
+import EmptyState from '@/components/shared/EmptyState';
 
 const TABS = [
   { key: 'all', label: 'All' },
@@ -67,12 +68,11 @@ const ActiveRelationships = () => {
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-20">
-          <UserX className="size-12 text-muted-foreground/40 mx-auto mb-4" />
-          <p className="text-muted-foreground">
-            {tab === 'all' ? 'No relationships yet' : `No ${tab.replace('_', ' ')} relationships`}
-          </p>
-        </div>
+        <EmptyState
+          icon={UserX}
+          title={tab === 'all' ? 'No relationships yet' : `No ${tab.replace('_', ' ')} relationships`}
+          description="Start by finding a tutor or posting a tuition request."
+        />
       ) : (
         <div className="space-y-3">
           {filtered.map(conn => (

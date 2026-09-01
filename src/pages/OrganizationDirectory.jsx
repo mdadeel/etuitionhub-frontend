@@ -12,6 +12,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import SEO from '@/components/shared/SEO';
 
 const OrganizationDirectory = () => {
   const { user } = useAuth();
@@ -118,6 +119,7 @@ const OrganizationDirectory = () => {
 
   return (
     <div className="min-h-screen bg-background pt-20 pb-12">
+      <SEO title="Coaching Centers & Organizations | eTuitionBD" description="Browse coaching centers, tuition centers, and educational organizations across Bangladesh. Find and join the right learning community." />
       <div className="w-full px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -150,7 +152,7 @@ const OrganizationDirectory = () => {
                         <p className="text-xs text-muted-foreground">{org.membership?.role?.name}</p>
                       </div>
                     </div>
-                    <span className="px-2 py-1 text-[10px] font-semibold uppercase bg-green-500/10 text-green-600 rounded">
+                    <span className="px-2 py-1 text-[11px] font-semibold uppercase bg-success/10 text-success rounded">
                       Member
                     </span>
                   </div>
@@ -163,7 +165,7 @@ const OrganizationDirectory = () => {
                     </Link>
                     <button
                       onClick={() => handleLeave(org._id, org.name)}
-                      className="px-3 py-2 text-sm text-muted-foreground hover:text-red-500 transition-colors"
+                      className="px-3 py-2 text-sm text-muted-foreground hover:text-destructive transition-colors"
                     >
                       Leave
                     </button>
@@ -211,7 +213,7 @@ const OrganizationDirectory = () => {
             {filteredOrgs.map((org) => (
               <div key={org._id} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
                 {/* Banner */}
-                <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 relative">
+                <div className="h-32 bg-primary/10 relative">
                   {org.profile?.banner && (
                     <img src={org.profile.banner} alt={`${org.name} Banner`} className="absolute inset-0 w-full h-full object-cover" />
                   )}
@@ -235,11 +237,11 @@ const OrganizationDirectory = () => {
                 {/* Content */}
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase bg-primary/10 text-primary rounded">
+                    <span className="px-2 py-0.5 text-[11px] font-semibold uppercase bg-primary/10 text-primary rounded">
                       {typeLabels[org.type] || org.type}
                     </span>
                     {org.verificationStatus === 'verified' && (
-                      <span className="px-2 py-0.5 text-[10px] font-semibold uppercase bg-green-500/10 text-green-600 rounded">
+                      <span className="px-2 py-0.5 text-[11px] font-semibold uppercase bg-success/10 text-success rounded">
                         Verified
                       </span>
                     )}

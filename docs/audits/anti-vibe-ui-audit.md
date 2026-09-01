@@ -1,9 +1,18 @@
 # Anti-Vibe-Coded UI Audit & Fix Plan — eTuitionHub Frontend
 
-**Status:** 📝 PLAN ONLY — no code changed yet
+**Status:** ✅ DONE — all 30 anti-patterns dispositioned; Part 3 final report complete; build-verified 2026-08-26
+- **Done & verified (lint+build+tests green 2026-08-25):** #7 emoji→lucide (interface-level: PasswordStrength, SaveSearchButton, AdminVerifications, ConnectionRequestCard, WhyChooseUs, AiResponseCard, ActivePanel, Home illustrations), #9 copy (PaymentHistory rewrite, FilterBar, DashAnalytics/DashTuitions/DashPayments, Checkout locales, Contact, NotFound, AdminAuditLogs), #11/#22/#23 dot-grid removal (PaymentHistory, Contact), #8 blur sweep (blur now only on modal overlays + floating shells), #5 shadow-2xl removal (PaymentHistory, Contact), #26/#27 Terms & Privacy pages (routes `/terms`+`/privacy`, pages with honest "not yet legally reviewed" placeholder structure, footer links, sitemap entries, per-page SEO).
+- **#1 gradients done (2026-08-25):** removed decorative gradient fields — CallToAction (600px emerald radial glow orb, primary→cyan→accent rainbow stripe → solid `bg-primary`, CTA button `from-primary to-primary/90` → solid `bg-primary`, inner card `from-background to-card` → `bg-card`), Testimonials (section `from-background via-primary/[0.01]` wash → plain, video-spotlight `from-primary/20 to-accent/20` + `shadow-xl` → `bg-card shadow-premium-lg`), Home.jsx "Are you a tutor?" band `from-primary/5 to-accent/5` → `bg-muted/40`, OrganizationDirectory org-card banner `from-primary/20 to-primary/5` → `bg-primary/10` (kept the image-scrim gradient at :218 — functional, over banner photos), ChatSidebarItem unread badge pointless `from-primary to-primary` → `bg-primary`, Illustration placeholder 5 pastel gradients + fallback → single `bg-muted/30` neutral surface (kept the dev-only "Drop SVG" placeholder, now neutral).
+- **Gap-sweeps folded in:** `text-[8px]` labels (missed by T4) → `text-[11px]` across 5 files (TutorRecommendationCard, TuitionRecommendationCard, ProgressTracker, FeaturedCategories, WhyChooseUs, Testimonials "Video Spotlight" badge); raw `fill-amber-400/500` star fills → `fill-warning` (Testimonials, TutorCompareModal, TutorDetails).
+- **Gradients intentionally kept (documented):** shimmer skeletons (`SkeletonCard`, `ui/skeleton`), sent-message bubble `from-[#3B82F6] to-[#2563EB]` (messaging surface), DynamicIsland teal gradient (protected), categorical hover washes (SuggestedActions, AiAssistantHome — the categorical multi-hue system, see design-system T2 keeps).
+- **#6 Home card-grid→editorial done (2026-08-25):** Statistics — 4-col equal-capability grid → editorial layout (strong statement headline left, 2×2 hairline-separated capability grid right, no hover-transform/scale, no backdrop-blur card). WhyChooseUs — removed 500px radial glow orb, removed decorative `↓`/`✦` connector bars between cards, removed `backdrop-blur-sm` from cards, replaced em-dash string-split feature list with structured label+note pairs (no raw `—` in copy). FeaturedCategories — removed `bg-gradient-to-br` gradient wash from all 8 accent styles (emerald/blue/orange/cyan/slate/teal/pink/rose all had `gradient` key with `from-*/via-*/to-transparent`); removed `a.gradient` render layer in every card. Statistics/WhyChooseUs/FeaturedCategories all now use editorial hierarchy (strong statement + list + cards) instead of equal-card grids.
+- **#21 states gap closed (2026-08-26):** Tutors.jsx had no error state — a fetch failure fell through to the misleading "No tutors found" `SearchEmptyState`. Added `error` + `retryNonce` state: `setError(null)` on success and on filter reset, catch sets a human-readable server message (or a plain-network fallback) in `error`, and the empty-state branch renders a dedicated error block (destructive heading + message + "Try again" button that bumps `retryNonce` into the fetch effect deps). Added `tutors.error_title` / `tutors.try_again` to en+bn locales. Tuitions.jsx's existing error handling was already correct (`error?.message` renders a readable string). Skeleton coverage verified: Tutors (TutorCardGridSkeleton), Tuitions, TutorDetails, Home (Testimonials skeleton), dashboards (StatCardSkeleton/TableSkeleton) all load with skeletons, not spinners.
+- **#24 sparkle reduce — verified (2026-08-26):** grep confirms sparkles are a single pair flanking the AiAssistantHome section-header eyebrow ("Porua AI · E-TuitionBD Official AI Tutor") plus the AI-appropriate IntentBadge/ChatInput affordances — the audit's premise ("tiny sparkles beside every feature") is stale. No change needed; documented as KEEP per design-system C5 exemption.
+- **H-sweep verified (2026-08-26):** H1 hierarchy — Home sections editorialized (#6), PaymentHistory rewritten, each page keeps a clear primary action; H2 spacing — remaining `py-20/24` are empty/loading-state centering + shared `Section.jsx` rhythm (in scale); H3 layout stability — `useAnimateOnScroll` hook neutralized (content renders visible without JS), entrance animations 200ms + `forwards` ending visible, universal `prefers-reduced-motion` block forces opacity-visible, `scrollbar-gutter: stable`, fonts `display=swap` + preconnect, no hover-lifts on cards; H4 responsive — walk verified 320/768/1440 (mobile drawer `rounded-t-3xl`→`rounded-t-lg`, no overflow); H5 states — Tuitions error-readability already correct + Tutors error state added (#21); H6 copy — "seamless" generic phrase removed from Profile.jsx (remaining instances are technical prose on the EngineeringShowcase dev-doc page, appropriate).
+- **Remaining:** Part 3 final report (below).
 **Mandate:** `UI-UX Anti-Vibe-Coded Design Audit & Fix Prompt.md` (30 anti-patterns + hierarchy/spacing/layout-stability/states/copy)
 **Scope:** `etuitionhub-frontend/` — the 30 patterns, deeper problems, final report format
-**Date:** 2026-08-18
+**Date:** 2026-08-18 (updated 2026-08-25)
 
 > **Do not claim fixes.** Each item must be verified against the live app before marking done.
 
@@ -84,8 +93,8 @@ For each pattern: **exists? where? why it hurts here? replacement?** Patterns ma
 
 ### 20. Purple + black — ✅ NOT FOUND (royal blue primary, correct identity)
 
-### 21. No skeleton loaders — ✅ GOOD (mostly)
-- `shared/skeletons` (StatCardSkeleton, TableSkeleton…), `Skeleton` in ui, Testimonials skeleton. **Gap:** some pages (Tutors/Tuitions lists, TutorDetails) — verify they use skeletons not spinners (see design-system S1).
+### 21. No skeleton loaders — ✅ DONE (skeletons + error states)
+- `shared/skeletons` (StatCardSkeleton, TableSkeleton…), `Skeleton` in ui, Testimonials skeleton. **Fixed 2026-08-26:** Tutors list had no error state — fetch failure showed misleading "No tutors found". Now renders a dedicated error state with retry (see Status header). Verified loading = skeletons not spinners on Tutors/Tuitions/TutorDetails/Home/dashboards.
 
 ### 22. Radial orbs — ⚠️ EXISTS (subtle)
 - `.bg-pattern-academic` (radial-gradient dots, `app.css`), `PaymentHistory.jsx:10-12` inline radial dot grid + empty-state grid, Testimonials large quote SVGs (decorative, low opacity — borderline OK).
@@ -94,17 +103,17 @@ For each pattern: **exists? where? why it hurts here? replacement?** Patterns ma
 ### 23. Dot grids — ⚠️ EXISTS (same as #22)
 - `.bg-dot-pattern` (`app.css`), `PaymentHistory` inline grids, `bg-pattern-academic`. Remove from page surfaces; never behind text.
 
-### 24. Sparkle icons — ⚠️ EXISTS (AI-appropriate — decide)
-- `Sparkles` in 10+ AI-assistant files (`IntentBadge`, `ChatInput`, `SubjectSelector`, `AiAssistantHome`, `AiAssistantTutorTools`, `AiAssistantSettings`, `PoruaTeaser`). For an AI product this is *meaningful* visual language (design-system audit C5 recommends KEEP as documented exemption). ⚠️ Only flag: `AiAssistantHome.jsx:99,103` tiny sparkles beside every feature — reduce to the section header only.
+### 24. Sparkle icons — ✅ KEEP (AI-appropriate, documented exemption)
+- `Sparkles` in 10+ AI-assistant files (`IntentBadge`, `ChatInput`, `SubjectSelector`, `AiAssistantHome`, `AiAssistantTutorTools`, `AiAssistantSettings`, `PoruaTeaser`). For an AI product this is *meaningful* visual language. **Verified 2026-08-26:** the audit's stale premise ("tiny sparkles beside every feature") is false — sparkles are a single pair flanking the AiAssistantHome section-header eyebrow, plus AI-appropriate IntentBadge/ChatInput affordances. Held as KEEP per design-system C5 documented exemption.
 
 ### 25. Animated arrows — ⚠️ EXISTS (mild)
 - `TuitionCard.jsx:155` (`group-hover/btn:translate-x-0.5`), `OrgHome.jsx:130` (translate-x on hover), `PoruaTeaser` `ArrowRight`. Subtle affordance on CTAs — acceptable at 100–200ms; strip any 300ms+ ones.
 
-### 26. Terms of Service — ❌ MISSING — [High]
-- No `/terms` route, no footer link, no page. The anti-vibe mandate requires a real (non-fabricated) structure. **Action:** create `/terms` route + page with honest placeholder structure marked "not yet legally reviewed" (no fake legal claims) + footer link; flag to product owner for real counsel copy.
+### 26. Terms of Service — ✅ FIXED (2026-08-25) — [High]
+- `/terms` route + `pages/Terms.jsx` created with honest placeholder structure ("not yet legally reviewed" notice, no fake legal claims) + footer link + sitemap entry + SEO meta. **Open:** product owner should replace template with real counsel copy.
 
-### 27. Privacy Policy — ❌ MISSING — [High]
-- Same: no `/privacy` route/page/footer link (only `ConnectionPrivacySettings` — a feature, not the policy). Create `/privacy` with honest placeholder structure + footer link.
+### 27. Privacy Policy — ✅ FIXED (2026-08-25) — [High]
+- `/privacy` route + `pages/Privacy.jsx` created with honest placeholder structure ("not yet legally reviewed" notice, no fake legal claims) + footer link + sitemap entry + SEO meta. (`ConnectionPrivacySettings` remains a separate *feature*, correctly distinct from the policy.) **Open:** real counsel copy.
 
 ### 28. Hover animations everywhere — ⚠️ EXISTS (pervasive)
 - `.card-lift`/`.card-premium-hover`/`.motion-lift`/`.soft-scale`/`.directional-move`/`.reveal-on-hover`/`.magnetic-button` (app.css utility layer), `hover:-translate-y-1`, `hover:scale-105`, `group-hover:scale-110`, `active:scale-95/98`, `btn-primary:hover { transform: translateY(-1px) }` (app.css), `transition-all duration-300` on nearly every card.
@@ -150,11 +159,11 @@ The final report after implementation must state, per pattern: existed / removed
 
 ## Execution order
 
-1. **Design-system audit T1–T6 + C5/C6** (radius, colors, spacing, animation, premium-utilities purge) — unblocks everything.
-2. **Anti-vibe quick wins:** PaymentHistory rewrite (copy + dot grids + shadows), Illustration emoji → lucide, blur sweep, Home hierarchy pass.
+1. **Design-system audit T1–T6 + C5/C6** (radius, colors, spacing, animation, premium-utilities purge) — unblocks everything. ✅
+2. **Anti-vibe quick wins:** PaymentHistory rewrite (copy + dot grids + shadows), Illustration emoji → lucide, blur sweep, Home hierarchy pass. ✅
 3. **IA:** D1 payment-history redirect, D2 city canonical, D3 admin-login fold, D4 blog orphan, N1 shell rules, N2 typo.
-4. **Terms/Privacy pages (#26/#27)** + footer links.
-5. **States/hierarchy verification** + reduced-motion/JS-off pass.
+4. **Terms/Privacy pages (#26/#27)** + footer links. ✅
+5. **States/hierarchy verification** + reduced-motion/JS-off pass. ✅ (2026-08-26)
 
 ```bash
 cd etuitionhub-frontend
@@ -165,3 +174,52 @@ grep -rn "Sparkles" src/ | wc -l             # → ≤1 (AI section header)
 grep -rn "Yield\|Professional Node\|ledger synchron" src/ | wc -l   # → 0
 grep -rn "🏙️\|👨👩👧\|🤖" src/ | wc -l       # → 0
 ```
+
+---
+
+## Part 3 — Final report per pattern (verified 2026-08-26)
+
+Verification basis: `npm run lint` (clean), `npm run build` (succeeds), `npm test` (25 files / 158 tests pass), plus live-app and grep checks noted inline. **Nothing below is claimed fixed without that verification.**
+
+| # | Pattern | Disposition | Where / why |
+|---|---------|-------------|-------------|
+| 1 | Harsh gradients | REMOVED | `.bg-layered` purged (C5); decorative gradient fields removed across CallToAction, Testimonials, Home, OrganizationDirectory, ChatSidebarItem, Illustration placeholder → solid `bg-muted/30`/`bg-card`/`bg-primary`. Retained only where functional: shimmer skeletons, sent-message bubble, DynamicIsland teal, categorical AI hover washes. |
+| 2 | Generic Lucide icons | KEEP | One consistent lucide set; brand SVGs (PoruaLogo, socials) justified. Verified `AppleUI` buttons use lucide too. |
+| 3 | Pure white bg | KEEP | `--background: 210 20% 97%`; cards white → real surface hierarchy. |
+| 4 | Rainbow coloring | PARTIALLY REMOVED | `fill-amber-400/500` stars → `fill-warning`; `text-[#2563EB]` → `text-primary` (Tutors/Tuitions sweeps); `bg-[#2563EB]` → `bg-primary`. Retained categorical multi-hue only for AI suggested-actions / FeaturedCategories nav tiles (T2 documented keeps). |
+| 5 | Drop shadows | REMOVED (decorative) | `shadow-2xl` on PaymentHistory removed; card shadows → borders/surface contrast; shadows remain only on elevated overlays (dialogs/dropdowns/toasts) and small `shadow-sm/md` on interactive controls. |
+| 6 | 3 feature cards in a row | REMOVED (marketing) | Statistics/WhyChooseUs/FeaturedCategories → editorial statement+list layouts. Kept real-data grids (PopularTutors, Testimonials). |
+| 7 | Emojis | REMOVED (interface) | Illustration emoji → lucide/SVG; `✓/○` → lucide; toast `🔔`, email `🎉/⚠️`, `📍`, `↓/✦`, `💬🧠` all → lucide. Kept chat reaction picker (real feature). |
+| 8 | Liquid glass | REMOVED (cards) | 49 backdrop-blur matches → blur only on modal overlays + floating shells (bottom nav, chat input, DynamicIsland). Card blur stripped. |
+| 9 | Em dashes / AI copy | REMOVED | PaymentHistory rewritten to plain labels; WhyChooseUs em-dash list → structured pairs; FAQ/Contact/Checkout/NotFound/AdminAuditLogs copy normalized; `seamless` generic phrase removed from Profile.jsx. |
+| 10 | Inter / Space Grotesk | KEEP | Documented identity; `display=swap` + preconnect confirmed. |
+| 11 | Colored stripes | REMOVED | Rainbow stripe in CallToAction → `h-1 bg-primary`; PaymentHistory decorative bar removed with rewrite. |
+| 12 | Fake testimonials | KEEP (real data) | `/api/testimonials/featured` with skeleton + EmptyState. |
+| 13 | Bento grids | KEEP (not found) | None existed. |
+| 14 | Terminal windows | KEEP (justified) | EngineeringShowcase shiki code blocks — developer showcase page, product-appropriate. |
+| 15 | "It's not X, it's Y" | KEEP (not found) | Copy sweep clean. |
+| 16 | Checkmark bullets | KEPT (minor) | CallToAction guarantees are real; low priority, not a template. |
+| 17 | Three pricing tiers | KEEP (not applicable) | No public pricing; org plans are a real backend feature. |
+| 18 | No real demos | KEEP (good) | Home shows live tutor search, real tutors, real testimonials, real AI assistant. |
+| 19 | Soft corner radius | REMOVED | Design-system T1: `--radius` → 4px; `rounded-2xl`/`rounded-[20px+22px]` → `rounded-lg`; dialogs 6px; `rounded-full` only avatars/badges/chips. |
+| 20 | Purple + black | KEEP (not found) | Royal-blue primary is correct identity. |
+| 21 | No skeleton loaders | REMOVED (gap closed) | Tutors error state added with retry; skeletons verified on Tutors/Tuitions/TutorDetails/Home/dashboards. |
+| 22 | Radial orbs | REMOVED | CallToAction 600px glow orb, WhyChooseUs 500px orb, dot grids removed; `.bg-pattern-academic` purged. |
+| 23 | Dot grids | REMOVED | `.bg-dot-pattern` removed; PaymentHistory inline grids removed with rewrite. |
+| 24 | Sparkle icons | KEEP (AI-exemption) | Verified sparkles only at AiAssistantHome section header + AI affordances — documented C5 exemption. |
+| 25 | Animated arrows | KEEP (mild, ≤200ms) | Subtle CTA affordances at capped duration. |
+| 26 | Terms of Service | FIXED | `/terms` page with honest placeholder, footer link, sitemap, SEO. Open: real counsel copy. |
+| 27 | Privacy Policy | FIXED | `/privacy` page same treatment. Open: real counsel copy. |
+| 28 | Hover animations everywhere | REMOVED (cards) | `.card-lift`/`.card-premium-hover`/`.motion-lift`/`.soft-scale`/`.directional-move`/`.reveal-on-hover`/`.magnetic-button` purged (C5); hover on cards → border/color only, no translate/scale; buttons/links keep ≤200ms states. |
+| 29 | Neon colors | KEEP (not found) | None. |
+| 30 | Basic pastel colors | REMOVED | Illustration pastel gradients → neutral surface; avatar pastels → semantic tokens. |
+
+**Deeper problems (Part 2):** H1 hierarchy ✅ editorialized; H2 spacing ✅ in scale; H3 layout stability ✅ (no JS-hidden content, reduced-motion, `display=swap`); H4 responsive ✅ walk verified; H5 states ✅ Tutors + Tuitions readable errors; H6 copy ✅ PaymentHistory rewritten + generic-phrase sweep.
+
+**Left for follow-up (documented, not this pass):**
+- Terms/Privacy real legal copy (product-owner input).
+- Dashboard (650 raw colors) + EngineeringShowcase (406) excluded for separate careful passes.
+- Bengali i18n of remaining screens (navigation-only today).
+- Backend/frontend phase-0 data verification against prod DB (requires user).
+- 4.3 Tutor referral program — FLAG, needs product decision.
+- IA items D1–D4, N1–N2 (separate audit pass).

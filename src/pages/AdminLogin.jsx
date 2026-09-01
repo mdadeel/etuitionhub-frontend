@@ -5,6 +5,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { isAdmin, isAdminPath, defaultRouteFor } from '../lib/authz';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ShieldCheck, Loader2 } from "lucide-react";
+import SEO from '../components/shared/SEO';
 
 const AdminLogin = () => {
     const { register, handleSubmit } = useForm();
@@ -60,51 +65,60 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4">
+            <SEO title="Admin Portal | eTuitionBD" description="Restricted area for authorized administrators only." noIndex={true} />
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-400 block mb-2">Restricted Access</span>
-                    <h1 className="text-3xl font-extrabold text-white">Admin Portal</h1>
-                    <p className="text-gray-400 text-sm mt-2">This area is for authorized administrators only.</p>
+                    <div className="inline-flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary mb-3">
+                        <ShieldCheck className="size-6" />
+                    </div>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary block mb-1">Restricted Access</span>
+                    <h1 className="text-2xl md:text-3xl font-heading font-extrabold text-foreground">Admin Portal</h1>
+                    <p className="text-muted-foreground text-sm mt-1">This area is for authorized administrators only.</p>
                 </div>
 
-                <div className="bg-gray-800 border border-gray-700 rounded-xl p-8 shadow-2xl">
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <div className="mb-5">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                <div className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-sm">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="admin-email" className="text-xs font-semibold text-foreground">
                                 Admin Email
-                            </label>
-                            <input
+                            </Label>
+                            <Input
+                                id="admin-email"
                                 type="email"
+                                autoComplete="email"
                                 {...register('email', { required: true })}
-                                className="w-full h-12 px-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all"
                                 placeholder="admin@domain.com"
+                                disabled={loading}
                             />
                         </div>
 
-                        <div className="mb-6">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="admin-password" className="text-xs font-semibold text-foreground">
                                 Password
-                            </label>
-                            <input
+                            </Label>
+                            <Input
+                                id="admin-password"
                                 type="password"
+                                autoComplete="current-password"
                                 {...register('password', { required: true })}
-                                className="w-full h-12 px-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition-all"
                                 placeholder="••••••••"
+                                disabled={loading}
                             />
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full h-12 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition-all disabled:opacity-50"
+                            className="w-full mt-2"
                         >
+                            {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
                             {loading ? 'Authenticating...' : 'Access Dashboard'}
-                        </button>
+                        </Button>
                     </form>
 
                     <p className="text-center mt-6 text-sm text-muted-foreground">
-                        Not an admin? <Link to="/login" className="text-teal-400 hover:underline">Return to User Login</Link>
+                        Not an admin? <Link to="/login" className="text-primary hover:underline font-medium">Return to User Login</Link>
                     </p>
                 </div>
             </div>

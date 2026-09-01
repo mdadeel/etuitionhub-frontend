@@ -220,7 +220,7 @@ const SubscriptionManagement = () => {
       render: (_, sub) => (
         <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
           sub.status === "active" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
-          sub.status === "trialing" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
+          sub.status === "trialing" ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" :
           sub.status === "canceled" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" :
           "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
         }`}>
@@ -286,7 +286,7 @@ const SubscriptionManagement = () => {
       {/* Create/Edit Plan Modal */}
       {showPlanModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-lg max-h-[85vh] rounded-2xl shadow-xl border border-border overflow-hidden flex flex-col">
+          <div className="bg-card w-full max-w-lg max-h-[85vh] rounded-lg shadow-xl border border-border overflow-hidden flex flex-col">
             <div className="p-6 border-b border-border flex items-center justify-between flex-shrink-0">
               <h2 className="text-xl font-bold text-foreground">{editingPlan ? "Edit Plan" : "Create Plan"}</h2>
               <button onClick={() => setShowPlanModal(false)} className="text-muted-foreground hover:text-foreground">✕</button>

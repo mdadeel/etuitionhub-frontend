@@ -5,9 +5,12 @@ import { Plus, Users, BookOpen } from "lucide-react";
 import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const OrgClasses = () => {
   const { orgId } = useParams();
+  const { hasPermission } = useAuth();
+  const canManage = hasPermission('class:manage');
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,12 +34,16 @@ const OrgClasses = () => {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Classes & Batches</h2>
           <p className="text-muted-foreground mt-1">
-            Manage your organization's class structure and assign subjects.
+            {canManage
+              ? "Manage your organization's class structure and assign subjects."
+              : "Your assigned classes in this organization."}
           </p>
         </div>
-        <Button className="shadow-sm">
-          <Plus className="mr-2 h-4 w-4" /> Create Class
-        </Button>
+        {canManage && (
+          <Button className="shadow-sm">
+            <Plus className="mr-2 h-4 w-4" /> Create Class
+          </Button>
+        )}
       </div>
 
       {loading ? (
@@ -49,11 +56,15 @@ const OrgClasses = () => {
             <BookOpen className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
             <h3 className="text-xl font-semibold mb-2">No Classes Found</h3>
             <p className="text-muted-foreground max-w-sm mb-6">
-              You haven't created any classes or batches yet. Create your first class to get started.
+              {canManage
+                ? "You haven't created any classes or batches yet. Create your first class to get started."
+                : "You haven't been assigned to any classes yet. Once assigned, they will appear here."}
             </p>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Create First Class
-            </Button>
+            {canManage && (
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Create First Class
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -82,9 +93,11 @@ const OrgClasses = () => {
                     <span>{cls.subjects?.length || 0} Subjects</span>
                   </div>
                 </div>
-                <div className="flex justify-end">
-                  <Button variant="outline" size="sm">Manage Class</Button>
-                </div>
+                {canManage && (
+                  <div className="flex justify-end">
+                    <Button variant="outline" size="sm">Manage Class</Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

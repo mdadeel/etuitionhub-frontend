@@ -3,19 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import DataTable from "@/components/ui/data-table";
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContext";
+import { useChat } from '../../contexts/ChatContext';
 import toast from 'react-hot-toast'
 import api from '../../services/api';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import TutorAvailability from './TutorAvailability';
 import Assignments from './Assignments';
 import { AppleHeader } from "@/components/shared/AppleUI";
+import { computeProjectedThisMonth } from '@/lib/earningsForecast';
 import { 
     FileText, 
     Banknote, 
     Database,
     UserCheck,
+    MessageSquare,
     ArrowUpRight,
     TrendingUp,
     Activity,
@@ -30,6 +34,8 @@ import SessionStatsCard from './SessionStatsCard';
  */
 const TutorDashboard = () => {
     const { user } = useAuth();
+    const { conversations, openChatWith, fetchConversations } = useChat();
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const { pathname } = useLocation();
     const initialTab = pathname.includes('/applications') ? 'applications' : (searchParams.get('tab') || 'overview');
@@ -54,10 +60,10 @@ const TutorDashboard = () => {
             setApps(res.data || []);
         } catch (err) {
             console.error('Failed to fetch applications:', err);
-            toast.error('Failed to load applications');
+            toast.error(t('tutorDashboard.load_apps_failed'));
             setApps([]);
         }
-    }, [user?.email]);
+    }, [user?.email, t]);
 
     // Fetch earnings
     const fetchRevenue = useCallback(async () => {
@@ -67,10 +73,10 @@ const TutorDashboard = () => {
             setRevenue(res.data || []);
         } catch (err) {
             console.error('Failed to fetch earnings:', err);
-            toast.error('Failed to load earnings');
+            toast.error(t('tutorDashboard.load_earnings_failed'));
             setRevenue([]);
         }
-    }, [user?.email]);
+    }, [user?.email, t]);
 
     // Initial data fetch
     useEffect(() => {
@@ -92,16 +98,39 @@ const TutorDashboard = () => {
     }, [user?.email, fetchApplications, fetchRevenue]);
 
     const totalEarnings = revenue.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
+    const projectedThisMonth = computeProjectedThisMonth(revenue);
     const activeEngagements = apps.filter(a => a.status === 'approved').length;
 
     const handleDelete = async (id) => {
-        if (!confirm('Delete this application?')) return;
+        if (!confirm(t('tutorDashboard.confirm_delete'))) return;
         try {
             await api.delete(`/api/applications/${id}`);
-            toast.success('Application deleted');
-            await fetchApplications();
+            toast.success(t('tutorDashboard.app_deleted'));            await fetchApplications();
         } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to delete application');
+            toast.error(err.response?.data?.error || t('tutorDashboard.delete_failed'));
+        }
+    };
+
+    const handleContactStudent = async (app) => {
+        try {
+            let conv = conversations.find(c =>
+                c.participants?.some(p => p._id === app.studentId || p.email === app.studentEmail)
+            );
+            if (conv) {
+                openChatWith(conv);
+                return;
+            }
+            await api.post('/api/messages', {
+                receiverId: app.studentId || app.tuitionId?.studentId,
+                text: t('tutorDashboard.first_message')
+            });
+            await fetchConversations();
+            conv = conversations.find(c =>
+                c.participants?.some(p => p._id === app.studentId || p.email === app.studentEmail)
+            );
+            if (conv) openChatWith(conv);
+        } catch {
+            toast.error(t('tutorDashboard.contact_failed'));
         }
     };
 
@@ -119,21 +148,21 @@ const TutorDashboard = () => {
     }
 
     const tabs = [
-        { id: 'overview', label: 'Overview', icon: Activity },
-        { id: 'applications', label: 'Applications', icon: FileText },
-        { id: 'ongoing', label: 'Engagements', icon: UserCheck },
-        { id: 'revenue', label: 'Earnings', icon: Banknote },
-        { id: 'availability', label: 'Availability', icon: Calendar },
-        { id: 'assignments', label: 'Assignments', icon: BookOpen },
+        { id: 'overview', label: 'overview', icon: Activity },
+        { id: 'applications', label: 'applications', icon: FileText },
+        { id: 'ongoing', label: 'engagements', icon: UserCheck },
+        { id: 'revenue', label: 'earnings', icon: Banknote },
+        { id: 'availability', label: 'availability', icon: Calendar },
+        { id: 'assignments', label: 'assignments', icon: BookOpen },
     ];
 
     return (
         <div className="space-y-10 animate-fade-in-up">
             
-            <AppleHeader 
-                title={`Welcome back, ${user?.displayName?.split(' ')[0]}`}
-                subtitle="Here's a summary of your professional activity and performance."
-                badge={<span className="px-3 py-1 text-xs font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20">Tutor Dashboard</span>}
+            <AppleHeader
+                title={t('tutorDashboard.hello', { name: user?.displayName?.split(' ')[0] })}
+                subtitle={t('tutorDashboard.subtitle')}
+                badge={<span className="px-3 py-1 text-xs font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20">{t('tutorDashboard.dashboard_badge')}</span>}
             />
 
             {/* Tab Navigation */}
@@ -151,7 +180,7 @@ const TutorDashboard = () => {
                             )}
                         >
                             <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-50'} />
-                            {tab.label}
+                            {t(`tutorDashboard.tab_${tab.label}`)}
                         </button>
                     ))}
                 </div>
@@ -161,37 +190,48 @@ const TutorDashboard = () => {
             {activeTab === 'overview' && (
                 <div className="space-y-10">
                     <SessionStatsCard />
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                         <Card className="p-6 md:p-10 group" >
                             <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
                                 <FileText size={24} />
                             </div>
-                            <p className="text-xs font-semibold text-muted-foreground mb-2">Total Applications</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-2">{t('tutorDashboard.total_applications')}</p>
                             <div className="flex items-baseline gap-2">
                                 <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">{apps.length}</span>
-                                <span className="text-xs font-semibold text-muted-foreground">Sent</span>
+                                <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.sent')}</span>
                             </div>
                         </Card>
 
                         <Card className="p-6 md:p-10 group" >
-                            <div className="size-12 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
+                            <div className="size-12 rounded-lg bg-success/10 text-success flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-success/20 shadow-sm">
                                 <UserCheck size={24} />
                             </div>
-                            <p className="text-xs font-semibold text-muted-foreground mb-2">Active Engagements</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-2">{t('tutorDashboard.active_engagements')}</p>
                             <div className="flex items-baseline gap-2">
                                 <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">{activeEngagements}</span>
-                                <span className="text-xs font-semibold text-muted-foreground">Jobs</span>
+                                <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.jobs')}</span>
                             </div>
                         </Card>
 
-                        <Card className="p-6 md:p-10 group col-span-2 lg:col-span-1" >
-                            <div className="size-12 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-amber-500/20 shadow-sm">
+                        <Card className="p-6 md:p-10 group" >
+                            <div className="size-12 rounded-lg bg-warning/10 text-warning flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-warning/20 shadow-sm">
                                 <TrendingUp size={24} />
                             </div>
-                            <p className="text-xs font-semibold text-muted-foreground mb-2">Total Earnings</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-2">{t('tutorDashboard.projected_month')}</p>
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-2xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">৳{projectedThisMonth.toLocaleString()}</span>
+                                <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.net')}</span>
+                            </div>
+                        </Card>
+
+                        <Card className="p-6 md:p-10 group" >
+                            <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
+                                <Banknote size={24} />
+                            </div>
+                            <p className="text-xs font-semibold text-muted-foreground mb-2">{t('tutorDashboard.total_earnings')}</p>
                             <div className="flex items-baseline gap-2">
                                 <span className="text-2xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">৳{totalEarnings}</span>
-                                <span className="text-xs font-semibold text-muted-foreground">BDT</span>
+                                <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.bdt')}</span>
                             </div>
                         </Card>
                     </div>
@@ -199,9 +239,9 @@ const TutorDashboard = () => {
                     <Card className="p-8 overflow-hidden relative">
                         <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         <div className="relative z-10">
-                            <h3 className="text-lg font-bold text-foreground tracking-tight mb-6">Recent Activity</h3>
+                            <h3 className="text-lg font-bold text-foreground tracking-tight mb-6">{t('tutorDashboard.recent_activity')}</h3>
                             {apps.length === 0 ? (
-                                <p className="text-sm text-muted-foreground italic">No recent activity detected.</p>
+                                <p className="text-sm text-muted-foreground italic">{t('tutorDashboard.no_recent_activity')}</p>
                             ) : (
                                 <div className="space-y-4">
                                     {apps.slice(0, 3).map((app) => (
@@ -235,13 +275,13 @@ const TutorDashboard = () => {
                     emptyState={
                         <div className="p-32 text-center">
                             <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-muted-foreground italic">No applications in the pipeline.</p>
+                            <p className="text-sm font-medium text-muted-foreground italic">{t('tutorDashboard.no_pipeline_apps')}</p>
                         </div>
                     }
                     columns={[
                         {
                             key: 'tuitionId',
-                            label: 'Subject',
+                            label: t('tutorDashboard.subject'),
                             render: (_, app) => (
                                 <>
                                     <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
@@ -251,7 +291,7 @@ const TutorDashboard = () => {
                         },
                         {
                             key: 'expectedSalary',
-                            label: 'Expected Fee',
+                            label: t('tutorDashboard.expected_fee'),
                             align: 'center',
                             render: (val) => (
                                 <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
@@ -259,7 +299,7 @@ const TutorDashboard = () => {
                         },
                         {
                             key: 'status',
-                            label: 'Status',
+                            label: t('tutorDashboard.status'),
                             align: 'center',
                             render: (val) => (
                                 <Badge
@@ -272,17 +312,17 @@ const TutorDashboard = () => {
                         },
                         {
                             key: '_id',
-                            label: 'Action',
+                            label: t('tutorDashboard.action'),
                             align: 'right',
                             render: (_, app) => (
                                 app.status === 'pending' ? (
                                     <button
                                         onClick={() => handleDelete(app._id)}
-                                        className="text-xs font-bold text-red-600 hover:underline active:scale-[0.98]"
+                                        className="text-xs font-bold text-destructive hover:underline active:scale-[0.98]"
                                     >
-                                        Recall Application
+                                        {t('tutorDashboard.recall_application')}
                                     </button>
-                                ) : <span className="text-xs text-muted-foreground/40 italic">Locked</span>
+                                ) : <span className="text-xs text-muted-foreground/40 italic">{t('tutorDashboard.locked')}</span>
                             ),
                         },
                     ]}
@@ -295,7 +335,7 @@ const TutorDashboard = () => {
                     {apps.filter(a => a.status === 'approved').length === 0 ? (
                         <Card className="md:col-span-2 p-32 text-center border-dashed">
                              <UserCheck size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-muted-foreground italic">No active engagements identified.</p>
+                            <p className="text-sm font-medium text-muted-foreground italic">{t('tutorDashboard.no_active_engagements')}</p>
                         </Card>
                     ) : (
                         apps.filter(a => a.status === 'approved').map(app => (
@@ -304,25 +344,23 @@ const TutorDashboard = () => {
                                 <div className="relative z-10">
                                     <div className="flex items-center gap-2 mb-6">
                                         <div className="size-2 rounded-full bg-primary animate-pulse"></div>
-                                        <span className="text-xs font-bold text-primary">Active Connection</span>
+                                        <span className="text-xs font-bold text-primary">{t('tutorDashboard.active_connection')}</span>
                                     </div>
                                     <h3 className="text-xl font-bold text-foreground mb-8 tracking-tight">{app.tuitionId?.subject}</h3>
-                                    
+
                                     <div className="space-y-4 mb-8">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xs font-semibold text-muted-foreground">Student Email</span>
+                                            <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.student_email')}</span>
                                             <span className="text-xs font-bold text-foreground">{app.studentEmail}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xs font-semibold text-muted-foreground">Monthly Fee</span>
-                                            <span className="text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary} <span className="text-xs text-muted-foreground opacity-50">/mo</span></span>
+                                            <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.monthly_fee')}</span>
+                                            <span className="text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary} <span className="text-xs text-muted-foreground opacity-50">{t('tutorDashboard.per_month')}</span></span>
                                         </div>
                                     </div>
-                                    
-                                    <Button asChild variant="outline" className="w-full h-11 rounded-lg active:scale-[0.98]">
-                                        <a href={`mailto:${app.studentEmail}`} className="flex items-center justify-center gap-2">
-                                            Send Message <ArrowUpRight size={14} />
-                                        </a>
+
+                                    <Button variant="outline" className="w-full h-11 rounded-lg active:scale-[0.98]" onClick={() => handleContactStudent(app)}>
+                                        <MessageSquare size={14} /> {t('tutorDashboard.send_message')} <ArrowUpRight size={14} />
                                     </Button>
                                 </div>
                             </Card>
@@ -338,12 +376,12 @@ const TutorDashboard = () => {
                         <div>
                              <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
                                 <div className="size-2 rounded-full bg-primary"></div>
-                                Earnings Report
+                                {t('tutorDashboard.earnings_report')}
                             </h2>
-                            <p className="text-xs font-medium text-muted-foreground mt-1">Audit trail for all completed tutor payments.</p>
+                            <p className="text-xs font-medium text-muted-foreground mt-1">{t('tutorDashboard.earnings_subtitle')}</p>
                         </div>
                         <div className="bg-card px-8 py-4 rounded-xl border border-border shadow-sm">
-                            <p className="text-xs font-semibold text-muted-foreground mb-1">Total Earnings</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-1">{t('tutorDashboard.total_earnings')}</p>
                             <p className="text-2xl font-bold text-primary tracking-tight tabular-nums">৳{totalEarnings}</p>
                         </div>
                     </div>
@@ -354,13 +392,13 @@ const TutorDashboard = () => {
                         emptyState={
                             <div className="p-32 text-center">
                                 <Banknote size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                                <p className="text-sm font-medium text-muted-foreground italic">No payment history found.</p>
+                                <p className="text-sm font-medium text-muted-foreground italic">{t('tutorDashboard.no_payment_history')}</p>
                             </div>
                         }
                         columns={[
                             {
                                 key: 'createdAt',
-                                label: 'Date',
+                                label: t('tutorDashboard.date'),
                                 render: (val) => (
                                     <span className="text-xs font-bold text-muted-foreground uppercase tabular-nums tracking-widest">
                                         {new Date(val).toLocaleDateString()}
@@ -369,17 +407,17 @@ const TutorDashboard = () => {
                             },
                             {
                                 key: 'tuitionId',
-                                label: 'Subject / Student',
+                                label: t('tutorDashboard.subject_student'),
                                 render: (_, payment) => (
                                     <>
-                                        <p className="text-sm font-bold text-foreground">{payment.tuitionId?.subject || 'Tutoring Fee'}</p>
+                                        <p className="text-sm font-bold text-foreground">{payment.tuitionId?.subject || t('tutorDashboard.tutoring_fee')}</p>
                                         <p className="text-xs text-muted-foreground font-medium mt-1">{payment.studentEmail}</p>
                                     </>
                                 ),
                             },
                             {
                                 key: 'grossAmount',
-                                label: 'Amount',
+                                label: t('tutorDashboard.amount'),
                                 align: 'center',
                                 render: (val) => (
                                     <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
@@ -387,7 +425,7 @@ const TutorDashboard = () => {
                             },
                             {
                                 key: 'status',
-                                label: 'Status',
+                                label: t('tutorDashboard.status'),
                                 align: 'right',
                                 render: (val) => (
                                     <Badge

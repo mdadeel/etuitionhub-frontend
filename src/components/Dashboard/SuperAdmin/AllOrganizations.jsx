@@ -105,7 +105,7 @@ const AllOrganizations = () => {
   const statusColors = {
     active: "bg-green-500/10 text-green-600",
     suspended: "bg-yellow-500/10 text-yellow-600",
-    pending_verification: "bg-blue-500/10 text-blue-600",
+    pending_verification: "bg-primary/10 text-primary",
     banned: "bg-red-500/10 text-red-600"
   };
 
@@ -220,7 +220,7 @@ const AllOrganizations = () => {
                   <span className="text-muted-foreground">|</span>
                   <button
                     onClick={() => { setSelectedOrg(org); setNotifyModalOpen(true); }}
-                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                    className="inline-flex items-center gap-1 text-primary hover:text-primary"
                   >
                     <Bell className="h-3 w-3" />
                     Notify

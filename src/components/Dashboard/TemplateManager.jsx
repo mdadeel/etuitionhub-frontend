@@ -111,7 +111,7 @@ const TemplateManager = () => {
                 </div>
                 <div className="space-y-3">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className="flex items-center justify-between p-4 border border-border/50 rounded-2xl">
+                        <div key={i} className="flex items-center justify-between p-4 border border-border/50 rounded-lg">
                             <div className="flex items-center gap-3">
                                 <Skeleton className="size-8 rounded-lg shrink-0" />
                                 <div className="space-y-1.5">
@@ -154,7 +154,7 @@ const TemplateManager = () => {
 
             {/* Create/Edit Form */}
             {showForm && (
-                <div className="mb-6 p-5 border border-primary/20 rounded-2xl bg-primary/5 space-y-4">
+                <div className="mb-6 p-5 border border-primary/20 rounded-lg bg-primary/5 space-y-4">
                     <p className="text-xs font-label font-semibold uppercase tracking-wider text-primary">
                         {editing ? 'Edit Template' : 'New Template'}
                     </p>
@@ -216,7 +216,7 @@ const TemplateManager = () => {
 
             {/* Template List */}
             {templates.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground bg-background rounded-2xl border border-border">
+                <div className="py-12 text-center text-muted-foreground bg-background rounded-lg border border-border">
                     <FileText size={32} className="mx-auto mb-3 opacity-20" />
                     <p className="text-sm font-medium text-foreground">No templates yet</p>
                     <p className="text-xs mt-1">Create your first template to reuse messages quickly.</p>
@@ -226,7 +226,7 @@ const TemplateManager = () => {
                     {templates.map(template => (
                         <div
                             key={template._id}
-                            className="p-5 border border-border rounded-2xl bg-card hover:border-primary/20 transition-colors group"
+                            className="p-5 border border-border rounded-lg bg-card hover:border-primary/20 transition-colors group"
                         >
                             <div className="flex justify-between items-start mb-2">
                                 <div className="flex items-center gap-2">

@@ -302,7 +302,7 @@ const OrgMembers = () => {
                           setRoleEditMember(member._id);
                           setRoleEditValue(member.roleId?._id || '');
                         }}
-                        className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg transition-colors"
+                        className="p-2 text-primary hover:bg-primary/10 dark:hover:bg-primary/20 rounded-lg transition-colors"
                         title="Change Role"
                       >
                         <Shield className="w-4 h-4" />
@@ -406,7 +406,7 @@ const OrgMembers = () => {
       {/* Invite Modal Overlay */}
       {showInviteModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-md rounded-2xl shadow-xl border border-border overflow-hidden">
+          <div className="bg-card w-full max-w-md rounded-lg shadow-xl border border-border overflow-hidden">
             <div className="p-6 border-b border-border flex items-center justify-between">
               <h2 className="text-xl font-bold text-foreground">Invite New Member</h2>
               <button onClick={resetInviteModal} className="text-muted-foreground hover:text-foreground">✕</button>

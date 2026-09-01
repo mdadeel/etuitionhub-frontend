@@ -117,7 +117,7 @@ const ChatInputBar = ({
                 <div className="mb-3 mx-1 overflow-hidden animate-in slide-in-from-bottom-2 duration-200">
                     <div className="px-3 py-2 bg-muted border-l-4 border-primary rounded-lg text-sm flex items-center justify-between gap-4 shadow-sm">
                         <div className="min-w-0 flex-1">
-                            <p className="text-[10px] font-bold text-primary tracking-wider uppercase">Replying to message</p>
+                            <p className="text-[11px] font-bold text-primary tracking-wider uppercase">Replying to message</p>
                             <p className="text-muted-foreground truncate mt-0.5 text-xs">{replyingTo.text}</p>
                         </div>
                         <button
@@ -136,7 +136,7 @@ const ChatInputBar = ({
                 <div className="mb-3 mx-1 overflow-hidden animate-in slide-in-from-bottom-2 duration-200">
                     <div className="px-3 py-2 bg-muted border-l-4 border-warning rounded-lg text-sm flex items-center justify-between gap-4 shadow-sm">
                         <div className="min-w-0 flex-1">
-                            <p className="text-[10px] font-bold text-warning tracking-wider uppercase">Editing message</p>
+                            <p className="text-[11px] font-bold text-warning tracking-wider uppercase">Editing message</p>
                             <p className="text-muted-foreground truncate mt-0.5 text-xs">{editingMessage.text}</p>
                         </div>
                         <button
@@ -157,7 +157,7 @@ const ChatInputBar = ({
                     className="absolute bottom-full mb-3 left-4 z-50 bg-popover border border-border shadow-md rounded-lg p-3 grid grid-cols-8 gap-2 w-72 animate-in zoom-in-95 duration-200"
                 >
                     <div className="col-span-8 mb-1 px-1 flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Quick Reactions</span>
+                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Quick Reactions</span>
                     </div>
                     {POPULAR_EMOJIS.map(emoji => (
                         <button

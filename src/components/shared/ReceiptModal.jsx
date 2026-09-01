@@ -53,21 +53,21 @@ const ReceiptModal = ({ paymentId, onClose }) => {
                 {!loading && receipt && (
                     <div className="p-8 space-y-6">
                         <div className="text-center pb-6 border-b border-border">
-                            <p className="text-[10px] font-heading font-black uppercase tracking-widest text-muted-foreground">Receipt No.</p>
+                            <p className="text-[11px] font-heading font-black uppercase tracking-widest text-muted-foreground">Receipt No.</p>
                             <p className="text-2xl font-heading font-black text-primary mt-1">{receipt.receiptNumber}</p>
-                            <p className="text-[10px] text-muted-foreground mt-1">
+                            <p className="text-[11px] text-muted-foreground mt-1">
                                 {new Date(receipt.generatedAt || receipt.createdAt).toLocaleString()}
                             </p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-6">
                             <div>
-                                <p className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">Student</p>
+                                <p className="text-[11px] font-heading font-black uppercase tracking-widest text-muted-foreground">Student</p>
                                 <p className="text-sm font-bold text-foreground mt-1">{receipt.studentId?.displayName || 'N/A'}</p>
                                 <p className="text-xs text-muted-foreground">{receipt.studentEmail}</p>
                             </div>
                             <div>
-                                <p className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">Tutor</p>
+                                <p className="text-[11px] font-heading font-black uppercase tracking-widest text-muted-foreground">Tutor</p>
                                 <p className="text-sm font-bold text-foreground mt-1">{receipt.tutorId?.displayName || 'N/A'}</p>
                                 <p className="text-xs text-muted-foreground">{receipt.tutorEmail}</p>
                             </div>
@@ -83,11 +83,11 @@ const ReceiptModal = ({ paymentId, onClose }) => {
 
                         <div className="grid grid-cols-2 gap-4 text-xs">
                             <div>
-                                <p className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">Payment Method</p>
+                                <p className="text-[11px] font-heading font-black uppercase tracking-widest text-muted-foreground">Payment Method</p>
                                 <p className="text-sm font-bold text-foreground mt-1 uppercase">{receipt.paymentMethod}</p>
                             </div>
                             <div>
-                                <p className="text-[9px] font-heading font-black uppercase tracking-widest text-muted-foreground">Transaction ID</p>
+                                <p className="text-[11px] font-heading font-black uppercase tracking-widest text-muted-foreground">Transaction ID</p>
                                 <p className="text-sm font-mono font-bold text-foreground mt-1 break-all">{receipt.transactionId}</p>
                             </div>
                         </div>
@@ -95,7 +95,7 @@ const ReceiptModal = ({ paymentId, onClose }) => {
                         <div className="flex gap-3 pt-4 border-t border-border">
                             <button
                                 onClick={() => window.print()}
-                                className="flex-1 h-10 px-4 border border-border text-[10px] font-heading font-black uppercase tracking-widest hover:bg-muted transition-colors flex items-center justify-center gap-2"
+                                className="flex-1 h-10 px-4 border border-border text-[11px] font-heading font-black uppercase tracking-widest hover:bg-muted transition-colors flex items-center justify-center gap-2"
                             >
                                 <Printer size={14} /> Print
                             </button>
@@ -109,7 +109,7 @@ const ReceiptModal = ({ paymentId, onClose }) => {
                                     a.click();
                                     URL.revokeObjectURL(url);
                                 }}
-                                className="flex-1 h-10 px-4 bg-primary text-white text-[10px] font-heading font-black uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                                className="flex-1 h-10 px-4 bg-primary text-white text-[11px] font-heading font-black uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                             >
                                 <Download size={14} /> Download
                             </button>

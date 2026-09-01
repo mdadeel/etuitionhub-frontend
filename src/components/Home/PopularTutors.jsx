@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Venus } from 'lucide-react';
 import TutorCard from '../shared/TutorCard';
 import api from '../../services/api';
 import { TutorCardGridSkeleton } from '../shared/skeletons';
 
 const PopularTutors = () => {
+    const { t } = useTranslation();
     const { data, isLoading } = useQuery({
         queryKey: ['tutors', 'popular'],
         queryFn: async () => {
@@ -26,13 +28,12 @@ const PopularTutors = () => {
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <div className="w-5 h-1 bg-primary rounded-full" />
-                            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Featured Tutors</span>
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t('popularTutors.heading')}</span>
                         </div>
-                        <h2 className="text-2xl font-heading font-bold tracking-tight text-foreground">Featured tutors</h2>
-                        <p className="text-sm text-muted-foreground mt-1">High-rated tutors actively taking new students</p>
+                        <h2 className="text-2xl font-heading font-bold tracking-tight text-foreground">{t('popularTutors.heading')}</h2>
                     </div>
                     <Link to="/tutors" className="text-sm text-primary font-medium hover:underline">
-                        Browse all →
+                        {t('popularTutors.view_all')} →
                     </Link>
                 </div>
 
@@ -47,7 +48,7 @@ const PopularTutors = () => {
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/60 bg-background/80 text-xs font-medium text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
                         >
                             <Venus className="size-3.5" />
-                            <span>Female Tutors</span>
+                            <span>{t('common.female_tutors')}</span>
                         </Link>
                     </div><div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
                             {tutors.map((tutor) => (
@@ -58,7 +59,7 @@ const PopularTutors = () => {
 
                 {!loading && tutors.length === 0 && (
                     <div className="text-center py-12 bg-background rounded border border-dashed opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
-                        <p className="text-muted-foreground">No tutors available yet.</p>
+                        <p className="text-muted-foreground">{t('common.no_results')}</p>
                     </div>
                 )}
             </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -17,7 +17,7 @@ const OrgExams = () => {
   const [form, setForm] = useState({ title: '', description: '', examDate: '', startTime: '', endTime: '', totalMarks: 100, passingMarks: 40, examType: 'other' });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchExams = async () => {
+  const fetchExams = useCallback(async () => {
     try {
       const res = await api.get(`/api/v1/organizations/${orgId}/exams`);
       setExams(res.data.data);
@@ -26,9 +26,9 @@ const OrgExams = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
-  useEffect(() => { fetchExams(); }, [orgId]);
+  useEffect(() => { fetchExams(); }, [fetchExams]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -46,8 +46,8 @@ const OrgExams = () => {
     }
   };
 
-  const getStatusColor = (s) => ({ scheduled: 'bg-blue-100 text-blue-700', in_progress: 'bg-yellow-100 text-yellow-700', completed: 'bg-green-100 text-green-700', cancelled: 'bg-red-100 text-red-700' }[s] || 'bg-gray-100 text-gray-700');
-  const getTypeColor = (t) => ({ midterm: 'bg-orange-100 text-orange-700', final: 'bg-red-100 text-red-700', quiz: 'bg-green-100 text-green-700', unit_test: 'bg-blue-100 text-blue-700' }[t] || 'bg-gray-100 text-gray-700');
+  const getStatusColor = (s) => ({ scheduled: 'bg-primary/10 text-primary', in_progress: 'bg-yellow-100 text-yellow-700', completed: 'bg-green-100 text-green-700', cancelled: 'bg-red-100 text-red-700' }[s] || 'bg-gray-100 text-gray-700');
+  const getTypeColor = (t) => ({ midterm: 'bg-orange-100 text-orange-700', final: 'bg-red-100 text-red-700', quiz: 'bg-green-100 text-green-700', unit_test: 'bg-primary/10 text-primary' }[t] || 'bg-gray-100 text-gray-700');
 
   return (
     <div className="space-y-6">

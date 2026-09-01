@@ -14,6 +14,7 @@
  */
 import React, { lazy, Suspense } from 'react';
 import { cn } from '@/lib/utils';
+import { Building2, Users, Bot, Brain, GraduationCap, Image } from 'lucide-react';
 
 // ─── Registry ───────────────────────────────────────────────────────────────
 // Only list files that ACTUALLY EXIST in /src/assets/illustrations/
@@ -34,37 +35,40 @@ const REGISTRY = {
 
 // ─── Placeholder ─────────────────────────────────────────────────────────────
 // Shown when no real illustration exists yet for a given name.
+// Uses lucide icons (no emoji as interface icons — design-system mandate).
 const META = {
-  'hero':             { gradient: 'from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40', icon: '🏙️',  label: 'Hero Illustration' },
-  'family-learning':  { gradient: 'from-amber-50 to-orange-100 dark:from-amber-950/40 dark:to-orange-950/40', icon: '👨‍👩‍👧', label: 'Family Learning' },
-  'robot':            { gradient: 'from-sky-50 to-blue-100 dark:from-sky-950/40 dark:to-blue-950/40', icon: '🤖',  label: 'AI Study Assistant' },
-  'student-thinking': { gradient: 'from-violet-50 to-purple-100 dark:from-violet-950/40 dark:to-purple-950/40', icon: '🤔', label: 'Student Thinking' },
-  'graduation':       { gradient: 'from-emerald-50 to-teal-100 dark:from-emerald-950/40 dark:to-teal-950/40', icon: '🎓', label: 'Graduation / Success' },
+  'hero':             { gradient: 'bg-muted/30', icon: Building2, label: 'Hero Illustration' },
+  'family-learning':  { gradient: 'bg-muted/30', icon: Users, label: 'Family Learning' },
+  'robot':            { gradient: 'bg-muted/30', icon: Bot, label: 'AI Study Assistant' },
+  'student-thinking': { gradient: 'bg-muted/30', icon: Brain, label: 'Student Thinking' },
+  'graduation':       { gradient: 'bg-muted/30', icon: GraduationCap, label: 'Graduation / Success' },
 };
 
 function IllustrationPlaceholder({ name, className }) {
   const meta = META[name] ?? {
-    gradient: 'from-slate-50 to-slate-100 dark:from-slate-900/40 dark:to-slate-800/40',
-    icon: '🖼️',
+    gradient: 'bg-muted/30',
+    icon: Image,
     label: name ?? 'Illustration',
   };
+
+  const Icon = meta.icon;
 
   return (
     <div
       className={cn(
-        'w-full h-full min-h-[240px] rounded-2xl',
-        'bg-gradient-to-br border border-dashed border-border/40',
+        'w-full h-full min-h-[240px] rounded-lg',
+        'border border-dashed border-border/40',
         'flex flex-col items-center justify-center gap-3 select-none',
         meta.gradient,
         className
       )}
     >
-      <span className="text-5xl">{meta.icon}</span>
+      <Icon className="size-12 text-muted-foreground/40" strokeWidth={1.5} />
       <div className="text-center space-y-0.5">
         <p className="text-xs font-semibold text-muted-foreground/70 tracking-wide uppercase">
           {meta.label}
         </p>
-        <p className="text-[10px] text-muted-foreground/40 font-mono">
+        <p className="text-[11px] text-muted-foreground/40 font-mono">
           Drop SVG → assets/illustrations/
         </p>
       </div>

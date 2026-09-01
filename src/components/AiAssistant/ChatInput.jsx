@@ -322,7 +322,7 @@ function pickRecognitionLang() {
     return (
         <div
             className={cn(
-                'group relative w-full rounded-2xl border bg-card backdrop-blur-xl transition-all duration-300 ease-in-out',
+                'group relative w-full rounded-lg border bg-card transition-all duration-300 ease-in-out',
                 focused
                     ? 'border-primary/25 ring-4 ring-primary/5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.25)]'
                     : 'border-border/40 shadow-[0_8px_30px_rgb(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)]',
@@ -384,7 +384,7 @@ function pickRecognitionLang() {
                         {slashMenuOpen && filteredSubjects.length > 0 && (
                             <div
                                 ref={slashMenuRef}
-                                className="absolute bottom-full left-0 right-0 mb-3.5 z-50 rounded-2xl border border-border/30 bg-card/95 backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200"
+                                className="absolute bottom-full left-0 right-0 mb-3.5 z-50 rounded-lg border border-border/30 bg-card/95 backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200"
                             >
                                 <div className="max-h-48 overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
                                     {filteredSubjects.map((key, i) => {
@@ -407,7 +407,7 @@ function pickRecognitionLang() {
                                                     <Icon size={13} className={i === slashIndex ? 'text-primary' : ''} />
                                                 </span>
                                                 <span className="flex-1 font-medium">{meta.label}</span>
-                                                <span className="text-[10px] text-muted-foreground/45 font-mono">/{key}</span>
+                                                <span className="text-[11px] text-muted-foreground/45 font-mono">/{key}</span>
                                             </button>
                                         );
                                     })}
@@ -447,17 +447,17 @@ function pickRecognitionLang() {
                                                 usage.remaining.daily === 0 || usage.remaining.monthly === 0
                                                     ? 'bg-destructive/10 text-destructive border-destructive/20'
                                                     : usage.remaining.daily / usage.limit.daily < 0.3 || usage.remaining.monthly / usage.limit.monthly < 0.3
-                                                        ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+                                                        ? 'bg-warning/10 text-warning border-warning/30'
                                                         : 'bg-muted/50 text-muted-foreground border-transparent hover:border-border/40 hover:text-foreground'
                                             )}
                                         >
                                             <Zap 
                                                 size={11} 
                                                 className={cn(
-                                                    usage.remaining.daily > 0 && usage.remaining.monthly > 0 ? "fill-current animate-pulse-subtle" : ""
+                                                    usage.remaining.daily > 0 && usage.remaining.monthly > 0 ? "fill-current" : ""
                                                 )} 
                                             />
-                                            <span className="text-[10px] font-bold tracking-tight">
+                                            <span className="text-[11px] font-bold tracking-tight">
                                                 {usage.remaining.daily}
                                             </span>
                                         </div>

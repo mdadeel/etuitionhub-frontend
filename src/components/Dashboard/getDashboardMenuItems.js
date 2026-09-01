@@ -54,8 +54,10 @@ function buildOrgMenu(orgContext, hasPermission) {
   if (hasPermission('tutor:view')) {
     items.push({ path: `${orgPath}/tutors`, label: "Tutors", icon: ShieldCheck, group: "People" });
   }
-  if (hasPermission('class:manage')) {
+  if (hasPermission('class:view') || hasPermission('class:manage')) {
     items.push({ path: `${orgPath}/classes`, label: "Classes", icon: LayoutDashboard, group: "Academic" });
+  }
+  if (hasPermission('class:manage')) {
     items.push({ path: `${orgPath}/academic-years`, label: "Academic Years", icon: Calendar, group: "Academic" });
     items.push({ path: `${orgPath}/batches`, label: "Batches", icon: Layers, group: "Academic" });
   }
@@ -150,8 +152,7 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
       { path: "/dashboard/profile", label: "Profile", icon: User, group: "Account" },
       { path: "/dashboard/sessions", label: "Sessions", icon: Calendar, group: "Teaching" },
       { path: "/dashboard/verification", label: "Verification", icon: ShieldCheck, group: "Account" },
-      { path: "/dashboard/wallet", label: "Wallet", icon: Wallet, group: "Finance" },
-      { path: "/dashboard/withdraw", label: "Withdraw", icon: ArrowDownToLine, group: "Finance" },
+      { path: "/dashboard/wallet", label: "Finance", icon: Wallet, group: "Finance" },
       { path: "/dashboard/assignments", label: "Assignments", icon: BookOpen, group: "Teaching" },
       { path: "/dashboard/templates", label: "Templates", icon: FileStack, group: "Teaching" },
     ];
@@ -161,10 +162,10 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
     { path: "/dashboard", label: "Overview", icon: LayoutDashboard, group: "Learning" },
     { path: "/dashboard/profile", label: "Profile", icon: User, group: "Account" },
     { path: "/dashboard/billing", label: "Billing", icon: Banknote, group: "Finance" },
-    { path: "/dashboard/relationships", label: "Relationships", icon: Users, group: "Connections" },
-    { path: "/dashboard/bookmarks", label: "Bookmarks", icon: Bookmark, group: "Connections" },
-    { path: "/dashboard/saved-searches", label: "Saved", icon: BookmarkCheck, group: "Connections" },
-    { path: "/dashboard/session-confirmations", label: "Confirm", icon: ClipboardCheck, group: "Learning" },
+    { path: "/dashboard/relationships", label: "Connections", icon: Users, group: "Learning" },
+    { path: "/dashboard/bookmarks", label: "Bookmarks", icon: Bookmark, group: "Learning" },
+    { path: "/dashboard/saved-searches", label: "Saved Searches", icon: BookmarkCheck, group: "Learning" },
+    { path: "/dashboard/calendar", label: "Sessions", icon: Calendar, group: "Learning" },
     { path: "/dashboard/assignments", label: "Assignments", icon: BookOpen, group: "Learning" },
     { path: "/dashboard/disputes", label: "Disputes", icon: Scale, group: "Support" },
   ];

@@ -27,7 +27,7 @@ const badgeVariants = cva(
         subtle: 'bg-background text-muted-foreground border-border hover:bg-muted border',
       },
       size: {
-        xs: 'text-[10px] px-2 py-0.5 h-4',
+        xs: 'text-[11px] px-2 py-0.5 h-4',
         sm: 'text-xs px-2.5 py-1 h-5',
         md: 'text-sm px-3 py-1.5 h-6',
         default: 'text-xs px-2.5 py-1 h-5',

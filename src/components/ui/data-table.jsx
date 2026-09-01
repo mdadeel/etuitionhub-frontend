@@ -77,7 +77,7 @@ export default function DataTable({
                 <th
                   key={col.key}
                   className={cn(
-                    "px-6 py-3 text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground relative select-none",
+                    "px-6 py-3 text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground relative select-none",
                     col.hideOn && HIDDEN_BP[col.hideOn],
                     col.align === "center" && "text-center",
                     col.align === "right" && "text-right",

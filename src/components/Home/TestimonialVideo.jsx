@@ -2,7 +2,7 @@ const TestimonialVideo = ({ videoUrl }) => {
   if (!videoUrl) return null;
 
   return (
-    <div className="relative p-1 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden aspect-[4/3]">
+    <div className="relative p-1 rounded-lg border border-border/50 bg-card shadow-sm overflow-hidden aspect-[4/3]">
       <iframe
         src={videoUrl}
         className="w-full h-full rounded-lg"

@@ -128,13 +128,13 @@ export default function QuizPlayer({
                     <p className="text-sm text-muted-foreground">questions answered correctly</p>
                 </div>
                 {weakTopics.length > 0 && (
-                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
-                        <p className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-amber-500 mb-2">
+                    <div className="rounded-xl border border-warning/30 bg-warning/5 p-4">
+                        <p className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-warning mb-2">
                             Weak Topics
                         </p>
                         <div className="flex flex-wrap gap-1.5">
                             {weakTopics.map((t, i) => (
-                                <span key={i} className="px-2 py-1 rounded-md bg-amber-500/10 text-amber-500 text-xs font-medium">
+                                <span key={i} className="px-2 py-1 rounded-md bg-warning/10 text-warning text-xs font-medium">
                                     {t}
                                 </span>
                             ))}
@@ -169,8 +169,8 @@ export default function QuizPlayer({
                                         
                                         if (correctIdx != null) {
                                             if (optIdx === correctIdx) {
-                                                bg = "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400";
-                                                icon = <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />;
+                                                bg = "bg-success/10 border-success/30 text-success dark:text-success";
+                                                icon = <CheckCircle2 size={14} className="text-success shrink-0" />;
                                             } else if (optIdx === userSelectedIdx && !isCorrect) {
                                                 bg = "bg-destructive/10 border-destructive/30 text-destructive";
                                                 icon = <X size={14} className="text-destructive shrink-0" />;
@@ -179,8 +179,8 @@ export default function QuizPlayer({
                                             // Fallback if backend doesn't provide exact correct index but just isCorrect boolean
                                             if (optIdx === userSelectedIdx) {
                                                 if (isCorrect) {
-                                                    bg = "bg-emerald-500/10 border-emerald-500/30 text-emerald-700";
-                                                    icon = <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />;
+                                                    bg = "bg-success/10 border-success/30 text-success";
+                                                    icon = <CheckCircle2 size={14} className="text-success shrink-0" />;
                                                 } else {
                                                     bg = "bg-destructive/10 border-destructive/30 text-destructive";
                                                     icon = <X size={14} className="text-destructive shrink-0" />;
@@ -232,7 +232,7 @@ export default function QuizPlayer({
         <div className="space-y-6">
             {/* Progress bar */}
             <div className="space-y-2">
-                <div className="flex items-center justify-between text-[10px] font-label tracking-wider text-muted-foreground">
+                <div className="flex items-center justify-between text-[11px] font-label tracking-wider text-muted-foreground">
                     <span>
                         Question {currentIdx + 1} of {total}
                     </span>
@@ -327,7 +327,7 @@ function ScoreGauge({ percent = 0 }) {
     const stroke = 8;
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (percent / 100) * circumference;
-    const color = percent >= 70 ? 'text-emerald-500' : percent >= 40 ? 'text-amber-500' : 'text-destructive';
+    const color = percent >= 70 ? 'text-success' : percent >= 40 ? 'text-warning' : 'text-destructive';
     return (
         <div className="flex items-center justify-center">
             <div className="relative size-40">
@@ -358,7 +358,7 @@ function ScoreGauge({ percent = 0 }) {
                     <span className={cn('text-3xl font-heading font-bold', color)}>
                         {percent}%
                     </span>
-                    <span className="text-[10px] font-label tracking-wider text-muted-foreground uppercase">
+                    <span className="text-[11px] font-label tracking-wider text-muted-foreground uppercase">
                         Score
                     </span>
                 </div>

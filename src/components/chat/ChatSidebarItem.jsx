@@ -26,7 +26,7 @@ const ChatSidebarItem = memo(({ conv, user, isActive, onClick }) => {
             onClick={() => onClick(conv)}
             aria-label={`Chat with ${other.displayName || other.email || 'Unknown User'}`}
             className={cn(
-                "w-[calc(100%-16px)] mx-2 my-1 px-3.5 py-3 flex items-center gap-3.5 text-left transition-all duration-200 rounded-2xl relative group",
+                "w-[calc(100%-16px)] mx-2 my-1 px-3.5 py-3 flex items-center gap-3.5 text-left transition-all duration-200 rounded-lg relative group",
                 isActive 
                     ? "bg-primary/10 dark:bg-primary/20 text-foreground shadow-sm" 
                     : "hover:bg-[color:hsl(var(--chat-hover))]"
@@ -44,8 +44,8 @@ const ChatSidebarItem = memo(({ conv, user, isActive, onClick }) => {
                 {isOnline && (
                     <span 
                         className={cn(
-                            "absolute bottom-0 right-0 size-3.5 bg-green-500 rounded-full border-2 transition-colors duration-200",
-                            isActive ? "border-[#EAF2FE] dark:border-[#1A2E4C]" : "border-background"
+                            "absolute bottom-0 right-0 size-3.5 bg-success rounded-full border-2 transition-colors duration-200",
+                            isActive ? "border-primary/20 dark:border-primary/40" : "border-background"
                         )} 
                         title="Online"
                     />
@@ -65,7 +65,7 @@ const ChatSidebarItem = memo(({ conv, user, isActive, onClick }) => {
                     </h4>
                     {conv.lastMessage && (
                         <span className={cn(
-                            "text-[10px] font-medium shrink-0 ml-2 transition-colors tracking-wide",
+                            "text-[11px] font-medium shrink-0 ml-2 transition-colors tracking-wide",
                             conv.unreadCount > 0 && !isActive ? "text-primary font-bold" : "text-muted-foreground/70"
                         )}>
                             {new Date(conv.lastMessage.createdAt).toLocaleDateString(undefined, { 
@@ -103,14 +103,14 @@ const ChatSidebarItem = memo(({ conv, user, isActive, onClick }) => {
                     
                     {/* Unread Badge OR Sent/Seen Indicator */}
                     {conv.unreadCount > 0 && !isActive ? (
-                        <div className="shrink-0 size-5 bg-gradient-to-tr from-blue-600 to-blue-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm animate-pulse animate-duration-1000">
+                        <div className="shrink-0 size-5 bg-primary text-white rounded-full flex items-center justify-center text-[11px] font-bold shadow-sm animate-pulse animate-duration-1000">
                             {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
                         </div>
                     ) : (
                         isLastMessageMine && conv.lastMessage && (
                             <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">
                                 {conv.lastMessage.isRead ? (
-                                    <CheckCheck size={16} className="text-[#2563EB]" title="Seen" strokeWidth={2.5} />
+                                    <CheckCheck size={16} className="text-primary" title="Seen" strokeWidth={2.5} />
                                 ) : (
                                     <Check size={16} className="text-muted-foreground/45" title="Sent" strokeWidth={2.5} />
                                 )}

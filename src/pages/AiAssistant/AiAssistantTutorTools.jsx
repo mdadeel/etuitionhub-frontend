@@ -3,7 +3,7 @@
 // Full-width layout with side-by-side form/output on desktop.
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Copy, Check, BookOpen, ClipboardList, Sparkles, Lock, BookmarkPlus, ArrowRight, StickyNote } from 'lucide-react';
+import { Copy, Check, BookOpen, ClipboardList, Sparkles, Lock, BookmarkPlus, ArrowRight, StickyNote, CalendarRange, Plus, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ import AiAssistantLayout from '../../components/AiAssistant/AiAssistantLayout';
 import SubjectSelector from '../../components/AiAssistant/SubjectSelector';
 import LessonPlanCard from '../../components/AiAssistant/LessonPlanCard';
 import AssignmentCard from '../../components/AiAssistant/AssignmentCard';
+import CurriculumCard from '../../components/AiAssistant/CurriculumCard';
 import { LessonPlanSkeleton, AssignmentSkeleton } from '@/components/shared/skeletons';
 import { Card } from '@/components/ui/card';
 import { useAiStore } from '../../store/aiStore';
@@ -20,7 +21,10 @@ import { useAiStore } from '../../store/aiStore';
 const TABS = [
     { id: 'lesson', label: 'Lesson Plan', icon: BookOpen },
     { id: 'assignment', label: 'Assignment', icon: ClipboardList },
+    { id: 'curriculum', label: 'Curriculum', icon: CalendarRange },
 ];
+
+const MAX_WEEKS = 8;
 
 const DURATION_OPTIONS = [
     '30 minutes',
@@ -54,6 +58,7 @@ export default function AiAssistantTutorTools() {
     const [grade, setGrade] = useState('Class 10');
     const [numQuestions, setNumQuestions] = useState(20);
     const [difficulty, setDifficulty] = useState('mixed');
+    const [topics, setTopics] = useState(['', '', '', '']); // one weekly topic per lesson plan
 
     // Output state
     const [loading, setLoading] = useState(false);
@@ -64,8 +69,46 @@ export default function AiAssistantTutorTools() {
 
     const isTutor = userRole === 'tutor' || userRole === 'admin';
 
+    const updateTopic = (index, value) => {
+        setTopics((prev) => prev.map((t, i) => (i === index ? value : t)));
+    };
+    const addTopic = () => {
+        if (topics.length >= MAX_WEEKS) return;
+        setTopics((prev) => [...prev, '']);
+    };
+    const removeTopic = (index) => {
+        if (topics.length <= 1) return;
+        setTopics((prev) => prev.filter((_, i) => i !== index));
+    };
+
     const handleGenerate = async (e) => {
         e?.preventDefault();
+        if (tab === 'curriculum') {
+            const filledTopics = topics.map((t) => t.trim()).filter(Boolean);
+            if (filledTopics.length === 0) {
+                toast.error('Enter at least one weekly topic');
+                return;
+            }
+            setLoading(true);
+            setError(null);
+            setOutput(null);
+            setSaved(false);
+            try {
+                const data = await aiService.generateMonthlyCurriculum({ subject, grade, duration, topics: filledTopics });
+                setOutput(data);
+                toast.success('Curriculum generated!');
+            } catch (err) {
+                const code = err?.response?.status;
+                if (code === 403) {
+                    setError('Lesson Planner is only available to verified tutors. Please make sure you are signed in as a tutor.');
+                } else {
+                    setError(err?.response?.data?.error || err?.message || 'Failed to generate');
+                }
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
         if (!topic.trim()) {
             toast.error('Please enter a topic');
             return;
@@ -107,10 +150,11 @@ export default function AiAssistantTutorTools() {
 
     const handleSaveNote = async () => {
         if (!output) return;
+        const typeLabel = tab === 'lesson' ? 'Lesson Plan' : tab === 'assignment' ? 'Assignment' : 'Curriculum';
         const noteData = {
-            title: output.title || output.topic || `${tab === 'lesson' ? 'Lesson Plan' : 'Assignment'} - ${topic}`,
+            title: output.title || output.topic || `${typeLabel} - ${tab === 'curriculum' ? (topics[0] || '') : topic}`,
             subject,
-            grade: tab === 'lesson' ? grade : '',
+            grade: tab === 'assignment' ? '' : grade,
             content: output,
         };
         // Save locally (immediate, offline-safe).
@@ -145,7 +189,7 @@ export default function AiAssistantTutorTools() {
                             Lesson Planner
                         </h1>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                            Generate lesson plans and assignments for your students
+                            Generate lesson plans, assignments, and monthly curricula for your students
                         </p>
                     </div>
                     <Link
@@ -186,33 +230,80 @@ export default function AiAssistantTutorTools() {
                     <Card className="p-5 space-y-4">
                         <h2 className="text-sm font-heading font-semibold text-foreground flex items-center gap-2">
                             <Sparkles size={14} className="text-primary" />
-                            Generate {tab === 'lesson' ? 'Lesson Plan' : 'Assignment'}
+                            Generate {tab === 'lesson' ? 'Lesson Plan' : tab === 'assignment' ? 'Assignment' : 'Curriculum'}
                         </h2>
                         <form onSubmit={handleGenerate} className="space-y-3">
                             <div>
-                                <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                <label className="text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                                     Subject
                                 </label>
                                 <div className="mt-1.5">
                                     <SubjectSelector compact />
                                 </div>
                             </div>
-                            <div>
-                                <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                    Topic
-                                </label>
-                                <input
-                                    type="text"
-                                    value={topic}
-                                    onChange={(e) => setTopic(e.target.value)}
-                                    placeholder="e.g. HTML Forms, SSC Physics: Motion"
-                                    className="mt-1.5 w-full h-10 px-3 rounded-lg bg-card border border-border text-sm focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
-                                />
-                            </div>
-                            {tab === 'lesson' ? (
+                            {tab === 'curriculum' ? (
+                                <div>
+                                    <label className="text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                        Weekly Topics
+                                    </label>
+                                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                                        One topic per week — each generates its own lesson plan.
+                                    </p>
+                                    <div className="mt-1.5 space-y-2">
+                                        {topics.map((t, i) => (
+                                            <div key={i} className="flex items-center gap-2">
+                                                <span className="w-6 shrink-0 text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                                    W{i + 1}
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    value={t}
+                                                    onChange={(e) => updateTopic(i, e.target.value)}
+                                                    placeholder={`Week ${i + 1} topic`}
+                                                    className="flex-1 h-10 px-3 rounded-lg bg-card border border-border text-sm focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
+                                                />
+                                                {topics.length > 1 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeTopic(i)}
+                                                        className="size-9 shrink-0 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-destructive/40 hover:bg-destructive/5 transition-colors"
+                                                        aria-label={`Remove week ${i + 1}`}
+                                                    >
+                                                        <X size={13} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {topics.length < MAX_WEEKS && (
+                                        <button
+                                            type="button"
+                                            onClick={addTopic}
+                                            className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground hover:text-primary transition-colors"
+                                        >
+                                            <Plus size={12} />
+                                            Add week
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                        Topic
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={topic}
+                                        onChange={(e) => setTopic(e.target.value)}
+                                        placeholder="e.g. HTML Forms, SSC Physics: Motion"
+                                        className="mt-1.5 w-full h-10 px-3 rounded-lg bg-card border border-border text-sm focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
+                                    />
+                                </div>
+                            )}
+                            {tab === 'lesson' || tab === 'curriculum' ? (
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                        <label className="text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                                             Duration
                                         </label>
                                         <select
@@ -226,7 +317,7 @@ export default function AiAssistantTutorTools() {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                        <label className="text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                                             Grade
                                         </label>
                                         <select
@@ -243,7 +334,7 @@ export default function AiAssistantTutorTools() {
                             ) : (
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                        <label className="text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                                             # Questions
                                         </label>
                                         <input
@@ -256,7 +347,7 @@ export default function AiAssistantTutorTools() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                        <label className="text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
                                             Difficulty
                                         </label>
                                         <select
@@ -293,10 +384,10 @@ export default function AiAssistantTutorTools() {
                         )}
                         {loading ? (
                             <div className="flex justify-center py-8">
-                                {tab === 'lesson' ? (
-                                    <LessonPlanSkeleton className="w-full max-w-md" />
-                                ) : (
+                                {tab === 'assignment' ? (
                                     <AssignmentSkeleton className="w-full max-w-md" />
+                                ) : (
+                                    <LessonPlanSkeleton className="w-full max-w-md" />
                                 )}
                             </div>
                         ) : error ? (
@@ -307,8 +398,8 @@ export default function AiAssistantTutorTools() {
                             <div className="space-y-3">
                                 {/* Toolbar */}
                                 <div className="flex items-center justify-between pb-2 border-b border-border/40">
-                                    <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                        Generated {tab === 'lesson' ? 'Lesson Plan' : 'Assignment'}
+                                    <p className="text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
+                                        Generated {tab === 'lesson' ? 'Lesson Plan' : tab === 'assignment' ? 'Assignment' : 'Curriculum'}
                                     </p>
                                     <div className="flex items-center gap-2">
                                         <button
@@ -337,10 +428,13 @@ export default function AiAssistantTutorTools() {
                                 </div>
                                 {/* Rendered card */}
                                 <div className="overflow-auto max-h-[600px] pr-1">
-                                    {tab === 'lesson'
-                                        ? <LessonPlanCard data={output} />
-                                        : <AssignmentCard data={output} />
-                                    }
+                                    {tab === 'lesson' ? (
+                                        <LessonPlanCard data={output} />
+                                    ) : tab === 'assignment' ? (
+                                        <AssignmentCard data={output} />
+                                    ) : (
+                                        <CurriculumCard data={output} />
+                                    )}
                                 </div>
                             </div>
                         ) : (
@@ -350,7 +444,7 @@ export default function AiAssistantTutorTools() {
                                 </div>
                                 <p className="text-sm font-medium">Ready to generate</p>
                                 <p className="text-xs mt-1 max-w-[240px]">
-                                    Fill in the form and click Generate to create a {tab === 'lesson' ? 'lesson plan' : 'assignment'}.
+                                    Fill in the form and click Generate to create a {tab === 'lesson' ? 'lesson plan' : tab === 'assignment' ? 'assignment' : 'monthly curriculum'}.
                                 </p>
                             </div>
                         )}
