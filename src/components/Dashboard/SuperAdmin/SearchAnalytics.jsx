@@ -3,7 +3,7 @@ import { Search, AlertTriangle } from 'lucide-react';
 import api from '../../../services/api';
 import EmptyState from '../../shared/EmptyState';
 
-const Section = ({ title, icon: Icon, items, colorClass, emptyText, loading }) => (
+const Section = ({ title, icon: Icon, items, colorClass, emptyText, loading, error, onRetry }) => (
   <section className="bg-card border border-border rounded-xl p-6">
     <div className="flex items-center gap-2 mb-4">
       <Icon className={`size-5 ${colorClass}`} />
@@ -15,16 +15,25 @@ const Section = ({ title, icon: Icon, items, colorClass, emptyText, loading }) =
           <div key={i} className="h-8 bg-muted rounded animate-pulse" />
         ))}
       </div>
+    ) : error ? (
+      <div className="text-sm text-destructive">
+        <p>{error.response?.data?.error || error.message || 'Failed to load'}</p>
+        {onRetry && (
+          <button onClick={onRetry} className="mt-2 text-primary underline">
+            Retry
+          </button>
+        )}
+      </div>
     ) : items.length === 0 ? (
       <EmptyState icon={Icon} title={emptyText} />
     ) : (
       <ol className="space-y-2">
         {items.map((it, i) => (
           <li
-            key={i}
+            key={it._id || `${it.term}-${i}`}
             className="flex items-center justify-between p-2 rounded hover:bg-muted/50 text-sm"
           >
-            <span className="font-mono">{it.term || it.query || it._id || JSON.stringify(it)}</span>
+            <span className="font-mono">{it.term || it.query || it._id || '—'}</span>
             <span className="text-muted-foreground">{it.count ?? it.frequency ?? ''}</span>
           </li>
         ))}
@@ -65,6 +74,8 @@ const SearchAnalytics = () => {
           colorClass="text-primary"
           items={popular.data || []}
           loading={popular.isLoading}
+          error={popular.error}
+          onRetry={() => popular.refetch()}
           emptyText="No searches yet"
         />
         <Section
@@ -73,6 +84,8 @@ const SearchAnalytics = () => {
           colorClass="text-warning"
           items={zero.data || []}
           loading={zero.isLoading}
+          error={zero.error}
+          onRetry={() => zero.refetch()}
           emptyText="No zero-result searches"
         />
       </div>
