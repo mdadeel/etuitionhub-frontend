@@ -7,6 +7,7 @@ import { User, Briefcase, Mail, Lock, Phone, CheckCircle, XCircle } from 'lucide
 import Logo from '../components/shared/Logo'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import SEO from '@/components/shared/SEO'
 import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 import PasswordStrength from '../components/shared/PasswordStrength'
@@ -64,10 +65,11 @@ const Register = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden bg-pattern-academic">
+        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
+            <SEO title="Create Account | eTuitionBD" description="Join eTuitionBD as a student or tutor. Connect with verified tutors across all curricula in Bangladesh." />
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
             <div className="w-full max-w-md z-10">
-                <div className="bg-card border border-border rounded-xl shadow-premium overflow-hidden p-5 sm:p-6">
+                <div className="bg-card border border-border rounded-xl  overflow-hidden p-5 sm:p-6">
                     <div className="text-center mb-4">
                         <div className="flex justify-center mb-3">
                             <Logo textSize="text-xl" boxSize="size-12" iconSize="size-8" />
@@ -108,11 +110,11 @@ const Register = () => {
                                         {...register("name", { required: "Name is required", minLength: { value: 3, message: "Name must be at least 3 characters" } })}
                                         placeholder="e.g. Adeel Rahman"
                                         className={cn("pl-9 h-11 bg-input/40 border rounded-xl transition-smooth",
-                                            errors.name ? "border-red-500 focus-visible:border-red-500" : "border-border focus-visible:border-primary"
+                                            errors.name ? "border-destructive focus-visible:border-destructive" : "border-border focus-visible:border-primary"
                                         )}
                                     />
                                 </div>
-                                {errors.name && <p className="text-[11px] text-red-500">{errors.name.message}</p>}
+                                {errors.name && <p className="text-[11px] text-destructive">{errors.name.message}</p>}
                             </div>
 
                             {/* Phone */}
@@ -129,15 +131,15 @@ const Register = () => {
                                         })}
                                         placeholder="01XXXXXXXXX"
                                         className={cn("pl-9 h-11 bg-input/40 border rounded-xl transition-smooth",
-                                            errors.phone ? "border-red-500 focus-visible:border-red-500" :
-                                            isPhoneValid && phoneValue ? "border-green-500 focus-visible:border-green-500" :
+                                            errors.phone ? "border-destructive focus-visible:border-destructive" :
+                                            isPhoneValid && phoneValue ? "border-success focus-visible:border-success" :
                                             "border-border focus-visible:border-primary"
                                         )}
                                     />
-                                    {isPhoneValid && phoneValue && <CheckCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" />}
-                                    {isPhoneInvalid && <XCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500" />}
+                                    {isPhoneValid && phoneValue && <CheckCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-success" />}
+                                    {isPhoneInvalid && <XCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive" />}
                                 </div>
-                                {errors.phone && <p className="text-[11px] text-red-500">{errors.phone.message}</p>}
+                                {errors.phone && <p className="text-[11px] text-destructive">{errors.phone.message}</p>}
                             </div>
 
                             {/* Email */}
@@ -155,15 +157,15 @@ const Register = () => {
                                         })}
                                         placeholder="name@domain.com"
                                         className={cn("pl-9 h-11 bg-input/40 border rounded-xl transition-smooth",
-                                            errors.email ? "border-red-500 focus-visible:border-red-500" :
-                                            isEmailValid ? "border-green-500 focus-visible:border-green-500" :
+                                            errors.email ? "border-destructive focus-visible:border-destructive" :
+                                            isEmailValid ? "border-success focus-visible:border-success" :
                                             "border-border focus-visible:border-primary"
                                         )}
                                     />
-                                    {isEmailValid && <CheckCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" />}
-                                    {isEmailInvalid && <XCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500" />}
+                                    {isEmailValid && <CheckCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-success" />}
+                                    {isEmailInvalid && <XCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive" />}
                                 </div>
-                                {errors.email && <p className="text-[11px] text-red-500">{errors.email.message}</p>}
+                                {errors.email && <p className="text-[11px] text-destructive">{errors.email.message}</p>}
                             </div>
 
                             {/* Password */}
@@ -182,11 +184,11 @@ const Register = () => {
                                         })}
                                         placeholder="Min. 8 characters"
                                         className={cn("pl-9 h-11 bg-input/40 border rounded-xl transition-smooth",
-                                            errors.password ? "border-red-500 focus-visible:border-red-500" : "border-border focus-visible:border-primary"
+                                            errors.password ? "border-destructive focus-visible:border-destructive" : "border-border focus-visible:border-primary"
                                         )}
                                     />
                                 </div>
-                                {errors.password && <p className="text-[11px] text-red-500">{errors.password.message}</p>}
+                                {errors.password && <p className="text-[11px] text-destructive">{errors.password.message}</p>}
                                 <PasswordStrength password={passwordValue} />
                             </div>
                         </div>

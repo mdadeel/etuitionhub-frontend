@@ -154,6 +154,7 @@ const DashboardSidebar = ({ className = '' }) => {
               <p className="pt-5 pb-1.5 px-3 first:pt-0 text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/50">
                 {group}
               </p>
+              <ul>
               {items.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.path);
@@ -185,6 +186,7 @@ const DashboardSidebar = ({ className = '' }) => {
                   </li>
                 );
               })}
+              </ul>
             </li>
           ))}
         </ul>

@@ -209,6 +209,12 @@ const HireRequests = () => {
 
                       <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">{req.message}</p>
 
+                      {req.preferredSlot && (
+                        <p className="text-xs text-foreground mt-1 flex items-center gap-1">
+                          <Clock className="size-3 text-primary" /> Requested slot: {req.preferredSlot}
+                        </p>
+                      )}
+
                       {req.proposedRate && !isCountered && (
                         <p className="text-xs text-foreground mt-1">Proposed: ৳{req.proposedRate.toLocaleString()}/mo</p>
                       )}
@@ -278,7 +284,7 @@ const HireRequests = () => {
       {/* Counter-Offer Modal */}
       {counterModal.open && (
         <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-sm rounded-2xl border border-border/80 shadow-lg p-6">
+          <div className="bg-card w-full max-w-sm rounded-lg border border-border/80 shadow-lg p-6">
             <h3 className="text-lg font-heading text-foreground mb-4">Counter Offer</h3>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">

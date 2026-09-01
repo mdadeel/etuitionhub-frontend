@@ -1,11 +1,13 @@
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 import { trackEvent } from '../../services/analytics';
 import PoruaLogo from '../AiAssistant/PoruaLogo';
 import Illustration from './illustrations/Illustration';
 
 const PoruaTeaser = () => {
+  const { t } = useTranslation();
   const ref = useAnimateOnScroll();
 
   return (
@@ -20,16 +22,15 @@ const PoruaTeaser = () => {
           <div ref={ref} className="lg:col-span-7 space-y-6 text-left opacity-0 animate-fade-in-up">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
               <Sparkles className="size-3.5" />
-              <span>AI-Powered Study Buddy</span>
+              <span>{t('poruaTeaser.badge')}</span>
             </div>
 
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-foreground tracking-tight leading-tight">
-              Meet <span className="text-primary">Porua</span>, your AI study assistant
+              {t('poruaTeaser.heading')} <span className="text-primary">{t('poruaTeaser.heading_highlight')}</span>
             </h2>
             
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl">
-              Get instant answers to academic questions, practice problems, and personalized learning 
-              recommendations — powered by AI, built specifically for the Bangladeshi school curriculum.
+              {t('poruaTeaser.desc')}
             </p>
 
             <div className="pt-2">
@@ -39,7 +40,7 @@ const PoruaTeaser = () => {
                 onClick={() => trackEvent('home_ai_teaser_click', 'porua')}
               >
                 <PoruaLogo iconOnly size={16} className="text-primary-foreground shrink-0" />
-                <span>Try Search in AI Assistant</span>
+                <span>{t('poruaTeaser.try_free')}</span>
                 <ArrowRight className="size-4" />
               </Link>
             </div>

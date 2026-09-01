@@ -16,7 +16,7 @@ const SaveSearchButton = ({ query, filters = emptyFilters }) => {
             toast.success('Search alert saved! We\'ll notify you when new results appear.');
         } catch (err) {
             if (err.response?.status === 409) {
-                toast('Alert already exists', { icon: '🔔' });
+                toast('Alert already exists', { icon: <Bell size={16} /> });
             } else {
                 toast.error('Failed to save alert');
             }

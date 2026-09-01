@@ -5,9 +5,12 @@ import { Plus, FileText, Upload, Download } from "lucide-react";
 import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const OrgMaterials = () => {
   const { orgId } = useParams();
+  const { hasPermission } = useAuth();
+  const canUpload = hasPermission('material:upload');
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,9 +37,11 @@ const OrgMaterials = () => {
             Upload and manage study materials for students.
           </p>
         </div>
-        <Button className="shadow-sm">
-          <Upload className="mr-2 h-4 w-4" /> Upload Material
-        </Button>
+        {canUpload && (
+          <Button className="shadow-sm">
+            <Upload className="mr-2 h-4 w-4" /> Upload Material
+          </Button>
+        )}
       </div>
 
       {loading ? (
@@ -51,9 +56,11 @@ const OrgMaterials = () => {
             <p className="text-muted-foreground max-w-sm mb-6">
               Upload study materials like notes, PDFs, and videos for your students.
             </p>
-            <Button>
-              <Upload className="mr-2 h-4 w-4" /> Upload First Material
-            </Button>
+            {canUpload && (
+              <Button>
+                <Upload className="mr-2 h-4 w-4" /> Upload First Material
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (

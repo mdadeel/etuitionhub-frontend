@@ -20,7 +20,7 @@ const ConnectionStatusBadge = ({ status, relationshipStatus, className }) => {
   const v = VARIANTS[key] || VARIANTS.pending;
   return (
     <span className={cn(
-      'inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full border',
+      'inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-full border',
       v.color,
       className
     )}>

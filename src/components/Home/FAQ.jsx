@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
-const faqs = [
-  { question: "How do you verify tutors?", answer: "Every tutor submits their academic certificates and national ID. We verify all documents manually before activating their profile to ensure 100% academic integrity." },
-  { question: "What boards and classes do you cover?", answer: "We cover all education boards in Bangladesh, including National Curriculum (English & Bangla Version). Our tutors specialize from primary levels to university admission coaching." },
-  { question: "How much does tutoring cost?", answer: "Fees are transparent and set by tutors. Typically, primary levels range from ৳2,000-৳4,000, while HSC and Admission levels range from ৳6,000-৳15,000 per month." },
-  { question: "How do payments work?", answer: "You can pay securely through our integrated Checkout system using credit/debit cards or mobile banking, or pay tutors directly via bKash, Nagad, or Bank Transfer. All Checkout transactions are protected. There are zero middleman fees on our platform." },
-  { question: "Can I change tutors if not satisfied?", answer: "Absolutely. Your satisfaction is our priority. If the tutor is not a perfect fit, our support team will help you find a replacement immediately." },
-];
-
 const FAQ = () => {
+  const { t } = useTranslation();
+  const faqs = [
+    { question: t('home.faq.q1'), answer: t('home.faq.a1') },
+    { question: t('home.faq.q2'), answer: t('home.faq.a2') },
+    { question: t('home.faq.q3'), answer: t('home.faq.a3') },
+    { question: t('home.faq.q4'), answer: t('home.faq.a4') },
+    { question: t('home.faq.q5'), answer: t('home.faq.a5') },
+  ];
   const [activeIndex, setActiveIndex] = useState(null);
   const headingRef = useAnimateOnScroll();
   const listRef = useAnimateOnScroll();
 
   return (
-    <section className="relative overflow-hidden bg-background py-20 md:py-28 border-b border-border/10">
+    <section className="relative overflow-hidden bg-background py-16 md:py-24 border-b border-border/10">
       {/* Soft violet glow — grounds the student-thinking illustration */}
       <div className="absolute top-1/2 right-0 w-[500px] h-[500px] -translate-y-1/2 rounded-full bg-violet-400/5 blur-[120px] pointer-events-none z-0" />
 
@@ -27,12 +28,12 @@ const FAQ = () => {
           {/* LEFT - FAQ Title & Accordion */}
           <div className="lg:col-span-7 space-y-8">
             <div ref={headingRef} className="text-left space-y-3">
-              <span className="text-xs font-semibold text-primary uppercase tracking-[0.18em]">FAQ</span>
+              <span className="text-xs font-semibold text-primary uppercase tracking-[0.18em]">{t('home.faq.badge')}</span>
               <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground tracking-tight leading-tight">
-                Questions? We've got answers.
+                {t('home.faq.heading')}
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Everything you need to know about finding the perfect tutor and securing your child's success.
+                {t('home.faq.subheading')}
               </p>
             </div>
 

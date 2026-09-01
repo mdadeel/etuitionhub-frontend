@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -21,7 +21,7 @@ const OrgSchedule = () => {
   const [subjects, setSubjects] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [scheduleRes, tutorsRes, subjectsRes] = await Promise.all([
         api.get(`/api/v1/organizations/${orgId}/schedules/timetable`),
@@ -36,9 +36,9 @@ const OrgSchedule = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
-  useEffect(() => { fetchData(); }, [orgId]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

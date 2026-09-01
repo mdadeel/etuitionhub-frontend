@@ -13,7 +13,7 @@ const EditHistoryModal = ({ isOpen, onClose, message }) => {
                 className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
             
-            <div className="relative w-full max-w-md bg-background border border-border shadow-2xl rounded-3xl overflow-hidden">
+            <div className="relative w-full max-w-md bg-background border border-border shadow-2xl rounded-lg overflow-hidden">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-muted/20">
                     <div className="flex items-center gap-2">
@@ -39,11 +39,11 @@ const EditHistoryModal = ({ isOpen, onClose, message }) => {
                             <div className="absolute -left-[9px] top-0 size-4 rounded-full bg-primary ring-4 ring-background" />
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="text-[11px] font-bold text-primary uppercase tracking-wider">Current Version</span>
-                                <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                                     <Clock size={10} /> {new Date(message.updatedAt).toLocaleString()}
                                 </span>
                             </div>
-                            <div className="p-3 bg-primary/5 rounded-2xl border border-primary/10 text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                            <div className="p-3 bg-primary/5 rounded-lg border border-primary/10 text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                                 {message.text}
                             </div>
                         </div>
@@ -56,11 +56,11 @@ const EditHistoryModal = ({ isOpen, onClose, message }) => {
                                     <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                                         {idx === history.length - 1 ? 'Original' : `Edit #${history.length - idx - 1}`}
                                     </span>
-                                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                                         <Clock size={10} /> {new Date(item.editedAt).toLocaleString()}
                                     </span>
                                 </div>
-                                <div className="p-3 bg-muted/30 rounded-2xl border border-border/50 text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                <div className="p-3 bg-muted/30 rounded-lg border border-border/50 text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
                                     {item.text}
                                         </div>
                                     </div>

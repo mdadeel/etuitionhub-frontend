@@ -210,7 +210,7 @@ const OrgRoles = () => {
             label: "Type",
             render: (_, role) => (
               <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                role.isSystem ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "bg-muted text-muted-foreground"
+                role.isSystem ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "bg-muted text-muted-foreground"
               }`}>
                 {role.isSystem ? "System" : "Custom"}
               </span>
@@ -250,7 +250,7 @@ const OrgRoles = () => {
       {/* Create/Edit Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-2xl max-h-[85vh] rounded-2xl shadow-xl border border-border overflow-hidden flex flex-col">
+          <div className="bg-card w-full max-w-2xl max-h-[85vh] rounded-lg shadow-xl border border-border overflow-hidden flex flex-col">
             <div className="p-6 border-b border-border flex items-center justify-between flex-shrink-0">
               <h2 className="text-xl font-bold text-foreground">
                 {editingRole ? "Edit Role" : "Create Role"}

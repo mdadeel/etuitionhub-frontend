@@ -5,6 +5,7 @@ import api from "../services/api";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
+import SEO from "../components/shared/SEO";
 
 const OrganizationDetails = () => {
   const { slug } = useParams();
@@ -118,17 +119,21 @@ const OrganizationDetails = () => {
 
   return (
     <div className="min-h-screen bg-background pt-20 pb-12">
+      <SEO 
+        title={`${organization.name} | eTuitionBD`} 
+        description={organization.profile?.bio || `Find tuition programs, coaching courses, and academic batches from ${organization.name} on eTuitionBD.`} 
+      />
       {/* Hero Cover Banner */}
       <div className="h-48 md:h-64 bg-primary/10 w-full relative">
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
       </div>
 
       <div className="w-full px-4 md:px-6 lg:px-8 -mt-24 relative z-10">
-        <div className="bg-card rounded-2xl shadow-xl border border-border p-6 md:p-10 mb-8 flex flex-col md:flex-row gap-8 items-start">
+        <div className="bg-card rounded-lg shadow-xl border border-border p-6 md:p-10 mb-8 flex flex-col md:flex-row gap-8 items-start">
           
           {/* Logo */}
           <div className="flex-shrink-0">
-            <div className="size-32 md:size-40 bg-background border-4 border-card rounded-2xl overflow-hidden shadow-lg flex items-center justify-center">
+            <div className="size-32 md:size-40 bg-background border-4 border-card rounded-lg overflow-hidden shadow-lg flex items-center justify-center">
               {organization.profile?.logo ? (
                 <img src={organization.profile.logo} alt={organization.name} className="size-full object-cover" />
               ) : (
@@ -145,7 +150,7 @@ const OrganizationDetails = () => {
                   {organization.name}
                   {organization.status === 'active' && (
                     <span title="Verified Organization">
-                      <CheckCircle2 className="size-6 text-green-500" />
+                      <CheckCircle2 className="size-6 text-success" />
                     </span>
                   )}
                 </h1>
@@ -224,7 +229,7 @@ const OrganizationDetails = () => {
         {/* Content Tabs / Details */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-card rounded-2xl border border-border p-8">
+            <div className="bg-card rounded-lg border border-border p-8">
               <h2 className="text-xl font-bold text-foreground mb-4 font-heading">About Us</h2>
               <p className="text-foreground/80 leading-relaxed text-lg whitespace-pre-line">
                 {organization.profile?.description || "This organization has not provided a description yet."}
@@ -233,7 +238,7 @@ const OrganizationDetails = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="bg-card rounded-2xl border border-border p-6">
+            <div className="bg-card rounded-lg border border-border p-6">
               <h3 className="text-lg font-bold text-foreground mb-4 font-heading">Contact Information</h3>
               <ul className="space-y-4">
                 {organization.profile?.publicEmail && (

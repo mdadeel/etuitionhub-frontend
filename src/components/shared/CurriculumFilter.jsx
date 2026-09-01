@@ -11,7 +11,7 @@ const OPTIONS = [
 
 const CurriculumFilter = ({ value, onChange }) => (
   <div>
-    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 mb-2 block">Curriculum</label>
+    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 mb-2 block">Curriculum</label>
     <div className="flex flex-wrap gap-1.5">
       <button
         type="button"

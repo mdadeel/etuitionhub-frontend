@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../services/api';
 import ConnectionsList from '../components/Connections/ConnectionsList';
 import ConnectionRequestCard from '../components/Connections/ConnectionRequestCard';
 import OnboardingWizard from '../components/Connections/OnboardingWizard';
-import ConnectionStatusBadge from '../components/Connections/ConnectionStatusBadge';
 import { Mail, UserPlus } from 'lucide-react';
 import { AppleHeader } from "@/components/shared/AppleUI";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import SEO from '@/components/shared/SEO';
 
 const ConnectionsPage = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('requests'); // requests, connections
   const [pendingRequests, setPendingRequests] = useState([]);
   const [acceptedConnections, setAcceptedConnections] = useState([]);
@@ -17,7 +21,7 @@ const ConnectionsPage = () => {
   const [viewerRole] = useState('student');  // could be 'tutor' or 'student' (placeholder)
   const navigate = useNavigate();
 
-  const loadPendingRequests = async () => {
+  const loadPendingRequests = useCallback(async () => {
     try {
       const res = await api.get(`/api/connections?status=pending`);
       setPendingRequests(res.data || []);
@@ -26,9 +30,9 @@ const ConnectionsPage = () => {
       console.error('Failed to load pending requests:', err);
       return err;
     }
-  };
+  }, []);
 
-  const loadAcceptedConnections = async () => {
+  const loadAcceptedConnections = useCallback(async () => {
     try {
       const res = await api.get('/api/connections?status=accepted');
       setAcceptedConnections(res.data || []);
@@ -37,28 +41,29 @@ const ConnectionsPage = () => {
       console.error('Failed to load accepted connections:', err);
       return err;
     }
-  };
+  }, []);
 
-  const loadAll = async () => {
+  const loadAll = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
     const [pendingErr, acceptedErr] = await Promise.all([loadPendingRequests(), loadAcceptedConnections()]);
     if (pendingErr || acceptedErr) {
-      setLoadError('Could not load your connections. Check your connection and try again.');
+      setLoadError(t('connections.load_error'));
     }
     setLoading(false);
-  };
+  }, [loadPendingRequests, loadAcceptedConnections, t]);
 
   useEffect(() => {
     loadAll();
-  }, []);
+  }, [loadAll]);
 
   return (
     <div className="bg-background min-h-screen">
+      <SEO title={t('connections.seo_title')} description={t('connections.seo_desc')} />
       <AppleHeader 
-        title="Connections" 
-        subtitle="Manage your tutoring connections and requests"
-        badge={<span className="px-3 py-1 text-xs font-semibold rounded-none bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">My Network</span>}
+        title={t('connections.title')} 
+        subtitle={t('connections.subtitle')}
+        badge={<span className="px-3 py-1 text-xs font-semibold rounded-none bg-primary/10 text-primary border border-primary/20">{t('connections.badge')}</span>}
       />
 
       <div className="flex items-center border-b border-border pb-4">
@@ -67,24 +72,24 @@ const ConnectionsPage = () => {
           className={cn(
             "flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all duration-300 rounded-none",
             activeTab === 'requests'
-              ? "bg-card text-[#2563EB] shadow-sm border border-border"
+              ? "bg-card text-primary shadow-sm border border-border"
               : "text-muted-foreground hover:text-foreground hover:bg-card/50"
           )}
         >
           <UserPlus size={16} />
-          Connection Requests
+          {t('connections.tab_requests')}
         </button>
         <button
           onClick={() => setActiveTab('connections')}
           className={cn(
             "flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all duration-300 rounded-none ml-4",
             activeTab === 'connections'
-              ? "bg-card text-[#2563EB] shadow-sm border border-border"
+              ? "bg-card text-primary shadow-sm border border-border"
               : "text-muted-foreground hover:text-foreground hover:bg-card/50"
           )}
         >
           <Mail size={16} />
-          My Connections
+          {t('connections.tab_connections')}
         </button>
       </div>
 
@@ -98,14 +103,14 @@ const ConnectionsPage = () => {
             </div>
           ) : loadError ? (
             <div className="text-center py-12">
-              <h3 className="font-semibold text-foreground">Something went wrong</h3>
+              <h3 className="font-semibold text-foreground">{t('connections.error_title')}</h3>
               <p className="text-muted-foreground mt-1">{loadError}</p>
-              <button
+              <Button
                 onClick={loadAll}
-                className="mt-6 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-sm font-medium"
+                className="mt-6"
               >
-                Try Again
-              </button>
+                {t('connections.error_try_again')}
+              </Button>
             </div>
           ) : pendingRequests.length > 0 ? (
             <div className="space-y-4">
@@ -114,7 +119,6 @@ const ConnectionsPage = () => {
                   key={request._id}
                   request={request}
                   onUpdate={() => {
-                    // Reload pending requests when a request is updated
                     loadPendingRequests();
                   }}
                 />
@@ -123,16 +127,16 @@ const ConnectionsPage = () => {
           ) : (
             <div className="text-center py-12">
               <UserPlus size={48} className="mx-auto mb-4 text-muted-foreground/30" />
-              <h3 className="font-semibold text-foreground">No connection requests</h3>
+              <h3 className="font-semibold text-foreground">{t('connections.no_requests_title')}</h3>
               <p className="text-muted-foreground">
-                You haven't received any connection requests yet.
+                {t('connections.no_requests_desc')}
               </p>
-              <button
+              <Button
                 onClick={() => navigate('/tutors')}
-                className="mt-6 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8] text-sm font-medium"
+                className="mt-6"
               >
-                Browse Tutors to Connect
-              </button>
+                {t('connections.browse_tutors')}
+              </Button>
             </div>
           )}
         </div>
@@ -143,7 +147,7 @@ const ConnectionsPage = () => {
           <ConnectionsList />
           {acceptedConnections.length > 0 && (
             <section>
-              <h2 className="text-lg font-semibold mb-3">Manage your tutoring</h2>
+              <h2 className="text-lg font-semibold mb-3">{t('connections.manage_title')}</h2>
               <div className="space-y-4">
                 {acceptedConnections.map(c => (
                   <OnboardingWizard
@@ -161,8 +165,5 @@ const ConnectionsPage = () => {
     </div>
   );
 };
-
-// Helper function for conditional class names (since we can't import cn in this context)
-const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 export default ConnectionsPage;

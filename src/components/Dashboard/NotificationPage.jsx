@@ -248,8 +248,8 @@ const NotificationPage = () => {
                                             className={cn(
                                                 'relative border rounded-xl p-5 transition-all duration-300',
                                                 notif.isRead 
-                                                    ? 'bg-card border-border shadow-sm hover:shadow-premium-md' 
-                                                    : 'bg-primary/[0.01] border-primary/20 shadow-sm hover:shadow-premium hover:border-primary/40',
+                                                    ? 'bg-card border-border shadow-sm hover:' 
+                                                    : 'bg-primary/[0.01] border-primary/20 shadow-sm hover: hover:border-primary/40',
                                                 isSelected && 'ring-2 ring-primary ring-offset-2 ring-offset-background'
                                             )}
                                         >

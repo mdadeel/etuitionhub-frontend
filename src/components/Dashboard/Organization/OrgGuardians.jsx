@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -17,7 +17,7 @@ const OrgGuardians = () => {
   const [form, setForm] = useState({ name: '', phone: '', email: '', relationship: 'parent' });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchGuardians = async () => {
+  const fetchGuardians = useCallback(async () => {
     try {
       const res = await api.get(`/api/v1/organizations/${orgId}/guardians`);
       setGuardians(res.data.data);
@@ -26,9 +26,9 @@ const OrgGuardians = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
-  useEffect(() => { fetchGuardians(); }, [orgId]);
+  useEffect(() => { fetchGuardians(); }, [fetchGuardians]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

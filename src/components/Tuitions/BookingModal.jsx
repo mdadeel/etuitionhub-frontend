@@ -87,7 +87,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                                             }}
                                             className="w-full justify-start text-xs font-normal"
                                         >
-                                            <Calendar className="size-4 mr-2 text-blue-500" />
+                                            <Calendar className="size-4 mr-2 text-primary" />
                                             {slot.startTime} - {slot.endTime}
                                         </Button>
                                     ))
@@ -95,7 +95,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                             </div>
                         )}
                         <div className="mt-6 flex justify-end">
-                            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg" onClick={() => setStep(2)} disabled={!selectedSlot}>Next Step</Button>
+                            <Button className="bg-primary hover:bg-primary/90 text-white rounded-lg" onClick={() => setStep(2)} disabled={!selectedSlot}>Next Step</Button>
                         </div>
                     </div>
                 )}
@@ -104,7 +104,7 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                     <div className="py-4">
                         <p className="mb-4 text-sm text-muted-foreground">You have selected <span className="font-semibold text-foreground">{selectedSlot?.startTime} to {selectedSlot?.endTime}</span>. Confirm your booking:</p>
                         <div className="flex flex-col gap-3 mt-6">
-                            <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full" onClick={handleConfirm}>
+                            <Button className="bg-primary hover:bg-primary/90 text-white w-full" onClick={handleConfirm}>
                                 Confirm Booking
                             </Button>
                             <Button variant="ghost" onClick={() => setStep(1)} className="w-full mt-2">Back</Button>
@@ -114,12 +114,12 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
 
                 {step === 3 && (
                     <div className="py-4 text-center">
-                        <div className="size-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="size-12 bg-success/15 text-success rounded-full flex items-center justify-center mx-auto mb-4">
                             <Check className="size-6" />
                         </div>
                         <h3 className="text-lg font-medium text-foreground">Booking Confirmed!</h3>
                         <p className="text-sm text-muted-foreground mt-2">Your session has been scheduled. Complete payment from your dashboard under Billing &amp; Receipts.</p>
-                        <Button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={onClose}>Done</Button>
+                        <Button className="mt-6 w-full bg-primary hover:bg-primary/90 text-white" onClick={onClose}>Done</Button>
                     </div>
                 )}
             </DialogContent>

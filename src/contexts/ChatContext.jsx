@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import useChatSocket from '../hooks/useChatSocket';
 import useChatPolling from '../hooks/useChatPolling';
@@ -6,8 +6,26 @@ import { logError } from '../utils/devLogger';
 
 const ChatContext = createContext();
 
+const defaultChatValue = {
+    socket: null,
+    conversations: [],
+    setConversations: () => {},
+    unreadTotal: 0,
+    fetchConversations: async () => {},
+    markAsRead: async () => {},
+    isFloatingOpen: false,
+    setIsFloatingOpen: () => {},
+    floatingActiveConv: null,
+    setFloatingActiveConv: () => {},
+    openChatWith: () => {},
+    onlineUsers: [],
+    typingUsers: new Map(),
+    startMessagePolling: () => {},
+    stopMessagePolling: () => {},
+};
+
 // eslint-disable-next-line react-refresh/only-export-components
-export const useChat = () => useContext(ChatContext);
+export const useChat = () => useContext(ChatContext) ?? defaultChatValue;
 
 export const ChatProvider = ({ children }) => {
     const { user, dbUser } = useAuth();
@@ -25,7 +43,7 @@ export const ChatProvider = ({ children }) => {
 
     const { socket, socketRef, onlineUsers, typingUsers } = useChatSocket(user, dbUser, fetchConversations);
 
-    const markAsRead = async (conversationId) => {
+    const markAsRead = useCallback(async (conversationId) => {
         try {
             const { default: api } = await import('../services/api');
             await api.patch(`/api/messages/${conversationId}/read`);
@@ -38,31 +56,39 @@ export const ChatProvider = ({ children }) => {
         } catch (error) {
             logError('ChatContext', 'failed to mark messages as read', error);
         }
-    };
+    }, [setConversations, socketRef]);
 
-    const openChatWith = (conversation) => {
+    const openChatWith = useCallback((conversation) => {
         setFloatingActiveConv(conversation);
         setIsFloatingOpen(true);
-    };
+    }, []);
+
+    const value = useMemo(() => ({
+        socket,
+        conversations,
+        setConversations,
+        unreadTotal,
+        fetchConversations,
+        markAsRead,
+        isFloatingOpen,
+        setIsFloatingOpen,
+        floatingActiveConv,
+        setFloatingActiveConv,
+        openChatWith,
+        onlineUsers,
+        typingUsers,
+        startMessagePolling,
+        stopMessagePolling,
+    }), [
+        socket, conversations, unreadTotal, fetchConversations,
+        isFloatingOpen, floatingActiveConv, onlineUsers, typingUsers,
+        startMessagePolling, stopMessagePolling,
+        markAsRead, openChatWith, setConversations,
+        setIsFloatingOpen, setFloatingActiveConv,
+    ]);
 
     return (
-        <ChatContext.Provider value={{
-            socket,
-            conversations,
-            setConversations,
-            unreadTotal,
-            fetchConversations,
-            markAsRead,
-            isFloatingOpen,
-            setIsFloatingOpen,
-            floatingActiveConv,
-            setFloatingActiveConv,
-            openChatWith,
-            onlineUsers,
-            typingUsers,
-            startMessagePolling,
-            stopMessagePolling,
-        }}>
+        <ChatContext.Provider value={value}>
             {children}
         </ChatContext.Provider>
     );

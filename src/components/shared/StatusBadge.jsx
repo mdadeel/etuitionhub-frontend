@@ -26,17 +26,21 @@ const STATUS_CONFIG = {
   verified_basic: { label: "Basic", tone: TONES.info },
 };
 
-const StatusBadge = ({ status, label, className }) => {
+const StatusBadge = ({ status, label, className, size = 'default' }) => {
   const config = STATUS_CONFIG[status] || { label: status || "—", tone: TONES.neutral };
   const displayLabel = label || config.label;
+  const sizeClasses = size === 'sm'
+    ? "gap-1 px-1.5 py-px text-[9px]"
+    : "gap-1.5 px-2.5 py-0.5 text-[11px]";
 
   return (
     <span className={cn(
-      "inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border whitespace-nowrap",
+      "inline-flex items-center font-semibold uppercase tracking-wider rounded-full border whitespace-nowrap",
+      sizeClasses,
       config.tone,
       className,
     )}>
-      <span className="size-1.5 rounded-full bg-current opacity-80" />
+      <span className="size-1 rounded-full bg-current opacity-80" />
       {displayLabel}
     </span>
   );

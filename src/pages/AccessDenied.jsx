@@ -2,12 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldAlert } from 'lucide-react';
 import Logo from '../components/shared/Logo';
 import { Button } from '@/components/ui/button';
+import SEO from '@/components/shared/SEO';
 
 const AccessDenied = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
+      <SEO title="Access Denied | eTuitionBD" noIndex />
       <div className="w-full max-w-md text-center space-y-6">
         <div className="flex justify-center">
           <Logo boxSize="size-10" iconSize="size-6" textSize="text-base" />

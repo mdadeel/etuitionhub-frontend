@@ -6,6 +6,7 @@ import { ArrowLeft, Mail } from 'lucide-react';
 import Logo from '../components/shared/Logo';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import SEO from '@/components/shared/SEO';
 
 const PasswordReset = () => {
     const [email, setEmail] = useState('');
@@ -38,12 +39,12 @@ const PasswordReset = () => {
 
     if (emailSent) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden bg-pattern-academic">
+            <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
 
                 <div className="w-full max-w-md z-10">
-                    <div className="bg-card border border-border rounded-xl shadow-premium overflow-hidden p-5 sm:p-6 text-center">
-                        <div className="size-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-card border border-border rounded-xl  overflow-hidden p-5 sm:p-6 text-center">
+                        <div className="size-12 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                             </svg>
@@ -65,11 +66,12 @@ const PasswordReset = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden bg-pattern-academic">
+        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
+            <SEO title="Reset Password | eTuitionBD" description="Reset your eTuitionBD account password. We'll send you a link to create a new one." />
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
 
             <div className="w-full max-w-md z-10">
-                <div className="bg-card border border-border rounded-xl shadow-premium overflow-hidden p-5 sm:p-6">
+                <div className="bg-card border border-border rounded-xl  overflow-hidden p-5 sm:p-6">
 
                     <div className="text-center mb-4">
                         <div className="flex justify-center mb-3">

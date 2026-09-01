@@ -17,9 +17,9 @@ const VercelAlert = () => {
   if (!visible) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[9999] bg-amber-50 border-b border-amber-200 text-amber-900 text-sm">
+    <div className="fixed top-0 left-0 right-0 z-[9999] bg-warning/10 border-b border-warning/20 text-warning text-sm">
       <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-start gap-3">
-        <AlertTriangle size={18} className="shrink-0 mt-0.5 text-amber-600" />
+        <AlertTriangle size={18} className="shrink-0 mt-0.5 text-warning" />
         <p className="flex-1">
           This site is running on a <strong>free Vercel tier</strong>. Real-time features like chat,
           video sessions, and instant notifications are unavailable. Some data may reset after redeploys.
@@ -30,7 +30,7 @@ const VercelAlert = () => {
             setVisible(false);
             localStorage.setItem('vercelAlertDismissed', 'true');
           }}
-          className="shrink-0 p-1 rounded hover:bg-amber-200/50 transition-colors"
+          className="shrink-0 p-1 rounded hover:bg-warning/20 transition-colors"
         >
           <X size={16} />
         </button>

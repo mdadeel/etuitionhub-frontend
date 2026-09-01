@@ -196,7 +196,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
                   if (isMobile && onCloseMobile) onCloseMobile();
                 }}
                 className={cn(
-                  'group flex items-center gap-2.5 px-2 h-9 rounded-[7px] transition-all duration-200',
+                  'group flex items-center gap-2.5 px-2 h-9 rounded-lg transition-all duration-200',
                   isActive
                     ? 'bg-primary/10 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -217,7 +217,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
               <button
                 onClick={onClick}
                 className={cn(
-                  'group flex items-center gap-2.5 px-2 h-9 rounded-[7px] transition-all duration-200 w-full text-left',
+                  'group flex items-center gap-2.5 px-2 h-9 rounded-lg transition-all duration-200 w-full text-left',
                   isActive
                     ? 'bg-primary/10 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -324,7 +324,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
       {location.pathname.startsWith('/dashboard') && (
         <div className="mb-5">
           {!isCollapsed && (
-            <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/50 px-3 mb-1.5">
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground/50 px-3 mb-1.5">
               Dashboard
             </p>
           )}
@@ -347,7 +347,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
       {!location.pathname.startsWith('/dashboard') && (
         <div className="mb-6">
           {!isCollapsed && (
-            <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/50 px-3 mb-1.5">
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground/50 px-3 mb-1.5">
               Subjects
             </p>
           )}
@@ -378,7 +378,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
           {!isCollapsed && (
             <div className="flex items-center gap-1.5 px-3 mb-1.5">
               <History size={14} className="text-muted-foreground/60" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground/60">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground/60">
                 Recent Chats
               </p>
             </div>
@@ -386,7 +386,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
           <div className="space-y-0">
             {isLoadingChats ? (
               [...Array(3)].map((_, i) => (
-                <div key={i} className="h-9 w-full bg-muted/20 animate-pulse rounded-[7px] mx-1" />
+                <div key={i} className="h-9 w-full bg-muted/20 animate-pulse rounded-lg mx-1" />
               ))
             ) : recentChats.length > 0 ? (
               recentChats.map((chat) => (
@@ -399,7 +399,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
                           if (isMobile && onCloseMobile) onCloseMobile();
                         }}
                         className={cn(
-                          'group flex items-center gap-2.5 px-2 h-9 rounded-[7px] transition-all duration-200 relative',
+                          'group flex items-center gap-2.5 px-2 h-9 rounded-lg transition-all duration-200 relative',
                           location.pathname.includes(chat._id)
                             ? 'bg-primary/10 text-primary'
                             : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -441,7 +441,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
                                 </button>
                                 <button 
                                   onClick={(e) => promptDeleteChat(e, chat._id)}
-                                  className="p-1 hover:bg-background rounded-md transition-colors text-red-500/70 hover:text-red-500"
+                                  className="p-1 hover:bg-background rounded-md transition-colors text-destructive/70 hover:text-destructive"
                                 >
                                   <Trash2 size={11} />
                                 </button>
@@ -483,7 +483,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
                       if (isMobile && onCloseMobile) onCloseMobile();
                     }}
                     className={cn(
-                      'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
+                      'flex items-center justify-center h-9 rounded-lg transition-colors duration-200',
                       location.pathname === '/ai-assistant/history'
                         ? 'bg-primary/10 text-primary'
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -505,7 +505,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
                       if (isMobile && onCloseMobile) onCloseMobile();
                     }}
                     className={cn(
-                      'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
+                      'flex items-center justify-center h-9 rounded-lg transition-colors duration-200',
                       location.pathname === '/ai-assistant/lesson-planner'
                         ? 'bg-primary/10 text-primary'
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -529,7 +529,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
                   if (isMobile && onCloseMobile) onCloseMobile();
                 }}
                 className={cn(
-                  'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
+                  'flex items-center justify-center h-9 rounded-lg transition-colors duration-200',
                   location.pathname === '/ai-assistant/saved-notes'
                     ? 'bg-primary/10 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -551,7 +551,7 @@ const ModernSidebar = ({ className, isMobile = false, onCloseMobile }) => {
                   if (isMobile && onCloseMobile) onCloseMobile();
                 }}
                 className={cn(
-                  'flex items-center justify-center h-9 rounded-[7px] transition-colors duration-200',
+                  'flex items-center justify-center h-9 rounded-lg transition-colors duration-200',
                   location.pathname === '/ai-assistant/settings'
                     ? 'bg-primary/10 text-primary'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'

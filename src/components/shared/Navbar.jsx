@@ -145,7 +145,7 @@ const Navbar = () => {
   // Dynamic navigation links
   const navLinks = [
     { path: "/tutors", label: t("nav.find_tutors", "Find Tutors") },
-    { path: "/tuitions", label: t("nav.tuitions", "Subjects") },
+    { path: "/tuitions", label: t("nav.tuitions", "Tuitions") },
     ...(user
       ? [{ path: "/ai-assistant", label: t("nav.ai_tutor", "Porua AI"), icon: (props) => <PoruaLogo iconOnly {...props} /> }]
       : []),

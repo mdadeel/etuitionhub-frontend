@@ -124,7 +124,7 @@ const GlobalUsers = () => {
             label: 'Account',
             render: (val) => (
               <span className={`text-xs font-label font-semibold uppercase px-2 py-0.5 rounded ${
-                val ? 'bg-blue-500/10 text-blue-600' : 'bg-muted text-muted-foreground'
+                val ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
               }`}>
                 {val ? 'Org' : 'Public'}
               </span>

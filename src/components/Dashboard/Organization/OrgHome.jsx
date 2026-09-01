@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../../services/api";
+import { useAuth } from "../../../contexts/AuthContext";
 import { toast } from "react-hot-toast";
 import {
   Building2,
@@ -16,6 +17,11 @@ import { Card } from "../../ui/card";
 
 const OrgHome = () => {
   const { orgId } = useParams();
+  const { hasPermission } = useAuth();
+  const canViewMembers = hasPermission("member:view");
+  const canViewStudents = hasPermission("student:view");
+  const canViewTuitions = hasPermission("tuition:view");
+  const canManageSettings = hasPermission("settings:manage");
   const [org, setOrg] = useState(null);
   const [stats, setStats] = useState(null);
   const [tuitions, setTuitions] = useState([]);
@@ -25,10 +31,15 @@ const OrgHome = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        const membersPromise = canViewMembers
+          ? api.get(`/api/v1/organizations/${orgId}/members`)
+          : Promise.resolve({ data: { data: [] } });
         const [orgRes, membersRes, tuitionsRes] = await Promise.all([
           api.get(`/api/v1/organizations/${orgId}`).catch(() => ({ data: { data: null } })),
-          api.get(`/api/v1/organizations/${orgId}/members`).catch(() => ({ data: { data: [] } })),
-          api.get(`/api/v1/organizations/${orgId}/tuitions`).catch(() => ({ data: { data: [] } })),
+          membersPromise.catch(() => ({ data: { data: [] } })),
+          canViewTuitions
+            ? api.get(`/api/v1/organizations/${orgId}/tuitions`).catch(() => ({ data: { data: [] } }))
+            : Promise.resolve({ data: { data: [] } }),
         ]);
 
         setOrg(orgRes.data.data);
@@ -51,7 +62,7 @@ const OrgHome = () => {
       }
     };
     fetchData();
-  }, [orgId]);
+  }, [orgId, canViewMembers, canViewTuitions]);
 
   if (loading) {
     return (
@@ -62,17 +73,21 @@ const OrgHome = () => {
   }
 
   const statCards = [
-    { label: "Total Members", value: stats?.totalMembers || 0, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "Teachers", value: stats?.teachers || 0, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    ...(canViewMembers ? [
+      { label: "Total Members", value: stats?.totalMembers || 0, icon: Users, color: "text-primary", bg: "bg-primary/10" },
+      { label: "Teachers", value: stats?.teachers || 0, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    ] : []),
+    ...(canViewStudents ? [
+      { label: "Students", value: stats?.students || 0, icon: TrendingUp, color: "text-amber-500", bg: "bg-amber-500/10" },
+    ] : []),
     { label: "Active Tuitions", value: stats?.activeTuitions || 0, icon: BookOpen, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Students", value: stats?.students || 0, icon: TrendingUp, color: "text-amber-500", bg: "bg-amber-500/10" },
   ];
 
   const quickLinks = [
-    { label: "Tuitions", path: "tuitions", icon: BookOpen, count: stats?.totalTuitions },
-    { label: "Members", path: "members", icon: Users, count: stats?.totalMembers },
+    ...(canViewTuitions ? [{ label: "Tuitions", path: "tuitions", icon: BookOpen, count: stats?.totalTuitions }] : []),
+    ...(canViewMembers ? [{ label: "Members", path: "members", icon: Users, count: stats?.totalMembers }] : []),
     { label: "Sessions", path: "sessions", icon: DollarSign },
-    { label: "Settings", path: "settings", icon: Building2 },
+    ...(canManageSettings ? [{ label: "Settings", path: "settings", icon: Building2 }] : []),
   ];
 
   return (

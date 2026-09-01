@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import api from '../../services/api';
 import { trackEvent } from '../../services/analytics';
 import { 
@@ -23,6 +24,7 @@ import { cn } from "@/lib/utils";
 
 
 const HomeBanner = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const { data: tutorsData } = useQuery({
@@ -100,25 +102,25 @@ const handleSearch = (e) => {
                         <div className="space-y-6">
                             <div>
                                 <Badge variant="secondary" className="px-4 py-1.5 rounded-full bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary-foreground/90 font-bold tracking-tight">
-                                    🇧🇩 Bangladesh's #1 Tutor Marketplace
+                                    {t('homeBanner.badge')}
                                 </Badge>
                             </div>
 
                             <div className="space-y-4">
                                 <h1 className="text-5xl lg:text-7xl font-display font-bold text-foreground leading-[1.1] tracking-tight">
-                                    Find Verified <br/>
+                                    {t('homeBanner.title_1')} <br/>
                                     <span className="text-primary relative inline-block">
-                                        Private Tutors
+                                        {t('homeBanner.title_2')}
                                         <svg className="absolute -bottom-2 left-0 w-full text-primary" viewBox="0 0 358 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M3 9C118.957 4.46788 239.113 1.10912 355 9" stroke="currentColor" strokeWidth="5" strokeLinecap="round"/>
                                         </svg>
                                     </span> <br/>
-                                    Across Bangladesh.
+                                    {t('homeBanner.title_3')}
                                 </h1>
                                 <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl font-body font-medium">
                                     {availability?.count
-                                        ? `Connect with ${availability.count} verified expert tutors for personalized home and online lessons. Academic excellence, built on trust.`
-                                        : "Connect with verified expert tutors for personalized home and online lessons. Academic excellence, built on trust."}
+                                        ? t('homeBanner.subtitle', { count: availability.count })
+                                        : t('homeBanner.subtitle_default')}
                                 </p>
                             </div>
                         </div>
@@ -128,28 +130,28 @@ const handleSearch = (e) => {
                             <Card className="p-6 bg-card/90 backdrop-blur-md border-border shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-xl overflow-visible">
                                 <div className="flex items-center gap-2 mb-4 text-xs font-semibold text-muted-foreground">
                                     <span className="relative flex size-2">
-                                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-                                        <span className="relative inline-flex size-2 rounded-full bg-green-500" />
+                                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                                        <span className="relative inline-flex size-2 rounded-full bg-success" />
                                     </span>
                                     <span>
                                         {availability ? (
                                             <>
-                                                Live: <span className="text-foreground font-bold">{availability.count}</span> expert tutors available{" "}
+                                                {t('homeBanner.live_prefix')} <span className="text-foreground font-bold">{availability.count}</span> {t('homeBanner.live_suffix')}{" "}
                                                 <span className="text-primary font-bold">
-                                                    {availability.scope === "nationwide" ? "nationwide" : `in ${availability.scope}`}
+                                                    {availability.scope === "nationwide" ? t('homeBanner.live_nationwide') : t('homeBanner.live_in_scope', { scope: availability.scope })}
                                                 </span>{" "}
-                                                right now
+                                                {t('homeBanner.live_right_now')}
                                             </>
                                         ) : (
-                                            "Checking live tutor availability..."
+                                            t('homeBanner.live_checking')
                                         )}
                                     </span>
                                 </div>
                                 <div className="flex flex-col md:flex-row items-stretch md:items-end gap-4 md:gap-6 mb-4">
                                     <div className="flex-1 w-full">
                                         <FilterSelect 
-                                            label="Subject"
-                                            placeholder="Select subject"
+                                            label={t('homeBanner.subject_label')}
+                                            placeholder={t('homeBanner.subject_placeholder')}
                                             icon={BookOpen}
                                             options={subjects}
                                             value={searchData.subject}
@@ -158,8 +160,8 @@ const handleSearch = (e) => {
                                     </div>
                                     <div className="flex-1 w-full">
                                         <FilterSelect 
-                                            label="Class Level"
-                                            placeholder="Select class"
+                                            label={t('homeBanner.class_label')}
+                                            placeholder={t('homeBanner.class_placeholder')}
                                             icon={GraduationCap}
                                             options={classes}
                                             value={searchData.classLevel}
@@ -179,7 +181,7 @@ const handleSearch = (e) => {
                                             className="bg-primary hover:bg-primary/90 h-10 px-6 font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 rounded-xl"
                                         >
                                             <Search className="size-4 mr-2" />
-                                            <span>Search</span>
+                                            <span>{t('homeBanner.search_btn')}</span>
                                         </Button>
                                     </div>
                                 </div>
@@ -187,15 +189,15 @@ const handleSearch = (e) => {
                                 <div className="flex flex-wrap items-center gap-8 pt-4 border-t border-border/60">
                                     <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                                         <CheckCircle className="size-4 text-primary" />
-                                        <span>Verified Credentials</span>
+                                        <span>{t('tutors.vetted')}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                                         <MessageCircle className="size-4 text-primary" />
-                                        <span>Direct Messaging</span>
+                                        <span>{t('nav.dashboard')}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                                         <Users className="size-4 text-primary" />
-                                        <span>No Platform Fees</span>
+                                        <span>{t('homeBanner.trusted_by')}</span>
                                     </div>
                                 </div>
                             </Card>
@@ -225,7 +227,7 @@ const handleSearch = (e) => {
                                     <div
                                         key={tutor._id}
                                         className={cn(
-                                            "absolute inset-0 rounded-2xl overflow-hidden bg-card shadow-[0_20px_40px_rgba(0,0,0,0.06)] border border-border/80 transition-all duration-500",
+                                            "absolute inset-0 rounded-lg overflow-hidden bg-card shadow-[0_20px_40px_rgba(0,0,0,0.06)] border border-border/80 transition-all duration-500",
                                         )}
                                         style={{
                                             zIndex,
@@ -250,7 +252,7 @@ const handleSearch = (e) => {
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-foreground leading-none">{availability.count}</p>
-                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Verified tutors online</p>
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{t('homeBanner.live_suffix')}</p>
                             </div>
                         </div>
                     ) : null}
@@ -259,8 +261,8 @@ const handleSearch = (e) => {
                             <ShieldCheck size={18} className="text-primary" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-foreground leading-none">ID-verified</p>
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Every tutor</p>
+                            <p className="text-2xl font-bold text-foreground leading-none">{t('homeBanner.live_nationwide')}</p>
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{t('tutors.vetted')}</p>
                         </div>
                     </div>
                 </div>

@@ -65,7 +65,7 @@ const PayPanel = ({ connection, onMarked }) => {
         type="button"
         onClick={handleFreeTrial}
         disabled={submitting}
-        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 border border-emerald-300 text-emerald-700 rounded-md text-sm hover:bg-emerald-50 disabled:opacity-50"
+        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 border border-success/30 text-success rounded-md text-sm hover:bg-success/15 disabled:opacity-50"
       >
         <Gift size={14} /> Mark as free trial
       </button>

@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import RoleBadge from '@/components/shared/RoleBadge';
+import NotificationPreferences from './NotificationPreferences';
 import { cn } from '@/lib/utils';
 import {
     BANGLADESH_DIVISIONS,
@@ -55,6 +56,20 @@ const Profile = () => {
     const [experience, setExperience] = useState('');
 
     const isTutor = dbUser?.role?.toLowerCase() === 'tutor';
+
+    const handlePhotoUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const res = await api.post('/api/upload', formData);
+            setPhotoInput(res.data.url);
+            toast.success('Photo uploaded');
+        } catch {
+            toast.error('Upload failed');
+        }
+    };
 
     useEffect(() => {
         if (dbUser || user) {
@@ -172,6 +187,21 @@ const Profile = () => {
                                         className="size-full object-cover"
                                         alt="Profile Preview"
                                     />
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    ref={fileInputRef}
+                                    onChange={handlePhotoUpload}
+                                />
+                                <div
+                                    className="absolute bottom-2 right-2 size-10 bg-card rounded-lg flex items-center justify-center shadow-lg border border-border cursor-pointer hover:scale-110 transition-transform text-muted-foreground hover:text-primary"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    role="button"
+                                    aria-label="Upload profile photo"
+                                >
+                                    <Camera size={18} />
                                 </div>
                             </div>
 
@@ -491,6 +521,9 @@ const Profile = () => {
                             </button>
                         </div>
                     </form>
+
+                    {/* Notification Preferences */}
+                    <NotificationPreferences />
                 </>
             ) : (
                 <>
@@ -524,19 +557,7 @@ const Profile = () => {
                                         accept="image/*"
                                         className="hidden"
                                         ref={fileInputRef}
-                                        onChange={async (e) => {
-                                            const file = e.target.files?.[0];
-                                            if (!file) return;
-                                            const formData = new FormData();
-                                            formData.append('file', file);
-                                            try {
-                                                const res = await api.post('/api/upload', formData);
-                                                setPhotoInput(res.data.url);
-                                                toast.success('Photo uploaded');
-                                            } catch {
-                                                toast.error('Upload failed');
-                                            }
-                                        }}
+                                        onChange={handlePhotoUpload}
                                     />
                                     <div
                                         className="absolute bottom-1 right-1 size-12 bg-card rounded-lg flex items-center justify-center shadow-lg border border-border cursor-pointer hover:scale-110 transition-transform text-muted-foreground hover:text-primary"
@@ -639,12 +660,16 @@ const Profile = () => {
                                         <div>
                                             <h4 className="text-sm font-semibold text-foreground">Account Security</h4>
                                             <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                                                Your account is protected by industry-standard encryption. 
-                                                Keep your information accurate to ensure seamless verification.
+                                                Your account is protected by industry-standard encryption.
+                                                Keep your information accurate so verification stays quick and easy.
                                             </p>
                                         </div>
                                     </div>
                                 </Card>
+                            </div>
+
+                            <div className="mt-8">
+                                <NotificationPreferences />
                             </div>
                         </div>
                     </div>

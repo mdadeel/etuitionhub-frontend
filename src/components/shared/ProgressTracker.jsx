@@ -17,7 +17,7 @@ const ProgressTracker = ({ status }) => {
     if (status === 'rejected') {
         return (
             <div className="flex items-center gap-1.5">
-                <span className="text-[9px] font-heading font-black uppercase tracking-widest text-red-600">Rejected</span>
+                <span className="text-[11px] font-heading font-black uppercase tracking-widest text-destructive">Rejected</span>
             </div>
         );
     }
@@ -34,18 +34,18 @@ const ProgressTracker = ({ status }) => {
                             <div
                                 className={`size-1.5 rounded-full ${
                                     isDone
-                                        ? 'bg-emerald-500'
+                                        ? 'bg-success'
                                         : isActive
-                                            ? 'bg-amber-500 animate-pulse'
+                                            ? 'bg-warning animate-pulse'
                                             : 'bg-muted-foreground/30'
                                 }`}
                             />
-                            <span className={`text-[8px] mt-0.5 uppercase tracking-widest font-heading font-black ${
-                                isDone ? 'text-emerald-600' : isActive ? 'text-amber-600' : 'text-muted-foreground/50'
+                            <span className={`text-[11px] mt-0.5 uppercase tracking-widest font-heading font-black ${
+                                isDone ? 'text-success' : isActive ? 'text-warning' : 'text-muted-foreground/50'
                             }`}>{label}</span>
                         </div>
                         {i < steps.length - 1 && (
-                            <div className={`w-3 h-px ${i < s.done ? 'bg-emerald-500' : i === s.done ? 'bg-amber-500' : 'bg-muted-foreground/30'}`} />
+                            <div className={`w-3 h-px ${i < s.done ? 'bg-success' : i === s.done ? 'bg-warning' : 'bg-muted-foreground/30'}`} />
                         )}
                     </div>
                 );

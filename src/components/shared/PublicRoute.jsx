@@ -28,7 +28,7 @@ function PublicRoute({ children }) {
             <div className="min-h-screen flex items-center justify-center bg-background px-4">
                 <div className="w-full max-w-md space-y-6">
                     <div className="text-center space-y-3">
-                        <Skeleton className="size-14 rounded-2xl mx-auto" />
+                        <Skeleton className="size-14 rounded-lg mx-auto" />
                         <Skeleton className="h-7 w-44 rounded-lg mx-auto" />
                         <LineSkeleton width="2/3" className="h-4 mx-auto" />
                     </div>
@@ -60,7 +60,7 @@ function PublicRoute({ children }) {
 
         return (
             <div className="min-h-screen flex items-center justify-center bg-background px-4">
-                <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-premium">
+                <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 ">
                     <h1 className="text-xl font-heading font-bold text-foreground mb-2">
                         You're already signed in
                     </h1>

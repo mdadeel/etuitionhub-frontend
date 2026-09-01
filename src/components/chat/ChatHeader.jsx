@@ -30,7 +30,7 @@ const ChatHeader = ({ conversation, user, onBack }) => {
                     <div className="relative">
                         <Avatar src={other.photoURL} alt={other.displayName} size="md" className="size-10 rounded-full shadow-sm transition-transform group-hover:scale-105" />
                         {isOnline && (
-                            <div className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-background" />
+                            <div className="absolute bottom-0 right-0 size-3 bg-success rounded-full border-2 border-background" />
                         )}
                     </div>
       
@@ -40,7 +40,7 @@ const ChatHeader = ({ conversation, user, onBack }) => {
                         </h3>
                         <span className="text-[12px] text-muted-foreground mt-0.5">
                             {isOnline ? (
-                                <span className="text-green-600 dark:text-green-500 font-medium">Active now</span>
+                                <span className="text-success dark:text-success font-medium">Active now</span>
                             ) : (
                                 <span>Offline</span>
                             )}

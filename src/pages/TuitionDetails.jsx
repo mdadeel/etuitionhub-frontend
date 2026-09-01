@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import toast from "react-hot-toast";
 
@@ -21,7 +22,8 @@ import {
     ShieldAlert,
     Lock,
     BookOpen,
-    Target
+    Target,
+    Bookmark
 } from 'lucide-react';
 import {
   Dialog,
@@ -39,7 +41,13 @@ import LoginRequiredModal from '../components/shared/LoginRequiredModal';
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton } from "@/components/shared/skeletons";
 import SEO from '../components/shared/SEO';
+import { Helmet } from 'react-helmet-async';
+import {
+    breadcrumbJsonLd,
+    serializeJsonLd,
+} from '../lib/jsonLd';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Breadcrumb from '../components/shared/Breadcrumb';
 
 function TuitionDetailsSkeleton() {
   return (
@@ -88,6 +96,7 @@ function TuitionDetailsSkeleton() {
 const TuitionDetails = () => {
     const { id } = useParams();
     const { user, dbUser } = useAuth();
+    const { t } = useTranslation();
     // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
 
@@ -107,6 +116,42 @@ const TuitionDetails = () => {
     const [reachOutMessage, setReachOutMessage] = useState('');
     const [reachOutRate, setReachOutRate] = useState('');
     const [submittingReachOut, setSubmittingReachOut] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
+
+    useEffect(() => {
+        if (tuition?._id && user) {
+            api.get(`/api/bookmarks/tuitions/check/${tuition._id}`)
+                .then(res => setIsSaved(res.data?.isSaved === true))
+                .catch(() => setIsSaved(false));
+        }
+    }, [tuition?._id, user]);
+
+    const handleBookmark = async () => {
+        if (!user) { setShowLoginModal(true); return; }
+        try {
+            if (isSaved) {
+                await api.delete(`/api/bookmarks/tuitions/${tuition._id}`);
+                setIsSaved(false);
+                toast.error(t('tuitionDetails.unsaved'));
+            } else {
+                await api.post(`/api/bookmarks/tuitions/${tuition._id}`);
+                setIsSaved(true);
+                toast.success(t('tuitionDetails.saved'));
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.error || t('tuitionDetails.save_failed'));
+        }
+    };
+
+    useEffect(() => {
+        if (showModal && dbUser && dbUser.role === 'tutor') {
+            setFormData(prev => ({
+                qualifications: prev.qualifications || dbUser.qualification || '',
+                experience: prev.experience || dbUser.experience || '',
+                expectedSalary: prev.expectedSalary || '',
+            }));
+        }
+    }, [showModal, dbUser]);
 
     useEffect(() => {
         const fetchTuitionDetails = async () => {
@@ -226,8 +271,8 @@ const TuitionDetails = () => {
             <div className="max-w-xl mx-auto px-4 py-20 text-center bg-background min-h-screen flex flex-col items-center justify-center">
                 <h2 className="text-xl font-heading text-foreground mb-2">Post Unavailable</h2>
                 <p className="text-sm text-muted-foreground mb-6">This tuition post doesn't exist or was removed.</p>
-                <Link to="/tuitions" className="px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8]">
-                    Back to Jobs
+                <Link to="/tuitions">
+                    <Button>Back to Jobs</Button>
                 </Link>
             </div>
         );
@@ -236,39 +281,35 @@ const TuitionDetails = () => {
     return (
         <>
         <SEO title={`${tuition?.subject || 'Tuition'} in ${tuition?.location || 'Bangladesh'} | eTuitionBD`} description={`Find a verified ${tuition?.subject || 'tutor'} in ${tuition?.location || 'Bangladesh'}. View qualifications, experience, fees, and contact directly.`} />
+        <Helmet>
+            <script type="application/ld+json">
+                {serializeJsonLd(breadcrumbJsonLd([
+                    { name: 'Tuitions', url: '/tuitions' },
+                    { name: tuition?.subject || 'Tuition', url: `/tuition/${tuition?._id || ''}` },
+                ])).__html}
+            </script>
+        </Helmet>
         <div className="bg-background min-h-screen py-8">
             <div className="max-w-6xl mx-auto px-4">
-
+                <Breadcrumb
+                    className="mb-4"
+                    items={[
+                        { label: t('nav.home', 'Home'), to: '/' },
+                        { label: t('nav.find_tuitions', 'Tuitions'), to: '/tuitions' },
+                        { label: tuition?.subject || t('tuitionDetails.title', 'Tuition Details') },
+                    ]}
+                />
 
                 <div className="grid lg:grid-cols-3 gap-6">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-4">
                         {/* Hero Card */}
                         <div className="bg-card p-6 rounded-lg border border-border">
-                            <div className="flex flex-wrap items-center gap-2 mb-4">
-                                <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] text-xs font-medium rounded-full">Class {tuition.class_name}</span>
-                                {tuition.status === 'approved' ? (
-                                    <span className="px-2 py-1 bg-[#059669]/10 text-[#059669] text-xs font-medium rounded-full">Verified</span>
-                                ) : (
-                                    <span className="px-2 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium rounded-full capitalize">{tuition.status}</span>
-                                )}
-                                {tuition.curriculum && (
-                                    <span className="px-2 py-1 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-medium rounded-full capitalize">{tuition.curriculum.replace(/_/g, ' ')}</span>
-                                )}
-                                {tuition.mode && (
-                                    <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
-                                        tuition.mode === 'online' ? 'bg-blue-500/10 text-blue-500' :
-                                        tuition.mode === 'home' ? 'bg-emerald-500/10 text-emerald-500' :
-                                        'bg-teal-500/10 text-teal-500'
-                                    }`}>{tuition.mode}</span>
-                                )}
-                            </div>
-
                             {tuition.poster && (
                                 <div className="flex items-center gap-2 mb-4">
                                     <Avatar size="xs" className="size-6 rounded-full">
                                         <AvatarImage src={tuition.poster.photoURL} alt={tuition.poster.name} />
-                                        <AvatarFallback className="text-[10px] font-medium rounded-full">
+                                        <AvatarFallback className="text-[11px] font-medium rounded-full">
                                             {tuition.poster.name?.charAt(0)?.toUpperCase() || '?'}
                                         </AvatarFallback>
                                     </Avatar>
@@ -276,26 +317,56 @@ const TuitionDetails = () => {
                                 </div>
                             )}
 
-                            <h1 className="text-xl font-heading text-foreground mb-6">
-                                {tuition.subject} Tutor Required
+                             <h1 className="text-xl font-heading text-foreground mb-6 flex items-center justify-between gap-4">
+                                <span>{tuition.subject} Tutor Required</span>
+                                <button
+                                    onClick={handleBookmark}
+                                    title={isSaved ? t('tuitionDetails.unsave') : t('tuitionDetails.save')}
+                                    aria-label={isSaved ? t('tuitionDetails.unsave') : t('tuitionDetails.save')}
+                                    className="shrink-0 inline-flex items-center justify-center size-10 rounded-lg border border-border bg-background hover:bg-muted transition-colors"
+                                >
+                                    <Bookmark
+                                        size={18}
+                                        className={isSaved ? "fill-primary text-primary" : "text-muted-foreground"}
+                                    />
+                                </button>
                             </h1>
+
+                            <div className="flex flex-wrap items-center gap-2 mb-6">
+                                <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">Class {tuition.class_name}</span>
+                                {tuition.status === 'approved' ? (
+                                    <span className="px-2 py-1 bg-success/10 text-success dark:text-success text-xs font-medium rounded-full">Verified</span>
+                                ) : (
+                                    <span className="px-2 py-1 bg-warning/10 text-warning dark:text-warning text-xs font-medium rounded-full capitalize">{tuition.status}</span>
+                                )}
+                                {tuition.curriculum && (
+                                    <span className="px-2 py-1 bg-success/10 text-success dark:text-success text-xs font-medium rounded-full capitalize">{tuition.curriculum.replace(/_/g, ' ')}</span>
+                                )}
+                                {tuition.mode && (
+                                    <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
+                                        tuition.mode === 'online' ? 'bg-primary/10 text-primary' :
+                                        tuition.mode === 'home' ? 'bg-success/10 text-success' :
+                                        'bg-success/10 text-success'
+                                    }`}>{tuition.mode}</span>
+                                )}
+                            </div>
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
                                 <div>
                                     <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
-                                        <Banknote size={12} className="text-[#2563EB]" /> Salary
+                                        <Banknote size={12} className="text-primary" /> Salary
                                     </p>
                                     <p className="text-lg font-heading text-foreground">৳{tuition.salary}</p>
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
-                                        <MapPin size={12} className="text-[#2563EB]" /> Location
+                                        <MapPin size={12} className="text-primary" /> Location
                                     </p>
                                     <p className="text-base font-medium text-foreground truncate" title={tuition.location}>{tuition.location}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
-                                        <Calendar size={12} className="text-[#2563EB]" /> Schedule
+                                        <Calendar size={12} className="text-primary" /> Schedule
                                     </p>
                                     <p className="text-base font-medium text-foreground">{tuition.days_per_week} Days/Wk</p>
                                 </div>
@@ -306,7 +377,7 @@ const TuitionDetails = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-card p-4 rounded-lg border border-border">
                                 <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
-                                    <Target size={14} className="text-[#2563EB]" /> Tutor Requirements
+                                    <Target size={14} className="text-primary" /> Tutor Requirements
                                 </h2>
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center py-2 border-b border-border/40">
@@ -332,7 +403,7 @@ const TuitionDetails = () => {
 
                             <div className="bg-card p-4 rounded-lg border border-border">
                                 <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
-                                    <BookOpen size={14} className="text-[#2563EB]" /> Job Description
+                                    <BookOpen size={14} className="text-primary" /> Job Description
                                 </h2>
                                 <p className="text-sm text-muted-foreground leading-relaxed">
                                     {tuition.description || "Looking for a dedicated and regular tutor to assist with academic requirements."}
@@ -341,9 +412,9 @@ const TuitionDetails = () => {
                         </div>
 
                         {/* Trust Section */}
-                        <div className="bg-[#2563EB]/5 p-4 rounded-lg border border-[#2563EB]/20">
+                        <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
                             <div className="flex items-start gap-4">
-                                <div className="size-10 bg-[#2563EB]/15 flex items-center justify-center text-[#2563EB] rounded-lg shrink-0">
+                                <div className="size-10 bg-primary/15 flex items-center justify-center text-primary rounded-lg shrink-0">
                                     <ShieldCheck size={20} />
                                 </div>
                                 <div className="space-y-2">
@@ -352,13 +423,13 @@ const TuitionDetails = () => {
                                         This recruitment is monitored by e-TuitionBD. Student information is verified and payment is secured.
                                     </p>
                                     <div className="flex flex-wrap gap-4 pt-2">
-                                        <div className="flex items-center gap-1 text-xs font-medium text-[#2563EB]">
+                                        <div className="flex items-center gap-1 text-xs font-medium text-primary">
                                             <CheckCircle size={12} /> {tuition.status === 'approved' ? 'Verified' : 'Pending Verification'}
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs font-medium text-[#2563EB]">
+                                        <div className="flex items-center gap-1 text-xs font-medium text-primary">
                                             <Lock size={12} /> Privacy
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs font-medium text-[#2563EB]">
+                                        <div className="flex items-center gap-1 text-xs font-medium text-primary">
                                             <ShieldAlert size={12} /> Safe
                                         </div>
                                     </div>
@@ -382,15 +453,15 @@ const TuitionDetails = () => {
                                             Login to Apply
                                         </Link>
                                     ) : !dbUser ? (
-                                        <button disabled className="w-full px-4 py-2.5 bg-muted text-[#9CA3AF] rounded-lg text-sm">
+                                        <Button disabled variant="secondary" className="w-full">
                                             Loading...
-                                        </button>
+                                        </Button>
                                     ) : dbUser?.role === 'tutor' && tuition.status === "approved" ? (
                                         <Dialog open={showModal} onOpenChange={setShowModal}>
                                             <DialogTrigger asChild>
-                                                <button className="w-full px-4 py-2.5 bg-[#2563EB] text-white font-medium rounded-lg hover:bg-[#1D4ED8] text-sm transition-colors">
+                                                <Button className="w-full">
                                                     Express Interest
-                                                </button>
+                                                </Button>
                                             </DialogTrigger>
                                             <DialogContent className="max-w-md rounded-lg border-border p-4 bg-card">
                                                 <DialogHeader>
@@ -446,12 +517,12 @@ const TuitionDetails = () => {
                                                     </div>
 
                                                     <div className="flex gap-2 pt-2">
-                                                        <button type="button" className="flex-1 px-4 py-2 border border-border text-muted-foreground rounded-lg hover:bg-background text-sm transition-colors" onClick={() => setShowModal(false)}>
+                                                        <Button type="button" variant="outline" className="flex-1" onClick={() => setShowModal(false)}>
                                                             Cancel
-                                                        </button>
-                                                        <button type="submit" className="flex-1 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1D4ED8] text-sm transition-colors">
+                                                        </Button>
+                                                        <Button type="submit" className="flex-1">
                                                             Submit
-                                                        </button>
+                                                        </Button>
                                                     </div>
                                                 </form>
                                             </DialogContent>
@@ -472,31 +543,31 @@ const TuitionDetails = () => {
                                 <p className="text-sm text-muted-foreground mb-4">
                                     Interested in this tuition? Reach out directly.
                                 </p>
-                                <button
+                                <Button
                                     onClick={() => setShowReachOutModal(true)}
-                                    className="w-full px-4 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 text-sm transition-colors"
+                                    className="w-full bg-success hover:bg-success text-white"
                                 >
                                     Reach Out to Student
-                                </button>
+                                </Button>
                             </div>
                         )}
 
                         {/* Safety Tips */}
                         <div className="bg-card p-4 rounded-lg border border-border">
                             <h4 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
-                                <ShieldAlert size={14} className="text-[#D97706]" /> Safety Tips
+                                <ShieldAlert size={14} className="text-warning dark:text-warning" /> Safety Tips
                             </h4>
                             <ul className="space-y-2">
                                 <li className="text-xs text-muted-foreground flex gap-2">
-                                    <span className="size-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
+                                    <span className="size-1 bg-warning dark:bg-warning/90 rounded-full mt-1.5 shrink-0"></span>
                                     No advance registration fees
                                 </li>
                                 <li className="text-xs text-muted-foreground flex gap-2">
-                                    <span className="size-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
+                                    <span className="size-1 bg-warning dark:bg-warning/90 rounded-full mt-1.5 shrink-0"></span>
                                     Verify student credentials
                                 </li>
                                 <li className="text-xs text-muted-foreground flex gap-2">
-                                    <span className="size-1 bg-[#D97706] rounded-full mt-1.5 shrink-0"></span>
+                                    <span className="size-1 bg-warning dark:bg-warning/90 rounded-full mt-1.5 shrink-0"></span>
                                     Keep communications on platform
                                 </li>
                             </ul>
@@ -510,7 +581,7 @@ const TuitionDetails = () => {
                         <div>
                             <h2 className="text-lg font-heading text-foreground">Similar Tuition Jobs</h2>
                         </div>
-                        <Link to="/tuitions" className="text-sm text-[#2563EB] hover:underline flex items-center gap-1">
+                        <Link to="/tuitions" className="text-sm text-primary hover:underline flex items-center gap-1">
                             View All <ArrowRight size={14} />
                         </Link>
                     </div>
@@ -526,7 +597,7 @@ const TuitionDetails = () => {
         <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="apply for this tuition" />
         {showReachOutModal && (
             <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="bg-card w-full max-w-md rounded-2xl border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
+                <div className="bg-card w-full max-w-md rounded-lg border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-heading text-foreground">Reach Out to Student</h3>
                         <button onClick={() => setShowReachOutModal(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground text-xl leading-none">&times;</button>
@@ -542,7 +613,7 @@ const TuitionDetails = () => {
                                     maxLength={500}
                                     className="w-full h-24 bg-background border border-border rounded-xl p-3 text-sm text-foreground resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                 />
-                                <p className="text-[10px] text-muted-foreground mt-1 text-right">{reachOutMessage.length}/500</p>
+                                <p className="text-[11px] text-muted-foreground mt-1 text-right">{reachOutMessage.length}/500</p>
                             </div>
                             <div>
                                 <label className="block text-xs font-semibold text-muted-foreground mb-1">Proposed Rate (৳/mo)</label>
@@ -559,7 +630,7 @@ const TuitionDetails = () => {
                             <button type="button" onClick={() => setShowReachOutModal(false)} className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all">
                                 Cancel
                             </button>
-                            <button type="submit" disabled={submittingReachOut || !reachOutMessage.trim()} className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-all">
+                            <button type="submit" disabled={submittingReachOut || !reachOutMessage.trim()} className="px-5 py-2.5 bg-success text-white text-sm font-semibold rounded-xl hover:bg-success disabled:opacity-50 transition-all">
                                 {submittingReachOut ? 'Sending…' : 'Send Request'}
                             </button>
                         </div>

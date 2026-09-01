@@ -158,7 +158,7 @@ const SearchPage = () => {
       <SEO title="Search Tutors & Tuitions | eTuitionBD" description="Search for verified private tutors and tuition opportunities across Bangladesh." />
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="relative mb-8">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-[#94A3B8]" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
           <input
             ref={inputRef}
             type="text"
@@ -166,7 +166,7 @@ const SearchPage = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search tutors and tuitions..."
-            className="w-full pl-12 pr-4 h-14 bg-card border border-border rounded-xl text-lg outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm"
+            className="w-full pl-12 pr-4 h-14 bg-card border border-border rounded-xl text-lg outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
             autoFocus
           />
           {input && (
@@ -197,7 +197,7 @@ const SearchPage = () => {
           >
             {suggestions.tutors.length > 0 && (
               <div className="p-2">
-                <p className="px-3 py-1.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <p className="px-3 py-1.5 text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                   <User size={10} /> Tutors
                 </p>
                 {suggestions.tutors.map((tutor) => (
@@ -226,7 +226,7 @@ const SearchPage = () => {
             )}
             {suggestions.tuitions.length > 0 && (
               <div className={cn("p-2", suggestions.tutors.length > 0 && "border-t border-border")}>
-                <p className="px-3 py-1.5 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <p className="px-3 py-1.5 text-[11px] font-label font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                   <BookOpen size={10} /> Tuitions
                 </p>
                 {suggestions.tuitions.map((tuition) => (
@@ -277,7 +277,7 @@ const SearchPage = () => {
 
         {totalResults > 0 && (
           <>
-            <div className="flex items-center gap-2 mb-4 text-xs text-[#94A3B8]">
+            <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
               <ArrowUpDown size={12} />
               Use &uarr;&darr; to navigate, Enter to open, Esc to clear
             </div>
@@ -296,7 +296,7 @@ const SearchPage = () => {
                       data-result-index={idx}
                       className={cn(
                         "rounded-xl transition-colors",
-                        activeIndex === idx && "ring-2 ring-[#2563EB]",
+                        activeIndex === idx && "ring-2 ring-primary",
                       )}
                     >
                       <TutorCard tutor={tutor} searchQuery={debouncedQuery} />
@@ -320,7 +320,7 @@ const SearchPage = () => {
                       className={cn(
                         "rounded-xl transition-colors",
                         activeIndex === tutors.length + idx &&
-                          "ring-2 ring-[#2563EB]",
+                          "ring-2 ring-primary",
                       )}
                     >
                       <TuitionCard
@@ -337,7 +337,7 @@ const SearchPage = () => {
 
         {!loading && (!debouncedQuery || debouncedQuery.length < 2) && (
           <div className="text-center py-20">
-            <Search size={48} className="mx-auto mb-4 text-[#E2E8F0]" />
+            <Search size={48} className="mx-auto mb-4 text-muted-foreground/40" />
             <p className="text-lg text-muted-foreground">
               Type at least 2 characters to search
             </p>

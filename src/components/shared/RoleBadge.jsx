@@ -32,7 +32,7 @@ const RoleBadge = ({ globalRole, role }) => {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-lg border whitespace-nowrap",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-lg border whitespace-nowrap",
         config.className,
       )}
     >

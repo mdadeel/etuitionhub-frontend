@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from 'react-i18next';
 import useDebouncedValue from "../hooks/useDebouncedValue";
 import { useSearchParams } from "react-router-dom";
 import TutorCard from "../components/shared/TutorCard";
+import TutorCompareModal from "../components/shared/TutorCompareModal";
 import { useAuth } from "../contexts/AuthContext";
 import {
   SlidersHorizontal,
@@ -10,7 +12,9 @@ import {
   X,
   Search,
   RefreshCw,
+  Scale,
 } from "lucide-react";
+import { toggleCompare, MAX_COMPARE } from "../lib/tutorCompare";
 import FilterSelect from "../components/shared/FilterSelect";
 import SearchEmptyState from "../components/shared/SearchEmptyState";
 import SaveSearchButton from "../components/shared/SaveSearchButton";
@@ -18,9 +22,12 @@ import api from "../services/api";
 import { cn } from "@/lib/utils";
 import SEO from '../components/shared/SEO';
 import { TutorCardGridSkeleton } from "@/components/shared/skeletons";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 const Tutors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
   const [tutors, setTutors] = useState([]);
   const [savedTutorIds, setSavedTutorIds] = useState(new Set());
   const { user } = useAuth();
@@ -40,9 +47,27 @@ const Tutors = () => {
   const [page, setPage] = useState(1);
   const [_pagination, setPagination] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
+  const [retryNonce, setRetryNonce] = useState(0);
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [compareIds, setCompareIds] = useState([]);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+
+  const handleToggleCompare = (id) => {
+    const { ids, rejected } = toggleCompare(compareIds, id);
+    if (rejected) {
+      toast.error(t('tutors.compare_limit', { count: MAX_COMPARE }));
+      return;
+    }
+    setCompareIds(ids);
+  };
+
+  const compareTutors = useMemo(
+    () => tutors.filter((t) => compareIds.includes(t._id)),
+    [compareIds, tutors],
+  );
 
   const handleMainScroll = (e) => {
     if (e.currentTarget.scrollTop > 20) {
@@ -69,6 +94,7 @@ const Tutors = () => {
     setHasMore(true);
     setTutors([]);
     setLoading(true);
+    setError(null);
   }, [
     debouncedSearch,
     selectedSubjects,
@@ -164,6 +190,7 @@ const Tutors = () => {
         const paginationData = responseData.pagination || null;
         const filterOptions = responseData.filterOptions || null;
 
+        setError(null);
         setTutors(prev => page === 1 ? (Array.isArray(tutorsData) ? tutorsData : []) : [...prev, ...(Array.isArray(tutorsData) ? tutorsData : [])]);
         setPagination(paginationData);
         setHasMore(paginationData ? paginationData.page < paginationData.pages : false);
@@ -194,6 +221,10 @@ const Tutors = () => {
       } catch (error) {
         if (!active) return;
         console.error("Error fetching tutors", error);
+        setError(
+          error?.response?.data?.message ||
+            "Unable to load tutors. Please check your connection and try again.",
+        );
       } finally {
         if (active) setLoading(false);
       }
@@ -212,6 +243,7 @@ const Tutors = () => {
     selectedMinSalary,
     selectedMaxSalary,
     page,
+    retryNonce,
   ]);
 
   useEffect(() => {
@@ -268,10 +300,10 @@ const Tutors = () => {
 
   return (
     <div className="bg-background text-foreground lg:h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
-      <SEO 
-        title="Find the Best Verified Tutors" 
-        description="Browse and connect with highly qualified, verified home and online tutors across Bangladesh. Select by class, subject, location, and monthly budget."
-        keywords="tutor, find tutors, verified tutors, bangladesh tutor, home tuition, online study"
+      <SEO
+        title={t('tutors.seo_title')}
+        description={t('tutors.seo_desc')}
+        keywords={t('tutors.seo_keywords')}
       />
       <div className="w-full px-4 md:px-6 lg:px-8 py-6 flex flex-col flex-1 min-h-0">
         {/* Header */}
@@ -286,10 +318,10 @@ const Tutors = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
               <h1 className="text-2xl font-heading text-foreground tracking-tight leading-none mb-2">
-                Verified <span className="text-[#2563EB]">Tutors.</span>
+                {t('tutors.heading_prefix')} <span className="text-primary">{t('tutors.heading_suffix')}</span>
               </h1>
               <p className="text-sm text-muted-foreground font-medium">
-                Browse through our verified network of academic professionals.
+                {t('tutors.heading_desc')}
               </p>
             </div>
 
@@ -298,14 +330,14 @@ const Tutors = () => {
                 <span className="text-xl font-heading text-foreground leading-none">
                   {filteredAndSortedTutors.length}
                 </span>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
-                  Available
+                <span className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">
+                  {t('tutors.available')}
                 </span>
               </div>
               <div className="px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
-                <ShieldCheck size={18} className="text-[#2563EB] mb-1" />
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
-                  100% Vetted
+                <ShieldCheck size={18} className="text-primary mb-1" />
+                <span className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">
+                  {t('tutors.vetted')}
                 </span>
               </div>
 
@@ -314,12 +346,12 @@ const Tutors = () => {
                 onClick={() => setIsMobileFiltersOpen(true)}
                 className="lg:hidden px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center justify-center min-w-[80px] hover:bg-muted active:scale-[0.98] transition-all relative self-stretch"
               >
-                <Filter size={18} className="text-[#2563EB] mb-1" />
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
-                  Filters
+                <Filter size={18} className="text-primary mb-1" />
+                <span className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">
+                  {t('tutors.filters')}
                 </span>
                 {(selectedSubjects.length > 0 || selectedArea !== "All") && (
-                  <span className="absolute -top-1 -right-1 size-5 bg-[#2563EB] text-white text-[9px] font-bold flex items-center justify-center rounded-full border border-card shadow-sm">
+                  <span className="absolute -top-1 -right-1 size-5 bg-primary text-white text-[11px] font-bold flex items-center justify-center rounded-full border border-card shadow-sm">
                     {(selectedSubjects.length > 0 ? 1 : 0) + (selectedArea !== "All" ? 1 : 0)}
                   </span>
                 )}
@@ -334,8 +366,8 @@ const Tutors = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search tutors..."
-              className="w-full pl-10 pr-4 h-12 bg-card border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20 shadow-sm transition-all text-foreground placeholder:text-muted-foreground"
+              placeholder={t('tutors.search_placeholder')}
+              className="w-full pl-10 pr-4 h-12 bg-card border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 shadow-sm transition-all text-foreground placeholder:text-muted-foreground"
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
             />
@@ -356,15 +388,15 @@ const Tutors = () => {
           >
             <div
               className={cn(
-                "bg-card w-full max-w-none h-[85vh] absolute bottom-0 lg:h-full p-6 lg:p-4 lg:rounded-2xl lg:border lg:border-border lg:w-full lg:shadow-sm transition-transform duration-300 rounded-t-3xl lg:rounded-2xl overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)] custom-scrollbar",
+                "bg-card w-full max-w-none h-[85vh] absolute bottom-0 lg:h-full p-6 lg:p-4 lg:rounded-lg lg:border lg:border-border lg:w-full lg:shadow-sm transition-transform duration-300 rounded-t-lg lg:rounded-lg overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)] custom-scrollbar",
                 isMobileFiltersOpen
                   ? "translate-y-0"
                   : "translate-y-full lg:translate-y-0",
               )}
             >
-              <div className="w-12 h-1.5 bg-[#E2E8F0] rounded-full mx-auto mb-6 lg:hidden" />
+              <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-6 lg:hidden" />
               <div className="flex items-center justify-between mb-6 lg:hidden">
-                <h3 className="text-xl font-heading tracking-tight">Filters</h3>
+                <h3 className="text-xl font-heading tracking-tight">{t('tutors.filters')}</h3>
                 <button
                   onClick={() => setIsMobileFiltersOpen(false)}
                   className="p-2 hover:bg-background rounded-full touch-manipulation"
@@ -373,66 +405,66 @@ const Tutors = () => {
                 </button>
               </div>
               <h3 className="hidden lg:flex text-sm font-medium text-foreground mb-4 items-center gap-2">
-                <Filter size={16} /> Filters
+                <Filter size={16} /> {t('tutors.filters')}
               </h3>
 
               <div className="space-y-4">
                 <FilterSelect
-                  label="Sort by"
+                  label={t('tutors.sort_by')}
                   value={sortBy}
                   onValueChange={setSortBy}
                   icon={SlidersHorizontal}
                   options={[
-                    { value: "ratings", label: "Top Rated" },
-                    { value: "name-az", label: "Alphabetical: A-Z" },
-                    { value: "name-za", label: "Alphabetical: Z-A" },
-                    { value: "salary-high", label: "Fee: High to Low" },
-                    { value: "salary-low", label: "Fee: Low to High" },
+                    { value: "ratings", label: t('tutors.sort_top_rated') },
+                    { value: "name-az", label: t('tutors.sort_name_az') },
+                    { value: "name-za", label: t('tutors.sort_name_za') },
+                    { value: "salary-high", label: t('tutors.sort_fee_high') },
+                    { value: "salary-low", label: t('tutors.sort_fee_low') },
                   ]}
                 />
 
                 <FilterSelect
-                  label="Area / Location"
+                  label={t('tutors.area_label')}
                   value={selectedArea}
                   onValueChange={setSelectedArea}
-                  placeholder="Select Area"
+                  placeholder={t('tutors.area_placeholder')}
                   options={allAreas}
                 />
 
                 <FilterSelect
-                  label="Language Preference"
+                  label={t('tutors.language_label')}
                   value={selectedLanguage}
                   onValueChange={setSelectedLanguage}
                   options={[
-                    { value: "all", label: "All" },
-                    { value: "english", label: "English" },
-                    { value: "bangla", label: "Bangla" },
-                    { value: "both", label: "Both" },
+                    { value: "all", label: t('tutors.lang_all') },
+                    { value: "english", label: t('tutors.lang_english') },
+                    { value: "bangla", label: t('tutors.lang_bangla') },
+                    { value: "both", label: t('tutors.lang_both') },
                   ]}
                 />
 
                 <FilterSelect
-                  label="Gender"
+                  label={t('tutors.gender_label')}
                   value={selectedGender}
                   onValueChange={setSelectedGender}
                   options={[
-                    { value: "all", label: "All" },
-                    { value: "male", label: "Male" },
-                    { value: "female", label: "Female" },
+                    { value: "all", label: t('tutors.lang_all') },
+                    { value: "male", label: t('tutors.gender_male') },
+                    { value: "female", label: t('tutors.gender_female') },
                   ]}
                 />
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block">
-                      Subjects
+                      {t('tutors.subjects')}
                     </label>
                     {selectedSubjects.length > 0 && (
                       <button
                         onClick={() => setSelectedSubjects([])}
-                        className="text-xs text-[#2563EB] hover:underline font-medium"
+                        className="text-xs text-primary hover:underline font-medium"
                       >
-                        Reset
+                        {t('tutors.reset')}
                       </button>
                     )}
                   </div>
@@ -443,7 +475,7 @@ const Tutors = () => {
                         onClick={() => toggleSubject(subject)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors min-h-[36px] border ${
                           selectedSubjects.includes(subject)
-                            ? "bg-[#2563EB] text-white border-[#2563EB]"
+                            ? "bg-primary text-white border-primary"
                             : "bg-background text-muted-foreground border-border hover:bg-muted"
                         }`}
                       >
@@ -466,15 +498,15 @@ const Tutors = () => {
                   onClick={handleClear}
                   className="w-full mt-6 px-3 py-3 text-sm font-medium text-muted-foreground border border-border rounded-xl hover:bg-background flex items-center justify-center gap-2 transition-colors"
                 >
-                  <X size={16} /> Clear All
+                  <X size={16} /> {t('tutors.clear_all')}
                 </button>
               )}
 
               <button
                 onClick={() => setIsMobileFiltersOpen(false)}
-                className="w-full mt-4 px-3 py-4 bg-[#2563EB] text-white rounded-xl font-medium text-sm lg:hidden h-14 shadow-sm active:scale-[0.98] transition-all"
+                className="w-full mt-4 px-3 py-4 bg-primary text-white rounded-xl font-medium text-sm lg:hidden h-14 shadow-sm active:scale-[0.98] transition-all"
               >
-                Apply Filters
+                {t('tutors.apply_filters')}
               </button>
             </div>
           </aside>
@@ -486,7 +518,7 @@ const Tutors = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <input
                 type="search"
-                placeholder="Search tutors..."
+                placeholder={t('tutors.search_placeholder')}
                 value={localSearch}
                 onChange={(e) => setLocalSearch(e.target.value)}
                 className="w-full pl-9 pr-4 h-10 rounded-xl text-sm bg-muted border border-border text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
@@ -500,16 +532,32 @@ const Tutors = () => {
             {searchQuery && (
               <div className="mb-4 flex items-center gap-2">
                 <span className="text-sm text-muted-foreground uppercase tracking-wide font-medium">
-                  Searching for:
+                  {t('tutors.searching_for')}
                 </span>
-                <span className="px-2 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-sm font-medium">
+                <span className="px-2 py-1 bg-primary/10 text-primary rounded-lg text-sm font-medium">
                   "{searchQuery}"
                 </span>
                 <SaveSearchButton query={searchQuery} filters={{ subject: selectedSubjects, area: selectedArea, language: selectedLanguage, gender: selectedGender, minSalary: selectedMinSalary, maxSalary: selectedMaxSalary }} />
               </div>
             )}
 
-            {tutors.length === 0 && !loading ? (
+            {tutors.length === 0 && !loading && error ? (
+              <div className="py-12 text-center">
+                <h3 className="text-lg font-heading text-destructive mb-2">
+                  {t('tutors.error_title')}
+                </h3>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+                  {error}
+                </p>
+                <button
+                  onClick={() => { setError(null); setLoading(true); setRetryNonce(n => n + 1); }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 active:scale-[0.98] transition-all shadow-sm"
+                >
+                  <RefreshCw size={14} />
+                  {t('tutors.try_again')}
+                </button>
+              </div>
+            ) : tutors.length === 0 && !loading ? (
               <div className="bg-card border border-border rounded-xl">
                 <SearchEmptyState
                   query={searchQuery}
@@ -533,10 +581,10 @@ const Tutors = () => {
                   <div className="px-4 pb-6 flex justify-center">
                     <button
                       onClick={handleClear}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] text-white rounded-xl text-sm font-medium hover:bg-[#1D4ED8] active:scale-[0.98] transition-all shadow-sm"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 active:scale-[0.98] transition-all shadow-sm"
                     >
                       <RefreshCw size={14} />
-                      Reset Filters
+                      {t('tutors.reset_filters')}
                     </button>
                   </div>
                 )}
@@ -550,6 +598,8 @@ const Tutors = () => {
                       tutor={tutor}
                       searchQuery={searchQuery}
                       initialIsSaved={savedTutorIds.has(tutor._id)}
+                      isCompared={compareIds.includes(tutor._id)}
+                      onToggleCompare={handleToggleCompare}
                     />
                   ))}
                 </div>
@@ -563,15 +613,15 @@ const Tutors = () => {
                   <div className="flex justify-center mt-8">
                     <button
                       onClick={() => setPage((prev) => prev + 1)}
-                      className="px-6 py-3 bg-[#2563EB] text-white font-medium rounded-xl hover:bg-[#1D4ED8] active:scale-[0.98] transition-all shadow-md"
+                      className="px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-all shadow-md"
                     >
-                      Load More Tutors
+                      {t('tutors.load_more')}
                     </button>
                   </div>
                 )}
                 {!hasMore && tutors.length > 0 && !loading && (
                   <div className="py-8 text-center text-sm text-muted-foreground border-t border-border mt-8">
-                    No more tutors available
+                    {t('tutors.no_more')}
                   </div>
                 )}
               </div>
@@ -579,6 +629,50 @@ const Tutors = () => {
           </main>
         </div>
       </div>
+
+      {/* Compare bar — fixed bottom, only when 2+ tutors selected */}
+      {compareIds.length >= 2 && (
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-card border-t border-border px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+                <Scale size={14} strokeWidth={2.5} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-foreground">
+                  {t('tutors.compare_selected', { count: compareIds.length })}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  {compareTutors.map((t) => t.displayName).join(", ")}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setCompareIds([])}
+                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+              >
+                {t('tutors.compare_clear')}
+              </button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsCompareOpen(true)}
+                className="gap-2"
+              >
+                <Scale size={14} strokeWidth={2.5} />
+                {t('tutors.compare_btn')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <TutorCompareModal
+        open={isCompareOpen}
+        onOpenChange={setIsCompareOpen}
+        tutors={compareTutors}
+      />
     </div>
   );
 };

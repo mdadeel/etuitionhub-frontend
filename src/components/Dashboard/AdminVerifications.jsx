@@ -41,7 +41,7 @@ const AdminVerifications = () => {
             // Send In-App Mail Notification
             await api.post('/api/mails/admin/send', {
                 userId,
-                subject: action === 'approve' ? 'Verification Approved 🎉' : 'Verification Rejected ⚠️',
+                subject: action === 'approve' ? 'Verification Approved' : 'Verification Rejected',
                 body: action === 'approve' 
                     ? 'Congratulations! Your documents have been verified and your profile now has the Verified Badge.'
                     : 'Unfortunately, your verification documents were rejected. Please ensure they are clear and valid, then re-upload.',

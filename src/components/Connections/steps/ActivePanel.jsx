@@ -37,8 +37,8 @@ const ActivePanel = ({ connection, onPaused, onCompleted, onCancel }) => {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-emerald-700 font-medium">
-        ✓ Tutoring is {connection.relationshipStatus}
+      <p className="text-sm text-success font-medium flex items-center gap-1.5">
+        <CheckCircle2 size={16} className="text-success" /> Tutoring is {connection.relationshipStatus}
       </p>
       {connection.firstSessionAt && (
         <p className="text-xs text-muted-foreground">
@@ -60,7 +60,7 @@ const ActivePanel = ({ connection, onPaused, onCompleted, onCancel }) => {
             type="button"
             onClick={handleComplete}
             disabled={submitting}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-success text-white rounded-md hover:bg-success"
           >
             <CheckCircle2 size={12} /> Mark complete
           </button>
@@ -68,7 +68,7 @@ const ActivePanel = ({ connection, onPaused, onCompleted, onCancel }) => {
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 rounded-md"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10 rounded-md"
         >
           Cancel relationship
         </button>

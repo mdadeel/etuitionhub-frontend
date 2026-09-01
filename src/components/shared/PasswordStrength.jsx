@@ -1,3 +1,4 @@
+import { Check, Circle } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 const PasswordStrength = ({ password }) => {
@@ -16,9 +17,9 @@ const PasswordStrength = ({ password }) => {
 
   const strength = score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong';
   const colors = {
-    weak: { bar: 'bg-red-500', text: 'text-red-500', label: 'Weak' },
-    medium: { bar: 'bg-orange-500', text: 'text-orange-500', label: 'Fair' },
-    strong: { bar: 'bg-green-500', text: 'text-green-500', label: 'Strong' },
+    weak: { bar: 'bg-destructive', text: 'text-destructive', label: 'Weak' },
+    medium: { bar: 'bg-warning', text: 'text-warning', label: 'Fair' },
+    strong: { bar: 'bg-success', text: 'text-success', label: 'Strong' },
   };
   const { bar, text, label } = colors[strength];
 
@@ -30,18 +31,18 @@ const PasswordStrength = ({ password }) => {
         <div className={cn("h-1 flex-1 rounded-full transition-colors", score >= 3 ? bar : "bg-muted")} />
       </div>
       <div className="flex items-center justify-between">
-        <span className={cn("text-[10px] font-medium", text)}>{label}</span>
-        <span className="text-[10px] text-muted-foreground">{password.length}/8 chars</span>
+        <span className={cn("text-[11px] font-medium", text)}>{label}</span>
+        <span className="text-[11px] text-muted-foreground">{password.length}/8 chars</span>
       </div>
-      <div className="flex gap-3 text-[10px]">
-        <span className={checks.length ? "text-green-500" : "text-muted-foreground"}>
-          {checks.length ? "✓" : "○"} 8+ chars
+      <div className="flex gap-3 text-[11px]">
+        <span className={`flex items-center gap-1 ${checks.length ? "text-success" : "text-muted-foreground"}`}>
+          {checks.length ? <Check size={12} className="text-success" /> : <Circle size={12} />} 8+ chars
         </span>
-        <span className={checks.letter ? "text-green-500" : "text-muted-foreground"}>
-          {checks.letter ? "✓" : "○"} Letter
+        <span className={`flex items-center gap-1 ${checks.letter ? "text-success" : "text-muted-foreground"}`}>
+          {checks.letter ? <Check size={12} className="text-success" /> : <Circle size={12} />} Letter
         </span>
-        <span className={checks.number ? "text-green-500" : "text-muted-foreground"}>
-          {checks.number ? "✓" : "○"} Number
+        <span className={`flex items-center gap-1 ${checks.number ? "text-success" : "text-muted-foreground"}`}>
+          {checks.number ? <Check size={12} className="text-success" /> : <Circle size={12} />} Number
         </span>
       </div>
     </div>

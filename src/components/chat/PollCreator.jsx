@@ -69,7 +69,7 @@ const PollCreator = ({ messageId, onCreated, onCancel }) => {
     };
 
     return (
-        <div className="p-4 border border-border rounded-2xl bg-card space-y-4">
+        <div className="p-4 border border-border rounded-lg bg-card space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <BarChart3 size={16} className="text-primary" />
@@ -110,7 +110,7 @@ const PollCreator = ({ messageId, onCreated, onCancel }) => {
                         {options.length > 2 && (
                             <button
                                 onClick={() => removeOption(index)}
-                                className="size-7 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                                className="size-7 flex items-center justify-center rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                             >
                                 <X size={14} />
                             </button>

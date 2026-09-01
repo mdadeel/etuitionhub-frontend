@@ -4,6 +4,7 @@ import { CheckCircle, Clock, ArrowRight, Receipt, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import api from '../services/api';
 import PaymentReceiptCard from '../components/shared/PaymentReceiptCard';
+import SEO from '@/components/shared/SEO';
 
 const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
@@ -30,9 +31,10 @@ const PaymentSuccess = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-6 selection:bg-primary/30 selection:text-primary">
+            <SEO title="Payment Submitted | eTuitionBD" noIndex />
             <div className="max-w-2xl w-full">
-                <div className="border border-border bg-card p-10 md:p-14 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                <div className="border border-border bg-card p-10 md:p-16 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-success"></div>
 
                     {receipt && (
                         <div className="mb-8">
@@ -41,12 +43,12 @@ const PaymentSuccess = () => {
                     )}
 
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="w-10 h-1 bg-emerald-500"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600">Submission Confirmed</span>
+                        <div className="w-10 h-1 bg-success"></div>
+                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-success">Submission Confirmed</span>
                     </div>
 
                     <div className="flex items-start gap-6 mb-10">
-                        <div className="size-16 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0">
+                        <div className="size-16 rounded-none bg-success/10 flex items-center justify-center text-success shrink-0">
                             <CheckCircle size={32} />
                         </div>
                         <div>
@@ -60,7 +62,7 @@ const PaymentSuccess = () => {
                     </div>
 
                     <div className="border border-border bg-muted/20 p-6 mb-10">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">Verification Timeline</p>
+                        <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">Verification Timeline</p>
                         <div className="space-y-4">
                             <TimelineStep icon={Receipt} label="Submitted" detail="Payment details received" status="done" />
                             <TimelineStep icon={Clock} label="Under Review" detail="Admin verifies transaction (24-48h)" status="active" />
@@ -68,8 +70,8 @@ const PaymentSuccess = () => {
                         </div>
                     </div>
 
-                    <div className="border border-emerald-500/30 bg-emerald-500/5 p-5 mb-10 flex items-start gap-4">
-                        <Mail size={18} className="text-emerald-600 shrink-0 mt-0.5" />
+                    <div className="border border-success/30 bg-success/5 p-5 mb-10 flex items-start gap-4">
+                        <Mail size={18} className="text-success shrink-0 mt-0.5" />
                         <p className="text-xs text-foreground/80 leading-relaxed">
                             A confirmation email has been sent. You can track this payment's status in your dashboard.
                         </p>
@@ -92,8 +94,8 @@ const PaymentSuccess = () => {
 // eslint-disable-next-line no-unused-vars
 const TimelineStep = ({ icon: Icon, label, detail, status }) => {
     const colors = {
-        done: 'bg-emerald-500/10 text-emerald-600',
-        active: 'bg-amber-500/10 text-amber-600 animate-pulse',
+        done: 'bg-success/10 text-success',
+        active: 'bg-warning/10 text-warning animate-pulse',
         pending: 'bg-muted text-muted-foreground',
     };
     return (

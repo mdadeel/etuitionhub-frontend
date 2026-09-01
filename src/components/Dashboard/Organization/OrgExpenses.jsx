@@ -26,7 +26,7 @@ const OrgExpenses = () => {
   }, [orgId]);
 
   const getStatusColor = (s) => ({
-    paid: 'bg-green-100 text-green-700', approved: 'bg-blue-100 text-blue-700',
+    paid: 'bg-green-100 text-green-700', approved: 'bg-primary/10 text-primary',
     pending: 'bg-yellow-100 text-yellow-700', rejected: 'bg-red-100 text-red-700'
   }[s] || 'bg-gray-100 text-gray-700');
 

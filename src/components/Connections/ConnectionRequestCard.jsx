@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { X, CheckCheck, Loader2 } from 'lucide-react';
+import { X, CheckCheck, Loader2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import DisputeModal from '../Dashboard/DisputeModal';
@@ -60,8 +60,8 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
             : `Student • ${request.otherUser.qualification || 'Seeking Tutoring'}`}
         </p>
         {request.otherUser.location && (
-          <p className="text-xs text-muted-foreground">
-            📍 {request.otherUser.location}
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <MapPin size={12} className="text-muted-foreground/70" /> {request.otherUser.location}
           </p>
         )}
         <div className="flex justify-end gap-2 mt-4">
@@ -87,7 +87,7 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
                variant="outline"
                onClick={() => setShowDispute(true)}
                size="sm"
-               className="text-red-500 border-red-500/30 hover:bg-red-500/10 hover:text-red-600"
+               className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
              >
                File Dispute
              </Button>

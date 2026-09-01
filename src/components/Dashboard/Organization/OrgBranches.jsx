@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -17,7 +17,7 @@ const OrgBranches = () => {
   const [form, setForm] = useState({ name: '', address: '', district: '', phone: '', email: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchBranches = async () => {
+  const fetchBranches = useCallback(async () => {
     try {
       const res = await api.get(`/api/v1/organizations/${orgId}/branches`);
       setBranches(res.data.data);
@@ -26,9 +26,9 @@ const OrgBranches = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orgId]);
 
-  useEffect(() => { fetchBranches(); }, [orgId]);
+  useEffect(() => { fetchBranches(); }, [fetchBranches]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

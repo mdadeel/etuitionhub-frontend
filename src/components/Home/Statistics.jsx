@@ -1,56 +1,69 @@
 import { Brain, Zap, BookOpen, MessageSquare } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 
-const capabilities = [
-  {
-    icon: Zap,
-    title: "Instant Answers",
-    description: "Get step-by-step solutions to complex math, science, and coding questions instantly."
-  },
-  {
-    icon: Brain,
-    title: "Concept Explanations",
-    description: "Break down difficult academic topics into simple, clear explanations."
-  },
-  {
-    icon: BookOpen,
-    title: "Curriculum Aligned",
-    description: "Tailored to national curriculum standards including SSC and HSC preparation."
-  },
-  {
-    icon: MessageSquare,
-    title: "Interactive Doubt Solving",
-    description: "Ask follow-up questions and explore concepts in depth with the AI."
-  }
-];
-
 const Statistics = () => {
+  const { t } = useTranslation();
+  const capabilities = [
+    {
+      icon: Zap,
+      title: t('poruaTeaser.feature1'),
+      description: t('poruaTeaser.feature1_desc'),
+    },
+    {
+      icon: Brain,
+      title: t('poruaTeaser.feature2'),
+      description: t('poruaTeaser.feature2_desc'),
+    },
+    {
+      icon: BookOpen,
+      title: t('poruaTeaser.feature3'),
+      description: t('poruaTeaser.feature3_desc'),
+    },
+    {
+      icon: MessageSquare,
+      title: t('home.stat_quick_response'),
+      description: t('home.stat_quick_response_desc'),
+    }
+  ];
   const containerRef = useAnimateOnScroll();
 
   return (
-    <section className="relative overflow-hidden py-10 md:py-14 bg-card border-y border-border/40">
+    <section className="relative overflow-hidden py-12 md:py-16 bg-card border-y border-border/40">
       <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
-        <div 
-          ref={containerRef} 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
-        >
-          {capabilities.map((item, i) => (
-            <div 
-              key={i} 
-              className="flex flex-col items-center md:items-start p-5 text-center md:text-left space-y-4 bg-background/40 hover:bg-background/80 border border-border/30 rounded-2xl transition-all duration-300 group relative z-10"
-            >
-              <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0 shadow-sm group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                <item.icon size={20} />
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          {/* Editorial statement */}
+          <div className="lg:col-span-4 lg:sticky lg:top-8">
+            <span className="text-[11px] font-bold text-primary uppercase tracking-widest">
+              {t('poruaTeaser.badge')}
+            </span>
+            <h2 className="mt-2 text-2xl md:text-3xl font-heading font-bold tracking-tight text-foreground">
+              {t('home.stat_caption')}
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-sm">
+              {t('home.stat_caption_desc')}
+            </p>
+          </div>
+
+          {/* Capabilities as a hairline-separated list */}
+          <div
+            ref={containerRef}
+            className="lg:col-span-8 grid sm:grid-cols-2 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden"
+          >
+            {capabilities.map((item, i) => (
+              <div key={i} className="flex items-start gap-3.5 p-5 bg-card">
+                <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                  <item.icon size={20} />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-heading font-bold text-sm text-foreground">{item.title}</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <h4 className="font-heading font-bold text-sm text-foreground">{item.title}</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-
     </section>
   );
 };

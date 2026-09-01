@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import StatusBadge from '../components/shared/StatusBadge';
 import DashboardPageHeader from '../components/shared/DashboardPageHeader';
 import EmptyState from '../components/shared/EmptyState';
+import SEO from '@/components/shared/SEO';
 
 const BkashIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -164,6 +165,7 @@ const AdminWithdrawals = () => {
 
     return (
         <div className="space-y-8">
+            <SEO title="Tutor Withdrawals | eTuitionBD" noIndex />
             <DashboardPageHeader
                 category="Financial Operations"
                 title="Tutor Withdrawals"
@@ -177,7 +179,7 @@ const AdminWithdrawals = () => {
                         <button
                             key={f.id}
                             onClick={() => setFilter(f.id)}
-                            className={`px-5 py-2.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border transition-all flex items-center gap-2 active:scale-[0.98] ${filter === f.id
+                            className={`px-5 py-2.5 text-[11px] font-heading font-bold uppercase tracking-widest rounded-lg border transition-all flex items-center gap-2 active:scale-[0.98] ${filter === f.id
                                 ? 'bg-primary border-primary text-white'
                                 : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted'
                                 }`}
@@ -196,13 +198,13 @@ const AdminWithdrawals = () => {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-background border-b border-border text-muted-foreground">
-                                    <th className="hidden lg:table-cell px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Date</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Tutor</th>
-                                    <th className="hidden md:table-cell px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Method</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Amount</th>
-                                    <th className="hidden xl:table-cell px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Account</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Status</th>
-                                    <th className="px-4 md:px-6 py-4 text-[9px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60 text-right">Ops</th>
+                                    <th className="hidden lg:table-cell px-6 py-4 text-[11px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Date</th>
+                                    <th className="px-4 md:px-6 py-4 text-[11px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Tutor</th>
+                                    <th className="hidden md:table-cell px-6 py-4 text-[11px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Method</th>
+                                    <th className="px-4 md:px-6 py-4 text-[11px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Amount</th>
+                                    <th className="hidden xl:table-cell px-6 py-4 text-[11px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Account</th>
+                                    <th className="px-4 md:px-6 py-4 text-[11px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60">Status</th>
+                                    <th className="px-4 md:px-6 py-4 text-[11px] font-heading font-bold uppercase tracking-widest text-muted-foreground/60 text-right">Ops</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border/40">
@@ -215,7 +217,7 @@ const AdminWithdrawals = () => {
                                             </td>
                                             <td className="px-4 md:px-6 py-5">
                                                 <p className="text-xs font-bold text-foreground">{tutor.displayName || tutor.email || '—'}</p>
-                                                {tutor.email && <p className="text-[10px] text-muted-foreground/60 mt-0.5">{tutor.email}</p>}
+                                                {tutor.email && <p className="text-[11px] text-muted-foreground/60 mt-0.5">{tutor.email}</p>}
                                             </td>
                                             <td className="hidden md:table-cell px-6 py-5">
                                                 <div className="flex items-center gap-2">
@@ -228,9 +230,9 @@ const AdminWithdrawals = () => {
                                             </td>
                                             <td className="hidden xl:table-cell px-6 py-5">
                                                 <p className="text-xs font-mono text-foreground">{w.accountNumber}</p>
-                                                <p className="text-[10px] text-muted-foreground/60">{w.accountName}</p>
+                                                <p className="text-[11px] text-muted-foreground/60">{w.accountName}</p>
                                                 {w.userId?.mobileNumber && (
-                                                    <p className="text-[10px] text-muted-foreground/60 mt-0.5 flex items-center gap-1">
+                                                    <p className="text-[11px] text-muted-foreground/60 mt-0.5 flex items-center gap-1">
                                                         <Phone size={10} /> {w.userId.mobileNumber}
                                                     </p>
                                                 )}
@@ -238,7 +240,7 @@ const AdminWithdrawals = () => {
                                             <td className="px-4 md:px-6 py-5">
                                                 <StatusBadge status={w.status} />
                                                 {w.transferTransactionId && (
-                                                    <p className="text-[10px] text-emerald-700 mt-1 font-mono">↳ {w.transferTransactionId}</p>
+                                                    <p className="text-[11px] text-success mt-1 font-mono">↳ {w.transferTransactionId}</p>
                                                 )}
                                             </td>
                                             <td className="px-4 md:px-6 py-5 text-right">
@@ -259,10 +261,10 @@ const AdminWithdrawals = () => {
                                                         </ActionBtn>
                                                     )}
                                                     {w.status === 'paid' && (
-                                                        <span className="text-[9px] font-heading font-bold text-emerald-700/50 uppercase tracking-widest">Done</span>
+                                                        <span className="text-[11px] font-heading font-bold text-success/50 uppercase tracking-widest">Done</span>
                                                     )}
                                                     {w.status === 'rejected' && (
-                                                        <span className="text-[9px] font-heading font-bold text-red-700/50 uppercase tracking-widest">Closed</span>
+                                                        <span className="text-[11px] font-heading font-bold text-destructive/50 uppercase tracking-widest">Closed</span>
                                                     )}
                                                 </div>
                                             </td>
@@ -316,7 +318,7 @@ const AdminWithdrawals = () => {
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setMarkPaidOpen(false)} className="rounded-none">Cancel</Button>
-                        <Button onClick={confirmMarkPaid} className="rounded-none bg-emerald-500 hover:bg-emerald-600" disabled={!markPaidTrxId.trim()}>Confirm Payment</Button>
+                        <Button onClick={confirmMarkPaid} className="rounded-none bg-success hover:bg-success/90" disabled={!markPaidTrxId.trim()}>Confirm Payment</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -326,8 +328,8 @@ const AdminWithdrawals = () => {
 
 const actionBtnColors = {
     primary: 'bg-primary border-primary text-white hover:bg-primary/90',
-    danger: 'bg-transparent border-transparent text-red-600 hover:border-red-200 hover:bg-red-50',
-    success: 'bg-emerald-500 border-emerald-500 text-white hover:bg-emerald-600',
+    danger: 'bg-transparent border-transparent text-destructive hover:border-destructive/20 hover:bg-destructive/10',
+    success: 'bg-success border-success text-white hover:bg-success/90',
 };
 
 const ActionBtn = ({ children, onClick, disabled, variant }) => {
@@ -336,7 +338,7 @@ const ActionBtn = ({ children, onClick, disabled, variant }) => {
             type="button"
             onClick={onClick}
             disabled={disabled}
-            className={`h-8 px-3 rounded-lg border text-[9px] font-heading font-bold uppercase tracking-widest transition-all disabled:opacity-40 active:scale-[0.98] ${actionBtnColors[variant]}`}
+            className={`h-8 px-3 rounded-lg border text-[11px] font-heading font-bold uppercase tracking-widest transition-all disabled:opacity-40 active:scale-[0.98] ${actionBtnColors[variant]}`}
         >
             {children}
         </button>

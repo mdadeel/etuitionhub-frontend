@@ -78,7 +78,7 @@ export const DynamicIsland = () => {
       case 'info':
         return (
           <div className="w-full h-full px-5 flex items-center justify-center gap-3 animate-fade-in relative z-20">
-            <Info className="w-3.5 h-3.5 text-blue-600 dark:text-[#00F5FF]" />
+            <Info className="w-3.5 h-3.5 text-primary dark:text-[#00F5FF]" />
             <span className="text-[0.6875rem] font-bold text-slate-800 dark:text-white/90 tracking-wide">Work Focus Mode Active</span>
           </div>
         );

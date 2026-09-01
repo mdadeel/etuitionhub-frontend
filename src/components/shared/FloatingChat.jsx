@@ -291,7 +291,7 @@ const FloatingChat = () => {
             
             {/* ── Chat Window ── */}
             {isFloatingOpen && (
-                <div className="mb-4 w-[380px] max-w-[calc(100vw-24px)] h-[540px] max-h-[calc(100vh-120px)] bg-background border border-border shadow-lg rounded-2xl flex flex-col overflow-hidden transition-all duration-355 animate-in fade-in zoom-in-95 duration-200">
+                <div className="mb-4 w-[380px] max-w-[calc(100vw-24px)] h-[540px] max-h-[calc(100vh-120px)] bg-background border border-border shadow-lg rounded-lg flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in zoom-in-95 duration-200">
 
                     {/* Header */}
                     {floatingActiveConv ? (
@@ -410,7 +410,7 @@ const FloatingChat = () => {
                                             <p className="text-xs text-muted-foreground mt-1 max-w-[200px] leading-normal">
                                                 {STRINGS.emptyThreadBody}
                                             </p>
-                                            <div className="mt-4 px-3 py-1.5 bg-card rounded-full border border-border text-[10px] text-muted-foreground flex items-center gap-1.5 shadow-sm">
+                                            <div className="mt-4 px-3 py-1.5 bg-card rounded-full border border-border text-[11px] text-muted-foreground flex items-center gap-1.5 shadow-sm">
                                                 <span className="size-1.5 bg-success rounded-full animate-pulse" />
                                                 Active session ready
                                             </div>
@@ -450,7 +450,7 @@ const FloatingChat = () => {
                                                     <React.Fragment key={msg._id || idx}>
                                                         {showDateGroup && (
                                                                 <div className="flex justify-center my-3">
-                                                                    <span className="text-[10px] font-semibold text-muted-foreground bg-card border border-border px-2.5 py-0.5 rounded-full shadow-sm">
+                                                                    <span className="text-[11px] font-semibold text-muted-foreground bg-card border border-border px-2.5 py-0.5 rounded-full shadow-sm">
                                                                         {dateGroup}
                                                                     </span>
                                                                 </div>
@@ -484,10 +484,10 @@ const FloatingChat = () => {
                                             <div className="size-5 rounded-full overflow-hidden shrink-0 border border-border mb-0.5">
                                                 {otherParticipant?.photoURL
                                                     ? <img src={otherParticipant.photoURL} className="size-full object-cover" alt="" />
-                                                    : <div className="size-full bg-muted flex items-center justify-center text-[9px] font-bold">{otherParticipant?.displayName?.[0]}</div>
+                                                    : <div className="size-full bg-muted flex items-center justify-center text-[11px] font-bold">{otherParticipant?.displayName?.[0]}</div>
                                                 }
                                             </div>
-                                            <div className="bg-card border border-border rounded-2xl rounded-bl-sm px-3.5 py-2 flex items-center gap-1 shadow-sm">
+                                            <div className="bg-card border border-border rounded-lg rounded-bl-sm px-3.5 py-2 flex items-center gap-1 shadow-sm">
                                                 <span className="size-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                                                 <span className="size-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                                                 <span className="size-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -529,7 +529,7 @@ const FloatingChat = () => {
 
                 {/* Unread Badge */}
                 {!isFloatingOpen && unreadTotal > 0 && (
-                    <div className="absolute -top-1.5 -right-1.5 size-5.5 bg-destructive border-2 border-background rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-md animate-pulse">
+                    <div className="absolute -top-1.5 -right-1.5 size-5.5 bg-destructive border-2 border-background rounded-full flex items-center justify-center text-[11px] font-black text-white shadow-md animate-pulse">
                         {unreadTotal > 99 ? '99+' : unreadTotal}
                     </div>
                 )}

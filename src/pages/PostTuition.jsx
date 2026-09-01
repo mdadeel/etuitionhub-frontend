@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 import api from "../services/api";
@@ -8,7 +9,6 @@ import {
   BANGLADESH_DIVISIONS,
   SUBJECT_OPTIONS,
   GENDER_OPTIONS,
-  WEEK_DAYS,
   MEDIUM_OPTIONS,
 } from "../utils/constants";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,14 @@ import LoginRequiredModal from "../components/shared/LoginRequiredModal";
 import SEO from '../components/shared/SEO';
 import { cn } from "@/lib/utils";
 
+const CLASS_LEVELS = [
+  "Class 1", "Class 2", "Class 3", "Class 4", "Class 5",
+  "Class 6", "Class 7", "Class 8", "Class 9", "Class 10",
+  "SSC", "HSC 1st Year", "HSC 2nd Year",
+];
+
 const PostTuition = ({ isDashboard = false, onSuccess }) => {
+  const { t } = useTranslation();
   const { user, dbUser, loading: authLoading } = useAuth();
   const role = dbUser?.role?.toLowerCase();
   const navigate = useNavigate();
@@ -31,15 +38,8 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
   const [location, setLocation] = useState("");
   const [gender, setGender] = useState("");
   const [daysPerWeek, setDaysPerWeek] = useState("");
-  const [availableDays, setAvailableDays] = useState([]);
   const [description, setDescription] = useState("");
   const [showLoginModal, setShowLoginModal] = useState(false);
-
-  const toggleDay = (day) => {
-    setAvailableDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
-    );
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,9 +49,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
     }
 
     if (role === "tutor") {
-      toast.error(
-        "Tutors cannot post tuitions. Switch to student mode or use a student account.",
-      );
+      toast.error(t('postTuition.error_role'));
       return;
     }
 
@@ -64,19 +62,19 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
       !gender ||
       !daysPerWeek
     ) {
-      toast.error("All fields are required");
+      toast.error(t('postTuition.error_required'));
       return;
     }
 
     const parsedSalary = parseInt(salary, 10);
     if (isNaN(parsedSalary) || parsedSalary <= 0) {
-      toast.error("Monthly budget must be a valid positive number.");
+      toast.error(t('postTuition.error_budget'));
       return;
     }
 
     const parsedDays = parseInt(daysPerWeek, 10);
     if (isNaN(parsedDays) || parsedDays < 1 || parsedDays > 7) {
-      toast.error("Days per week must be between 1 and 7.");
+      toast.error(t('postTuition.error_days'));
       return;
     }
 
@@ -90,10 +88,9 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
         location,
         gender,
         days_per_week: parsedDays,
-        available_days: availableDays,
         description: description || undefined,
       });
-      toast.success("Tuition posted successfully!");
+      toast.success(t('postTuition.success'));
       setSubject("");
       setClassName("");
       setSalary("");
@@ -101,15 +98,14 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
       setLocation("");
       setGender("");
       setDaysPerWeek("");
-      setAvailableDays([]);
       setDescription("");
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate("/tuitions");
+        navigate("/dashboard");
       }
     } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to post tuition");
+      toast.error(err.response?.data?.error || t('postTuition.error_generic'));
     } finally {
       setSubmitting(false);
     }
@@ -143,7 +139,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground">
-            Subject *
+            {t('postTuition.subject_label')} *
           </Label>
           <select
             value={subject}
@@ -151,7 +147,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
             className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
             required
           >
-            <option value="">Select subject</option>
+            <option value="">{t('postTuition.select_subject')}</option>
             {SUBJECT_OPTIONS.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -162,7 +158,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground">
-            Class Level *
+            {t('postTuition.class_label')} *
           </Label>
           <select
             value={className}
@@ -170,22 +166,8 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
             className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
             required
           >
-            <option value="">Select class</option>
-            {[
-              "Class 1",
-              "Class 2",
-              "Class 3",
-              "Class 4",
-              "Class 5",
-              "Class 6",
-              "Class 7",
-              "Class 8",
-              "Class 9",
-              "Class 10",
-              "SSC",
-              "HSC 1st Year",
-              "HSC 2nd Year",
-            ].map((c) => (
+            <option value="">{t('postTuition.select_class')}</option>
+            {CLASS_LEVELS.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -195,20 +177,20 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground">
-            Monthly Budget (BDT) *
+            {t('postTuition.salary_label')} *
           </Label>
           <Input
             value={salary}
             onChange={(e) => setSalary(e.target.value)}
             type="number"
-            placeholder="5000"
+            placeholder={t('postTuition.salary_placeholder')}
             required
           />
         </div>
 
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground">
-            Curriculum *
+            {t('postTuition.medium_label')} *
           </Label>
           <select
             value={medium}
@@ -216,7 +198,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
             className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
             required
           >
-            <option value="">Select medium</option>
+            <option value="">{t('postTuition.select_medium')}</option>
             {MEDIUM_OPTIONS.map((m) => (
               <option key={m} value={m}>
                 {m}
@@ -228,7 +210,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
       <div className="space-y-2">
         <Label className="text-sm font-medium text-foreground">
-          Division *
+          {t('postTuition.location_label')} *
         </Label>
         <select
           value={location}
@@ -236,7 +218,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
           className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
           required
         >
-          <option value="">Select division</option>
+          <option value="">{t('postTuition.select_division')}</option>
           {BANGLADESH_DIVISIONS.map((d) => (
             <option key={d} value={d}>
               {d}
@@ -247,7 +229,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
       <div className="space-y-2">
         <Label className="text-sm font-medium text-foreground">
-          Preferred Tutor Gender *
+          {t('postTuition.gender_label')} *
         </Label>
         <select
           value={gender}
@@ -255,7 +237,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
           className="w-full h-10 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
           required
         >
-          <option value="">Select gender</option>
+          <option value="">{t('postTuition.select_gender')}</option>
           {GENDER_OPTIONS.map((g) => (
             <option key={g} value={g}>
               {g}
@@ -266,7 +248,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
       <div className="space-y-2">
         <Label className="text-sm font-medium text-foreground">
-          Days Per Week *
+          {t('postTuition.days_label')} *
         </Label>
         <Input
           value={daysPerWeek}
@@ -274,45 +256,19 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
           type="number"
           min="1"
           max="7"
-          placeholder="e.g. 3"
+          placeholder={t('postTuition.days_placeholder')}
           required
         />
       </div>
 
       <div className="space-y-2">
         <Label className="text-sm font-medium text-foreground">
-          Available Days
-        </Label>
-        <div className="flex flex-wrap gap-2">
-          {WEEK_DAYS.map((day) => {
-            const isSelected = availableDays.includes(day);
-            return (
-              <button
-                key={day}
-                type="button"
-                onClick={() => toggleDay(day)}
-                className={cn(
-                  "px-4 py-2 text-sm rounded-lg font-medium transition-all border",
-                  isSelected
-                    ? "bg-primary text-white border-primary"
-                    : "bg-background text-muted-foreground border-border hover:border-primary/30"
-                )}
-              >
-                {day}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">
-          Additional Details (Job Description)
+          {t('postTuition.description_label')}
         </Label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Describe what you're looking for in a tutor, specific requirements, job description, etc."
+          placeholder={t('postTuition.description_placeholder')}
           className="w-full min-h-[100px] px-3 py-3 border border-border rounded-lg text-sm bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
           rows={3}
         />
@@ -327,11 +283,11 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
           >
             {submitting ? (
               <>
-                <RefreshCw className="size-4 animate-spin mr-2 animate-spin-slow" />
-                Publishing...
+                <RefreshCw className="size-4 animate-spin mr-2" />
+                {t('postTuition.submit_btn_loading')}
               </>
             ) : (
-              "Publish Request"
+              t('postTuition.submit_btn')
             )}
           </Button>
         ) : (
@@ -341,7 +297,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
               disabled={submitting}
               className="flex-1 h-11"
             >
-              {submitting ? "Posting..." : "Post Tuition"}
+              {submitting ? t('postTuition.submit_btn_loading') : t('postTuition.submit_btn')}
             </Button>
             <Button
               type="button"
@@ -349,7 +305,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
               onClick={() => navigate(-1)}
               className="h-11 px-5"
             >
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
           </>
         )}
@@ -368,10 +324,10 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground tracking-tight">
-                Post a New Request
+                {t('postTuition.title')}
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Define your academic requirements to find the best tutor.
+                {t('postTuition.subtitle')}
               </p>
             </div>
           </div>
@@ -383,7 +339,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
   return (
     <div className="bg-background min-h-screen py-12">
-      <SEO title="Post a Tuition Request | Find a Tutor in Bangladesh – eTuitionBD" description="Need a tutor? Post your tuition requirements for free and get matched with verified private tutors in your area." />
+      <SEO title={t('postTuition.seo_title')} description={t('postTuition.seo_desc')} />
       <div className="max-w-3xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">
@@ -391,13 +347,13 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
           >
-            <ArrowLeft size={16} /> Back
+            <ArrowLeft size={16} /> {t('common.back')}
           </button>
           <h1 className="text-2xl font-heading text-foreground mb-2">
-            Post a tuition requirement
+            {t('postTuition.title')}
           </h1>
           <p className="text-muted-foreground">
-            Fill in your academic needs and we'll match you with suitable tutors
+            {t('postTuition.subtitle')}
           </p>
         </div>
 
@@ -407,23 +363,23 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
               <GraduationCap size={28} className="text-muted-foreground" />
             </div>
             <h2 className="text-lg font-heading text-foreground mb-2">
-              Login required
+              {t('common.login_required', 'Login required')}
             </h2>
             <p className="text-muted-foreground mb-6">
-              You need to be logged in to post a tuition request
+              {t('postTuition.login_msg', 'You need to be logged in to post a tuition request')}
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link
                 to="/login"
                 className="px-5 py-2.5 border border-border text-foreground font-medium rounded-lg hover:bg-background transition-colors"
               >
-                Sign In
+                {t('navigation.login', 'Sign In')}
               </Link>
               <Link
                 to="/register"
                 className="px-5 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors"
               >
-                Create Account
+                {t('navigation.get_started', 'Create Account')}
               </Link>
             </div>
           </div>

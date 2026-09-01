@@ -19,7 +19,7 @@ const LoadingSpinner = ({ size = 'lg', fullScreen = true }) => {
                 </div>
 
                 <div className="flex flex-col items-center">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em] animate-pulse">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.3em] animate-pulse">
                         Synchronizing
                     </p>
                     <div className="flex gap-1 mt-2">

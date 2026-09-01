@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Navigate } from "react-router-dom"
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
 import api from '../services/api';
@@ -21,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import SEO from '@/components/shared/SEO';
 
 const PAYMENT_METHODS = [
     { id: 'bkash', name: 'bKash', color: 'bg-[#D12053]', badge: 'Manual' },
@@ -51,6 +53,7 @@ const getPaymentsDemoMode = () => {
 const Checkout = () => {
     const { id } = useParams();
     const { user, dbUser, loading: authLoading } = useAuth();
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const role = dbUser?.role?.toLowerCase();
     const [loading, setLoading] = useState(true);
@@ -66,6 +69,14 @@ const Checkout = () => {
     });
     const [screenshotFile, setScreenshotFile] = useState(null);
     const [demoMode, setDemoMode] = useState(false);
+    const [dirty, setDirty] = useState(false);
+
+    useEffect(() => {
+        if (!dirty || submitting) return;
+        const handler = (e) => { e.preventDefault(); e.returnValue = ''; };
+        window.addEventListener('beforeunload', handler);
+        return () => window.removeEventListener('beforeunload', handler);
+    }, [dirty, submitting]);
 
     useEffect(() => {
         let active = true;
@@ -84,14 +95,14 @@ const Checkout = () => {
             setLoading(false);
         // eslint-disable-next-line no-unused-vars
         } catch (err) {
-            setError('Operational failure: Could not load target parameters');
+            setError(t('checkout.error_load'));
             setLoading(false);
         }
     };
 
     useEffect(() => {
         if (!id || !user?.email) {
-            toast.error('Session Invalid: Identity context missing');
+            toast.error(t('checkout.error_session'));
             navigate('/dashboard');
             return;
         }
@@ -99,36 +110,38 @@ const Checkout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, user]);
 
-    const handleChange = (e) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
-    };
+     const handleChange = (e) => {
+         setFormData(prev => ({
+             ...prev,
+             [e.target.name]: e.target.value
+         }));
+         setDirty(true);
+     };
 
-    const handleScreenshotChange = (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error('Screenshot must be under 5MB');
-            return;
-        }
-        if (!file.type.startsWith('image/')) {
-            toast.error('Please select an image file');
-            return;
-        }
-        setScreenshotFile(file);
-    };
+     const handleScreenshotChange = (e) => {
+         const file = e.target.files?.[0];
+         if (!file) return;
+         if (file.size > 5 * 1024 * 1024) {
+             toast.error(t('checkout.error_screenshot_size'));
+             return;
+         }
+         if (!file.type.startsWith('image/')) {
+             toast.error(t('checkout.error_screenshot_type'));
+             return;
+         }
+         setScreenshotFile(file);
+         setDirty(true);
+     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.transactionId.trim()) {
-            toast.error('Transaction ID required');
+            toast.error(t('checkout.error_tx_required'));
             return;
         }
         if (!formData.senderNumber.trim()) {
-            toast.error('Sender number required');
+            toast.error(t('checkout.error_sender_required'));
             return;
         }
 
@@ -166,11 +179,12 @@ const Checkout = () => {
                     }
                 }
 
-                toast.success('Payment submitted for verification');
+                toast.success(t('checkout.success_submitted'));
+                setDirty(false);
                 navigate(paymentId ? `/payment-success?payment_id=${paymentId}` : '/payment-success');
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.error || 'Payment submission failed';
+            const errorMessage = error.response?.data?.error || t('checkout.error_submit');
             toast.error(errorMessage);
         } finally {
             setSubmitting(false);
@@ -189,11 +203,11 @@ const Checkout = () => {
                 <div className="max-w-md w-full text-center border border-border p-12 bg-muted/10 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-destructive"></div>
                     <AlertCircle size={48} className="text-destructive mx-auto mb-8 opacity-20" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-destructive mb-4 italic">System Alert</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.3em] text-destructive mb-4 italic">{t('checkout.system_alert')}</p>
                     <h2 className="text-2xl font-black text-foreground tracking-tighter uppercase italic mb-12">{error?.message || error}</h2>
                     <div className="flex flex-col gap-4">
-                        <Button onClick={() => navigate('/dashboard')} variant="outline" className="h-14 rounded-none border-border font-black uppercase tracking-widest text-[10px]">Return to Management</Button>
-                        <Button onClick={fetchApplication} className="h-14 rounded-none font-black uppercase tracking-widest text-[10px]">Retry Synchronization</Button>
+                        <Button onClick={() => navigate('/dashboard')} variant="outline" className="h-14 rounded-none border-border font-black uppercase tracking-widest text-[11px]">{t('checkout.return_to_management')}</Button>
+                        <Button onClick={fetchApplication} className="h-14 rounded-none font-black uppercase tracking-widest text-[11px]">{t('checkout.retry_sync')}</Button>
                     </div>
                 </div>
             </div>
@@ -202,9 +216,9 @@ const Checkout = () => {
 
     return (
         <div className="bg-background min-h-screen py-20 px-6 relative overflow-hidden selection:bg-primary/30 selection:text-primary animate-in fade-in duration-700">
+          <SEO title="Checkout | eTuitionBD" noIndex />
             {/* Background Technical Grid Element */}
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
-                 style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '32px 32px' }}>
+            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none">
             </div>
 
             <div className="max-w-5xl mx-auto relative z-10">
@@ -212,13 +226,13 @@ const Checkout = () => {
                     <div>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-10 h-1 bg-primary"></div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Transaction Infrastructure</span>
+                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">{t('checkout.transaction_infra')}</span>
                         </div>
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">Payment Submission.</h1>
-                        <p className="mt-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] italic">Submit transaction parameters for administrative verification.</p>
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-foreground tracking-tighter uppercase italic leading-[0.85]">{t('checkout.title')}</h1>
+                        <p className="mt-6 text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em] italic">{t('checkout.subtitle')}</p>
                     </div>
-                    <Button variant="ghost" onClick={() => navigate(-1)} className="text-[10px] font-black uppercase tracking-[0.3em] h-auto p-0 hover:bg-transparent hover:text-primary group">
-                        <ArrowLeft size={14} className="mr-2 transition-transform group-hover:-translate-x-1" /> Abort Transaction
+                    <Button variant="ghost" onClick={() => navigate(-1)} className="text-[11px] font-black uppercase tracking-[0.3em] h-auto p-0 hover:bg-transparent hover:text-primary group">
+                        <ArrowLeft size={14} className="mr-2 transition-transform group-hover:-translate-x-1" /> {t('checkout.abort')}
                     </Button>
                 </header>
 
@@ -228,13 +242,13 @@ const Checkout = () => {
                         <form onSubmit={handleSubmit} className="space-y-12">
                             {/* Payment Method Selection */}
                             <div className="space-y-6">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Payment Protocol</Label>
+                                <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">{t('checkout.payment_protocol')}</Label>
                                 <div className="grid grid-cols-2 gap-4">
                                     {PAYMENT_METHODS.map(method => (
                                         <button
                                             key={method.id}
                                             type="button"
-                                            onClick={() => setFormData(prev => ({ ...prev, paymentMethod: method.id }))}
+                                            onClick={() => { setFormData(prev => ({ ...prev, paymentMethod: method.id })); setDirty(true); }}
                                             className={`p-6 border rounded-none text-left transition-all relative overflow-hidden group ${formData.paymentMethod === method.id
                                                 ? 'border-primary bg-primary/5'
                                                 : 'border-border bg-background hover:border-primary/30'
@@ -247,7 +261,7 @@ const Checkout = () => {
                                                 </span>
                                                 {method.badge && (
                                                     <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded ml-2">
-                                                        {method.badge}
+                                                        {t('checkout.manual_badge')}
                                                     </span>
                                                 )}
                                             </div>
@@ -260,13 +274,13 @@ const Checkout = () => {
                                     ))}
                                 </div>
                                 {demoMode && isDemoMethod(formData.paymentMethod) && (
-                                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                        <div className="flex items-center gap-2 text-yellow-800">
+                                    <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
+                                        <div className="flex items-center gap-2 text-warning">
                                             <AlertCircle className="size-5" />
-                                            <span className="font-medium">Demo Mode</span>
+                                            <span className="font-medium">{t('checkout.demo_mode')}</span>
                                         </div>
-                                        <p className="text-sm text-yellow-700 mt-1">
-                                            This payment method is in demo mode. Transactions will be auto-verified for testing purposes.
+                                        <p className="text-sm text-warning mt-1">
+                                            {t('checkout.demo_desc')}
                                         </p>
                                     </div>
                                 )}
@@ -274,20 +288,20 @@ const Checkout = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
                                 <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Transaction Hash (ID)</Label>
+                                    <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">{t('checkout.transaction_hash')}</Label>
                                     <Input
                                         type="text"
                                         name="transactionId"
                                         value={formData.transactionId}
                                         onChange={handleChange}
                                         className="h-14 rounded-none border-border bg-muted/20 font-mono text-xs font-bold text-primary focus-visible:ring-primary uppercase tracking-widest"
-                                        placeholder="E.G. TXN_99882211"
+                                        placeholder={t('checkout.tx_placeholder')}
                                         required
                                     />
                                 </div>
 
                                 <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Origin Phone Node</Label>
+                                    <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">{t('checkout.origin_phone')}</Label>
                                     <Input
                                         type="text"
                                         name="senderNumber"
@@ -301,23 +315,23 @@ const Checkout = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Additional Parameters (Optional)</Label>
+                                <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">{t('checkout.additional_params')}</Label>
                                 <Textarea
                                     name="notes"
                                     value={formData.notes}
                                     onChange={handleChange}
                                     className="min-h-[120px] rounded-none border-border bg-muted/20 font-medium focus-visible:ring-primary resize-none p-6 text-sm"
-                                    placeholder="DETAIL_SPECIFIC_TRANSACTION_CONTEXT..."
+                                    placeholder={t('checkout.notes_placeholder')}
                                 />
                             </div>
 
                             <div className="space-y-4">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Payment Screenshot (Optional)</Label>
+                                <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">{t('checkout.screenshot_label')}</Label>
                                 <div className="border border-border rounded-none bg-muted/20 p-6">
                                     <label className="flex items-center gap-3 cursor-pointer">
                                         <Upload size={16} className="text-muted-foreground" />
                                         <span className="text-xs font-bold text-muted-foreground">
-                                            {screenshotFile ? screenshotFile.name : 'Click to upload payment screenshot'}
+                                            {screenshotFile ? screenshotFile.name : t('checkout.click_to_upload')}
                                         </span>
                                         <input
                                             type="file"
@@ -327,7 +341,7 @@ const Checkout = () => {
                                         />
                                     </label>
                                     {screenshotFile && (
-                                        <div className="mt-3 flex items-center gap-2 text-xs text-green-600">
+                                        <div className="mt-3 flex items-center gap-2 text-xs text-success">
                                             <CheckCircle2 size={12} />
                                             <span>{screenshotFile.name} ({(screenshotFile.size / 1024).toFixed(0)} KB)</span>
                                         </div>
@@ -345,7 +359,7 @@ const Checkout = () => {
                                         <div className="size-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
                                     ) : (
                                         <>
-                                            Synchronize Payment <Send size={18} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                            {t('checkout.submit_btn')} <Send size={18} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                                         </>
                                     )}
                                 </Button>
@@ -360,36 +374,36 @@ const Checkout = () => {
                             
                             <div className="p-10 border-b border-border bg-muted/10 relative z-10">
                                 <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-foreground flex items-center gap-3">
-                                    <Database size={14} className="text-primary" /> Yield Summary
+                                    <Database size={14} className="text-primary" /> {t('checkout.yield_summary')}
                                 </h3>
                             </div>
-                            
+
                             <div className="p-10 space-y-8 relative z-10">
                                 <div className="space-y-2">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Specialist Entity</p>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground">{t('checkout.specialist_entity')}</p>
                                     <p className="text-sm font-black text-foreground uppercase tracking-tight italic">{application?.tutorName}</p>
                                 </div>
-                                
+
                                 <div className="space-y-2">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">Reference Node</p>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground">{t('checkout.reference_node')}</p>
                                     <p className="text-xs font-mono font-bold text-primary uppercase tracking-widest">#{id?.slice(-12).toUpperCase()}</p>
                                 </div>
-                                
+
                                 <div className="pt-10 border-t border-border">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">Total Protocol Yield</p>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">{t('checkout.total_yield')}</p>
                                     <p className="text-3xl sm:text-5xl font-black text-primary tabular-nums tracking-tighter italic leading-none">
                                         ৳{application?.expectedSalary}
                                     </p>
-                                    <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-[0.2em] mt-4 italic">Assigned Monthly Honorarium</p>
+                                    <p className="text-[11px] font-black text-muted-foreground/50 uppercase tracking-[0.2em] mt-4 italic">{t('checkout.monthly_honorarium')}</p>
                                 </div>
                             </div>
-                            
+
                             <div className="p-8 bg-primary/5 border-t border-primary/20 flex items-center gap-4 relative z-10">
                                 <div className="size-10 rounded-none bg-primary/10 flex items-center justify-center text-primary">
                                     <ShieldCheck size={20} />
                                 </div>
-                                <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] leading-relaxed">
-                                    Verification Protocol Active. Manual audit completed within 24-48 standard hours.
+                                <p className="text-[11px] font-black text-primary uppercase tracking-[0.2em] leading-relaxed">
+                                    {t('checkout.verification_protocol')}
                                 </p>
                             </div>
                         </div>

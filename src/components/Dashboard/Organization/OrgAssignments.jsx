@@ -5,9 +5,13 @@ import { Plus, FileText, Calendar, Users } from "lucide-react";
 import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const OrgAssignments = () => {
   const { orgId } = useParams();
+  const { hasPermission } = useAuth();
+  const canCreate = hasPermission('assignment:create');
+  const canGrade = hasPermission('assignment:grade');
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,9 +47,11 @@ const OrgAssignments = () => {
             Create assignments, track submissions, and grade student work.
           </p>
         </div>
-        <Button className="shadow-sm">
-          <Plus className="mr-2 h-4 w-4" /> Create Assignment
-        </Button>
+        {canCreate && (
+          <Button className="shadow-sm">
+            <Plus className="mr-2 h-4 w-4" /> Create Assignment
+          </Button>
+        )}
       </div>
 
       {loading ? (
@@ -60,9 +66,11 @@ const OrgAssignments = () => {
             <p className="text-muted-foreground max-w-sm mb-6">
               Create your first assignment to get started.
             </p>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Create First Assignment
-            </Button>
+            {canCreate && (
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Create First Assignment
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -101,7 +109,7 @@ const OrgAssignments = () => {
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
                   <Button variant="outline" size="sm">Submissions</Button>
-                  <Button variant="outline" size="sm">Grade</Button>
+                  {canGrade && <Button variant="outline" size="sm">Grade</Button>}
                 </div>
               </CardContent>
             </Card>

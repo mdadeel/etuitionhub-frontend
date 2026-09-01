@@ -166,17 +166,17 @@ const FilterSelect = ({
                     {multi && selectedValues.length > 0 ? (
                         <div className="flex items-center gap-1 flex-wrap">
                             {selectedValues.slice(0, 3).map(v => (
-                                <span key={v} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 text-[10px] font-bold text-primary border border-primary/20 rounded">
+                                <span key={v} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 text-[11px] font-bold text-primary border border-primary/20 rounded">
                                     {getOptionLabel(v)}
                                     <X
                                         size={10}
-                                        className="cursor-pointer hover:text-red-500"
+                                        className="cursor-pointer hover:text-destructive"
                                         onClick={(e) => handleRemoveChip(e, v)}
                                     />
                                 </span>
                             ))}
                             {selectedValues.length > 3 && (
-                                <span className="text-[10px] text-muted-foreground font-bold">
+                                <span className="text-[11px] text-muted-foreground font-bold">
                                     +{selectedValues.length - 3}
                                 </span>
                             )}

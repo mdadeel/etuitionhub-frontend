@@ -105,7 +105,7 @@ const DashAnalytics = () => {
             <header className="mb-4 border-b border-border pb-3">
                 <div className="flex items-center gap-2 mb-2">
                     <div className="w-6 h-1.5 bg-primary rounded-lg"></div>
-                    <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Operations Control</span>
+                    <span className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground">Dashboard</span>
                 </div>
                 <h2 className="text-lg md:text-xl font-heading font-bold uppercase tracking-tight text-foreground">Platform Insights</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">Real-time performance metrics and user distribution tracking.</p>
@@ -242,12 +242,12 @@ const DashAnalytics = () => {
                 </div>
             </div>
 
-            {/* Yield Real-time Matrix */}
+            {/* Recent Transactions */}
             <div className="bg-card border border-border rounded-xl overflow-hidden relative">
                 <div className="px-5 py-4 border-b border-border bg-background flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <div>
                         <h3 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-foreground">Recent Transactions</h3>
-                        <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">Latest BDT Payment Operations</p>
+                        <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">Latest BDT payments</p>
                     </div>
                     <span className="rounded-lg bg-primary/10 text-primary border border-primary/20 px-3 py-1 text-[10px] font-label font-semibold uppercase tracking-wider flex items-center gap-1.5">
                         <span className="size-1.5 bg-primary rounded-lg animate-pulse"></span>
@@ -269,7 +269,7 @@ const DashAnalytics = () => {
                         },
                         {
                             key: 'studentEmail',
-                            label: 'Node',
+                            label: 'Student',
                             render: (val) => (
                                 <div className="flex flex-col">
                                     <span className="text-xs md:text-sm font-bold text-foreground leading-tight">{(val || '').split('@')[0]}</span>
@@ -279,7 +279,7 @@ const DashAnalytics = () => {
                         },
                         {
                             key: 'amount',
-                            label: 'Yield',
+                            label: 'Amount',
                             align: 'center',
                             render: (val) => (
                                 <span className="text-xs md:text-sm font-heading font-black text-primary tabular-nums">৳{val?.toLocaleString()}</span>

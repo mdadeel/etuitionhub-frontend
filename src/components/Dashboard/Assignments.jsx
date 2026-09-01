@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 
 const STATUS_COLORS = {
     pending: 'text-amber-700 bg-amber-500/10 border-amber-500/20 dark:text-amber-400 dark:bg-amber-500/20 dark:border-amber-500/30',
-    submitted: 'text-blue-700 bg-blue-500/10 border-blue-500/20 dark:text-blue-400 dark:bg-blue-500/20 dark:border-blue-500/30',
+    submitted: 'text-primary bg-primary/10 border-primary/20 dark:text-primary dark:bg-primary/20 dark:border-primary/30',
     graded: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20 dark:text-emerald-400 dark:bg-emerald-500/20 dark:border-emerald-500/30',
     returned: 'text-teal-700 bg-teal-500/10 border-teal-500/20 dark:text-teal-400 dark:bg-teal-500/20 dark:border-teal-500/30',
 };

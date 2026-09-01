@@ -27,7 +27,7 @@ const ResponseTimeIndicator = ({ tutor }) => {
     <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
       {activeRecently && (
         <span className="flex items-center gap-1">
-          <Circle size={8} className="fill-emerald-500 text-emerald-500" /> Active recently
+          <Circle size={8} className="fill-emerald-500 text-success" /> Active recently
         </span>
       )}
       {replyText && <span>· {replyText}</span>}
