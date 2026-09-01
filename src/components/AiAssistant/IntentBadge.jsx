@@ -21,7 +21,7 @@ const INTENT_MAP = {
         label: 'Explain Topic',
         mode: 'Interactive lesson',
         icon: Lightbulb,
-        color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+        color: 'bg-primary/10 text-primary dark:text-primary border-primary/20',
     },
     math: {
         label: 'Solve Problem',
@@ -39,13 +39,13 @@ const INTENT_MAP = {
         label: 'Review IELTS / TOEFL',
         mode: 'Band score + corrections',
         icon: FileEdit,
-        color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+        color: 'bg-warning/10 text-warning dark:text-warning border-warning/20',
     },
     srijonshil: {
         label: 'Srijonshil',
         mode: 'Structured exam answer',
         icon: BookOpen,
-        color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+        color: 'bg-success/10 text-success dark:text-success border-success/20',
     },
     general: {
         label: 'Academic Question',
@@ -57,7 +57,7 @@ const INTENT_MAP = {
         label: 'Generate Quiz',
         mode: 'Quiz Builder',
         icon: ClipboardList,
-        color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+        color: 'bg-success/10 text-success dark:text-success border-success/20',
     },
 };
 
@@ -92,7 +92,7 @@ export default function IntentBadge({ templateType, intent, className = '', show
     return (
         <div
             className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-label font-semibold uppercase tracking-[0.08em]',
+                'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-label font-semibold uppercase tracking-[0.08em]',
                 meta.color,
                 className,
             )}

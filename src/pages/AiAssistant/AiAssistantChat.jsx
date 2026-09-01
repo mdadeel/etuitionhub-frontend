@@ -103,7 +103,7 @@ export default function AiAssistantChat() {
                 }
             }
         }
-    }, [data?.messages?.length, localMessages.length, thinking, streamingAssistantMessage, inlineQuizzes]);
+    }, [data?.messages, localMessages, thinking, streamingAssistantMessage, inlineQuizzes]);
 
     const handleSend = async (msg, forceTemplate = undefined, editMessageId = undefined, regenerateMessageId = undefined) => {
         const trimmed = (msg || '').trim();
@@ -549,10 +549,10 @@ export default function AiAssistantChat() {
                         {Object.entries(inlineQuizzes).map(([quizKey, item]) => (
                             <div
                                 key={quizKey}
-                                className="rounded-2xl border border-border/60 bg-card/80 p-4 sm:p-6 animate-fade-in-up"
+                                className="rounded-lg border border-border/60 bg-card/80 p-4 sm:p-6 animate-fade-in-up"
                             >
                                 <div className="flex items-center justify-between gap-2 mb-3">
-                                    <div className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                                    <div className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                                         Porua · Quiz · {item.topic || ''}
                                     </div>
                                     <button

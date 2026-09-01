@@ -95,7 +95,7 @@ export default memo(function CodeBlock({ code, language, isStreaming = false, sh
                         <button
                             type="button"
                             onClick={handlePreview}
-                            className="flex items-center gap-1.5 text-[11px] font-semibold text-orange-400/85 hover:text-orange-500 dark:text-orange-400/80 dark:hover:text-orange-400 active:scale-95 transition-all duration-150"
+                            className="flex items-center gap-1.5 text-[11px] font-semibold text-warning/85 hover:text-warning dark:text-warning/80 dark:hover:text-warning active:scale-95 transition-all duration-150"
                             aria-label="Preview HTML in new tab"
                         >
                             <ExternalLink size={12} />
@@ -106,7 +106,7 @@ export default memo(function CodeBlock({ code, language, isStreaming = false, sh
                         type="button"
                         onClick={handleCopy}
                         disabled={copied}
-                        className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 active:scale-95 transition-all duration-150 disabled:opacity-100 disabled:text-emerald-500"
+                        className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 active:scale-95 transition-all duration-150 disabled:opacity-100 disabled:text-success"
                         aria-label={copied ? 'Copied to clipboard' : 'Copy code to clipboard'}
                     >
                         {copied ? (

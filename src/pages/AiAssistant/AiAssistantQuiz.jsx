@@ -41,12 +41,12 @@ export default function AiAssistantQuiz() {
         <AiAssistantLayout showBack>
             <div className="w-full mx-auto">
                 {isLoading ? (
-                    <div className="rounded-2xl border border-border bg-card/50 p-8 text-center text-muted-foreground">
+                    <div className="rounded-lg border border-border bg-card/50 p-8 text-center text-muted-foreground">
                         <ClipboardList className="mx-auto mb-3 text-primary" size={28} />
                         <p>Loading quiz...</p>
                     </div>
                 ) : !quiz ? (
-                    <div className="rounded-2xl border border-border bg-card/50 p-8 text-center">
+                    <div className="rounded-lg border border-border bg-card/50 p-8 text-center">
                         <p className="text-sm text-muted-foreground">Quiz not found.</p>
                         <button
                             onClick={() => navigate('/ai-assistant')}
@@ -56,10 +56,10 @@ export default function AiAssistantQuiz() {
                         </button>
                     </div>
                 ) : (
-                    <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-md p-6 sm:p-8 shadow-sm">
+                    <div className="rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm">
                         {/* Header */}
                         <header className="mb-6 pb-4 border-b border-border/40">
-                            <p className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-primary">
+                            <p className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-primary">
                                 Porua Quiz · {quiz.subject}
                             </p>
                             <h2 className="text-xl sm:text-2xl font-heading font-bold text-foreground mt-1">

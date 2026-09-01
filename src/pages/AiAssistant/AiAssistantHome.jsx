@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import useAiStore from '../../store/aiStore';
@@ -38,6 +39,7 @@ function formatRelative(dateLike) {
 }
 
 export default function AiAssistantHome() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth();
     const subject = useAiStore((s) => s.subject);
@@ -72,7 +74,7 @@ export default function AiAssistantHome() {
 
     const greetingName = user?.displayName?.split(' ')[0] || 'there';
     const hour = new Date().getHours();
-    const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    const greeting = hour < 12 ? t('ai.greeting_morning') : hour < 18 ? t('ai.greeting_afternoon') : t('ai.greeting_evening');
 
     return (
         <AiAssistantLayout>
@@ -86,10 +88,10 @@ export default function AiAssistantHome() {
                             <header className="space-y-3 text-center">
                                 {/* Porua AI logo + animated glow */}
                                 <div className="relative flex justify-center mb-4">
-                                    <div className="relative size-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/10">
+                                    <div className="relative size-14 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/10">
                                         <PoruaLogo iconOnly size={28} className="text-primary" />
                                         {/* Subtle pulse ring */}
-                                        <span className="absolute inset-0 rounded-2xl border border-primary/30 animate-ping opacity-20 pointer-events-none" />
+                                        <span className="absolute inset-0 rounded-lg border border-primary/30 animate-ping opacity-20 pointer-events-none" />
                                     </div>
                                 </div>
 
@@ -97,8 +99,8 @@ export default function AiAssistantHome() {
                                 <div className="space-y-1">
                                     <div className="flex items-center justify-center gap-1.5">
                                         <Sparkles size={13} className="text-primary/60" />
-                                        <span className="text-[10px] font-label font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                                            Porua AI · E-TuitionBD Official AI Tutor
+                                        <span className="text-[11px] font-label font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                                            {t('ai.badge')}
                                         </span>
                                         <Sparkles size={13} className="text-primary/60" />
                                     </div>
@@ -107,8 +109,7 @@ export default function AiAssistantHome() {
                                         <span className="text-primary">{greetingName}</span>
                                     </h2>
                                     <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                                        Your AI study companion for SSC, HSC, Admission, IELTS, Programming, and more.
-                                        What would you like to learn today?
+                                        {t('ai.intro')}
                                     </p>
                                 </div>
                             </header>
@@ -159,7 +160,7 @@ export default function AiAssistantHome() {
                                             <div className="relative z-10">
                                                 <p className="text-xs font-semibold text-foreground leading-tight">{action.label}</p>
                                                 {action.mode && (
-                                                    <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{action.mode}</p>
+                                                    <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">{action.mode}</p>
                                                 )}
                                             </div>
                                         </button>
@@ -178,35 +179,14 @@ export default function AiAssistantHome() {
                             onChange={setText}
                             onSend={handleSend}
                             loading={false}
-                            placeholder={`Ask anything about ${subjectLabel(subject)}...`}
+                            placeholder={t('ai.input_placeholder', { subject: t('ai.subjects.' + (subject || 'general')) })}
                         />
                         <p className="hidden md:block text-xs text-center text-muted-foreground mt-3 px-4 leading-relaxed">
-                            Porua AI specializes in education. It can make mistakes — always verify important info.
+                            {t('ai.disclaimer')}
                         </p>
                     </div>
                 </div>
             </div>
         </AiAssistantLayout>
     );
-}
-
-function subjectLabel(s) {
-    const map = {
-        ssc: 'SSC',
-        hsc: 'HSC',
-        admission: 'University Admission',
-        math: 'Math',
-        physics: 'Physics',
-        chemistry: 'Chemistry',
-        biology: 'Biology',
-        ict: 'ICT',
-        ielts: 'IELTS',
-        toefl: 'TOEFL',
-        sat: 'SAT',
-        english: 'English',
-        bangla: 'Bangla',
-        programming: 'Programming',
-        general: 'anything',
-    };
-    return map[s] || 'anything';
 }

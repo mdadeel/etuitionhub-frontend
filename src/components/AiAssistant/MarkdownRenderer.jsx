@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, lazy, Suspense } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import CodeBlock from './CodeBlock';
-import { MathInline, MathBlock } from './MathRenderer';
 import ImageRenderer from './ImageRenderer';
+
+const LazyMathRenderer = lazy(() => import('./MathRenderer'));
 
 const sanitizeSchema = {
     tagNames: [
@@ -49,12 +50,20 @@ function preprocessMath(text) {
 
 function MathInlineComponent({ ...props }) {
     const math = props['data-math'] || '';
-    return <MathInline math={math} />;
+    return (
+        <Suspense fallback={<code className="px-1.5 py-0.5 bg-muted/50 rounded text-sm font-mono">{math}</code>}>
+            <LazyMathRenderer text={`$${math}$`} />
+        </Suspense>
+    );
 }
 
 function MathBlockComponent({ ...props }) {
     const math = props['data-math'] || '';
-    return <MathBlock math={math} />;
+    return (
+        <Suspense fallback={<code className="block my-4 p-4 bg-muted/50 rounded-lg text-sm font-mono">{math}</code>}>
+            <LazyMathRenderer text={`$$${math}$$`} />
+        </Suspense>
+    );
 }
 
 function MarkdownPre({ children }) {
@@ -97,7 +106,7 @@ function MarkdownLink({ href, children, ...props }) {
         >
             {children}
             {isExternal && (
-                <span className="inline-block ml-0.5 text-[10px] align-super">↗</span>
+                <span className="inline-block ml-0.5 text-[11px] align-super">↗</span>
             )}
         </a>
     );
@@ -194,7 +203,7 @@ function MarkdownDel({ children, ...props }) {
 }
 
 function MarkdownMark({ children, ...props }) {
-    return <mark className="bg-yellow-200/50 dark:bg-yellow-500/20 px-0.5 rounded" {...props}>{children}</mark>;
+    return <mark className="bg-warning/20 dark:bg-warning/20 px-0.5 rounded" {...props}>{children}</mark>;
 }
 
 export default function MarkdownRenderer({ content, className = '' }) {

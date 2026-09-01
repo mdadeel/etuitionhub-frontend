@@ -4,7 +4,7 @@ import {
     BookOpen, Target, Brain, Globe, AlertTriangle, ClipboardList,
     Sigma, ListChecks, FileText, CheckCircle2, ChevronDown,
     Calculator, Lightbulb, Code2, Languages, FileEdit, Clock, Zap,
-    XCircle, Compass, Lightbulb as Idea, GraduationCap, BookMarked, Flame,
+    XCircle, Compass, Lightbulb as Idea, GraduationCap, BookMarked, Flame, MessageCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ConversationalBubble from './ConversationalBubble';
@@ -130,14 +130,14 @@ function SectionTitle({ icon: Icon, title }) {
 function DifficultyBadge({ level }) {
     if (!level) return null;
     const map = {
-        beginner:     { label: 'Beginner',     color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
-        intermediate: { label: 'Intermediate', color: 'bg-amber-500/10   text-amber-600   dark:text-amber-400   border-amber-500/20'   },
-        advanced:     { label: 'Advanced',     color: 'bg-rose-500/10    text-rose-600    dark:text-rose-400    border-rose-500/20'    },
+        beginner:     { label: 'Beginner',     color: 'bg-success/10 text-success dark:text-success border-success/20' },
+        intermediate: { label: 'Intermediate', color: 'bg-warning/10   text-warning   dark:text-warning   border-warning/20'   },
+        advanced:     { label: 'Advanced',     color: 'bg-destructive/10    text-destructive    dark:text-destructive    border-destructive/20'    },
     };
     const m = map[level] || map.beginner;
     return (
         <span className={cn(
-            'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em]',
+            'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em]',
             m.color,
         )}>
             <Flame size={9} strokeWidth={2.5} />
@@ -150,15 +150,15 @@ function DifficultyBadge({ level }) {
 function AnalogyCard({ text }) {
     if (!text) return null;
     return (
-        <div className="relative mb-5 rounded-xl border border-amber-500/15 bg-amber-50/50 dark:bg-amber-950/10 p-4 pl-12 shadow-xs transition-all duration-200">
+        <div className="relative mb-5 rounded-xl border border-warning/15 bg-warning/10 dark:bg-warning/10 p-4 pl-12 shadow-xs transition-all duration-200">
             {/* Speech bubble icon */}
-            <div className="absolute left-3.5 top-3.5 size-7 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-sm">
-                💬
+            <div className="absolute left-3.5 top-3.5 size-7 rounded-full bg-warning/15 dark:bg-warning/30 flex items-center justify-center text-sm">
+                <MessageCircle size={14} />
             </div>
             <div className="text-[14px] leading-relaxed text-foreground/90 italic">
                 <MarkdownRenderer content={text} />
             </div>
-            <span className="mt-2 block text-[10px] font-bold uppercase tracking-wider text-amber-600/70 dark:text-amber-400/60">
+            <span className="mt-2 block text-[11px] font-bold uppercase tracking-wider text-warning/70 dark:text-warning/60">
                 Analogy · Think of it this way
             </span>
         </div>
@@ -210,10 +210,10 @@ function MemoryHook({ text }) {
     return (
         <div className="mt-4 rounded-xl border border-sky-500/15 bg-sky-50/50 dark:bg-sky-950/10 p-4 flex items-start gap-3 shadow-xs">
             <div className="shrink-0 size-7 rounded-lg bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-sm">
-                🧠
+                <Brain size={14} />
             </div>
             <div>
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-1">
+                <span className="block text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-1">
                     Memory Hook
                 </span>
                 <p className="text-[14px] leading-relaxed text-foreground/90 font-medium">
@@ -228,12 +228,12 @@ function MemoryHook({ text }) {
 function ExamSpotlight({ text }) {
     if (!text) return null;
     return (
-        <div className="mt-4 rounded-xl border border-emerald-500/15 bg-emerald-50/50 dark:bg-emerald-950/10 p-4 flex items-start gap-3 shadow-xs">
-            <div className="shrink-0 size-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                <GraduationCap size={14} className="text-emerald-600 dark:text-emerald-400" />
+        <div className="mt-4 rounded-xl border border-success/15 bg-success/15 dark:bg-success/10 p-4 flex items-start gap-3 shadow-xs">
+            <div className="shrink-0 size-7 rounded-lg bg-success/15 dark:bg-success/30 flex items-center justify-center">
+                <GraduationCap size={14} className="text-success dark:text-success" />
             </div>
             <div>
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+                <span className="block text-[11px] font-bold uppercase tracking-wider text-success dark:text-success mb-1">
                     📝 Exam Spotlight · SSC / HSC / Admission
                 </span>
                 <p className="text-[14px] leading-relaxed text-foreground/90">
@@ -249,8 +249,8 @@ function ExamSpotlight({ text }) {
 // V2 Educational Highlight Block (compact, minimal border)
 function Highlight({ type, title, children }) {
     const config = {
-        key:     { icon: Idea,          color: 'text-blue-500',  bg: 'bg-blue-500/5',  border: 'border-blue-500/15',  defaultTitle: 'Key Point' },
-        mistake: { icon: AlertTriangle, color: 'text-amber-500', bg: 'bg-amber-500/5', border: 'border-amber-500/15', defaultTitle: 'Common Mistake' },
+        key:     { icon: Idea,          color: 'text-primary',  bg: 'bg-primary/5',  border: 'border-primary/15',  defaultTitle: 'Key Point' },
+        mistake: { icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning/5', border: 'border-warning/15', defaultTitle: 'Common Mistake' },
         tip:     { icon: ({size, className}) => <PoruaLogo iconOnly size={size || 14} className={className} />,      color: 'text-primary',   bg: 'bg-primary/5',   border: 'border-primary/15',   defaultTitle: 'Exam Tip' },
     };
     const c = config[type] || config.key;
@@ -260,7 +260,7 @@ function Highlight({ type, title, children }) {
         <div className={cn("mt-4 mb-2 p-3.5 rounded-xl border shadow-xs", c.bg, c.border)}>
             <div className="flex items-center gap-1.5 mb-1.5">
                 <Icon size={14} className={c.color} />
-                <span className={cn("text-[10px] font-bold uppercase tracking-wider", c.color)}>
+                <span className={cn("text-[11px] font-bold uppercase tracking-wider", c.color)}>
                     {title || c.defaultTitle}
                 </span>
             </div>
@@ -524,23 +524,23 @@ function RefusedMessage({ data }) {
     }[category] || 'Off-Topic';
 
     return (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
+        <div className="rounded-xl border border-warning/30 bg-warning/5 p-4 space-y-3">
             <div className="flex items-center gap-2">
-                <div className="size-7 rounded-lg bg-amber-500/15 flex items-center justify-center">
-                    <AlertTriangle size={14} className="text-amber-500" />
+                <div className="size-7 rounded-lg bg-warning/15 flex items-center justify-center">
+                    <AlertTriangle size={14} className="text-warning" />
                 </div>
                 <div>
-                    <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider">
+                    <p className="text-xs font-semibold text-warning uppercase tracking-wider">
                         {heading}
                     </p>
-                    <p className="text-[11px] text-amber-500/60">This topic is outside Porua&apos;s scope</p>
+                    <p className="text-[11px] text-warning/60">This topic is outside Porua&apos;s scope</p>
                 </div>
             </div>
             <p className="text-sm leading-relaxed text-foreground/80">
                 {data.answer}
             </p>
             {data.keyPoints?.length > 0 && (
-                <div className="pt-2 border-t border-amber-500/10">
+                <div className="pt-2 border-t border-warning/10">
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                         I can help with:
                     </p>
@@ -688,7 +688,7 @@ function SrijonshilTemplate({ data }) {
 function NeoBrutalistDivider({ title, icon: Icon }) {
     return (
         <div className="flex items-center gap-4 mb-5">
-            <div className="text-[12px] font-bold uppercase tracking-[1px] text-accent bg-accent/10 py-1 px-3 border border-accent/20 rounded-[2px] flex items-center gap-2">
+            <div className="text-[12px] font-bold uppercase tracking-[1px] text-accent bg-accent/10 py-1 px-3 border border-accent/20 rounded-sm flex items-center gap-2">
                 {Icon && <Icon size={12} strokeWidth={2.5} />}
                 {title}
             </div>
@@ -710,7 +710,7 @@ function UnifiedTemplate({ data }) {
                         </div>
                     )}
                     {data.solution.codeOrMath && (
-                        <div className="mt-4 rounded-[2px] overflow-hidden shadow-sm border border-border">
+                        <div className="mt-4 rounded-sm overflow-hidden shadow-sm border border-border">
                             <CodeBlock code={data.solution.codeOrMath} />
                         </div>
                     )}
@@ -723,8 +723,8 @@ function UnifiedTemplate({ data }) {
                     <NeoBrutalistDivider title={data.insights.title || "Insights & Best Practices"} icon={Idea} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
                         {data.insights.cards.map((card, i) => (
-                            <div key={i} className="bg-[rgba(255,255,255,0.01)] border border-border hover:border-muted-foreground/30 p-5 rounded-[2px] shadow-sm flex flex-col gap-3 transition-colors duration-300">
-                                <h3 className={cn("font-bold text-[16px] flex items-center gap-2", card.type === 'success' ? "text-emerald-500" : card.type === 'warning' ? "text-accent" : "text-primary")}>
+                            <div key={i} className="bg-[rgba(255,255,255,0.01)] border border-border hover:border-muted-foreground/30 p-5 rounded-sm shadow-sm flex flex-col gap-3 transition-colors duration-300">
+                                <h3 className={cn("font-bold text-[16px] flex items-center gap-2", card.type === 'success' ? "text-success" : card.type === 'warning' ? "text-accent" : "text-primary")}>
                                     {card.type === 'success' ? <CheckCircle2 size={16} strokeWidth={2.5} /> : card.type === 'warning' ? <AlertTriangle size={16} strokeWidth={2.5} /> : <Idea size={16} strokeWidth={2.5} />}
                                     {card.title}
                                 </h3>
@@ -746,7 +746,7 @@ function UnifiedTemplate({ data }) {
             {data.verification && data.verification.scenarios?.length > 0 && (
                 <section>
                     <NeoBrutalistDivider title={data.verification.title || "Verification & Tests"} icon={CheckCircle2} />
-                    <div className="w-full mt-3 rounded-[2px] overflow-hidden border border-border overflow-x-auto">
+                    <div className="w-full mt-3 rounded-sm overflow-hidden border border-border overflow-x-auto">
                         <table className="w-full text-left text-[14px] border-collapse whitespace-nowrap md:whitespace-normal">
                             <thead className="bg-[rgba(255,255,255,0.02)] border-b border-border text-foreground font-semibold">
                                 <tr>
@@ -759,7 +759,7 @@ function UnifiedTemplate({ data }) {
                                 {data.verification.scenarios.map((tc, i) => (
                                     <tr key={i} className="border-b border-border last:border-b-0">
                                         <td className="p-3 border-r border-border align-top"><MarkdownRenderer content={tc.scenario || `Scenario ${i+1}`} /></td>
-                                        <td className="p-3 border-r border-border align-top"><code className="font-mono text-[13px] px-1.5 py-0.5 bg-background border border-border rounded-[2px] text-accent break-all">{tc.input}</code></td>
+                                        <td className="p-3 border-r border-border align-top"><code className="font-mono text-[13px] px-1.5 py-0.5 bg-background border border-border rounded-sm text-accent break-all">{tc.input}</code></td>
                                         <td className="p-3 align-top"><MarkdownRenderer content={tc.expectedOutput} /></td>
                                     </tr>
                                 ))}
@@ -854,7 +854,7 @@ export default function AiResponseCard({
     const metadataStr = getMetadataLabel(resolvedType, structured.topic, structured.outputType);
 
     return (
-        <article className={cn('animate-fade-in-up w-full max-w-[850px] min-w-0 overflow-hidden bg-card border border-border/60 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6', className)}>
+        <article className={cn('animate-fade-in-up w-full max-w-[850px] min-w-0 overflow-hidden bg-card border border-border/60 rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] p-6', className)}>
             {/* Header: metadata row with difficulty badge */}
             <div className="flex items-center gap-2 text-[13px] text-muted-foreground mb-3 font-medium flex-wrap">
                 <div className="flex items-center gap-2">

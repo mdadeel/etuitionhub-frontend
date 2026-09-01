@@ -185,6 +185,20 @@ export const aiService = {
         return response.data;
     },
 
+    /**
+     * Batch AI curriculum export — generates one lesson plan per topic in a
+     * single backend call. Each week consumes its own AI usage token.
+     * @param {object} opts
+     * @param {string} opts.subject
+     * @param {string} opts.grade
+     * @param {string} opts.duration
+     * @param {string[]} opts.topics 1–8 weekly topics
+     */
+    generateMonthlyCurriculum: async ({ subject, grade, duration, topics }) => {
+        const response = await api.post('/api/ai/tutor/curriculum', { subject, grade, duration, topics });
+        return response.data;
+    },
+
     trackTutorRecommendationClick: async (tutorId, sessionId) => {
         const response = await api.post('/api/ai/tutor-recommendation-click', { tutorId, sessionId });
         return response.data;

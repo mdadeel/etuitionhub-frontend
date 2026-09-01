@@ -13,7 +13,7 @@ function SectionHeader({ icon: Icon, label }) {
             <span className="flex items-center justify-center size-6 rounded-md bg-primary/10 text-primary shrink-0">
                 <Icon size={13} strokeWidth={2.4} />
             </span>
-            <h4 className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+            <h4 className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                 {label}
             </h4>
         </div>
@@ -31,7 +31,7 @@ export default function AssignmentCard({ data }) {
         <div className="space-y-6 animate-fade-in-up">
             {/* Header */}
             <div className="pb-3 border-b border-border/40">
-                <p className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-primary mb-1">
+                <p className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-primary mb-1">
                     Assignment
                 </p>
                 <h3 className="text-lg font-heading font-bold text-foreground">
@@ -57,7 +57,7 @@ export default function AssignmentCard({ data }) {
                                         {q.question}
                                     </p>
                                     {q.marks != null && (
-                                        <span className="shrink-0 text-[10px] font-label text-muted-foreground px-1.5 py-0.5 rounded bg-muted border border-border/50">
+                                        <span className="shrink-0 text-[11px] font-label text-muted-foreground px-1.5 py-0.5 rounded bg-muted border border-border/50">
                                             {q.marks} mark{q.marks !== 1 ? 's' : ''}
                                         </span>
                                     )}
@@ -69,16 +69,16 @@ export default function AssignmentCard({ data }) {
                                             className={cn(
                                                 'flex items-center gap-2.5 rounded-lg border px-3 py-2 text-xs',
                                                 showAnswerKey && oi === q.correctIndex
-                                                    ? 'border-emerald-500/60 bg-emerald-500/10 text-foreground font-medium'
+                                                    ? 'border-success/60 bg-success/10 text-foreground font-medium'
                                                     : 'border-border/40 bg-card/30 text-foreground/80',
                                             )}
                                         >
-                                            <span className="shrink-0 size-4 rounded-full border border-current flex items-center justify-center text-[9px] font-bold">
+                                            <span className="shrink-0 size-4 rounded-full border border-current flex items-center justify-center text-[11px] font-bold">
                                                 {String.fromCharCode(65 + oi)}
                                             </span>
                                             <span className="flex-1">{opt}</span>
                                             {showAnswerKey && oi === q.correctIndex && (
-                                                <CheckCircle2 size={11} className="shrink-0 text-emerald-500" />
+                                                <CheckCircle2 size={11} className="shrink-0 text-success" />
                                             )}
                                         </div>
                                     ))}
@@ -112,7 +112,7 @@ export default function AssignmentCard({ data }) {
                                     </div>
                                 </div>
                                 {q.marks != null && (
-                                    <span className="shrink-0 text-[10px] font-label text-muted-foreground px-1.5 py-0.5 rounded bg-muted border border-border/50">
+                                    <span className="shrink-0 text-[11px] font-label text-muted-foreground px-1.5 py-0.5 rounded bg-muted border border-border/50">
                                         {q.marks}m
                                     </span>
                                 )}
@@ -134,8 +134,8 @@ export default function AssignmentCard({ data }) {
                         {showAnswerKey ? 'Hide Answer Key' : 'Reveal Answer Key'}
                     </button>
                     {showAnswerKey && (
-                        <div className="mt-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 animate-fade-in-up">
-                            <p className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-emerald-500 mb-2">
+                        <div className="mt-3 rounded-xl border border-success/30 bg-success/5 p-4 animate-fade-in-up">
+                            <p className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-success mb-2">
                                 Answer Key
                             </p>
                             <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">

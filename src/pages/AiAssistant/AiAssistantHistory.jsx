@@ -36,7 +36,7 @@ function ChatRow({ session, onOpen, onDelete }) {
                     {session.title || 'Untitled chat'}
                 </p>
                 <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
-                    <span className="px-1.5 py-0.5 rounded bg-muted text-foreground/70 uppercase tracking-wider text-[10px] font-label">
+                    <span className="px-1.5 py-0.5 rounded bg-muted text-foreground/70 uppercase tracking-wider text-[11px] font-label">
                         {session.subject}
                     </span>
                     <span>{session.messageCount} msgs</span>
@@ -75,7 +75,7 @@ function QuizRow({ quiz, onOpen, onDelete }) {
                     {quiz.topic}
                 </p>
                 <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
-                    <span className="px-1.5 py-0.5 rounded bg-muted text-foreground/70 uppercase tracking-wider text-[10px] font-label">
+                    <span className="px-1.5 py-0.5 rounded bg-muted text-foreground/70 uppercase tracking-wider text-[11px] font-label">
                         {quiz.subject}
                     </span>
                     <span>{quiz.questions.length} Qs</span>
@@ -307,7 +307,7 @@ export default function AiAssistantHistory() {
 // eslint-disable-next-line no-unused-vars
 function EmptyState({ icon: Icon, title, hint }) {
     return (
-        <div className="rounded-2xl border border-dashed border-border/60 bg-card/30 p-12 text-center text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-12 text-center text-muted-foreground">
             <Icon className="mx-auto mb-3 text-muted-foreground/60" size={28} />
             <p className="text-sm font-medium text-foreground/80">{title}</p>
             <p className="text-xs mt-1">{hint}</p>

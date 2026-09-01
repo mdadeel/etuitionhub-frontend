@@ -25,7 +25,7 @@ const ACTIONS = [
         icon: Lightbulb,
         prompt: 'Explain ',
         forceTemplate: 'concept',
-        color: 'from-blue-500/20 to-blue-500/0',
+        color: 'from-primary/20 to-primary/0',
     },
     {
         id: 'quiz',

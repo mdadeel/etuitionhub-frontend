@@ -16,11 +16,11 @@ export default function TuitionRecommendationCard({ tuitions = [], subject }) {
                 <span className="flex items-center justify-center size-6 rounded-md bg-primary/20 text-primary">
                     <Briefcase size={13} strokeWidth={2.4} />
                 </span>
-                <h4 className="text-[10px] font-label font-semibold uppercase tracking-[0.1em] text-primary">
+                <h4 className="text-[11px] font-label font-semibold uppercase tracking-[0.1em] text-primary">
                     Recommended Tuition Jobs
                 </h4>
                 {subject && (
-                    <span className="ml-auto text-[10px] font-label tracking-wider text-muted-foreground">
+                    <span className="ml-auto text-[11px] font-label tracking-wider text-muted-foreground">
                         {subject}
                     </span>
                 )}
@@ -48,14 +48,14 @@ export default function TuitionRecommendationCard({ tuitions = [], subject }) {
                                     </p>
                                 </div>
                                 {post.isNewPost && (
-                                    <span className="shrink-0 text-[8px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">
+                                    <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider bg-success/10 text-success dark:text-success border border-success/20 px-1.5 py-0.5 rounded-full">
                                         New Post
                                     </span>
                                 )}
                             </div>
 
                             <div className="flex items-center justify-between w-full pt-1.5 border-t border-border/40 mt-1">
-                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground max-w-[85%]">
+                                <div className="flex items-center gap-2 text-[11px] text-muted-foreground max-w-[85%]">
                                     {post.location && (
                                         <span className="flex items-center gap-0.5 truncate">
                                             <MapPin size={9} />
