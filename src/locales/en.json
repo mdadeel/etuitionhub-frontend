@@ -709,6 +709,28 @@
       "saved": "Tuition saved to your list",
       "unsaved": "Tuition removed from your list",
       "save_failed": "Failed to save tuition"
+    },
+    "admin": {
+      "testimonials": {
+        "title": "Testimonials",
+        "subtitle": "Manage testimonials shown on the homepage",
+        "add": "Add testimonial",
+        "name": "Name",
+        "role": "Role",
+        "school": "School",
+        "location": "Location",
+        "quote": "Quote",
+        "rating": "Rating",
+        "photo_url": "Photo URL",
+        "video_url": "Video URL",
+        "featured": "Featured",
+        "created": "Testimonial created",
+        "create_failed": "Could not create testimonial",
+        "load_failed": "Could not load testimonials",
+        "empty_title": "No testimonials yet",
+        "empty_desc": "Add the first testimonial to feature on the homepage.",
+        "items_count": "{count} testimonial(s)"
+      }
     }
   }
 }
