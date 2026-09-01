@@ -4,7 +4,9 @@ import {
   BrowserRouter,
   Routes,
   Route,
+  Navigate,
   useLocation,
+  useParams,
   useSearchParams,
 } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -18,6 +20,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChatProvider } from "./contexts/ChatContext";
 import useSocketEvents from "./hooks/useSocketEvents";
 import useHeartbeat from "./hooks/useHeartbeat";
+import useAnonBookmarkMigration from "./hooks/useAnonBookmarkMigration";
 import ToastViewport from "./components/shared/ToastViewport";
 import PrivateRoute from "./components/shared/PrivateRoute";
 import PublicRoute from "./components/shared/PublicRoute";
@@ -27,6 +30,18 @@ import { cn } from "@/lib/utils";
 import RouteErrorBoundary from "./components/shared/RouteErrorBoundary";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
 import { DynamicIslandProvider } from "./contexts/DynamicIslandProvider";
+
+/**
+ * Legacy SEO URLs of the form /tutors/<city-slug> (e.g. /tutors/dhaka) must
+ * keep resolving. The canonical mechanism is the ?area= query filter used by
+ * the Tutors page and the Footer "Popular Areas" links, so this redirect
+ * rewrites the old path shape onto it.
+ */
+const RedirectToTutorsCity = () => {
+  const { city } = useParams();
+  const cityName = (city || "").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return <Navigate to={`/tutors?area=${encodeURIComponent(cityName)}`} replace />;
+};
 const DynamicIsland = lazy(() => import("./components/shared/DynamicIsland").then(m => ({ default: m.DynamicIsland })));
 
 // Lazy-loaded page components for code splitting
@@ -35,27 +50,26 @@ const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Tuitions = lazy(() => import("./pages/Tuitions"));
 const Tutors = lazy(() => import("./pages/Tutors"));
-const Blog = lazy(() => import("./pages/Blog"));
 const TutorDetails = lazy(() => import("./pages/TutorDetails"));
+const PublicBookingPage = lazy(() => import("./pages/PublicBookingPage"));
 const TuitionDetails = lazy(() => import("./pages/TuitionDetails"));
 const PostTuition = lazy(() => import("./pages/PostTuition"));
 const BecomeTutor = lazy(() => import("./pages/BecomeTutor"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const SessionRoom = lazy(() => import("./pages/SessionRoom"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
-const PaymentHistory = lazy(() => import("./pages/PaymentHistory"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AccessDenied = lazy(() => import("./pages/AccessDenied"));
 const PasswordReset = lazy(() => import("./pages/PasswordReset"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
-const TutorsByCity = lazy(() => import("./pages/TutorsByCity"));
-const AiAssistantHome = lazy(() => import("./pages/AiAssistant/AiAssistantHome"));
-const AiAssistantChat = lazy(() => import("./pages/AiAssistant/AiAssistantChat"));
+const AiAssistantHome = lazy(() => import("./pages/AiAssistant/AiAssistantHome"));const AiAssistantChat = lazy(() => import("./pages/AiAssistant/AiAssistantChat"));
 const AiAssistantQuiz = lazy(() => import("./pages/AiAssistant/AiAssistantQuiz"));
 const AiAssistantHistory = lazy(() => import("./pages/AiAssistant/AiAssistantHistory"));
 const AiAssistantTutorTools = lazy(() => import("./pages/AiAssistant/AiAssistantTutorTools"));
@@ -88,11 +102,9 @@ const ConditionalFooter = () => {
   const { pathname } = useLocation();
   const isDashboard = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/super-admin");
   const isSession = pathname.startsWith("/session");
-  const isTutors = pathname.startsWith("/tutors");
-  const isTuitions = pathname.startsWith("/tuitions");
   const isAiAssistant = pathname.startsWith("/ai-assistant");
   const isAuth = pathname === "/login" || pathname === "/register";
-  if (isDashboard || isSession || isTutors || isTuitions || isAiAssistant || isAuth) return null;
+  if (isDashboard || isSession || isAiAssistant || isAuth) return null;
   return <Suspense fallback={null}><Footer /></Suspense>;
 };
 
@@ -153,6 +165,11 @@ const RealtimeBridge = () => {
   return null;
 };
 
+const AnonBookmarkMigrationBridge = () => {
+  useAnonBookmarkMigration();
+  return null;
+};
+
 const HeartbeatBridge = () => {
   useHeartbeat();
   return null;
@@ -178,10 +195,42 @@ let App = () => {
     <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <AuthProvider>
+        <AnonBookmarkMigrationBridge />
         <AuthenticatedProviders>
             <BrowserRouter>
               <SessionExpiryCheck />
             <ScrollToTop />
+            <Toaster
+                position="top-center"
+                gutter={12}
+                containerStyle={{ inset: 0 }}
+                toastOptions={{
+                    duration: 3500,
+                    style: {
+                        background: 'hsl(var(--card))',
+                        color: 'hsl(var(--foreground))',
+                        borderRadius: '10px',
+                        boxShadow: '0 8px 30px rgb(0 0 0 / 0.12)',
+                        fontSize: '14px',
+                        padding: '10px 14px',
+                    },
+                    success: {
+                        iconTheme: { primary: 'hsl(var(--success))', secondary: 'hsl(var(--card))' },
+                        style: { color: 'hsl(var(--success))' },
+                    },
+                    error: {
+                        iconTheme: { primary: 'hsl(var(--destructive))', secondary: 'hsl(var(--card))' },
+                        style: { color: 'hsl(var(--destructive))' },
+                    },
+                    loading: {
+                        iconTheme: { primary: 'hsl(var(--primary))', secondary: 'hsl(var(--card))' },
+                        style: { color: 'hsl(var(--primary))' },
+                    },
+                    blank: {
+                        style: { color: 'hsl(var(--muted-foreground))' },
+                    },
+                }}
+            />
             <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
               <DynamicIsland />
               <ConditionalNavbar />
@@ -191,14 +240,16 @@ let App = () => {
                   <Route path="/" element={<RouteErrorBoundary><Home /></RouteErrorBoundary>} />
                   <Route path="/tuitions" element={<RouteErrorBoundary><Tuitions /></RouteErrorBoundary>} />
                   <Route path="/tutors" element={<RouteErrorBoundary><Tutors /></RouteErrorBoundary>} />
-                  <Route path="/tutors/:city" element={<RouteErrorBoundary><TutorsByCity /></RouteErrorBoundary>} />
+                  <Route path="/tutors/:city" element={<RouteErrorBoundary><RedirectToTutorsCity /></RouteErrorBoundary>} />
                   <Route path="/tutor/:id" element={<RouteErrorBoundary><TutorDetails /></RouteErrorBoundary>} />
+                  <Route path="/book/:tutorId" element={<RouteErrorBoundary><PublicBookingPage /></RouteErrorBoundary>} />
                   <Route path="/tuition/:id" element={<RouteErrorBoundary><TuitionDetails /></RouteErrorBoundary>} />
                   <Route path="/about" element={<RouteErrorBoundary><About /></RouteErrorBoundary>} />
                   <Route path="/contact" element={<RouteErrorBoundary><Contact /></RouteErrorBoundary>} />
+                  <Route path="/terms" element={<RouteErrorBoundary><Terms /></RouteErrorBoundary>} />
+                  <Route path="/privacy" element={<RouteErrorBoundary><Privacy /></RouteErrorBoundary>} />
                   <Route path="/post-tuition" element={<RouteErrorBoundary><PostTuition /></RouteErrorBoundary>} />
                   <Route path="/become-tutor" element={<RouteErrorBoundary><BecomeTutor /></RouteErrorBoundary>} />
-                  <Route path="/blog" element={<RouteErrorBoundary><Blog /></RouteErrorBoundary>} />
                   <Route path="/organizations" element={<RouteErrorBoundary><OrganizationDirectory /></RouteErrorBoundary>} />
                   <Route path="/organizations/:slug" element={<RouteErrorBoundary><OrganizationDetails /></RouteErrorBoundary>} />
                   <Route
@@ -313,13 +364,7 @@ let App = () => {
                   />
                   <Route
                     path="/payment-history"
-                    element={
-                      <RouteErrorBoundary>
-                        <PrivateRoute>
-                          <PaymentHistory />
-                        </PrivateRoute>
-                      </RouteErrorBoundary>
-                    }
+                    element={<Navigate to="/dashboard/billing" replace />}
                   />
                   <Route path="/search" element={<RouteErrorBoundary><SearchPage /></RouteErrorBoundary>} />
                   <Route path="/docs/engineering" element={<RouteErrorBoundary><EngineeringShowcase /></RouteErrorBoundary>} />

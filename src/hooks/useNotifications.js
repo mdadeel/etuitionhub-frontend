@@ -46,10 +46,8 @@ const useNotifications = ({ userId, pageSize = 20, enabled = true, category = nu
         }
     }, [pageSize, category]);
 
-    // Initial fetch + count. The 10s poll is gone — unread count is driven by
-    // socket 'notification:new' events (incremented on arrival, decremented on
-    // markAsRead, reset on markAllAsRead). On Vercel (no socket) the badge
-    // simply doesn't update — same as the pre-3.1 behavior for new events.
+    // Initial fetch + periodic poll. On Vercel socket.IO is disabled, so the
+    // badge count is driven by a 30-second REST poll instead of real-time events.
     useEffect(() => {
         // Wait until the backend session is ready (enabled = !!dbUser). Firing
         // before the token cookie is minted just produces a 401 cascade.
@@ -61,6 +59,14 @@ const useNotifications = ({ userId, pageSize = 20, enabled = true, category = nu
         api.get('/api/notifications/unread-count')
             .then((res) => setUnreadCount(res.data.count || 0))
             .catch(() => {});
+
+        // Poll unread count every 30s so the badge updates on Vercel
+        const interval = setInterval(() => {
+            api.get('/api/notifications/unread-count')
+                .then((res) => setUnreadCount(res.data.count || 0))
+                .catch(() => {});
+        }, 30000);
+        return () => clearInterval(interval);
     }, [enabled, refetch, setUnreadCount]);
 
     // Prepend new notifications from socket events for instant display
