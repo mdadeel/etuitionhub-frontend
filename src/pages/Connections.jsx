@@ -6,7 +6,7 @@ import ConnectionsList from '../components/Connections/ConnectionsList';
 import ConnectionRequestCard from '../components/Connections/ConnectionRequestCard';
 import OnboardingWizard from '../components/Connections/OnboardingWizard';
 import { Mail, UserPlus } from 'lucide-react';
-import { AppleHeader } from "@/components/shared/AppleUI";
+import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import SEO from '@/components/shared/SEO';
@@ -60,10 +60,10 @@ const ConnectionsPage = () => {
   return (
     <div className="bg-background min-h-screen">
       <SEO title={t('connections.seo_title')} description={t('connections.seo_desc')} />
-      <AppleHeader 
+      <DashboardPageHeader 
         title={t('connections.title')} 
         subtitle={t('connections.subtitle')}
-        badge={<span className="px-3 py-1 text-xs font-semibold rounded-none bg-primary/10 text-primary border border-primary/20">{t('connections.badge')}</span>}
+        category={t('connections.badge')}
       />
 
       <div className="flex items-center border-b border-border pb-4">

@@ -3,7 +3,7 @@ import StudentPayments from "./StudentPayments";
 import MyReceipts from "./MyReceipts";
 import { CreditCard, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AppleHeader } from "@/components/shared/AppleUI";
+import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 
 const BillingHistory = () => {
   const [activeTab, setActiveTab] = useState("payments");
@@ -15,14 +15,10 @@ const BillingHistory = () => {
 
   return (
     <div className="space-y-10 animate-in fade-in animate-fade-in-up duration-700">
-      <AppleHeader
+      <DashboardPageHeader
         title="Billing & Financials"
         subtitle="Manage payments, track verification status, and view generated receipts."
-        badge={
-          <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-lg bg-secondary/10 text-secondary">
-            Financial Dashboard
-          </span>
-        }
+        category="Financial Dashboard"
       />
 
       {/* Tab Switcher */}

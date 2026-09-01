@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
 import ModerationModal from "../ModerationModal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const OrgMembers = () => {
   const { orgId } = useParams();
@@ -403,94 +405,85 @@ const OrgMembers = () => {
         />
       )}
 
-      {/* Invite Modal Overlay */}
-      {showInviteModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-md rounded-lg shadow-xl border border-border overflow-hidden">
-            <div className="p-6 border-b border-border flex items-center justify-between">
-              <h2 className="text-xl font-bold text-foreground">Invite New Member</h2>
-              <button onClick={resetInviteModal} className="text-muted-foreground hover:text-foreground">✕</button>
-            </div>
-            
-            <div className="p-6">
-              {!inviteResult ? (
-                <form onSubmit={handleInvite} className="space-y-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Email Address</label>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input
-                        type="email"
-                        required
-                        value={inviteEmail}
-                        onChange={(e) => setInviteEmail(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        placeholder="colleague@example.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Assign Role</label>
-                    <select
-                      value={inviteRoleId}
-                      onChange={(e) => setInviteRoleId(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none"
-                    >
-                      {roles.map(role => (
-                        <option key={role._id} value={role._id}>
-                          {role.name} {role.isSystem ? '(System)' : ''}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={inviting}
-                    className="w-full py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors flex justify-center items-center gap-2 disabled:opacity-70"
-                  >
-                    {inviting ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
-                    {inviting ? "Generating Invite..." : "Generate Invite Link"}
-                  </button>
-                </form>
-              ) : (
-                <div className="space-y-6 text-center">
-                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground">Invitation Ready</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Share this token with <strong>{inviteResult.email}</strong>. They must sign up or log in, then use this token to join the organization.
-                    </p>
-                  </div>
-                  
-                  <div className="bg-muted p-4 rounded-lg flex items-center justify-between gap-3 border border-border">
-                    <code className="text-sm font-mono text-primary break-all">
-                      {inviteResult.token}
-                    </code>
-                    <button
-                      onClick={() => copyToClipboard(inviteResult.token)}
-                      className="p-2 hover:bg-background rounded-md border border-border transition-colors shrink-0"
-                      title="Copy Token"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={resetInviteModal}
-                    className="w-full py-2.5 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors"
-                  >
-                    Done
-                  </button>
+      {/* Invite Modal */}
+      <Dialog open={showInviteModal} onOpenChange={(open) => !open && resetInviteModal()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invite New Member</DialogTitle>
+          </DialogHeader>
+          
+          {!inviteResult ? (
+            <form onSubmit={handleInvite} className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Email Address</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="email"
+                    required
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    placeholder="colleague@example.com"
+                  />
                 </div>
-              )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Assign Role</label>
+                <select
+                  value={inviteRoleId}
+                  onChange={(e) => setInviteRoleId(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none"
+                >
+                  {roles.map(role => (
+                    <option key={role._id} value={role._id}>
+                      {role.name} {role.isSystem ? '(System)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={resetInviteModal}>Cancel</Button>
+                <Button type="submit" disabled={inviting}>
+                  {inviting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
+                  {inviting ? "Generating Invite..." : "Generate Invite Link"}
+                </Button>
+              </DialogFooter>
+            </form>
+          ) : (
+            <div className="space-y-6 text-center">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground">Invitation Ready</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Share this token with <strong>{inviteResult.email}</strong>. They must sign up or log in, then use this token to join the organization.
+                </p>
+              </div>
+              
+              <div className="bg-muted p-4 rounded-lg flex items-center justify-between gap-3 border border-border">
+                <code className="text-sm font-mono text-primary break-all">
+                  {inviteResult.token}
+                </code>
+                <button
+                  onClick={() => copyToClipboard(inviteResult.token)}
+                  className="p-2 hover:bg-background rounded-md border border-border transition-colors shrink-0"
+                  title="Copy Token"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+              </div>
+
+              <Button variant="secondary" className="w-full" onClick={resetInviteModal}>
+                Done
+              </Button>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Moderation Modal Overlay */}
       {selectedUser && (

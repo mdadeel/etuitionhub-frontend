@@ -14,6 +14,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const PERMISSION_GROUPS = {
   Members: ["member:view", "member:invite", "member:invite_teacher", "member:invite_student", "member:remove", "member:manage_roles", "member:suspend", "member:export"],
@@ -248,136 +250,123 @@ const OrgRoles = () => {
       />
 
       {/* Create/Edit Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-2xl max-h-[85vh] rounded-lg shadow-xl border border-border overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-border flex items-center justify-between flex-shrink-0">
-              <h2 className="text-xl font-bold text-foreground">
-                {editingRole ? "Edit Role" : "Create Role"}
-              </h2>
-              <button onClick={() => setShowCreateModal(false)} className="text-muted-foreground hover:text-foreground">✕</button>
-            </div>
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>
+              {editingRole ? "Edit Role" : "Create Role"}
+            </DialogTitle>
+          </DialogHeader>
 
-            <form onSubmit={handleSave} className="flex flex-col flex-1 min-h-0">
-              <div className="p-6 space-y-5 overflow-y-auto flex-1 min-h-0">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Role Name *</label>
-                    <input
-                      value={formName}
-                      onChange={(e) => setFormName(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      placeholder="e.g. Finance Staff"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Slug</label>
-                    <input
-                      value={formSlug}
-                      onChange={(e) => setFormSlug(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono text-sm"
-                      placeholder="auto-generated"
-                    />
-                  </div>
-                </div>
+          <form onSubmit={handleSave} className="flex flex-col flex-1 min-h-0">
+            <div className="space-y-5 overflow-y-auto flex-1 min-h-0">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Description</label>
+                  <label className="text-sm font-medium text-foreground">Role Name *</label>
                   <input
-                    value={formDesc}
-                    onChange={(e) => setFormDesc(e.target.value)}
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value)}
                     className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    placeholder="Optional description"
+                    placeholder="e.g. Finance Staff"
+                    required
                   />
                 </div>
-
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-foreground">Permissions</label>
-                  <div className="bg-background border border-border rounded-lg divide-y divide-border">
-                    {Object.entries(PERMISSION_GROUPS).map(([group, perms]) => {
-                      const selected = perms.filter((p) => formPerms.includes(p)).length;
-                      const allSelected = selected === perms.length;
-                      const expanded = expandedGroups[group];
-                      return (
-                        <div key={group}>
-                          <div
-                            className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                            onClick={() => toggleGroup(group)}
-                          >
-                            <div className="flex items-center gap-3">
-                              {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                              <span className="text-sm font-medium">{group}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {selected}/{perms.length}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); toggleAllInGroup(group); }}
-                              className={`px-2 py-1 text-xs rounded-md border transition-colors ${
-                                allSelected
-                                  ? "bg-primary/10 text-primary border-primary/20"
-                                  : "bg-muted text-muted-foreground border-border hover:bg-muted/80"
-                              }`}
-                            >
-                              {allSelected ? "Deselect All" : "Select All"}
-                            </button>
-                          </div>
-                          {expanded && (
-                            <div className="px-6 pb-3 grid grid-cols-2 gap-2">
-                              {perms.map((perm) => (
-                                <label
-                                  key={perm}
-                                  className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-xs ${
-                                    formPerms.includes(perm)
-                                      ? "bg-primary/5 border-primary/20 text-primary"
-                                      : "bg-background border-border text-muted-foreground hover:bg-muted/50"
-                                  }`}
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={formPerms.includes(perm)}
-                                    onChange={() => togglePerm(perm)}
-                                    className="sr-only"
-                                  />
-                                  <div className={`size-4 rounded flex items-center justify-center border ${
-                                    formPerms.includes(perm) ? "bg-primary border-primary" : "border-border"
-                                  }`}>
-                                    {formPerms.includes(perm) && <Check size={10} className="text-primary-foreground" />}
-                                  </div>
-                                  <span className="font-mono">{perm}</span>
-                                </label>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Slug</label>
+                  <input
+                    value={formSlug}
+                    onChange={(e) => setFormSlug(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono text-sm"
+                    placeholder="auto-generated"
+                  />
                 </div>
               </div>
-
-              <div className="p-6 border-t border-border flex justify-end gap-3 flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2.5 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-70"
-                >
-                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  {editingRole ? "Save Changes" : "Create Role"}
-                </button>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Description</label>
+                <input
+                  value={formDesc}
+                  onChange={(e) => setFormDesc(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  placeholder="Optional description"
+                />
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-foreground">Permissions</label>
+                <div className="bg-background border border-border rounded-lg divide-y divide-border">
+                  {Object.entries(PERMISSION_GROUPS).map(([group, perms]) => {
+                    const selected = perms.filter((p) => formPerms.includes(p)).length;
+                    const allSelected = selected === perms.length;
+                    const expanded = expandedGroups[group];
+                    return (
+                      <div key={group}>
+                        <div
+                          className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                          onClick={() => toggleGroup(group)}
+                        >
+                          <div className="flex items-center gap-3">
+                            {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                            <span className="text-sm font-medium">{group}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {selected}/{perms.length}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); toggleAllInGroup(group); }}
+                            className={`px-2 py-1 text-xs rounded-md border transition-colors ${
+                              allSelected
+                                ? "bg-primary/10 text-primary border-primary/20"
+                                : "bg-muted text-muted-foreground border-border hover:bg-muted/80"
+                            }`}
+                          >
+                            {allSelected ? "Deselect All" : "Select All"}
+                          </button>
+                        </div>
+                        {expanded && (
+                          <div className="px-6 pb-3 grid grid-cols-2 gap-2">
+                            {perms.map((perm) => (
+                              <label
+                                key={perm}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-xs ${
+                                  formPerms.includes(perm)
+                                    ? "bg-primary/5 border-primary/20 text-primary"
+                                    : "bg-background border-border text-muted-foreground hover:bg-muted/50"
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={formPerms.includes(perm)}
+                                  onChange={() => togglePerm(perm)}
+                                  className="sr-only"
+                                />
+                                <div className={`size-4 rounded flex items-center justify-center border ${
+                                  formPerms.includes(perm) ? "bg-primary border-primary" : "border-border"
+                                }`}>
+                                  {formPerms.includes(perm) && <Check size={10} className="text-primary-foreground" />}
+                                </div>
+                                <span className="font-mono">{perm}</span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)}>Cancel</Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                {editingRole ? "Save Changes" : "Create Role"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

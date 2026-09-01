@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { X, Send, Loader2 } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -12,8 +13,6 @@ const HireRequestModal = ({ tuition, tutorId, isOpen, onClose }) => {
   const [preferredTime, setPreferredTime] = useState('');
   const [proposedRate, setProposedRate] = useState(tuition?.salary || '');
   const [submitting, setSubmitting] = useState(false);
-
-  if (!isOpen) return null;
 
   const toggleDay = (day) => {
     setSelectedDays(prev => 
@@ -50,21 +49,16 @@ const HireRequestModal = ({ tuition, tutorId, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="bg-card border border-border rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-border">
-          <div>
-            <h3 className="text-lg font-heading font-bold text-foreground">Request Tutor</h3>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              {tuition?.subject ? `For ${tuition.subject}` : 'Send a tutoring request'}
-            </p>
-          </div>
-          <button onClick={onClose} className="size-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors">
-            <X className="size-4 text-muted-foreground" />
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Request Tutor</DialogTitle>
+          <DialogDescription>
+            {tuition?.subject ? `For ${tuition.subject}` : 'Send a tutoring request'}
+          </DialogDescription>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Message <span className="text-destructive">*</span></label>
             <textarea
@@ -120,16 +114,16 @@ const HireRequestModal = ({ tuition, tutorId, isOpen, onClose }) => {
             />
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
-            <Button type="submit" disabled={submitting} className="flex-1">
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="submit" disabled={submitting}>
               {submitting ? <Loader2 className="size-4 animate-spin mr-2" /> : <Send className="size-4 mr-2" />}
               {submitting ? 'Sending...' : 'Send Request'}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

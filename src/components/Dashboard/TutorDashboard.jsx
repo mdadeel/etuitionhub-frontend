@@ -12,7 +12,7 @@ import api from '../../services/api';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import TutorAvailability from './TutorAvailability';
 import Assignments from './Assignments';
-import { AppleHeader } from "@/components/shared/AppleUI";
+import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 import { computeProjectedThisMonth } from '@/lib/earningsForecast';
 import { 
     FileText, 
@@ -159,10 +159,10 @@ const TutorDashboard = () => {
     return (
         <div className="space-y-10 animate-fade-in-up">
             
-            <AppleHeader
+            <DashboardPageHeader
                 title={t('tutorDashboard.hello', { name: user?.displayName?.split(' ')[0] })}
                 subtitle={t('tutorDashboard.subtitle')}
-                badge={<span className="px-3 py-1 text-xs font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20">{t('tutorDashboard.dashboard_badge')}</span>}
+                category={t('tutorDashboard.dashboard_badge')}
             />
 
             {/* Tab Navigation */}

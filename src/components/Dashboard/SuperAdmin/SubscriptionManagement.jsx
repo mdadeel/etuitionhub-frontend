@@ -10,6 +10,8 @@ import {
   Building2,
 } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const SubscriptionManagement = () => {
   const [plans, setPlans] = useState([]);
@@ -284,75 +286,72 @@ const SubscriptionManagement = () => {
       </div>
 
       {/* Create/Edit Plan Modal */}
-      {showPlanModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-lg max-h-[85vh] rounded-lg shadow-xl border border-border overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-border flex items-center justify-between flex-shrink-0">
-              <h2 className="text-xl font-bold text-foreground">{editingPlan ? "Edit Plan" : "Create Plan"}</h2>
-              <button onClick={() => setShowPlanModal(false)} className="text-muted-foreground hover:text-foreground">✕</button>
+      <Dialog open={showPlanModal} onOpenChange={setShowPlanModal}>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>{editingPlan ? "Edit Plan" : "Create Plan"}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSave} className="flex flex-col flex-1 min-h-0">
+            <div className="space-y-4 overflow-y-auto flex-1 min-h-0">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Plan Name *</label>
+                  <input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="e.g. Pro" required />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Slug</label>
+                  <input value={form.slug} onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono text-sm" placeholder="auto-generated" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Description</label>
+                <input value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Plan description" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Monthly Price (৳)</label>
+                  <input type="number" value={form.priceMonthly} onChange={(e) => setForm(f => ({ ...f, priceMonthly: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Yearly Price (৳)</label>
+                  <input type="number" value={form.priceYearly} onChange={(e) => setForm(f => ({ ...f, priceYearly: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Max Members</label>
+                  <input type="number" value={form.maxMembers} onChange={(e) => setForm(f => ({ ...f, maxMembers: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Max Tuitions</label>
+                  <input type="number" value={form.maxTuitions} onChange={(e) => setForm(f => ({ ...f, maxTuitions: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Storage (MB)</label>
+                  <input type="number" value={form.maxStorageMB} onChange={(e) => setForm(f => ({ ...f, maxStorageMB: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Features (one per line)</label>
+                <textarea value={form.features} onChange={(e) => setForm(f => ({ ...f, features: e.target.value }))} rows={4} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm font-mono" placeholder="Unlimited tuitions&#10;Priority support&#10;Custom branding" />
+              </div>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <div className={`size-5 rounded border flex items-center justify-center transition-colors ${form.isPublic ? "bg-primary border-primary" : "border-border"}`} onClick={() => setForm(f => ({ ...f, isPublic: !f.isPublic }))}>
+                  {form.isPublic && <Check size={12} className="text-primary-foreground" />}
+                </div>
+                <span className="text-sm font-medium">Visible in public plan listing</span>
+              </label>
             </div>
-            <form onSubmit={handleSave} className="flex flex-col flex-1 min-h-0">
-              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Plan Name *</label>
-                    <input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="e.g. Pro" required />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Slug</label>
-                    <input value={form.slug} onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono text-sm" placeholder="auto-generated" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Description</label>
-                  <input value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Plan description" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Monthly Price (৳)</label>
-                    <input type="number" value={form.priceMonthly} onChange={(e) => setForm(f => ({ ...f, priceMonthly: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Yearly Price (৳)</label>
-                    <input type="number" value={form.priceYearly} onChange={(e) => setForm(f => ({ ...f, priceYearly: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Max Members</label>
-                    <input type="number" value={form.maxMembers} onChange={(e) => setForm(f => ({ ...f, maxMembers: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Max Tuitions</label>
-                    <input type="number" value={form.maxTuitions} onChange={(e) => setForm(f => ({ ...f, maxTuitions: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Storage (MB)</label>
-                    <input type="number" value={form.maxStorageMB} onChange={(e) => setForm(f => ({ ...f, maxStorageMB: e.target.value }))} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Features (one per line)</label>
-                  <textarea value={form.features} onChange={(e) => setForm(f => ({ ...f, features: e.target.value }))} rows={4} className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm font-mono" placeholder="Unlimited tuitions&#10;Priority support&#10;Custom branding" />
-                </div>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <div className={`size-5 rounded border flex items-center justify-center transition-colors ${form.isPublic ? "bg-primary border-primary" : "border-border"}`} onClick={() => setForm(f => ({ ...f, isPublic: !f.isPublic }))}>
-                    {form.isPublic && <Check size={12} className="text-primary-foreground" />}
-                  </div>
-                  <span className="text-sm font-medium">Visible in public plan listing</span>
-                </label>
-              </div>
-              <div className="p-6 border-t border-border flex justify-end gap-3 flex-shrink-0">
-                <button type="button" onClick={() => setShowPlanModal(false)} className="px-4 py-2.5 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors">Cancel</button>
-                <button type="submit" disabled={saving} className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-70">
-                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  {editingPlan ? "Save Changes" : "Create Plan"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowPlanModal(false)}>Cancel</Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                {editingPlan ? "Save Changes" : "Create Plan"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

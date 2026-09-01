@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import ImportantMails from './ImportantMails';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const statusConfig = {
   pending: { variant: 'warning', label: 'Pending' },
@@ -282,53 +284,54 @@ const HireRequests = () => {
         </div>
       )}
       {/* Counter-Offer Modal */}
-      {counterModal.open && (
-        <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-sm rounded-lg border border-border/80 shadow-lg p-6">
-            <h3 className="text-lg font-heading text-foreground mb-4">Counter Offer</h3>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Original offer: ৳{counterModal.originalRate?.toLocaleString()}/mo
-              </p>
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1">Your counter rate (৳)</label>
-                <input
-                  type="number"
-                  value={counterRate}
-                  onChange={(e) => setCounterRate(e.target.value)}
-                  placeholder="e.g. 6000"
-                  className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1">Message (optional)</label>
-                <textarea
-                  value={counterMessage}
-                  onChange={(e) => setCounterMessage(e.target.value)}
-                  placeholder="I can do ৳6,000 given the distance..."
-                  maxLength={500}
-                  className="w-full h-20 bg-background border border-border rounded-xl p-3 text-sm text-foreground resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                />
-              </div>
+      <Dialog open={counterModal.open} onOpenChange={(open) => {
+        if (!open) {
+          setCounterModal({ open: false, requestId: null, originalRate: 0 });
+          setCounterRate('');
+          setCounterMessage('');
+        }
+      }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Counter Offer</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Original offer: ৳{counterModal.originalRate?.toLocaleString()}/mo
+            </p>
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">Your counter rate (৳)</label>
+              <input
+                type="number"
+                value={counterRate}
+                onChange={(e) => setCounterRate(e.target.value)}
+                placeholder="e.g. 6000"
+                className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              />
             </div>
-            <div className="flex gap-3 justify-end mt-6">
-              <button
-                onClick={() => { setCounterModal({ open: false, requestId: null, originalRate: 0 }); setCounterRate(''); setCounterMessage(''); }}
-                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCounter}
-                disabled={submittingCounter || !counterRate}
-                className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary/90 disabled:opacity-50 transition-all"
-              >
-                {submittingCounter ? 'Sending…' : 'Send Counter'}
-              </button>
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">Message (optional)</label>
+              <textarea
+                value={counterMessage}
+                onChange={(e) => setCounterMessage(e.target.value)}
+                placeholder="I can do ৳6,000 given the distance..."
+                maxLength={500}
+                className="w-full h-20 bg-background border border-border rounded-xl p-3 text-sm text-foreground resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              />
             </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setCounterModal({ open: false, requestId: null, originalRate: 0 });
+              setCounterRate('');
+              setCounterMessage('');
+            }}>Cancel</Button>
+            <Button onClick={handleCounter} disabled={submittingCounter || !counterRate}>
+              {submittingCounter ? 'Sending…' : 'Send Counter'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

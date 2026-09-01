@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import { X, Loader2, Calendar } from 'lucide-react';
+import { Loader2, Calendar } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const SessionLogModal = ({ connectionId, isOpen, onClose, onLogged }) => {
   const [scheduledAt, setScheduledAt] = useState('');
   const [durationMinutes, setDurationMinutes] = useState('');
   const [topicsCovered, setTopicsCovered] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,19 +40,14 @@ const SessionLogModal = ({ connectionId, isOpen, onClose, onLogged }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="bg-card border border-border rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-border">
-          <div>
-            <h3 className="text-lg font-heading font-bold text-foreground">Log Session</h3>
-            <p className="text-sm text-muted-foreground mt-0.5">Record a completed tutoring session</p>
-          </div>
-          <button onClick={onClose} className="size-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors">
-            <X className="size-4 text-muted-foreground" />
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Log Session</DialogTitle>
+          <DialogDescription>Record a completed tutoring session</DialogDescription>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Session Date <span className="text-destructive">*</span></label>
             <div className="relative">
@@ -94,16 +88,16 @@ const SessionLogModal = ({ connectionId, isOpen, onClose, onLogged }) => {
             <div className="text-xs text-muted-foreground text-right mt-1">{topicsCovered.length}/1000</div>
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
-            <Button type="submit" disabled={submitting} className="flex-1">
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="submit" disabled={submitting}>
               {submitting && <Loader2 className="size-4 animate-spin mr-2" />}
               {submitting ? 'Logging...' : 'Log Session'}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

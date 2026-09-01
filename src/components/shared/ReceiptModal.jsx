@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { Receipt, X, Printer, Download } from 'lucide-react';
+import { Receipt, Printer, Download } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 /**
  * Receipt modal: fetches /api/receipts/me and shows the matching receipt for a given paymentId.
@@ -36,22 +38,19 @@ const ReceiptModal = ({ paymentId, onClose }) => {
     if (!paymentId) return null;
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-card border border-border max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-                    <div className="flex items-center gap-2">
+        <Dialog open={!!paymentId} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="sm:max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
                         <Receipt size={18} className="text-primary" />
-                        <h2 className="text-sm font-heading font-black uppercase tracking-widest">Payment Receipt</h2>
-                    </div>
-                    <button onClick={onClose} className="p-1 hover:bg-muted transition-colors">
-                        <X size={18} />
-                    </button>
-                </div>
+                        Payment Receipt
+                    </DialogTitle>
+                </DialogHeader>
 
                 {loading && <div className="p-10 text-center text-xs text-muted-foreground">Loading...</div>}
 
                 {!loading && receipt && (
-                    <div className="p-8 space-y-6">
+                    <div className="space-y-6">
                         <div className="text-center pb-6 border-b border-border">
                             <p className="text-[11px] font-heading font-black uppercase tracking-widest text-muted-foreground">Receipt No.</p>
                             <p className="text-2xl font-heading font-black text-primary mt-1">{receipt.receiptNumber}</p>
@@ -93,13 +92,15 @@ const ReceiptModal = ({ paymentId, onClose }) => {
                         </div>
 
                         <div className="flex gap-3 pt-4 border-t border-border">
-                            <button
+                            <Button
+                                variant="outline"
+                                className="flex-1"
                                 onClick={() => window.print()}
-                                className="flex-1 h-10 px-4 border border-border text-[11px] font-heading font-black uppercase tracking-widest hover:bg-muted transition-colors flex items-center justify-center gap-2"
                             >
-                                <Printer size={14} /> Print
-                            </button>
-                            <button
+                                <Printer size={14} className="mr-2" /> Print
+                            </Button>
+                            <Button
+                                className="flex-1"
                                 onClick={() => {
                                     const blob = new Blob([JSON.stringify(receipt, null, 2)], { type: 'application/json' });
                                     const url = URL.createObjectURL(blob);
@@ -109,15 +110,14 @@ const ReceiptModal = ({ paymentId, onClose }) => {
                                     a.click();
                                     URL.revokeObjectURL(url);
                                 }}
-                                className="flex-1 h-10 px-4 bg-primary text-white text-[11px] font-heading font-black uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                             >
-                                <Download size={14} /> Download
-                            </button>
+                                <Download size={14} className="mr-2" /> Download
+                            </Button>
                         </div>
                     </div>
                 )}
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 };
 

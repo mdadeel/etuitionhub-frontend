@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment, Suspense } from "react";
 import { useLocation, Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, Settings, ChevronRight, Inbox } from "lucide-react";
+import { Menu, Settings, ChevronRight, Inbox } from "lucide-react";
 
 import { useAuth } from "../../contexts/AuthContext";
 import DashboardSidebar from "../Dashboard/DashboardSidebar";
@@ -217,19 +217,11 @@ const DashboardLayout = ({ children }) => {
       {/* Mobile Sidebar Content */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 w-72 bg-card z-[70] lg:hidden transition-transform duration-300 border-r border-border overflow-y-auto",
+          "fixed inset-y-0 left-0 w-64 z-[70] lg:hidden transition-transform duration-300 overflow-y-auto",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="sticky top-0 z-10 flex justify-end p-2 bg-card">
-          <button
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-background rounded-lg border border-border transition-colors"
-          >
-            <X size={18} className="text-muted-foreground" />
-          </button>
-        </div>
-        <DashboardSidebar />
+        <DashboardSidebar className="h-full" />
       </div>
 
       <main className="flex-1 h-full overflow-x-hidden relative flex flex-col safe-bottom overflow-y-auto">

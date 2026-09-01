@@ -113,7 +113,7 @@ const NotificationPage = () => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8 animate-fade-in-up">
+        <div className="max-w-6xl mx-auto px-4 py-8 animate-fade-in-up">
             {/* Premium Header */}
             <div className="mb-8 pb-6 border-b border-border">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

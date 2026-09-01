@@ -7,7 +7,7 @@ import { Bookmark, Trash2, ExternalLink, Users, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TutorCardGridSkeleton, TuitionCardGridSkeleton } from "@/components/shared/skeletons";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { AppleHeader } from "@/components/shared/AppleUI";
+import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 
 const Bookmarks = () => {
   const navigate = useNavigate();
@@ -79,14 +79,10 @@ const Bookmarks = () => {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700 animate-fade-in-up">
-      <AppleHeader
+      <DashboardPageHeader
         title="Bookmarks"
         subtitle="Manage all your saved tutors and tuition listings in one place."
-        badge={
-          <span className="px-3 py-1 text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground rounded-lg bg-secondary/10">
-            Saved Items
-          </span>
-        }
+        category="Saved Items"
       />
 
       {/* Tab Switcher */}

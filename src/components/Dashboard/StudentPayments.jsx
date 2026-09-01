@@ -6,7 +6,7 @@ import api from '../../services/api';
 import { useRealtimeStore } from '../../store/realtimeStore';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import toast from 'react-hot-toast';
-import { AppleHeader } from "@/components/shared/AppleUI";
+import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 import {
     Banknote,
     CheckCircle2,
@@ -135,10 +135,10 @@ const StudentPayments = ({ hideHeader }) => {
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             {!hideHeader && (
-                <AppleHeader 
+                <DashboardPageHeader 
                     title="Payment History" 
                     subtitle="Track all your transactions and payment activities."
-                    badge={<span className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-lg bg-secondary/10 text-secondary">Financial Records</span>}
+                    category="Financial Records"
                     action={
                         <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-lg border border-green-500/20">
                             <div className="size-2 rounded-full bg-green-500 animate-pulse"></div>

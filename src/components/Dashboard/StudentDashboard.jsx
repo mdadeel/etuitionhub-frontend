@@ -10,7 +10,7 @@ import api from "../../services/api";
 import { StatCardSkeleton } from "@/components/shared/skeletons";
 import StudentPayments from "./StudentPayments";
 import Assignments from "./Assignments";
-import { AppleHeader } from "@/components/shared/AppleUI";
+import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 import {
   Database,
   FileText,
@@ -161,14 +161,10 @@ const StudentDashboard = () => {
  
   return (
     <div className="space-y-10 animate-in fade-in duration-700 animate-fade-in-up">
-      <AppleHeader
+      <DashboardPageHeader
         title={t("student.hello", { name: user?.displayName?.split(" ")[0] })}
         subtitle={t("student.subtitle")}
-        badge={
-          <span className="px-3 py-1 text-xs font-semibold rounded-lg bg-primary/10 text-primary border border-primary/20">
-            {t("student.dashboard_badge")}
-          </span>
-        }
+        category={t("student.dashboard_badge")}
       />
  
       {/* Tab Navigation */}
