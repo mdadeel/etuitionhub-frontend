@@ -37,6 +37,7 @@ import {
   Layers,
   PanelTop,
   Star,
+  Search,
 } from "lucide-react";
 
 function buildOrgMenu(orgContext, hasPermission) {
@@ -130,6 +131,7 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
       { path: "/super-admin/organizations", label: "Organizations", icon: Users, group: "Platform" },
       { path: "/super-admin/analytics", label: "Analytics", icon: History, group: "Platform" },
       { path: "/super-admin/subscriptions", label: "Subscriptions", icon: CreditCard, group: "Platform" },
+      { path: "/super-admin/search-analytics", label: "Search Analytics", icon: Search, group: "Platform" },
       { path: "/super-admin/users", label: "All Users", icon: User, group: "Users & Content" },
       { path: "/super-admin/tutors", label: "Tutors", icon: ShieldCheck, group: "Users & Content" },
       { path: "/super-admin/tuitions", label: "Tuitions", icon: FileText, group: "Users & Content" },

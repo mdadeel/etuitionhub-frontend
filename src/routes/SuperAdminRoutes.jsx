@@ -14,6 +14,7 @@ const AdminTutors = lazy(() => import('../components/Dashboard/AdminTutors'));
 const DashTuitions = lazy(() => import('../components/Dashboard/DashTuitions'));
 const AdminVerifications = lazy(() => import('../components/Dashboard/AdminVerifications'));
 const SubscriptionManagement = lazy(() => import('../components/Dashboard/SuperAdmin/SubscriptionManagement'));
+const SearchAnalytics = lazy(() => import('../components/Dashboard/SuperAdmin/SearchAnalytics'));
 // Merged from the collapsed /admin route set (AdminRoutes now redirects to /super-admin).
 const AdminWithdrawals = lazy(() => import('../pages/AdminWithdrawals'));
 const DashPayments = lazy(() => import('../components/Dashboard/DashPayments'));
@@ -46,6 +47,7 @@ const SuperAdminRoutes = () => {
         <Route path="subscriptions" element={<SubscriptionManagement />} />
         <Route path="audit-logs" element={<AdminAuditLogs />} />
         <Route path="testimonials" element={<AdminTestimonials />} />
+        <Route path="search-analytics" element={<SearchAnalytics />} />
         <Route path="settings" element={<DashSettings />} />
         <Route path="*" element={<Navigate to="" replace />} />
       </Routes>
