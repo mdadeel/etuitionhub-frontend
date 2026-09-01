@@ -22,8 +22,7 @@ import {
     ShieldAlert,
     Lock,
     BookOpen,
-    Target,
-    Bookmark
+    Target
 } from 'lucide-react';
 import {
   Dialog,
@@ -48,6 +47,7 @@ import {
 } from '../lib/jsonLd';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Breadcrumb from '../components/shared/Breadcrumb';
+import SaveButton from '../components/Dashboard/SaveButton';
 
 function TuitionDetailsSkeleton() {
   return (
@@ -116,32 +116,6 @@ const TuitionDetails = () => {
     const [reachOutMessage, setReachOutMessage] = useState('');
     const [reachOutRate, setReachOutRate] = useState('');
     const [submittingReachOut, setSubmittingReachOut] = useState(false);
-    const [isSaved, setIsSaved] = useState(false);
-
-    useEffect(() => {
-        if (tuition?._id && user) {
-            api.get(`/api/bookmarks/tuitions/check/${tuition._id}`)
-                .then(res => setIsSaved(res.data?.isSaved === true))
-                .catch(() => setIsSaved(false));
-        }
-    }, [tuition?._id, user]);
-
-    const handleBookmark = async () => {
-        if (!user) { setShowLoginModal(true); return; }
-        try {
-            if (isSaved) {
-                await api.delete(`/api/bookmarks/tuitions/${tuition._id}`);
-                setIsSaved(false);
-                toast.error(t('tuitionDetails.unsaved'));
-            } else {
-                await api.post(`/api/bookmarks/tuitions/${tuition._id}`);
-                setIsSaved(true);
-                toast.success(t('tuitionDetails.saved'));
-            }
-        } catch (err) {
-            toast.error(err.response?.data?.error || t('tuitionDetails.save_failed'));
-        }
-    };
 
     useEffect(() => {
         if (showModal && dbUser && dbUser.role === 'tutor') {
@@ -319,17 +293,7 @@ const TuitionDetails = () => {
 
                              <h1 className="text-xl font-heading text-foreground mb-6 flex items-center justify-between gap-4">
                                 <span>{tuition.subject} Tutor Required</span>
-                                <button
-                                    onClick={handleBookmark}
-                                    title={isSaved ? t('tuitionDetails.unsave') : t('tuitionDetails.save')}
-                                    aria-label={isSaved ? t('tuitionDetails.unsave') : t('tuitionDetails.save')}
-                                    className="shrink-0 inline-flex items-center justify-center size-10 rounded-lg border border-border bg-background hover:bg-muted transition-colors"
-                                >
-                                    <Bookmark
-                                        size={18}
-                                        className={isSaved ? "fill-primary text-primary" : "text-muted-foreground"}
-                                    />
-                                </button>
+                                <SaveButton type="tuition" id={tuition._id} isAuthenticated={!!user} />
                             </h1>
 
                             <div className="flex flex-wrap items-center gap-2 mb-6">

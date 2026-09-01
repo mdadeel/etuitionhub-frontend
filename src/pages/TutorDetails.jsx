@@ -16,7 +16,6 @@ import {
     ShieldCheck,
     Award,
     Send,
-    Heart,
     GraduationCap,
     CheckCircle2,
     Trash2
@@ -28,12 +27,12 @@ import {
     serializeJsonLd,
 } from '../lib/jsonLd';
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
-import { hasAnonBookmark, addAnonBookmark, removeAnonBookmark } from '../lib/anonBookmarks';
 import WhatsAppShareButton from '../components/shared/WhatsAppShareButton';
 import Breadcrumb from '../components/shared/Breadcrumb';
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton, CircleSkeleton } from "@/components/shared/skeletons";
 import CredibilityBadge from '@/components/CredibilityBadge';
+import SaveButton from '../components/Dashboard/SaveButton';
 
 function TutorDetailsSkeleton() {
   return (
@@ -105,7 +104,6 @@ const TutorDetails = () => {
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
     const [messageText, setMessageText] = useState('');
     const [sendingMessage, setSendingMessage] = useState(false);
-    const [isSaved, setIsSaved] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     // Report Tutor State
@@ -133,30 +131,28 @@ const TutorDetails = () => {
             setLoading(true);
 
             try {
-                // Concurrently fetch tutor profile, reviews, bookmark status, and booking eligibility (eliminating waterfalls)
+                // Concurrently fetch tutor profile, reviews, and booking eligibility (eliminating waterfalls)
                 const promises = [
                     api.get(`/api/tutors/${id}`),
                     api.get(`/api/tutors/${id}/reviews`)
                 ];
 
                 if (user) {
-                    promises.push(api.get(`/api/bookmarks/check/${id}`));
                     promises.push(api.get(`/api/bookings/student/${user.email}`));
                 }
 
                 const results = await Promise.all(promises);
                 const tutorRes = results[0];
                 const reviewsRes = results[1];
-                const bookmarkRes = results[2];
-                const bookingsRes = results[3];
+                const bookingsRes = user ? results[2] : null;
 
                 if (tutorRes.data) {
                     setTutor(tutorRes.data);
-                    
+
                     // Check booking eligibility once tutor data is available
                     if (bookingsRes?.data) {
-                        const completed = bookingsRes.data.some(b => 
-                            b.tutorEmail.toLowerCase() === tutorRes.data.email.toLowerCase() && 
+                        const completed = bookingsRes.data.some(b =>
+                            b.tutorEmail.toLowerCase() === tutorRes.data.email.toLowerCase() &&
                             b.status === 'completed'
                         );
                         setCanReview(completed);
@@ -167,13 +163,6 @@ const TutorDetails = () => {
 
                 if (reviewsRes.data) {
                     setReviews(reviewsRes.data);
-                }
-
-                if (bookmarkRes?.data) {
-                    setIsSaved(bookmarkRes.data.isSaved);
-                } else if (!user && tutorRes.data?._id) {
-                    // Anonymous visitors: saved state comes from localStorage.
-                    setIsSaved(hasAnonBookmark("tutor", tutorRes.data._id));
                 }
             } catch (error) {
                 console.error("Failed to fetch tutor:", error);
@@ -272,39 +261,6 @@ const TutorDetails = () => {
             toast.error(t('tutorDetails.toast_message_failed'));
         } finally {
             setSendingMessage(false);
-        }
-    };
-
-    const handleSave = async () => {
-        if (!user) {
-            // Anonymous: toggle the device-local interest list, then prompt login.
-            if (tutor?._id) {
-                const wasSaved = hasAnonBookmark("tutor", tutor._id);
-                if (wasSaved) {
-                    removeAnonBookmark("tutor", tutor._id);
-                    setIsSaved(false);
-                } else {
-                    addAnonBookmark("tutor", tutor._id);
-                    setIsSaved(true);
-                }
-            }
-            setShowLoginModal(true);
-            return;
-        }
-        if (!tutor) return;
-        try {
-            if (isSaved) {
-                await api.delete(`/api/bookmarks/${tutor._id}`);
-                setIsSaved(false);
-                toast.success(t('tutorDetails.toast_removed_saved'));
-            } else {
-                await api.post(`/api/bookmarks/${tutor._id}`);
-                setIsSaved(true);
-                toast.success(t('tutorDetails.toast_saved'));
-            }
-        // eslint-disable-next-line no-unused-vars
-        } catch (err) {
-            toast.error(t('tutorDetails.toast_save_failed'));
         }
     };
 
@@ -511,18 +467,7 @@ const TutorDetails = () => {
                                                     </button>
                                                 )}
                                             </div>
-                                            <button
-                                                onClick={handleSave}
-                                                title={isSaved ? t('tutorDetails.remove_from_saved') : t('tutorDetails.save_profile')}
-                                                aria-label={isSaved ? t('tutorDetails.remove_from_saved') : t('tutorDetails.save_profile')}
-                                                className={`p-2 border rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 ${
-                                                    isSaved
-                                                        ? 'border-destructive/20 text-destructive bg-destructive/10 hover:bg-destructive/10 dark:bg-destructive/15 dark:border-destructive/30 dark:text-destructive/80 dark:hover:bg-destructive/20 dark:hover:text-destructive'
-                                                        : 'border-border text-muted-foreground hover:bg-muted/50 dark:hover:bg-muted/20 dark:hover:text-foreground'
-                                                }`}
-                                            >
-                                                <Heart size={16} className={isSaved ? 'fill-destructive text-destructive' : ''} aria-hidden="true" />
-                                            </button>
+                                            <SaveButton type="tutor" id={tutor._id} isAuthenticated={!!user} />
                                             <WhatsAppShareButton 
                                                 tutor={tutor} 
                                                 className="p-2 border rounded-xl shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background hover:bg-muted/50 dark:hover:bg-muted/20 hover:text-success dark:hover:text-success hover:border-success/30 dark:hover:border-success/30" 
