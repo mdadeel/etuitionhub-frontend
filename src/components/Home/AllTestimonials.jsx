@@ -62,14 +62,14 @@ const AllTestimonials = () => {
                 const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
                 const rating = it.rating || 5;
                 return (
-                  <div key={it._id} className="p-6 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm flex flex-col justify-between min-h-[220px]">
+                  <article key={it._id || idx} className="p-6 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm flex flex-col justify-between min-h-[220px]">
                     <div>
-                      <div className="flex gap-1 mb-3">
+                      <div className="flex gap-1 mb-3" aria-label={`${rating} out of 5 stars`}>
                         {Array.from({ length: rating }).map((_, i) => (
                           <Star key={i} size={13} className="fill-warning text-warning" />
                         ))}
                       </div>
-                      <p className="text-sm text-muted-foreground leading-relaxed italic">&ldquo;{it.quote}&rdquo;</p>
+                      <blockquote className="text-sm text-muted-foreground leading-relaxed italic">&ldquo;{it.quote}&rdquo;</blockquote>
                     </div>
                     <div className="border-t border-border/40 pt-4 flex items-center gap-3 mt-4">
                       <Avatar className={`size-10 rounded-full border ${color}`}>
@@ -82,7 +82,7 @@ const AllTestimonials = () => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </article>
                 );
               })}
             </div>
@@ -91,6 +91,7 @@ const AllTestimonials = () => {
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
+                  aria-label={t('common.prev')}
                   className="px-4 py-2 rounded border border-border disabled:opacity-50"
                 >
                   {t('common.prev')}
@@ -101,6 +102,7 @@ const AllTestimonials = () => {
                 <button
                   onClick={() => setPage(p => Math.min(pages, p + 1))}
                   disabled={page === pages}
+                  aria-label={t('common.next')}
                   className="px-4 py-2 rounded border border-border disabled:opacity-50"
                 >
                   {t('common.next')}
