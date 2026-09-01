@@ -29,6 +29,7 @@ import {
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
 import WhatsAppShareButton from '../components/shared/WhatsAppShareButton';
 import Breadcrumb from '../components/shared/Breadcrumb';
+import ReportModal from '../components/shared/ReportModal';
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton, CircleSkeleton } from "@/components/shared/skeletons";
 import CredibilityBadge from '@/components/CredibilityBadge';
@@ -108,10 +109,7 @@ const TutorDetails = () => {
 
     // Report Tutor State
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-    const [reportReason, setReportReason] = useState('');
-    const [reportDescription, setReportDescription] = useState('');
-    const [submittingReport, setSubmittingReport] = useState(false);
-    
+
     // Hire Request State
     const [isHireModalOpen, setIsHireModalOpen] = useState(false);
     const [hireMessage, setHireMessage] = useState('');
@@ -261,31 +259,6 @@ const TutorDetails = () => {
             toast.error(t('tutorDetails.toast_message_failed'));
         } finally {
             setSendingMessage(false);
-        }
-    };
-
-    const handleSubmitReport = async (e) => {
-        e.preventDefault();
-        if (!user) { setShowLoginModal(true); return; }
-        if (!reportReason) {
-            toast.error(t('tutorDetails.report_reason_required'));
-            return;
-        }
-        setSubmittingReport(true);
-        try {
-            await api.post('/api/v1/moderation/reports', {
-                reportedId: tutor._id,
-                reasonCategory: reportReason,
-                description: reportDescription,
-            });
-            toast.success(t('tutorDetails.report_submitted'));
-            setIsReportModalOpen(false);
-            setReportReason('');
-            setReportDescription('');
-        } catch (err) {
-            toast.error(err.response?.data?.error || t('tutorDetails.report_failed'));
-        } finally {
-            setSubmittingReport(false);
         }
     };
 
@@ -832,61 +805,11 @@ const TutorDetails = () => {
         )}
 
         {/* Report Tutor Modal */}
-        {isReportModalOpen && (
-            <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="bg-card w-full max-w-md rounded-lg border border-border/80 shadow-lg p-6 animate-in fade-in zoom-in duration-200">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-heading text-foreground">{t('tutorDetails.report_title', { name: tutor?.displayName || '' })}</h3>
-                        <button onClick={() => setIsReportModalOpen(false)} aria-label={t('tutorDetails.close')} className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1">
-                            &times;
-                        </button>
-                    </div>
-                    <form onSubmit={handleSubmitReport}>
-                        <label className="block text-sm font-medium text-muted-foreground mb-1">
-                            {t('tutorDetails.report_reason')}
-                        </label>
-                        <select
-                            value={reportReason}
-                            onChange={(e) => setReportReason(e.target.value)}
-                            aria-label={t('tutorDetails.report_reason')}
-                            className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
-                        >
-                            <option value="">{t('tutorDetails.report_select')}</option>
-                            <option value="harassment">{t('tutorDetails.report_harassment')}</option>
-                            <option value="fraud">{t('tutorDetails.report_fraud')}</option>
-                            <option value="inappropriate">{t('tutorDetails.report_inappropriate')}</option>
-                            <option value="other">{t('tutorDetails.report_other')}</option>
-                        </select>
-                        <label className="block text-sm font-medium text-muted-foreground mb-1">
-                            {t('tutorDetails.report_description')}
-                        </label>
-                        <textarea
-                            value={reportDescription}
-                            onChange={(e) => setReportDescription(e.target.value)}
-                            placeholder={t('tutorDetails.report_desc_placeholder')}
-                            aria-label={t('tutorDetails.report_description')}
-                            className="w-full h-24 bg-background border border-border rounded-xl p-3 text-sm text-foreground mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background resize-none"
-                        />
-                        <div className="flex gap-3 justify-end">
-                            <button
-                                type="button"
-                                onClick={() => setIsReportModalOpen(false)}
-                                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 cursor-pointer"
-                            >
-                                {t('tutorDetails.cancel')}
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={submittingReport || !reportReason}
-                                className="px-5 py-2.5 bg-destructive text-white text-sm font-semibold rounded-xl hover:bg-destructive/90 disabled:opacity-50 flex items-center gap-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background active:scale-95 shadow-sm cursor-pointer"
-                            >
-                                {submittingReport ? t('tutorDetails.reporting') : t('tutorDetails.submit_report')}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        )}
+        <ReportModal
+            isOpen={isReportModalOpen}
+            onClose={() => setIsReportModalOpen(false)}
+            reportedId={tutor._id}
+        />
 
         <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action={t('tutorDetails.save_this_tutor')} />
         </>
