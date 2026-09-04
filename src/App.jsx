@@ -105,7 +105,9 @@ const ConditionalFooter = () => {
   const isSession = pathname.startsWith("/session");
   const isAiAssistant = pathname.startsWith("/ai-assistant");
   const isAuth = pathname === "/login" || pathname === "/register";
-  if (isDashboard || isSession || isAiAssistant || isAuth) return null;
+  const isTutors = pathname.startsWith("/tutors");
+  const isTuitions = pathname.startsWith("/tuitions");
+  if (isDashboard || isSession || isAiAssistant || isAuth || isTutors || isTuitions) return null;
   return <Suspense fallback={null}><Footer /></Suspense>;
 };
 

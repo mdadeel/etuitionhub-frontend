@@ -490,7 +490,25 @@
       "stat_districts_val": "64",
       "stat_districts_label": "Districts Covered",
       "stat_rating_val": "4.8 / 5",
-      "stat_rating_label": "Parent Satisfaction Score"
+      "stat_rating_label": "Parent Satisfaction Score",
+      "faq": {
+        "badge": "Common Questions",
+        "title": "Frequently Asked Questions by Parents",
+        "heading": "Frequently Asked Questions by Parents",
+        "subheading": "Everything you need to know about tutor vetting, safety, fees, and trial sessions.",
+        "q1": "How does eTuitionBD verify tutors?",
+        "a1": "Every tutor must submit their National ID (NID), student ID or university degree certificate, and contact details. Our team manually verifies documents before profile activation.",
+        "q2": "How quickly can I find a tutor for my child?",
+        "a2": "You can browse and message verified tutors directly. Most tutors respond within 15 to 30 minutes, allowing you to finalize schedules quickly.",
+        "q3": "Can I request home tutoring in my specific neighborhood?",
+        "a3": "Yes! You can filter tutors specifically for Home Tutoring in your exact area across Dhaka, Chattogram, and all 64 districts.",
+        "q4": "Do you offer online 1-on-1 tutoring?",
+        "a4": "Yes, thousands of verified tutors provide online tuition with digital whiteboards, screen sharing, and personalized study schedules.",
+        "q5": "What are the platform fees for parents?",
+        "a5": "Finding and contacting tutors is 100% free for parents. There are zero agency commissions or hidden charges.",
+        "q6": "Can I replace a tutor if my child is not satisfied?",
+        "a6": "Yes. If a tutor is not the right fit after the initial sessions, our support team will help you find a suitable replacement immediately."
+      }
     },
     "faq": {
       "badge": "Common Questions",

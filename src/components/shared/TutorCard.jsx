@@ -154,6 +154,11 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           <span className="truncate">{experience}</span>
         </div>
 
+        {/* Compact Responsive Trust & Verification Metadata */}
+        <div className="mt-1">
+          <TrustBadges tutor={tutor} showExperience={false} />
+        </div>
+
         {/* Compact Responsive Subject Badges */}
         <div className="flex flex-wrap gap-1 mt-2">
           {subjects.slice(0, 3).map((sub) => (
@@ -170,11 +175,6 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               +{subjects.length - 3}
             </span>
           )}
-        </div>
-
-        {/* Compact Responsive Trust & Verification Metadata */}
-        <div className="mt-1.5">
-          <TrustBadges tutor={tutor} showExperience={false} />
         </div>
 
         <div className="mt-auto border-t border-border pt-2.5 mt-2.5 flex items-center justify-between gap-2">
@@ -280,10 +280,9 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               <Clock size={12} className="text-primary shrink-0" />
               <span className="truncate">Responds in 15 mins</span>
             </span>
-          </div>
-
-          <div className="mt-3">
-            <TrustBadges tutor={tutor} showExperience={false} />
+            <div className="col-span-2 pt-1">
+              <TrustBadges tutor={tutor} showExperience={false} />
+            </div>
           </div>
         </div>
 

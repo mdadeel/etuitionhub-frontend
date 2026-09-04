@@ -42,41 +42,44 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
   };
 
   return (
-    <div className="flex items-start gap-4 bg-card p-4 rounded-xl border border-border">
-      <Avatar size="sm" className="w-10 h-10 flex-shrink-0 rounded-full">
+    <div className="flex items-start gap-3 sm:gap-4 bg-card p-3.5 sm:p-4 rounded-xl border border-border">
+      <Avatar size="sm" className="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 rounded-full">
         <AvatarImage src={request.otherUser.photoURL} alt={request.otherUser.displayName} />
         <AvatarFallback className="rounded-full">
           {request.otherUser.displayName?.charAt(0)?.toUpperCase() || 'U'}
         </AvatarFallback>
       </Avatar>
-      <div className="flex-1 space-y-2">
-        <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-foreground">{request.otherUser.displayName}</h3>
-          <div className="text-xs text-muted-foreground">{request.status}</div>
+      <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
+        <div className="flex justify-between items-start gap-2 min-w-0">
+          <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{request.otherUser.displayName}</h3>
+          <div className="text-[11px] sm:text-xs text-muted-foreground capitalize shrink-0">{request.status}</div>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
           {request.otherUser.role === 'tutor' 
             ? `Tutor • ${request.otherUser.subjects?.join(', ') || 'Various Subjects'}` 
             : `Student • ${request.otherUser.qualification || 'Seeking Tutoring'}`}
         </p>
         {request.otherUser.location && (
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <MapPin size={12} className="text-muted-foreground/70" /> {request.otherUser.location}
+          <p className="text-[11px] sm:text-xs text-muted-foreground flex items-center gap-1 min-w-0">
+            <MapPin size={12} className="text-muted-foreground/70 shrink-0" />
+            <span className="truncate">{request.otherUser.location}</span>
           </p>
         )}
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex flex-wrap items-center justify-end gap-2 mt-3 sm:mt-4">
           {!loading && request.status === 'pending' && (
             <>
               <Button 
                 variant="outline" 
                 onClick={handleReject}
                 size="sm"
+                className="h-8 text-xs px-3"
               >
                 Reject
               </Button>
               <Button 
                 onClick={handleAccept}
                 size="sm"
+                className="h-8 text-xs px-3"
               >
                 Accept
               </Button>
@@ -87,14 +90,14 @@ const ConnectionRequestCard = ({ request, onUpdate }) => {
                variant="outline"
                onClick={() => setShowDispute(true)}
                size="sm"
-               className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+               className="h-8 text-xs px-3 text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
              >
                File Dispute
              </Button>
           )}
           {loading && (
             <div className="flex items-center gap-2">
-              <Loader2 size={16} className="mr-2" />
+              <Loader2 size={16} className="animate-spin" />
               <span className="text-xs">Processing...</span>
             </div>
           )}

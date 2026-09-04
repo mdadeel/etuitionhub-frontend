@@ -7,11 +7,12 @@ import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
 const FAQ = () => {
   const { t } = useTranslation();
   const faqs = [
-    { question: t('home.faq.q1'), answer: t('home.faq.a1') },
-    { question: t('home.faq.q2'), answer: t('home.faq.a2') },
-    { question: t('home.faq.q3'), answer: t('home.faq.a3') },
-    { question: t('home.faq.q4'), answer: t('home.faq.a4') },
-    { question: t('home.faq.q5'), answer: t('home.faq.a5') },
+    { question: t('faq.q1') || t('home.faq.q1'), answer: t('faq.a1') || t('home.faq.a1') },
+    { question: t('faq.q2') || t('home.faq.q2'), answer: t('faq.a2') || t('home.faq.a2') },
+    { question: t('faq.q3') || t('home.faq.q3'), answer: t('faq.a3') || t('home.faq.a3') },
+    { question: t('faq.q4') || t('home.faq.q4'), answer: t('faq.a4') || t('home.faq.a4') },
+    { question: t('faq.q5') || t('home.faq.q5'), answer: t('faq.a5') || t('home.faq.a5') },
+    { question: t('faq.q6') || t('home.faq.q6'), answer: t('faq.a6') || t('home.faq.a6') },
   ];
   const [activeIndex, setActiveIndex] = useState(null);
   const headingRef = useAnimateOnScroll();
@@ -28,12 +29,12 @@ const FAQ = () => {
           {/* LEFT - FAQ Title & Accordion */}
           <div className="lg:col-span-7 space-y-8">
             <div ref={headingRef} className="text-left space-y-3">
-              <span className="text-xs font-semibold text-primary uppercase tracking-[0.18em]">{t('home.faq.badge')}</span>
+              <span className="text-xs font-semibold text-primary uppercase tracking-[0.18em]">{t('faq.badge') || t('home.faq.badge')}</span>
               <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground tracking-tight leading-tight">
-                {t('home.faq.heading')}
+                {t('faq.heading') || t('home.faq.heading')}
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {t('home.faq.subheading')}
+                {t('faq.subheading') || t('home.faq.subheading')}
               </p>
             </div>
 

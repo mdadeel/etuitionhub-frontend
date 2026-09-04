@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
-import { Bookmark, Trash2, ExternalLink, Users, BookOpen } from "lucide-react";
+import { Bookmark, Users, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TutorCardGridSkeleton, TuitionCardGridSkeleton } from "@/components/shared/skeletons";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
+import TutorCard from "@/components/shared/TutorCard";
+import TuitionCard from "@/components/shared/TuitionCard";
 
 const Bookmarks = () => {
   const navigate = useNavigate();
@@ -47,28 +48,6 @@ const Bookmarks = () => {
     fetchSavedTutors();
     fetchSavedTuitions();
   }, []);
-
-  const removeTutor = async (tutorId) => {
-    try {
-      await api.delete(`/api/bookmarks/${tutorId}`);
-      setSavedTutors((prev) => prev.filter((t) => t._id !== tutorId));
-      toast.success("Tutor removed from saved");
-    } catch (err) {
-      console.error("Failed to remove tutor:", err);
-      toast.error("Failed to remove tutor");
-    }
-  };
-
-  const removeTuition = async (tuitionId) => {
-    try {
-      await api.delete(`/api/bookmarks/tuitions/${tuitionId}`);
-      setSavedTuitions((prev) => prev.filter((t) => t._id !== tuitionId));
-      toast.success("Tuition removed from saved");
-    } catch (err) {
-      console.error("Failed to remove tuition:", err);
-      toast.error("Failed to remove tuition");
-    }
-  };
 
   const tabs = [
     { id: "tutors", label: "Saved Tutors", icon: Users, count: savedTutors.length },
@@ -137,74 +116,7 @@ const Bookmarks = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {savedTutors.map((tutor) => (
-              <Card
-                key={tutor._id}
-                className="p-5 flex flex-col justify-between"
-                moveOnHover
-              >
-                <div>
-                  <div className="flex items-start gap-4 mb-4">
-                    <Avatar size="lg" className="size-14 rounded-lg overflow-hidden flex-shrink-0">
-                      <AvatarImage src={tutor.photoURL} alt={tutor.displayName} />
-                      <AvatarFallback className="text-muted-foreground text-sm font-heading font-bold uppercase rounded-lg">
-                        {tutor.displayName?.charAt(0)?.toUpperCase() || 'T'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wide truncate">
-                        {tutor.displayName}
-                      </h3>
-                      <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest truncate mt-0.5">
-                        {tutor.qualification || "Tutor"}
-                      </p>
-                      {tutor.location && (
-                        <p className="text-[10px] text-muted-foreground font-medium truncate mt-1">
-                          {tutor.location}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {tutor.subjects && tutor.subjects.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {tutor.subjects.slice(0, 3).map((sub, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-0.5 bg-muted text-muted-foreground text-[9px] font-semibold rounded-lg border border-border/45"
-                        >
-                          {sub}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-border">
-                  {tutor.expectedSalary ? (
-                    <span className="text-xs font-heading font-bold text-primary tracking-wide">
-                      ৳{tutor.expectedSalary.toLocaleString()}/mo
-                    </span>
-                  ) : (
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Negotiable</span>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => navigate(`/tutor/${tutor._id}`)}
-                      className="p-2 text-primary hover:bg-primary/10 rounded-lg border border-transparent hover:border-primary/20 transition-all active:scale-[0.98]"
-                      title="View Profile"
-                    >
-                      <ExternalLink size={15} />
-                    </button>
-                    <button
-                      onClick={() => removeTutor(tutor._id)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-transparent hover:border-red-200 transition-all active:scale-[0.98]"
-                      title="Remove"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </div>
-              </Card>
+              <TutorCard key={tutor._id} tutor={tutor} initialIsSaved={true} />
             ))}
           </div>
         )
@@ -227,58 +139,7 @@ const Bookmarks = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {savedTuitions.map((tuition) => (
-            <Card
-              key={tuition._id}
-              className="p-5 flex flex-col justify-between"
-              moveOnHover
-            >
-              <div>
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="size-14 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 border border-primary/25">
-                    <Bookmark size={20} className="text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wide truncate">
-                      {tuition.subject}
-                    </h3>
-                    <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest truncate mt-0.5">
-                      {tuition.class_name || "N/A"}
-                    </p>
-                    {tuition.location && (
-                      <p className="text-[10px] text-muted-foreground font-medium truncate mt-1">
-                        {tuition.location}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-4 border-t border-border">
-                {tuition.salary ? (
-                  <span className="text-xs font-heading font-bold text-primary tracking-wide">
-                    ৳{tuition.salary.toLocaleString()}/mo
-                  </span>
-                ) : (
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Negotiable</span>
-                )}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => navigate(`/tuition/${tuition._id}`)}
-                    className="p-2 text-primary hover:bg-primary/10 rounded-lg border border-transparent hover:border-primary/20 transition-all active:scale-[0.98]"
-                    title="View Details"
-                  >
-                    <ExternalLink size={15} />
-                  </button>
-                  <button
-                    onClick={() => removeTuition(tuition._id)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-transparent hover:border-red-200 transition-all active:scale-[0.98]"
-                    title="Remove"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </div>
-            </Card>
+            <TuitionCard key={tuition._id} tuition={tuition} initialIsSaved={true} />
           ))}
         </div>
       )}
