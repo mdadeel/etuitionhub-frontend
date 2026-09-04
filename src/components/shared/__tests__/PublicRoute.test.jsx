@@ -60,7 +60,49 @@ describe('PublicRoute', () => {
         expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
     });
 
-    it('shows an interstitial (not a silent redirect) when signed in as a student', () => {
+    it('redirects to dashboard when signed in and visiting /login', () => {
+        mockUseAuth.mockReturnValue({
+            user: { email: 'student@test.com', displayName: 'Demo Student' },
+            dbUser: { role: 'student', globalRole: 'user', displayName: 'Demo Student' },
+            loading: false,
+            configError: null,
+            logout: vi.fn(),
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/login']}>
+                <PublicRoute>
+                    <Child />
+                </PublicRoute>
+            </MemoryRouter>
+        );
+
+        expect(screen.queryByText('Login form')).not.toBeInTheDocument();
+        expect(screen.queryByText("You're already signed in")).not.toBeInTheDocument();
+    });
+
+    it('redirects to dashboard when signed in and visiting /register', () => {
+        mockUseAuth.mockReturnValue({
+            user: { email: 'student@test.com', displayName: 'Demo Student' },
+            dbUser: { role: 'student', globalRole: 'user', displayName: 'Demo Student' },
+            loading: false,
+            configError: null,
+            logout: vi.fn(),
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/register']}>
+                <PublicRoute>
+                    <Child />
+                </PublicRoute>
+            </MemoryRouter>
+        );
+
+        expect(screen.queryByText('Login form')).not.toBeInTheDocument();
+        expect(screen.queryByText("You're already signed in")).not.toBeInTheDocument();
+    });
+
+    it('shows an interstitial (not a silent redirect) when signed in on /admin-login', () => {
         mockUseAuth.mockReturnValue({
             user: { email: 'student@test.com', displayName: 'Demo Student' },
             dbUser: { role: 'student', globalRole: 'user', displayName: 'Demo Student' },
@@ -84,7 +126,7 @@ describe('PublicRoute', () => {
         expect(screen.queryByText('Login form')).not.toBeInTheDocument();
     });
 
-    it('calls logout when the user signs out', async () => {
+    it('calls logout when the user signs out from admin-login interstitial', async () => {
         const user = userEvent.setup();
         const logout = vi.fn().mockResolvedValue(undefined);
         mockUseAuth.mockReturnValue({
@@ -96,7 +138,7 @@ describe('PublicRoute', () => {
         });
 
         render(
-            <MemoryRouter>
+            <MemoryRouter initialEntries={['/admin-login']}>
                 <PublicRoute>
                     <Child />
                 </PublicRoute>

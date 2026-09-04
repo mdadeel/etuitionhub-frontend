@@ -25,12 +25,15 @@ import { Badge } from "@/components/ui/badge";
 import SEO from '@/components/shared/SEO';
 
 const PAYMENT_METHODS = [
-    { id: 'bkash', name: 'bKash', color: 'bg-[#D12053]', badge: 'Manual' },
-    { id: 'nagad', name: 'Nagad', color: 'bg-[#F7941D]', badge: 'Manual' },
+    { id: 'bkash_pg', name: 'bKash Gateway', color: 'bg-[#D12053]', badge: 'Instant ⚡' },
+    { id: 'sslcommerz', name: 'SSLCommerz (Cards/Internet Banking)', color: 'bg-[#0072BC]', badge: 'Instant ⚡' },
+    { id: 'bkash', name: 'bKash Manual', color: 'bg-[#D12053]', badge: 'Manual' },
+    { id: 'nagad', name: 'Nagad Manual', color: 'bg-[#F7941D]', badge: 'Manual' },
     { id: 'rocket', name: 'Rocket', color: 'bg-[#8C3494]', badge: 'Manual' },
     { id: 'bank', name: 'Bank Transfer', color: 'bg-primary', badge: 'Manual' }
 ];
 
+const isInstantMethod = (methodId) => ['bkash_pg', 'sslcommerz'].includes(methodId);
 const isDemoMethod = (methodId) => ['bkash', 'nagad', 'rocket'].includes(methodId);
 
 // Whether the backend runs in payments demo mode (PAYMENTS_DEMO_MODE=true).
@@ -62,7 +65,7 @@ const Checkout = () => {
     const [application, setApplication] = useState(null);
 
     const [formData, setFormData] = useState({
-        paymentMethod: 'bkash',
+        paymentMethod: 'bkash_pg',
         transactionId: '',
         senderNumber: '',
         notes: ''
@@ -136,13 +139,16 @@ const Checkout = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.transactionId.trim()) {
-            toast.error(t('checkout.error_tx_required'));
-            return;
-        }
-        if (!formData.senderNumber.trim()) {
-            toast.error(t('checkout.error_sender_required'));
-            return;
+        const isInstant = isInstantMethod(formData.paymentMethod);
+        if (!isInstant) {
+            if (!formData.transactionId.trim()) {
+                toast.error(t('checkout.error_tx_required'));
+                return;
+            }
+            if (!formData.senderNumber.trim()) {
+                toast.error(t('checkout.error_sender_required'));
+                return;
+            }
         }
 
         setSubmitting(true);
@@ -154,10 +160,10 @@ const Checkout = () => {
                 tutorName: application?.tutorName,
                 amount: application?.expectedSalary,
                 paymentMethod: formData.paymentMethod,
-                transactionId: formData.transactionId.trim(),
-                senderNumber: formData.senderNumber.trim(),
+                transactionId: isInstant ? `PENDING_${Date.now()}` : formData.transactionId.trim(),
+                senderNumber: isInstant ? (user?.phoneNumber || 'InstantGateway') : formData.senderNumber.trim(),
                 notes: formData.notes.trim(),
-                status: 'pending_verification'
+                status: isInstant ? 'pending' : 'pending_verification'
             };
 
             const response = await api.post('/api/payments/manual', paymentData);

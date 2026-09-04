@@ -42,45 +42,15 @@ const Home = () => {
                 </script>
             </Helmet>
             <HomeBanner />
-            
-            {/* Divider 1: Paper airplane flight trail path */}
-            <SectionDivider variant="paper-path" />
-            
             <FeaturedCategories />
-            
-            {/* Divider 2: Subtle book page fold */}
-            <SectionDivider variant="book-edge" />
-            
             <PopularTutors />
-            
-            {/* Divider 3: Campus Skyline silhouette */}
-            <SectionDivider variant="campus-skyline" />
-            
-            <WhyChooseUs />
-            
-            {/* Divider 4: Learning route connectors */}
-            <SectionDivider variant="learning-route" />
-            
-            <PoruaTeaser />
-            
-            {/* Divider 5: Notebook tear edge */}
-            <SectionDivider variant="notebook-tear" />
-            
-            <Statistics />
-            
-            {/* Divider 6: Minimal academic wave */}
             <SectionDivider variant="minimal-wave" />
-            
-            <Testimonials />
-            
-            {/* Divider 7: Page fold divider */}
+            <WhyChooseUs />
+            <PoruaTeaser />
+            <Statistics />
             <SectionDivider variant="book-edge" />
-            
+            <Testimonials />
             <FAQ />
-            
-            {/* Divider 8: Paper airplane flight path */}
-            <SectionDivider variant="paper-path" />
-            
             <CallToAction />
             
             {!user && (

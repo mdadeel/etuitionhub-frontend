@@ -19,27 +19,32 @@ const STATUS_CONFIG = {
   confirmed: { label: "Confirmed", tone: TONES.success },
   paid: { label: "Paid", tone: TONES.success },
   available_for_withdrawal: { label: "Available", tone: TONES.success },
-  verified_premium: { label: "Premium", tone: TONES.success },
+  verified_premium: { label: "Top Verified", tooltip: "Identity, NID & top degree credentials verified by eTuitionHub", tone: TONES.success },
   withdrawn: { label: "Withdrawn", tone: TONES.neutral },
-  unverified: { label: "None", tone: TONES.neutral },
+  unverified: { label: "Unverified", tone: TONES.neutral },
   rejected: { label: "Rejected", tone: TONES.destructive },
-  verified_basic: { label: "Basic", tone: TONES.info },
+  verified_basic: { label: "Verified Tutor", tooltip: "Identity & academic credentials verified by eTuitionHub", tone: TONES.info },
 };
 
-const StatusBadge = ({ status, label, className, size = 'default' }) => {
+const StatusBadge = ({ status, label, tooltip, className, size = 'default' }) => {
   const config = STATUS_CONFIG[status] || { label: status || "—", tone: TONES.neutral };
   const displayLabel = label || config.label;
+  const displayTooltip = tooltip || config.tooltip;
   const sizeClasses = size === 'sm'
     ? "gap-1 px-1.5 py-px text-[9px]"
     : "gap-1.5 px-2.5 py-0.5 text-[11px]";
 
   return (
-    <span className={cn(
-      "inline-flex items-center font-semibold uppercase tracking-wider rounded-full border whitespace-nowrap",
-      sizeClasses,
-      config.tone,
-      className,
-    )}>
+    <span
+      title={displayTooltip}
+      className={cn(
+        "inline-flex items-center font-semibold uppercase tracking-wider rounded-full border whitespace-nowrap",
+        displayTooltip ? "cursor-help" : "",
+        sizeClasses,
+        config.tone,
+        className,
+      )}
+    >
       <span className="size-1 rounded-full bg-current opacity-80" />
       {displayLabel}
     </span>

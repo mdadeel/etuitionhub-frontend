@@ -233,7 +233,6 @@ let App = () => {
                 }}
             />
             <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
-              <DynamicIsland />
               <ConditionalNavbar />
               <MainContent>
                 <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>}>

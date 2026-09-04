@@ -1,15 +1,18 @@
-// Public Route component - handles login/register pages
-// If a session is already active, shows an explicit "continue or sign out"
-// interstitial instead of silently redirecting — this is what lets an admin
-// reach /admin-login even when a stale student session is sitting in the
-// browser. Redirects on explicit user action only.
+// Public Route component — handles login/register pages.
+//
+// Routes that need the "already signed in" interstitial (admin-login,
+// password-reset) keep showing it so admins can switch accounts and users can
+// reset a different password. Routes that don't (/login, /register) just
+// redirect to the dashboard — the interstitial is friction there.
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { defaultRouteFor } from '../../lib/authz';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 import ConfigError from './ConfigError';
+
+const INTERSTITIAL_ROUTES = new Set(['/admin-login', '/password-reset', '/reset-password']);
 
 function PublicRoute({ children }) {
     const { user, dbUser, loading, configError, logout } = useAuth();
@@ -42,10 +45,15 @@ function PublicRoute({ children }) {
         );
     }
 
-    // Logged in: offer explicit choice instead of a silent redirect.
-    // dbUser may still be null briefly if the profile fetch failed — in that
-    // case fall back to the displayName on the Firebase user.
+    // Logged in: /login and /register redirect straight to dashboard.
+    // Admin-login / password-reset show the interstitial so admins can
+    // switch accounts and users can sign out to reset a different password.
     if (user) {
+        if (!INTERSTITIAL_ROUTES.has(location.pathname)) {
+            return <Navigate to={defaultRouteFor(dbUser)} replace />;
+        }
+
+        // ponytail: interstitial for admin/password-reset routes only
         const displayName = dbUser?.displayName || user.displayName || user.email;
         const roleLabel = dbUser?.globalRole === 'super_admin'
             ? 'Super Admin'
@@ -55,7 +63,6 @@ function PublicRoute({ children }) {
         const handleSignOut = async () => {
             setSigningOut(true);
             await logout();
-            // logout() clears user — this component re-renders and shows children.
         };
 
         return (

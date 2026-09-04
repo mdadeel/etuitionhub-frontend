@@ -192,7 +192,7 @@ const Footer = () => {
                 <div className="h-px bg-white/10 mb-8"></div>
 
                 {/* Footer Bottom */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6 pr-0 md:pr-20">
                     <p className="text-sm text-white/40 text-center md:text-left">
                         © 2026 e-tuitionBD. All rights reserved.
                     </p>

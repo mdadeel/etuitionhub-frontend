@@ -143,26 +143,34 @@ const FilterSelect = ({
             ? getOptionLabel(selectedValues[0])
             : placeholder;
 
-    const hasValue = multi ? selectedValues.length > 0 : selectedValues.length > 0;
+    const isNonDefault = multi
+        ? selectedValues.length > 0
+        : selectedValues.length > 0 && selectedValues[0] !== 'all' && selectedValues[0] !== 'All' && selectedValues[0] !== 'ratings';
 
     return (
         <div className={cn("relative", isOpen && "z-[100]")} ref={containerRef}>
             {label && (
-                <label className="block text-xs font-heading font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">
-                    {label}
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-heading font-bold text-muted-foreground uppercase tracking-wider">
+                        {label}
+                    </label>
+                    {isNonDefault && (
+                        <span className="size-1.5 rounded-full bg-primary animate-pulse" title="Active Filter" />
+                    )}
+                </div>
             )}
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                    className={cn(
-                        'w-full flex items-center justify-between gap-2 h-10 px-3 bg-card border border-border rounded-xl text-sm transition-all',
-                        'hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10',
-                        hasValue ? 'text-foreground font-bold' : 'text-muted-foreground'
-                    )}
-                >
+                className={cn(
+                    'w-full flex items-center justify-between gap-2 h-10 px-3 bg-card border rounded-xl text-sm transition-all',
+                    isNonDefault
+                        ? 'border-primary/50 bg-primary/5 text-primary font-bold shadow-2xs ring-1 ring-primary/20'
+                        : 'border-border text-muted-foreground hover:border-primary/30'
+                )}
+            >
                 <div className="flex items-center gap-2 min-w-0">
-                    {Icon && <Icon size={14} className={cn("shrink-0 opacity-55", hasValue && "text-primary opacity-100")} />}
+                    {Icon && <Icon size={14} className={cn("shrink-0 opacity-55", isNonDefault && "text-primary opacity-100")} />}
                     {multi && selectedValues.length > 0 ? (
                         <div className="flex items-center gap-1 flex-wrap">
                             {selectedValues.slice(0, 3).map(v => (
@@ -182,10 +190,10 @@ const FilterSelect = ({
                             )}
                         </div>
                     ) : (
-                        <span className="truncate">{displayText}</span>
+                        <span className={cn("truncate", isNonDefault ? "text-foreground font-bold" : "")}>{displayText}</span>
                     )}
                 </div>
-                <ChevronDown size={14} className={cn('shrink-0 transition-transform opacity-40', isOpen && 'rotate-180')} />
+                <ChevronDown size={14} className={cn('shrink-0 transition-transform opacity-40', isNonDefault && 'text-primary opacity-100', isOpen && 'rotate-180')} />
             </button>
 
             {isOpen && (

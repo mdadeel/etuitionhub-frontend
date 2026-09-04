@@ -298,6 +298,26 @@ const Tutors = () => {
     );
   };
 
+  const activeFilters = useMemo(() => {
+    const list = [];
+    if (selectedSubjects.length > 0) {
+      selectedSubjects.forEach(sub => list.push({ key: `subject-${sub}`, label: sub, remove: () => toggleSubject(sub) }));
+    }
+    if (selectedArea && selectedArea !== "All") {
+      list.push({ key: 'area', label: `Area: ${selectedArea}`, remove: () => setSelectedArea("All") });
+    }
+    if (selectedLanguage && selectedLanguage !== "all") {
+      list.push({ key: 'language', label: `Lang: ${selectedLanguage}`, remove: () => setSelectedLanguage("all") });
+    }
+    if (selectedGender && selectedGender !== "all") {
+      list.push({ key: 'gender', label: `Gender: ${selectedGender}`, remove: () => setSelectedGender("all") });
+    }
+    if (localSearch) {
+      list.push({ key: 'query', label: `"${localSearch}"`, remove: () => setLocalSearch("") });
+    }
+    return list;
+  }, [selectedSubjects, selectedArea, selectedLanguage, selectedGender, localSearch]);
+
   return (
     <div className="bg-background text-foreground lg:h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
       <SEO
@@ -325,34 +345,37 @@ const Tutors = () => {
               </p>
             </div>
 
+            {/* Integrated Trust & Stats Bar (Stripe/Linear style) */}
             <div className="flex items-center gap-2">
-              <div className="px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
-                <span className="text-xl font-heading text-foreground leading-none">
-                  {filteredAndSortedTutors.length}
-                </span>
-                <span className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">
-                  {t('tutors.available')}
-                </span>
-              </div>
-              <div className="px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center min-w-[80px]">
-                <ShieldCheck size={18} className="text-primary mb-1" />
-                <span className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">
-                  {t('tutors.vetted')}
-                </span>
+              <div className="inline-flex items-center divide-x divide-border rounded-xl border border-border/80 bg-card px-3.5 py-2 shadow-sm text-xs text-foreground">
+                <div className="flex items-center gap-2 pr-3.5">
+                  <span className="text-base font-bold text-foreground leading-none">
+                    {filteredAndSortedTutors.length}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">
+                    {t('tutors.available')}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 pl-3.5">
+                  <ShieldCheck size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="text-[11px] font-semibold text-foreground tracking-wide">
+                    100% Identity & Degree Vetted
+                  </span>
+                </div>
               </div>
 
               {/* Mobile Filters Inline Trigger */}
               <button
                 onClick={() => setIsMobileFiltersOpen(true)}
-                className="lg:hidden px-4 py-2 bg-card border border-border rounded-xl shadow-sm flex flex-col items-center justify-center min-w-[80px] hover:bg-muted active:scale-[0.98] transition-all relative self-stretch"
+                className="lg:hidden px-3.5 py-2 bg-card border border-border rounded-xl shadow-sm flex items-center justify-center gap-2 hover:bg-muted active:scale-[0.98] transition-all relative self-stretch"
               >
-                <Filter size={18} className="text-primary mb-1" />
+                <Filter size={16} className="text-primary" />
                 <span className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">
                   {t('tutors.filters')}
                 </span>
-                {(selectedSubjects.length > 0 || selectedArea !== "All") && (
-                  <span className="absolute -top-1 -right-1 size-5 bg-primary text-white text-[11px] font-bold flex items-center justify-center rounded-full border border-card shadow-sm">
-                    {(selectedSubjects.length > 0 ? 1 : 0) + (selectedArea !== "All" ? 1 : 0)}
+                {activeFilters.length > 0 && (
+                  <span className="size-4 bg-primary text-white text-[10px] font-bold flex items-center justify-center rounded-full">
+                    {activeFilters.length}
                   </span>
                 )}
               </button>
@@ -404,8 +427,15 @@ const Tutors = () => {
                   <X size={24} />
                 </button>
               </div>
-              <h3 className="hidden lg:flex text-sm font-medium text-foreground mb-4 items-center gap-2">
-                <Filter size={16} /> {t('tutors.filters')}
+              <h3 className="hidden lg:flex text-sm font-semibold text-foreground mb-4 items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Filter size={16} className="text-primary" /> {t('tutors.filters')}
+                </span>
+                {activeFilters.length > 0 && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
+                    {activeFilters.length} active
+                  </span>
+                )}
               </h3>
 
               <div className="space-y-4">
@@ -415,7 +445,7 @@ const Tutors = () => {
                   onValueChange={setSortBy}
                   icon={SlidersHorizontal}
                   options={[
-                    { value: "ratings", label: t('tutors.sort_top_rated') },
+                    { value: "ratings", label: "Highest Rated" },
                     { value: "name-az", label: t('tutors.sort_name_az') },
                     { value: "name-za", label: t('tutors.sort_name_za') },
                     { value: "salary-high", label: t('tutors.sort_fee_high') },
@@ -486,33 +516,60 @@ const Tutors = () => {
                 </div>
               </div>
 
-              {(searchQuery ||
-                sortBy !== "ratings" ||
-                selectedSubjects.length > 0 ||
-                selectedArea !== "All" ||
-                selectedLanguage !== "all" ||
-                selectedGender !== "all" ||
-                selectedMinSalary !== 1000 ||
-                selectedMaxSalary !== 20000) && (
-                <button
-                  onClick={handleClear}
-                  className="w-full mt-6 px-3 py-3 text-sm font-medium text-muted-foreground border border-border rounded-xl hover:bg-background flex items-center justify-center gap-2 transition-colors"
-                >
-                  <X size={16} /> {t('tutors.clear_all')}
-                </button>
-              )}
+              <div className="pt-4 border-t border-border mt-6 space-y-2">
+                {activeFilters.length > 0 && (
+                  <button
+                    onClick={handleClear}
+                    className="w-full px-3 py-2.5 text-xs font-semibold text-muted-foreground border border-border rounded-xl hover:bg-muted hover:text-foreground flex items-center justify-center gap-2 transition-all"
+                  >
+                    <X size={14} /> {t('tutors.clear_all')} ({activeFilters.length})
+                  </button>
+                )}
 
-              <button
-                onClick={() => setIsMobileFiltersOpen(false)}
-                className="w-full mt-4 px-3 py-4 bg-primary text-white rounded-xl font-medium text-sm lg:hidden h-14 shadow-sm active:scale-[0.98] transition-all"
-              >
-                {t('tutors.apply_filters')}
-              </button>
+                <button
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                  className="w-full px-3 py-3 bg-primary text-white rounded-xl font-semibold text-xs lg:hidden shadow-sm active:scale-[0.98] transition-all"
+                >
+                  {t('tutors.apply_filters')}
+                </button>
+              </div>
             </div>
           </aside>
 
           {/* Main Content */}
           <main onScroll={handleMainScroll} className="lg:col-span-3 relative pb-24 md:pb-0 overflow-y-auto custom-scrollbar pr-1">
+
+            {/* Active Filter Chips Bar */}
+            {activeFilters.length > 0 && (
+              <div className="mb-4 flex flex-wrap items-center gap-2 bg-muted/40 p-2.5 rounded-xl border border-border/60">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mr-1">
+                  Active Filters:
+                </span>
+                {activeFilters.map((f) => (
+                  <span
+                    key={f.key}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-card border border-border text-xs font-medium text-foreground shadow-2xs group"
+                  >
+                    {f.label}
+                    <button
+                      type="button"
+                      onClick={f.remove}
+                      className="text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors"
+                      title="Remove filter"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                ))}
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="text-xs text-primary font-semibold hover:underline ml-auto"
+                >
+                  {t('tutors.clear_all')}
+                </button>
+              </div>
+            )}
 
             <div className="md:hidden mb-3 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />

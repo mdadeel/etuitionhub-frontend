@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, Loader2 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -13,6 +13,39 @@ const HireRequestModal = ({ tuition, tutorId, isOpen, onClose }) => {
   const [preferredTime, setPreferredTime] = useState('');
   const [proposedRate, setProposedRate] = useState(tuition?.salary || '');
   const [submitting, setSubmitting] = useState(false);
+
+  // Restore draft from sessionStorage on mount/open
+  useEffect(() => {
+    if (!isOpen) return;
+    try {
+      const savedDraft = sessionStorage.getItem('draft_hire_request');
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed.tutorId === tutorId || parsed.tuitionId === tuition?._id) {
+          if (parsed.message) setMessage(parsed.message);
+          if (Array.isArray(parsed.selectedDays)) setSelectedDays(parsed.selectedDays);
+          if (parsed.preferredTime) setPreferredTime(parsed.preferredTime);
+          if (parsed.proposedRate) setProposedRate(parsed.proposedRate);
+        }
+      }
+    } catch {
+      // Ignore sessionStorage read errors
+    }
+  }, [isOpen, tutorId, tuition?._id]);
+
+  // Persist draft changes
+  useEffect(() => {
+    if (message || selectedDays.length > 0 || preferredTime || proposedRate) {
+      sessionStorage.setItem('draft_hire_request', JSON.stringify({
+        tutorId,
+        tuitionId: tuition?._id,
+        message,
+        selectedDays,
+        preferredTime,
+        proposedRate
+      }));
+    }
+  }, [message, selectedDays, preferredTime, proposedRate, tutorId, tuition?._id]);
 
   const toggleDay = (day) => {
     setSelectedDays(prev => 
@@ -39,6 +72,7 @@ const HireRequestModal = ({ tuition, tutorId, isOpen, onClose }) => {
         },
         proposedRate: proposedRate ? Number(proposedRate) : undefined
       });
+      sessionStorage.removeItem('draft_hire_request');
       toast.success('Request sent — tutor has 48 hours to respond');
       onClose();
     } catch (err) {
