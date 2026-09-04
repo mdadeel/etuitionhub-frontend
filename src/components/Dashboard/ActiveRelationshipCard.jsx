@@ -57,31 +57,31 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
   const isEnded = connection.relationshipStatus === 'completed';
 
   return (
-    <div className="bg-card border border-border rounded-xl p-4 hover:border-primary/20 transition-colors">
-      <div className="flex items-start justify-between gap-4">
+    <div className="bg-card border border-border rounded-xl p-3.5 sm:p-4 hover:border-primary/20 transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
         <div className="flex items-start gap-3 min-w-0 flex-1">
-          <Avatar size="sm" className="size-10 rounded-full shrink-0">
+          <Avatar size="sm" className="size-9 sm:size-10 rounded-full shrink-0">
             <AvatarImage src={photoURL} alt={displayName} />
             <AvatarFallback className="rounded-full">
-              <User className="size-5 text-muted-foreground" />
+              <User className="size-4 sm:size-5 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="font-medium text-foreground">{displayName}</h4>
+              <h4 className="font-semibold text-sm sm:text-base text-foreground">{displayName}</h4>
               <Badge variant={cfg.variant} size="xs">{cfg.label}</Badge>
             </div>
 
             {connection.proposedDetails?.subject && (
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 <BookOpen className="size-3.5 inline mr-1.5" />
                 {connection.proposedDetails.subject}
               </p>
             )}
 
-            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
               {connection.agreedRate && (
-                <span className="tabular-nums">৳{connection.agreedRate}/month</span>
+                <span className="tabular-nums font-medium text-foreground">৳{connection.agreedRate.toLocaleString()}/month</span>
               )}
               {connection.sessionsPerMonth && (
                 <span>{connection.sessionsPerMonth} sessions/mo</span>
@@ -99,54 +99,59 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
         </div>
 
         {!isEnded && (
-          <div className="flex gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 self-end sm:self-start">
             {isTutor && (
               <button
+                type="button"
                 onClick={() => setShowLogModal(true)}
-                className="size-9 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 title="Log Session"
               >
-                <BookOpen className="size-4" />
+                <BookOpen className="size-3.5 sm:size-4" />
               </button>
             )}
 
             <button
+              type="button"
               onClick={() => setShowPrivacy(!showPrivacy)}
-              className="size-9 flex items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+              className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
               title="Privacy Settings"
             >
-              <Settings className="size-4" />
+              <Settings className="size-3.5 sm:size-4" />
             </button>
 
             {isActive && (
               <button
+                type="button"
                 onClick={() => handleAction('/pause', 'Relationship paused', 'pause')}
                 disabled={actionLoading !== null}
-                className="size-9 flex items-center justify-center rounded-lg bg-warning/10 text-warning hover:bg-warning/20 transition-colors disabled:opacity-50"
+                className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-warning/10 text-warning hover:bg-warning/20 transition-colors disabled:opacity-50"
                 title="Pause"
               >
-                <Pause className="size-4" />
+                <Pause className="size-3.5 sm:size-4" />
               </button>
             )}
 
             {isPaused && (
               <button
+                type="button"
                 onClick={() => handleAction('/resume', 'Relationship resumed', 'resume')}
                 disabled={actionLoading !== null}
-                className="size-9 flex items-center justify-center rounded-lg bg-success/10 text-success hover:bg-success/20 transition-colors disabled:opacity-50"
+                className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-success/10 text-success hover:bg-success/20 transition-colors disabled:opacity-50"
                 title="Resume"
               >
-                <Play className="size-4" />
+                <Play className="size-3.5 sm:size-4" />
               </button>
             )}
 
             <button
+              type="button"
               onClick={handleEnd}
               disabled={actionLoading !== null}
-              className="size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50"
+              className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50"
               title="End"
             >
-              <CheckCircle className="size-4" />
+              <CheckCircle className="size-3.5 sm:size-4" />
             </button>
           </div>
         )}

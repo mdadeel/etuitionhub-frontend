@@ -28,7 +28,7 @@ export default function TuitionRecommendationCard({ tuitions = [], subject }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {tuitions.map((post) => {
-                    const displaySalary = post.salary ? `৳${post.salary}/month` : 'Negotiable';
+                    const displaySalary = post.salary ? `৳${post.salary.toLocaleString()}/mo` : 'Negotiable';
                     return (
                         <Link
                             key={post._id}
@@ -38,9 +38,9 @@ export default function TuitionRecommendationCard({ tuitions = [], subject }) {
                                 'hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300',
                             )}
                         >
-                            <div className="flex justify-between items-start w-full">
+                            <div className="flex justify-between items-start gap-2 w-full">
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                                    <p className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                                         {post.class_name ? `${post.class_name} · ` : ''}{post.subject}
                                     </p>
                                     <p className="text-xs font-semibold text-primary/90 mt-0.5">
@@ -48,30 +48,30 @@ export default function TuitionRecommendationCard({ tuitions = [], subject }) {
                                     </p>
                                 </div>
                                 {post.isNewPost && (
-                                    <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider bg-success/10 text-success dark:text-success border border-success/20 px-1.5 py-0.5 rounded-full">
-                                        New Post
+                                    <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider bg-success/10 text-success border border-success/20 px-1.5 py-0.5 rounded-md">
+                                        New
                                     </span>
                                 )}
                             </div>
 
                             <div className="flex items-center justify-between w-full pt-1.5 border-t border-border/40 mt-1">
-                                <div className="flex items-center gap-2 text-[11px] text-muted-foreground max-w-[85%]">
+                                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground min-w-0 flex-1 pr-2">
                                     {post.location && (
-                                        <span className="flex items-center gap-0.5 truncate">
-                                            <MapPin size={9} />
-                                            {post.location.split(',')[0]}
+                                        <span className="flex items-center gap-0.5 truncate max-w-[100px]">
+                                            <MapPin size={10} className="shrink-0 text-primary/70" />
+                                            <span className="truncate">{post.location.split(',')[0]}</span>
                                         </span>
                                     )}
                                     {post.medium && (
                                         <>
-                                            <span>·</span>
-                                            <span className="truncate">{post.medium} medium</span>
+                                            <span className="shrink-0">•</span>
+                                            <span className="truncate capitalize">{post.medium}</span>
                                         </>
                                     )}
                                 </div>
                                 <ArrowRight
                                     size={12}
-                                    className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all"
+                                    className="text-muted-foreground shrink-0 group-hover:text-primary group-hover:translate-x-0.5 transition-all"
                                 />
                             </div>
                         </Link>

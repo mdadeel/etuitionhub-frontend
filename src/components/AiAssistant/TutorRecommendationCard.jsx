@@ -44,26 +44,26 @@ export default function TutorRecommendationCard({ tutors = [], subject, onTrackC
                             to={`/tutor/${tutor._id}`}
                             onClick={() => handleClick(tutor._id)}
                             className={cn(
-                                'group flex items-center gap-3 rounded-lg border border-border bg-card/80 p-2.5',
+                                'group flex items-center gap-2.5 rounded-lg border border-border bg-card/80 p-2.5',
                                 'hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300',
                             )}
                         >
-                            <div className="shrink-0 size-10 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center">
-                                <Avatar size="sm" className="size-10 rounded-lg">
+                            <div className="shrink-0 size-9 sm:size-10 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center">
+                                <Avatar size="sm" className="size-9 sm:size-10 rounded-lg">
                                     <AvatarImage src={tutor.photoURL} alt={tutor.displayName} />
-                                    <AvatarFallback className="text-sm font-heading font-bold rounded-lg">
+                                    <AvatarFallback className="text-xs font-semibold rounded-lg">
                                         {tutor.displayName?.charAt(0)?.toUpperCase() || 'T'}
                                     </AvatarFallback>
                                 </Avatar>
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 max-w-full">
-                                    <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                                    <p className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                                         {tutor.displayName}
                                     </p>
                                     {tutor.isRisingStar && (
-                                        <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-1 py-0.5 rounded">
-                                            Rising Star
+                                        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 px-1 py-0.5 rounded-md">
+                                            Rising
                                         </span>
                                     )}
                                 </div>
@@ -74,14 +74,14 @@ export default function TutorRecommendationCard({ tutors = [], subject, onTrackC
                                             {rating.toFixed(1)}
                                         </span>
                                     ) : (
-                                        <span className="font-semibold">New</span>
+                                        <span className="font-semibold text-foreground">New</span>
                                     )}
                                     {tutor.location && (
                                         <>
-                                            <span>·</span>
-                                            <span className="flex items-center gap-0.5 truncate">
-                                                <MapPin size={9} />
-                                                {tutor.location.split(',')[0]}
+                                            <span className="shrink-0">•</span>
+                                            <span className="flex items-center gap-0.5 truncate max-w-[85px] sm:max-w-[110px]">
+                                                <MapPin size={9} className="shrink-0 text-primary/70" />
+                                                <span className="truncate">{tutor.location.split(',')[0]}</span>
                                             </span>
                                         </>
                                     )}
@@ -89,7 +89,7 @@ export default function TutorRecommendationCard({ tutors = [], subject, onTrackC
                             </div>
                             <ArrowRight
                                 size={14}
-                                className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all"
+                                className="text-muted-foreground shrink-0 group-hover:text-primary group-hover:translate-x-0.5 transition-all"
                             />
                         </Link>
                     );
