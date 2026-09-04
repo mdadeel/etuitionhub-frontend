@@ -108,16 +108,16 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
       </button>
 
       {/* MOBILE COMPACT LAYOUT (sm:hidden) */}
-      <div className="p-4 flex-grow flex flex-col sm:hidden">
-        <div className="flex items-start gap-3">
+      <div className="p-3.5 flex-grow flex flex-col sm:hidden">
+        <div className="flex items-start gap-2.5">
           <div className="relative shrink-0 mt-0.5">
-            <div className="size-10">
+            <div className="size-11">
               <Avatar
                 src={photoURL}
                 alt={displayName}
                 size="md"
                 gender={tutor.gender}
-                className="size-full ring-2 ring-border/60 group-hover:ring-primary/40 transition-all rounded-md"
+                className="size-full ring-2 ring-border/60 group-hover:ring-primary/40 transition-all rounded-lg"
               />
             </div>
             {isVerified && (
@@ -126,17 +126,17 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
               </span>
             )}
           </div>
-          <div className="flex-grow min-w-0 pr-10">
-            <h3 className="font-bold text-[14px] text-foreground tracking-tight line-clamp-1 leading-tight group-hover:text-primary transition-colors">
+          <div className="flex-grow min-w-0 pr-8">
+            <h3 className="font-bold text-[13px] text-foreground tracking-tight line-clamp-1 leading-tight group-hover:text-primary transition-colors">
               <Highlight text={displayName} query={searchQuery} />
             </h3>
-            <p className="text-[11px] text-muted-foreground line-clamp-1 leading-tight mt-0.5" title={qualification}>
+            <p className="text-[10px] text-muted-foreground line-clamp-1 leading-tight mt-0.5" title={qualification}>
               {qualification || "Experienced Tutor"}
             </p>
           </div>
         </div>
 
-        <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground truncate">
+        <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground flex-wrap">
           {rating > 0 && (
             <>
               <span className="flex items-center gap-0.5 shrink-0">
@@ -148,45 +148,47 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           )}
           <span className="flex items-center gap-0.5 shrink-0">
              <MapPin size={10} className="text-primary shrink-0" />
-             <span className="truncate">{(location || "N/A").split(",")[0]}</span>
+             <span className="truncate max-w-[85px]">{(location || "N/A").split(",")[0]}</span>
           </span>
           <span className="shrink-0">·</span>
           <span className="truncate">{experience}</span>
         </div>
 
-        <div className="flex flex-nowrap overflow-hidden gap-1 mt-2">
-          {subjects.slice(0, 2).map((sub) => (
+        {/* Compact Responsive Subject Badges */}
+        <div className="flex flex-wrap gap-1 mt-2">
+          {subjects.slice(0, 3).map((sub) => (
             <span
               key={`sub-mob-${sub}`}
-              className="text-[10px] font-medium px-1.5 py-px rounded bg-muted/60 text-muted-foreground border border-border/40 whitespace-nowrap truncate max-w-[72px]"
+              className="text-[9px] font-medium px-1.5 py-0.5 rounded-md bg-muted/60 text-muted-foreground border border-border/40 truncate max-w-[110px] leading-tight"
               title={sub}
             >
               <Highlight text={sub} query={searchQuery} />
             </span>
           ))}
-          {subjects.length > 2 && (
-            <span className="text-[10px] text-muted-foreground font-bold whitespace-nowrap px-1 py-px rounded bg-muted/30 border border-border/30">
-              +{subjects.length - 2}
+          {subjects.length > 3 && (
+            <span className="text-[9px] text-muted-foreground font-bold px-1.5 py-0.5 rounded-md bg-muted/40 border border-border/30 shrink-0 leading-tight">
+              +{subjects.length - 3}
             </span>
           )}
         </div>
 
-        <div className="mt-2">
-          <TrustBadges tutor={tutor} />
+        {/* Compact Responsive Trust & Verification Metadata */}
+        <div className="mt-1.5">
+          <TrustBadges tutor={tutor} showExperience={false} />
         </div>
 
-        <div className="mt-auto border-t border-border pt-3 mt-3 flex items-center justify-between gap-2">
+        <div className="mt-auto border-t border-border pt-2.5 mt-2.5 flex items-center justify-between gap-2">
           <div className="flex items-baseline gap-0.5 min-w-0">
-            <span className="text-[16px] font-bold text-foreground tracking-tight leading-none truncate">
+            <span className="text-base font-bold text-foreground tracking-tight leading-none truncate">
               ৳{salary.toLocaleString()}
             </span>
-            <span className="text-[11px] text-muted-foreground font-semibold shrink-0">/mo</span>
+            <span className="text-[10px] text-muted-foreground font-semibold shrink-0">/mo</span>
           </div>
           <Button
             type="button"
             variant="primary"
             size="sm"
-            className="font-semibold text-xs px-3.5 h-7.5 pointer-events-auto flex items-center justify-center gap-1 rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95 shrink-0"
+            className="font-semibold text-[11px] px-3 h-7 pointer-events-auto flex items-center justify-center gap-1 rounded-lg shadow-sm hover:shadow transition-all active:scale-95 shrink-0"
             onClick={(e) => {
               if (isBannerPreview) {
                 e.stopPropagation();
@@ -202,12 +204,12 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
 
       {/* DESKTOP VIEW LAYOUT (hidden sm:flex) */}
       <div className="hidden sm:flex flex-col flex-grow">
-        <div className="p-6 flex-grow">
+        <div className="p-5 md:p-6 flex-grow">
           {/* Avatar & Main Credentials Header */}
           <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center gap-1 shrink-0 w-16">
+            <div className="flex flex-col items-center gap-1 shrink-0 w-14 sm:w-16">
               <div className="relative">
-                <div className="size-16">
+                <div className="size-14 sm:size-16">
                   <Avatar
                     src={photoURL}
                     alt={displayName}
@@ -217,8 +219,8 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
                   />
                 </div>
                 {isVerified && (
-                  <span className="absolute -bottom-0.5 -right-0.5 size-5 bg-success text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card" title="Verified Profile">
-                    <Check className="size-3 stroke-[3]" />
+                  <span className="absolute -bottom-0.5 -right-0.5 size-4 sm:size-5 bg-success text-white rounded-full flex items-center justify-center ring-2 ring-white dark:ring-card" title="Verified Profile">
+                    <Check className="size-2.5 sm:size-3 stroke-[3]" />
                   </span>
                 )}
               </div>
@@ -235,8 +237,8 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
                 )}
               </div>
             </div>
-            <div className="flex-1 min-w-0 pr-8">
-              <h3 className="font-bold text-lg text-foreground tracking-tight line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+            <div className="flex-1 min-w-0 pr-6">
+              <h3 className="font-bold text-base md:text-lg text-foreground tracking-tight line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                 <Highlight text={displayName} query={searchQuery} />
               </h3>
               <p className="text-xs text-muted-foreground font-medium mt-0.5 line-clamp-2" title={qualification}>
@@ -246,20 +248,20 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
           </div>
 
           <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
-            {subjects.slice(0, 2).map((sub) => (
+            {subjects.slice(0, 3).map((sub) => (
               <span
                 key={`sub-${sub}`}
-                className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-muted/50 text-muted-foreground border border-border/40 transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary/20"
+                className="text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted/50 text-muted-foreground border border-border/40 transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary/20"
               >
                 <Highlight text={sub} query={searchQuery} />
               </span>
             ))}
-            {subjects.length > 2 && (
+            {subjects.length > 3 && (
               <span
-                className="text-[11px] text-muted-foreground font-bold px-2 py-0.5 cursor-help"
-                title={subjects.slice(2).join(", ")}
+                className="text-[10px] sm:text-[11px] text-muted-foreground font-bold px-2 py-0.5 cursor-help"
+                title={subjects.slice(3).join(", ")}
               >
-                +{subjects.length - 2}
+                +{subjects.length - 3}
               </span>
             )}
           </div>
@@ -280,15 +282,15 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
             </span>
           </div>
 
-          <div className="mt-3 space-y-1.5">
-            <TrustBadges tutor={tutor} />
+          <div className="mt-3">
+            <TrustBadges tutor={tutor} showExperience={false} />
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-6 py-4 bg-muted/10 border-t border-border">
+        <div className="flex items-center justify-between px-5 md:px-6 py-3.5 bg-muted/10 border-t border-border">
           <div>
             <div className="flex items-baseline gap-0.5">
-              <span className="text-xl font-bold text-foreground tracking-tight">
+              <span className="text-lg md:text-xl font-bold text-foreground tracking-tight">
                 ৳{salary.toLocaleString()}
               </span>
               <span className="text-[11px] text-muted-foreground font-semibold">/mo</span>
