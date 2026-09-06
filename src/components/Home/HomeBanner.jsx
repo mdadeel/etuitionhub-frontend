@@ -193,7 +193,7 @@ const handleSearch = (e) => {
                                     </div>
                                     <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                                         <MessageCircle className="size-4 text-primary" />
-                                        <span>{t('nav.dashboard')}</span>
+                                        <span>{t('homeBanner.stat_students')}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                                         <Users className="size-4 text-primary" />

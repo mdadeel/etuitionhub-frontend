@@ -43,7 +43,13 @@ const Login = () => {
         } catch (err) {
             console.error('Login error', err)
             toast.dismiss(toastId)
-            if (err.code === 'auth/user-not-found') {
+            // Firebase Auth errors have an `error.code` like 'auth/wrong-password'.
+            // Backend 401 errors from setJWT have `error.response?.data?.error` with
+            // the specific message (e.g. "Firebase ID token is required for login").
+            const backendError = err.response?.data?.error;
+            if (backendError) {
+                toast.error(backendError);
+            } else if (err.code === 'auth/user-not-found') {
                 toast.error(t('login.error_not_found'))
             } else if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
                 toast.error(t('login.error_wrong_password'))
@@ -60,8 +66,9 @@ const Login = () => {
             const dbUser = await refreshUserFromDB(result.user.email)
             toast.success(t('login.toast_success'))
             navigate(isAdmin(dbUser) ? defaultRouteFor(dbUser) : from, { replace: true })
-        } catch {
-            toast.error(t('login.error_generic'))
+        } catch (err) {
+            const backendError = err.response?.data?.error;
+            toast.error(backendError || t('login.error_generic'));
         }
     }
 

@@ -1,40 +1,38 @@
-import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Link } from "react-router-dom";
+import { ChevronRight, Home } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-/**
- * Reusable breadcrumb navigation for public pages.
- * @param {Array<{ label: string, to?: string }>} items - Breadcrumb items. Last item should not have `to`.
- */
-export default function Breadcrumb({ items, className }) {
-  if (!items || items.length === 0) return null;
+const Breadcrumb = ({ items = [] }) => {
+  if (!items.length) return null;
 
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className={cn(
-        'flex items-center gap-1.5 text-xs text-muted-foreground',
-        className,
-      )}
-    >
-      {items.map((item, idx) => {
-        const isLast = idx === items.length - 1;
-        return (
-          <span key={idx} className="flex items-center gap-1.5">
-            {idx > 0 && <ChevronRight size={10} className="shrink-0" />}
-            {isLast || !item.to ? (
-              <span className="font-medium text-foreground">{item.label}</span>
-            ) : (
-              <Link
-                to={item.to}
-                className="font-medium hover:text-foreground transition-colors"
-              >
-                {item.label}
-              </Link>
-            )}
-          </span>
-        );
-      })}
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-xs text-muted-foreground">
+      <Link
+        to="/"
+        className="flex items-center gap-1 hover:text-foreground transition-colors"
+      >
+        <Home size={13} />
+        <span className="sr-only sm:not-sr-only">Home</span>
+      </Link>
+      {items.map((item, i) => (
+        <span key={i} className="flex items-center gap-1">
+          <ChevronRight size={12} className="text-muted-foreground/50" />
+          {item.to ? (
+            <Link
+              to={item.to}
+              className="hover:text-foreground transition-colors font-medium"
+            >
+              {item.label}
+            </Link>
+          ) : (
+            <span className={cn("font-semibold", i === items.length - 1 ? "text-foreground" : "text-muted-foreground")}>
+              {item.label}
+            </span>
+          )}
+        </span>
+      ))}
     </nav>
   );
-}
+};
+
+export default Breadcrumb;

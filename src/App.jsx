@@ -1,5 +1,5 @@
 import "./app.css";
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -26,6 +26,7 @@ import PrivateRoute from "./components/shared/PrivateRoute";
 import PublicRoute from "./components/shared/PublicRoute";
 import AdminRoute from "./components/shared/AdminRoute";
 const FloatingChat = lazy(() => import("./components/shared/FloatingChat"));
+const CommandPalette = lazy(() => import("./components/shared/CommandPalette"));
 import { cn } from "@/lib/utils";
 import RouteErrorBoundary from "./components/shared/RouteErrorBoundary";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
@@ -139,14 +140,23 @@ const MainContent = ({ children }) => {
   const isSession = pathname.startsWith("/session");
 
   return (
-    <main
-      className={cn(
-        "flex-grow transition-all duration-300",
-        !isDashboard && !isSession ? "pt-14 safe-bottom" : "pt-0",
-      )}
-    >
-      {children}
-    </main>
+    <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:text-sm focus:font-medium focus:shadow-lg"
+      >
+        Skip to main content
+      </a>
+      <main
+        id="main-content"
+        className={cn(
+          "flex-grow transition-all duration-300",
+          !isDashboard && !isSession ? "pt-14 safe-bottom" : "pt-0",
+        )}
+      >
+        {children}
+      </main>
+    </>
   );
 };
 
@@ -178,6 +188,27 @@ const HeartbeatBridge = () => {
   return null;
 };
 
+const CommandPaletteBridge = () => {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setOpen((o) => !o);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  return (
+    <Suspense fallback={null}>
+      <CommandPalette open={open} onOpenChange={setOpen} />
+    </Suspense>
+  );
+};
+
 const AuthenticatedProviders = ({ children }) => {
   const { user } = useAuth();
   if (!user) return children;
@@ -201,6 +232,7 @@ let App = () => {
         <AnonBookmarkMigrationBridge />
         <AuthenticatedProviders>
             <BrowserRouter>
+              <CommandPaletteBridge />
               <SessionExpiryCheck />
             <ScrollToTop />
             <Toaster
@@ -251,7 +283,16 @@ let App = () => {
                   <Route path="/testimonials" element={<RouteErrorBoundary><TestimonialsPage /></RouteErrorBoundary>} />
                   <Route path="/terms" element={<RouteErrorBoundary><Terms /></RouteErrorBoundary>} />
                   <Route path="/privacy" element={<RouteErrorBoundary><Privacy /></RouteErrorBoundary>} />
-                  <Route path="/post-tuition" element={<RouteErrorBoundary><PostTuition /></RouteErrorBoundary>} />
+                  <Route
+                    path="/post-tuition"
+                    element={
+                      <RouteErrorBoundary>
+                        <PrivateRoute>
+                          <PostTuition />
+                        </PrivateRoute>
+                      </RouteErrorBoundary>
+                    }
+                  />
                   <Route path="/become-tutor" element={<RouteErrorBoundary><BecomeTutor /></RouteErrorBoundary>} />
                   <Route path="/organizations" element={<RouteErrorBoundary><OrganizationDirectory /></RouteErrorBoundary>} />
                   <Route path="/organizations/:slug" element={<RouteErrorBoundary><OrganizationDetails /></RouteErrorBoundary>} />
