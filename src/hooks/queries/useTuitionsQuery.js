@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import api from '../../services/api';
 
 const buildParams = (filters = {}) => {
@@ -17,4 +17,5 @@ export const useTuitionsQuery = (filters = {}) =>
             return res.data;
         },
         staleTime: 60_000,
+        placeholderData: keepPreviousData,
     });
