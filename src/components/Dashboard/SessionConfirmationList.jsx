@@ -7,13 +7,29 @@ import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
+import { useAppMutation } from '../../hooks/queries/useAppMutation';
 
 const SessionConfirmationList = () => {
     const [sessions, setSessions] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [acting, setActing] = useState(null);
     const [disputeReason, setDisputeReason] = useState('');
     const [showDisputeFor, setShowDisputeFor] = useState(null);
+
+    const confirmMutation = useAppMutation({
+        mutationFn: (sessionId) => api.patch(`/api/sessions/${sessionId}/confirm`),
+        successMessage: 'Session confirmed',
+        onSuccess: (_, sessionId) => setSessions((prev) => prev.filter((s) => s._id !== sessionId)),
+    });
+
+    const disputeMutation = useAppMutation({
+        mutationFn: ({ sessionId, reason }) => api.patch(`/api/sessions/${sessionId}/dispute`, { reason }),
+        successMessage: 'Session disputed',
+        onSuccess: (_, { sessionId }) => {
+            setSessions((prev) => prev.filter((s) => s._id !== sessionId));
+            setDisputeReason('');
+            setShowDisputeFor(null);
+        },
+    });
 
     const fetchSessions = useCallback(async () => {
         try {
@@ -50,34 +66,10 @@ const SessionConfirmationList = () => {
         return { text: `${h}h ${m}m remaining`, expired: false };
     };
 
-    const handleConfirm = async (sessionId) => {
-        setActing(sessionId);
-        try {
-            await api.patch(`/api/sessions/${sessionId}/confirm`);
-            setSessions(prev => prev.filter(s => s._id !== sessionId));
-            toast.success('Session confirmed');
-        } catch (error) {
-            console.error(error);
-            toast.error(error.response?.data?.error || 'Failed to confirm session');
-        } finally {
-            setActing(null);
-        }
-    };
+    const handleConfirm = (sessionId) => confirmMutation.mutate(sessionId);
 
-    const handleDispute = async (sessionId) => {
-        setActing(sessionId);
-        try {
-            await api.patch(`/api/sessions/${sessionId}/dispute`, { reason: disputeReason });
-            setSessions(prev => prev.filter(s => s._id !== sessionId));
-            setDisputeReason('');
-            setShowDisputeFor(null);
-            toast.success('Session disputed');
-        } catch (error) {
-            console.error(error);
-            toast.error(error.response?.data?.error || 'Failed to dispute session');
-        } finally {
-            setActing(null);
-        }
+    const handleDispute = (sessionId) => {
+        disputeMutation.mutate({ sessionId, reason: disputeReason });
     };
 
     if (loading) {
@@ -130,7 +122,9 @@ const SessionConfirmationList = () => {
                     {sessions.map(session => {
                         const timeInfo = getTimeInfo(session.createdAt);
                         const tutor = session.tutorId;
-                        const isActing = acting === session._id;
+                        const isActing =
+                            (confirmMutation.isPending && confirmMutation.variables === session._id) ||
+                            (disputeMutation.isPending && disputeMutation.variables?.sessionId === session._id);
                         const isDisputing = showDisputeFor === session._id;
 
                         return (

@@ -17,6 +17,8 @@ import EditModal from './EditModal';
 import Pagination from '../shared/Pagination';
 import StatusBadge from '../shared/StatusBadge';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
+import BulkActionBar from './SuperAdmin/BulkActionBar';
+import { useAppMutation } from '../../hooks/queries/useAppMutation';
 
 const ROLE_OPTIONS = [
     { value: '', label: 'All Roles' },
@@ -39,6 +41,13 @@ const DashUsers = () => {
     const [roleFilter, setRoleFilter] = useState('');
     const [locationFilter, setLocationFilter] = useState(null);
 
+    // Bulk action selection
+    const [selectedIds, setSelectedIds] = useState([]);
+    const allSelected = filtered.length > 0 && selectedIds.length === filtered.length;
+    const toggleAll = () => setSelectedIds(allSelected ? [] : filtered.map((u) => u._id));
+    const toggleOne = (id) =>
+        setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
     // Reset page when search or filter changes
     useEffect(() => {
         setPage(1);
@@ -48,6 +57,27 @@ const DashUsers = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+
+    const deleteMutation = useAppMutation({
+        mutationFn: (id) => api.delete(`/api/users/${id}`),
+        onSuccess: loadUsers,
+        errorTitle: 'Delete failed',
+    });
+
+    const roleMutation = useAppMutation({
+        mutationFn: ({ id, role }) => api.patch(`/api/users/${id}`, { role }),
+        successMessage: 'Role updated',
+        onSuccess: loadUsers,
+    });
+
+    const verifyMutation = useAppMutation({
+        mutationFn: ({ id, status }) => {
+            const isVerified = ['verified_basic', 'verified_premium'].includes(status);
+            return api.patch(`/api/users/${id}`, { verificationStatus: status, isVerified, searchVisibility: isVerified });
+        },
+        successMessage: 'Verification updated',
+        onSuccess: loadUsers,
+    });
 
     const userFields = [
         { name: 'displayName', label: 'Full Name', placeholder: 'e.g. Rahim Khan' },
@@ -101,48 +131,23 @@ const DashUsers = () => {
             toast.error('Demo data is read-only');
             return;
         }
-
-        try {
-            await api.delete(`/api/users/${id}`);
-            toast.success('User deleted');
-            await loadUsers();
-        } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to delete user');
-        }
+        deleteMutation.mutate(id);
     };
 
-    const handleRoleChange = async (id, role) => {
-        const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
+    const handleRoleChange = (id, role) => {
         if (!isValidId(id)) {
             toast.error('Demo data is read-only');
             return;
         }
-
-        try {
-            await api.patch(`/api/users/${id}`, { role });
-            toast.success(`Role updated to ${role}`);
-            await loadUsers();
-        } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to update role');
-        }
+        roleMutation.mutate({ id, role });
     };
 
-    const handleVerificationChange = async (id, status) => {
-        const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
+    const handleVerificationChange = (id, status) => {
         if (!isValidId(id)) {
             toast.error('Demo data is read-only');
             return;
         }
-
-        const isVerified = ['verified_basic', 'verified_premium'].includes(status);
-        
-        try {
-            await api.patch(`/api/users/${id}`, { verificationStatus: status, isVerified, searchVisibility: isVerified });
-            toast.success(`Verification updated to ${status}`);
-            await loadUsers();
-        } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to update verification');
-        }
+        verifyMutation.mutate({ id, status });
     };
 
     const handleEditClick = (user) => {
@@ -223,10 +228,39 @@ const DashUsers = () => {
                 <LocationFilter value={locationFilter} onChange={setLocationFilter} />
             </DashboardFilterBar>
 
+            <BulkActionBar
+                selectedIds={selectedIds}
+                total={filtered.length}
+                onClear={() => setSelectedIds([])}
+                onAction={() => { loadUsers(); setSelectedIds([]); }}
+            />
+
             <DataTable
                 rowKey={(user) => user._id}
                 data={filtered}
                 columns={[
+                    {
+                        key: '_select',
+                        label: (
+                            <input
+                                type="checkbox"
+                                checked={allSelected}
+                                onChange={toggleAll}
+                                className="size-4 accent-primary cursor-pointer"
+                                aria-label="Select all"
+                            />
+                        ),
+                        render: (_, user) => (
+                            <input
+                                type="checkbox"
+                                checked={selectedIds.includes(user._id)}
+                                onChange={(e) => { e.stopPropagation(); toggleOne(user._id); }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="size-4 accent-primary cursor-pointer"
+                                aria-label={`Select ${user.displayName}`}
+                            />
+                        ),
+                    },
                     {
                         key: 'displayName',
                         label: 'User',

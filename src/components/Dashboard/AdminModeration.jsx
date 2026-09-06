@@ -8,6 +8,7 @@ import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
 import EmptyState from '../shared/EmptyState';
 import { cn } from '@/lib/utils';
+import { useAppMutation } from '../../hooks/queries/useAppMutation';
 
 const TABS = [
     { id: 'pending', label: 'Pending Review' },
@@ -18,7 +19,6 @@ const AdminModeration = () => {
     const [activeTab, setActiveTab] = useState('pending');
     const [tutors, setTutors] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState(null);
 
     const fetchTutors = async (tab) => {
         setLoading(true);
@@ -38,36 +38,44 @@ const AdminModeration = () => {
         fetchTutors(activeTab);
     }, [activeTab]);
 
-    const handleAction = async (tutorId, action) => {
-        setActionLoading(`${action}-${tutorId}`);
-        try {
-            if (action === 'approve') {
-                await api.post(`/api/admin/tutors/${tutorId}/approve`);
-                toast.success('Tutor approved successfully');
-            } else if (action === 'reject') {
-                const reason = prompt('Enter rejection reason:');
-                if (!reason || !reason.trim()) {
-                    setActionLoading(null);
-                    return;
-                }
-                await api.post(`/api/admin/tutors/${tutorId}/reject`, { reason: reason.trim() });
-                toast.success('Tutor rejected');
-            } else if (action === 'resubmission') {
-                const reason = prompt('Enter what needs to be updated:');
-                if (!reason || !reason.trim()) {
-                    setActionLoading(null);
-                    return;
-                }
-                await api.post(`/api/admin/tutors/${tutorId}/request-resubmission`, { reason: reason.trim() });
-                toast.success('Resubmission requested');
-            }
-            setTutors(tutors.filter(t => t._id !== tutorId));
-        } catch (error) {
-            console.error('Action failed', error);
-            toast.error(error.response?.data?.error || 'Failed to process action');
-        } finally {
-            setActionLoading(null);
+    const approveMutation = useAppMutation({
+        mutationFn: (tutorId) => api.post(`/api/admin/tutors/${tutorId}/approve`),
+        successMessage: 'Tutor approved',
+        onSuccess: (_, tutorId) => setTutors((prev) => prev.filter((t) => t._id !== tutorId)),
+    });
+
+    const rejectMutation = useAppMutation({
+        mutationFn: ({ tutorId, reason }) => api.post(`/api/admin/tutors/${tutorId}/reject`, { reason }),
+        successMessage: 'Tutor rejected',
+        onSuccess: (_, { tutorId }) => setTutors((prev) => prev.filter((t) => t._id !== tutorId)),
+    });
+
+    const resubmitMutation = useAppMutation({
+        mutationFn: ({ tutorId, reason }) =>
+            api.post(`/api/admin/tutors/${tutorId}/request-resubmission`, { reason }),
+        successMessage: 'Resubmission requested',
+        onSuccess: (_, { tutorId }) => setTutors((prev) => prev.filter((t) => t._id !== tutorId)),
+    });
+
+    const handleAction = (tutorId, action) => {
+        if (action === 'approve') {
+            approveMutation.mutate(tutorId);
+        } else if (action === 'reject') {
+            const reason = prompt('Enter rejection reason:');
+            if (!reason?.trim()) return;
+            rejectMutation.mutate({ tutorId, reason: reason.trim() });
+        } else if (action === 'resubmission') {
+            const reason = prompt('Enter what needs to be updated:');
+            if (!reason?.trim()) return;
+            resubmitMutation.mutate({ tutorId, reason: reason.trim() });
         }
+    };
+
+    const isLoading = (action, tutorId) => {
+        if (action === 'approve') return approveMutation.isPending && approveMutation.variables === tutorId;
+        if (action === 'reject') return rejectMutation.isPending && rejectMutation.variables?.tutorId === tutorId;
+        if (action === 'resubmission') return resubmitMutation.isPending && resubmitMutation.variables?.tutorId === tutorId;
+        return false;
     };
 
     if (loading) {
@@ -213,9 +221,9 @@ const AdminModeration = () => {
                                     <button
                                         className="flex-1 h-10 rounded-lg border border-primary bg-primary text-primary-foreground text-[9px] font-label font-semibold uppercase tracking-widest hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                         onClick={() => handleAction(tutor._id, 'approve')}
-                                        disabled={actionLoading === `approve-${tutor._id}`}
+                                        disabled={isLoading('approve', tutor._id)}
                                     >
-                                        {actionLoading === `approve-${tutor._id}` ? (
+                                        {isLoading('approve', tutor._id) ? (
                                             <RefreshCw size={12} className="animate-spin" />
                                         ) : (
                                             <CheckCircle size={12} />
@@ -225,9 +233,9 @@ const AdminModeration = () => {
                                     <button
                                         className="flex-1 h-10 rounded-lg text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-950/30 text-[9px] font-label font-semibold uppercase tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                         onClick={() => handleAction(tutor._id, 'reject')}
-                                        disabled={actionLoading === `reject-${tutor._id}`}
+                                        disabled={isLoading('reject', tutor._id)}
                                     >
-                                        {actionLoading === `reject-${tutor._id}` ? (
+                                        {isLoading('reject', tutor._id) ? (
                                             <RefreshCw size={12} className="animate-spin" />
                                         ) : (
                                             <XCircle size={12} />
@@ -237,9 +245,9 @@ const AdminModeration = () => {
                                     <button
                                         className="h-10 px-3 rounded-lg text-amber-600 border border-amber-200 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-[9px] font-label font-semibold uppercase tracking-widest transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                         onClick={() => handleAction(tutor._id, 'resubmission')}
-                                        disabled={actionLoading === `resubmission-${tutor._id}`}
+                                        disabled={isLoading('resubmission', tutor._id)}
                                     >
-                                        <RefreshCw size={12} className={actionLoading === `resubmission-${tutor._id}` ? 'animate-spin' : ''} />
+                                        <RefreshCw size={12} className={isLoading('resubmission', tutor._id) ? 'animate-spin' : ''} />
                                         Revise
                                     </button>
                                 </div>
