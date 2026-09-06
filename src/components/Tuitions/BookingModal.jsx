@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '../ui/button';
 import { Calendar, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAppMutation } from '../../hooks/queries/useAppMutation';
 
 export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
     const { user, dbUser } = useAuth();
@@ -27,24 +28,23 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
         }
     }, [isOpen, tutorId, selectedDate]);
 
-    const handleConfirm = async () => {
-        try {
-            await api.post('/api/bookings', {
-                tutorId,
-                tutorName,
-                studentEmail: user?.email || dbUser?.email,
-                subject: 'Trial Session',
-                scheduledAt: selectedDate || new Date(),
-                duration: 60,
-                status: 'pending'
-            });
+    const bookMutation = useAppMutation({
+        mutationFn: (payload) => api.post('/api/bookings', payload),
+        successMessage: 'Booking created! Complete payment from your dashboard.',
+        onSuccess: () => setStep(3),
+        errorTitle: 'Booking failed',
+    });
 
-            setStep(3);
-            toast.success('Booking created! Complete payment from your dashboard.');
-        } catch (err) {
-            console.error(err);
-            toast.error(err.response?.data?.error || 'Failed to create booking');
-        }
+    const handleConfirm = () => {
+        bookMutation.mutate({
+            tutorId,
+            tutorName,
+            studentEmail: user?.email || dbUser?.email,
+            subject: 'Trial Session',
+            scheduledAt: selectedDate || new Date(),
+            duration: 60,
+            status: 'pending',
+        });
     };
 
     return (
@@ -104,10 +104,10 @@ export default function BookingModal({ isOpen, onClose, tutorId, tutorName }) {
                     <div className="py-4">
                         <p className="mb-4 text-sm text-muted-foreground">You have selected <span className="font-semibold text-foreground">{selectedSlot?.startTime} to {selectedSlot?.endTime}</span>. Confirm your booking:</p>
                         <div className="flex flex-col gap-3 mt-6">
-                            <Button className="bg-primary hover:bg-primary/90 text-white w-full" onClick={handleConfirm}>
-                                Confirm Booking
+                            <Button className="bg-primary hover:bg-primary/90 text-white w-full" onClick={handleConfirm} disabled={bookMutation.isPending}>
+                                {bookMutation.isPending ? 'Booking…' : 'Confirm Booking'}
                             </Button>
-                            <Button variant="ghost" onClick={() => setStep(1)} className="w-full mt-2">Back</Button>
+                            <Button variant="ghost" onClick={() => setStep(1)} className="w-full mt-2" disabled={bookMutation.isPending}>Back</Button>
                         </div>
                     </div>
                 )}

@@ -8,6 +8,7 @@ import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import ImportantMails from './ImportantMails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useAppMutation } from '../../hooks/queries/useAppMutation';
 
 const statusConfig = {
   pending: { variant: 'warning', label: 'Pending' },
@@ -26,7 +27,6 @@ const HireRequests = () => {
   const [counterModal, setCounterModal] = useState({ open: false, requestId: null, originalRate: 0 });
   const [counterRate, setCounterRate] = useState('');
   const [counterMessage, setCounterMessage] = useState('');
-  const [submittingCounter, setSubmittingCounter] = useState(false);
   const navigate = useNavigate();
 
   const [now, setNow] = useState(() => Date.now());
@@ -45,61 +45,44 @@ const HireRequests = () => {
       .finally(() => setLoading(false));
   }, [tab]);
 
-  const handleAccept = async (id) => {
-    try {
-      await api.patch(`/api/hire-requests/${id}/accept`);
-      toast.success('Request accepted — connection created');
-      setRequests(prev => prev.map(r => r._id === id ? { ...r, status: 'accepted' } : r));
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to accept');
-    }
-  };
+  const acceptMutation = useAppMutation({
+    mutationFn: (id) => api.patch(`/api/hire-requests/${id}/accept`),
+    successMessage: 'Request accepted — connection created',
+    onSuccess: (_, id) => setRequests((prev) => prev.map((r) => (r._id === id ? { ...r, status: 'accepted' } : r))),
+  });
 
-  const handleDecline = async (id) => {
-    try {
-      await api.patch(`/api/hire-requests/${id}/decline`);
-      toast.success('Request declined');
-      setRequests(prev => prev.map(r => r._id === id ? { ...r, status: 'declined' } : r));
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to decline');
-    }
-  };
+  const declineMutation = useAppMutation({
+    mutationFn: (id) => api.patch(`/api/hire-requests/${id}/decline`),
+    successMessage: 'Request declined',
+    onSuccess: (_, id) => setRequests((prev) => prev.map((r) => (r._id === id ? { ...r, status: 'declined' } : r))),
+  });
 
-  const handleCounter = async () => {
-    if (!counterRate || Number(counterRate) <= 0) {
-      toast.error('Please enter a valid counter rate');
-      return;
-    }
-    setSubmittingCounter(true);
-    try {
-      await api.patch(`/api/hire-requests/${counterModal.requestId}/counter`, {
-        counterRate: Number(counterRate),
-        counterMessage
-      });
-      toast.success('Counter-offer sent');
-      setRequests(prev => prev.map(r =>
-        r._id === counterModal.requestId
-          ? { ...r, status: 'countered', counterRate: Number(counterRate), counterMessage }
-          : r
+  const counterMutation = useAppMutation({
+    mutationFn: ({ requestId, rate, message }) =>
+      api.patch(`/api/hire-requests/${requestId}/counter`, { counterRate: rate, counterMessage: message }),
+    successMessage: 'Counter-offer sent',
+    onSuccess: (_, { requestId, rate, message }) => {
+      setRequests((prev) => prev.map((r) =>
+        r._id === requestId ? { ...r, status: 'countered', counterRate: rate, counterMessage: message } : r
       ));
       setCounterModal({ open: false, requestId: null, originalRate: 0 });
       setCounterRate('');
       setCounterMessage('');
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to send counter');
-    } finally {
-      setSubmittingCounter(false);
-    }
-  };
+    },
+  });
 
-  const handleCancel = async (id) => {
-    try {
-      await api.delete(`/api/hire-requests/${id}`);
-      toast.success('Request cancelled');
-      setRequests(prev => prev.filter(r => r._id !== id));
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to cancel');
+  const cancelMutation = useAppMutation({
+    mutationFn: (id) => api.delete(`/api/hire-requests/${id}`),
+    successMessage: 'Request cancelled',
+    onSuccess: (_, id) => setRequests((prev) => prev.filter((r) => r._id !== id)),
+  });
+
+  const handleCounter = () => {
+    if (!counterRate || Number(counterRate) <= 0) {
+      toast.error('Please enter a valid counter rate');
+      return;
     }
+    counterMutation.mutate({ requestId: counterModal.requestId, rate: Number(counterRate), message: counterMessage });
   };
 
   const handleViewProfile = (req) => {
@@ -326,8 +309,8 @@ const HireRequests = () => {
               setCounterRate('');
               setCounterMessage('');
             }}>Cancel</Button>
-            <Button onClick={handleCounter} disabled={submittingCounter || !counterRate}>
-              {submittingCounter ? 'Sending…' : 'Send Counter'}
+            <Button onClick={handleCounter} disabled={counterMutation.isPending || !counterRate}>
+              {counterMutation.isPending ? 'Sending…' : 'Send Counter'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -24,7 +24,6 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(initialIsSaved === true);
-  const [saving, setSaving] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
@@ -37,22 +36,20 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
       setShowLoginModal(true);
       return;
     }
-    setSaving(true);
+    const wasSaved = isSaved;
+    setIsSaved(!wasSaved); // optimistic — instant feedback
     try {
-      if (isSaved) {
+      if (wasSaved) {
         await api.delete(`/api/bookmarks/${tutor._id}`);
-        setIsSaved(false);
         toast.success("Tutor removed");
       } else {
         await api.post(`/api/bookmarks/${tutor._id}`);
-        setIsSaved(true);
         toast.success("Tutor saved to your list");
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setIsSaved(wasSaved); // revert on error
       toast.error("Could not save tutor");
     }
-    setSaving(false);
   };
 
   if (!tutor) return null;
@@ -94,7 +91,6 @@ const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, init
       <button
         type="button"
         onClick={handleBookmark}
-        disabled={saving}
         className="absolute top-2 right-2 z-10 size-11 flex items-center justify-center rounded-full text-muted-foreground transition-all duration-200"
         title={isSaved ? "Unsave" : "Save"}
         aria-label={isSaved ? "Unsave tutor" : "Save tutor"}

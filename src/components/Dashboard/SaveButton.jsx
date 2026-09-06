@@ -29,7 +29,7 @@ const SaveButton = ({ type, id, isAuthenticated, size = 'md', className }) => {
     return () => { cancelled = true; };
   }, [id, isAuthenticated, checkPath, type]);
 
-  const toggle = async (e) => {
+  const toggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!id) return;
@@ -39,12 +39,15 @@ const SaveButton = ({ type, id, isAuthenticated, size = 'md', className }) => {
       toast.success(saved ? t('save.removed_anon') : t('save.added_anon'));
       return;
     }
-    try {
-      if (saved) { await api.delete(mutationPath); setSaved(false); toast.success(t('save.removed')); }
-      else { await api.post(mutationPath); setSaved(true); toast.success(t('save.added')); }
-    } catch (err) {
-      toast.error(err.response?.data?.error || t('save.failed'));
-    }
+    const wasSaved = saved;
+    setSaved(!wasSaved); // optimistic
+    const method = wasSaved ? 'delete' : 'post';
+    api[method](mutationPath)
+      .then(() => toast.success(wasSaved ? t('save.removed') : t('save.added')))
+      .catch(() => {
+        setSaved(wasSaved); // revert on error
+        toast.error(t('save.failed'));
+      });
   };
 
   const iconCls = size === 'sm' ? 'size-4' : size === 'lg' ? 'size-6' : 'size-5';
