@@ -45,9 +45,41 @@
       "per_month": "/mo"
     },
     "home": {
-      "become_tutor_title": "Are you a tutor?",
-      "become_tutor_desc": "Join 2,500+ verified tutors across Bangladesh",
-      "become_tutor_btn": "Apply now"
+      "become_tutor_title": "Are you an educator or university student?",
+      "become_tutor_desc": "Join 15,000+ verified tutors teaching students across Bangladesh. Free registration & direct earnings.",
+      "become_tutor_btn": "Apply as Tutor",
+      "stat_caption": "Proven Impact & Transparent Standards",
+      "stat_caption_desc": "Empowering students across Bangladesh with verified tutors, academic mentorship, and intelligent study tools.",
+      "stat_tutors_val": "15,000+",
+      "stat_tutors_label": "Verified Tutors Registered",
+      "stat_students_val": "50,000+",
+      "stat_students_label": "Students Mentored",
+      "stat_matches_val": "98%",
+      "stat_matches_label": "Successful Matches",
+      "stat_response_val": "< 15 min",
+      "stat_response_label": "Avg. Response Time",
+      "stat_districts_val": "64",
+      "stat_districts_label": "Districts Covered",
+      "stat_rating_val": "4.8 / 5",
+      "stat_rating_label": "Parent Satisfaction Score",
+      "faq": {
+        "badge": "Common Questions",
+        "title": "Frequently Asked Questions by Parents",
+        "heading": "Frequently Asked Questions by Parents",
+        "subheading": "Everything you need to know about tutor vetting, safety, fees, and trial sessions.",
+        "q1": "How does eTuitionBD verify tutors?",
+        "a1": "Every tutor must submit their National ID (NID), student ID or university degree certificate, and contact details. Our team manually verifies documents before profile activation.",
+        "q2": "How quickly can I find a tutor for my child?",
+        "a2": "You can browse and message verified tutors directly. Most tutors respond within 15 to 30 minutes, allowing you to finalize schedules quickly.",
+        "q3": "Can I request home tutoring in my specific neighborhood?",
+        "a3": "Yes! You can filter tutors specifically for Home Tutoring in your exact area across Dhaka, Chattogram, and all 64 districts.",
+        "q4": "Do you offer online 1-on-1 tutoring?",
+        "a4": "Yes, thousands of verified tutors provide online tuition with digital whiteboards, screen sharing, and personalized study schedules.",
+        "q5": "What are the platform fees for parents?",
+        "a5": "Finding and contacting tutors is 100% free for parents. There are zero agency commissions or hidden charges.",
+        "q6": "Can I replace a tutor if my child is not satisfied?",
+        "a6": "Yes. If a tutor is not the right fit after the initial sessions, our support team will help you find a suitable replacement immediately."
+      }
     },
     "tuitions": {
       "seo_title": "Tuition Jobs - Find Teaching Opportunities",
@@ -250,7 +282,8 @@
       "error_tx_required": "Transaction ID required",
       "error_sender_required": "Sender number required",
       "error_submit": "Payment submission failed",
-      "success_submitted": "Payment submitted for verification"
+      "success_submitted": "Payment submitted for verification",
+      "upload_failed": "Screenshot upload failed — your payment was still submitted."
     },
     "student": {
       "hello": "Hello, {{name}}",
@@ -471,44 +504,9 @@
       "block2_f3_label": "Replacement Guarantee",
       "block2_f3_note": "Switch tutors anytime if not 100% satisfied",
       "block2_f4_label": "Secure Payments",
-      "block2_f4_note": "bKash, Nagad & direct bank options"
-    },
-    "home": {
-      "become_tutor_title": "Are you an educator or university student?",
-      "become_tutor_desc": "Join 15,000+ verified tutors teaching students across Bangladesh. Free registration & direct earnings.",
-      "become_tutor_btn": "Apply as Tutor",
-      "stat_caption": "Proven Impact & Transparent Standards",
-      "stat_caption_desc": "Empowering students across Bangladesh with verified tutors, academic mentorship, and intelligent study tools.",
-      "stat_tutors_val": "15,000+",
-      "stat_tutors_label": "Verified Tutors Registered",
-      "stat_students_val": "50,000+",
-      "stat_students_label": "Students Mentored",
-      "stat_matches_val": "98%",
-      "stat_matches_label": "Successful Matches",
-      "stat_response_val": "< 15 min",
-      "stat_response_label": "Avg. Response Time",
-      "stat_districts_val": "64",
-      "stat_districts_label": "Districts Covered",
-      "stat_rating_val": "4.8 / 5",
-      "stat_rating_label": "Parent Satisfaction Score",
-      "faq": {
-        "badge": "Common Questions",
-        "title": "Frequently Asked Questions by Parents",
-        "heading": "Frequently Asked Questions by Parents",
-        "subheading": "Everything you need to know about tutor vetting, safety, fees, and trial sessions.",
-        "q1": "How does eTuitionBD verify tutors?",
-        "a1": "Every tutor must submit their National ID (NID), student ID or university degree certificate, and contact details. Our team manually verifies documents before profile activation.",
-        "q2": "How quickly can I find a tutor for my child?",
-        "a2": "You can browse and message verified tutors directly. Most tutors respond within 15 to 30 minutes, allowing you to finalize schedules quickly.",
-        "q3": "Can I request home tutoring in my specific neighborhood?",
-        "a3": "Yes! You can filter tutors specifically for Home Tutoring in your exact area across Dhaka, Chattogram, and all 64 districts.",
-        "q4": "Do you offer online 1-on-1 tutoring?",
-        "a4": "Yes, thousands of verified tutors provide online tuition with digital whiteboards, screen sharing, and personalized study schedules.",
-        "q5": "What are the platform fees for parents?",
-        "a5": "Finding and contacting tutors is 100% free for parents. There are zero agency commissions or hidden charges.",
-        "q6": "Can I replace a tutor if my child is not satisfied?",
-        "a6": "Yes. If a tutor is not the right fit after the initial sessions, our support team will help you find a suitable replacement immediately."
-      }
+      "block2_f4_note": "bKash, Nagad & direct bank options",
+      "block3_title": "Ongoing Support & Progress",
+      "block3_desc": "We don't disappear after the first class. Track sessions, resolve issues, and ensure consistent academic progress."
     },
     "faq": {
       "badge": "Common Questions",

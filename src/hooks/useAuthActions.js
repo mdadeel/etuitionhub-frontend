@@ -93,6 +93,11 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             return result;
         } catch (error) {
             setLoading(false);
+            // Surface backend auth errors (e.g. MISSING_ID_TOKEN, INVALID_TOKEN)
+            // so the caller can show a specific message instead of a Firebase error.
+            if (error.response?.status === 401) {
+                throw new Error(error.response.data?.error || 'Login failed');
+            }
             throw error;
         }
     };
@@ -113,6 +118,9 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             return dbUser;
         } catch (error) {
             setLoading(false);
+            if (error.response?.status === 401) {
+                throw new Error(error.response.data?.error || 'Login failed');
+            }
             throw error;
         }
     };
@@ -135,6 +143,9 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
             return result;
         } catch (error) {
             setLoading(false);
+            if (error.response?.status === 401) {
+                throw new Error(error.response.data?.error || 'Login failed');
+            }
             throw error;
         }
     };

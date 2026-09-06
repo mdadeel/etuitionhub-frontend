@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import { useRealtimeStore } from '../store/realtimeStore';
 import { queryClient } from '../lib/queryClient';
 import { useAuth } from '../contexts/AuthContext';
-import API_URL from '../config/api';
+import API_URL, { SOCKET_URL } from '../config/api';
 
 let socketRef = null;
 
@@ -16,10 +16,11 @@ const useSocketEvents = () => {
 
         if (!user || socketRef) return;
 
-        const backendUrl = API_URL;
-        if (backendUrl.includes('vercel')) return undefined;
+        // Use standalone Socket.IO service in production; embedded in dev.
+        const socketUrl = SOCKET_URL || API_URL;
+        if (socketUrl.includes('vercel')) return undefined;
 
-        const s = io(backendUrl, {
+        const s = io(socketUrl, {
             withCredentials: true,
             transports: ['polling', 'websocket'],
             reconnectionAttempts: 3,

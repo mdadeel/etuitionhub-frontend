@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getSocket } from './useSocketEvents';
-import API_URL from '../config/api';
+import API_URL, { SOCKET_URL } from '../config/api';
 
 const useChatSocket = (user, dbUser, fetchConversations) => {
     const [socket, setSocket] = useState(null);
@@ -8,31 +8,32 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
     const [typingUsers, setTypingUsers] = useState(new Set());
     const socketRef = useRef(null);
 
-    // Poll online status every 30s — Vercel-only fallback
+    // Poll online status every 30s — Vercel-only fallback (standalone socket server doesn't need this)
     useEffect(() => {
         if (!user) return;
-        const backendUrl = API_URL;
-        if (!backendUrl.includes('vercel')) return;
-        const fetchOnline = async () => {
-            try {
-                const res = await import('../services/api').then(m => m.default.get('/api/users/online'));
-                const ids = res.data.online.map(u => u._id.toString());
-                setOnlineUsers(new Set(ids));
-            } catch {
-                // Silently fail — online status is non-critical UX
-            }
-        };
-        fetchOnline();
-        const interval = setInterval(fetchOnline, 30000);
-        return () => clearInterval(interval);
+        const socketUrl = SOCKET_URL || API_URL;
+        if (socketUrl.includes('vercel')) {
+            const fetchOnline = async () => {
+                try {
+                    const res = await import('../services/api').then(m => m.default.get('/api/users/online'));
+                    const ids = res.data.online.map(u => u._id.toString());
+                    setOnlineUsers(new Set(ids));
+                } catch {
+                    // Silently fail — online status is non-critical UX
+                }
+            };
+            fetchOnline();
+            const interval = setInterval(fetchOnline, 30000);
+            return () => clearInterval(interval);
+        }
     }, [user]);
 
-    // Reuse the existing socket from useSocketEvents instead of creating a duplicate
+    // Reuse the existing socket from useSocketEvents instead of creating a duplicate.
+    // Socket connection is managed by useSocketEvents — we just attach listeners here.
     useEffect(() => {
         if (!user) return;
-
-        const backendUrl = API_URL;
-        if (backendUrl.includes('vercel')) return;
+        const socketUrl = SOCKET_URL || API_URL;
+        if (socketUrl.includes('vercel')) return;
 
         const existingSocket = getSocket();
         if (!existingSocket) return;

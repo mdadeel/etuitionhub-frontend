@@ -41,7 +41,10 @@ const useSessionManager = () => {
     const setJWT = useCallback(async (email, firebaseUser) => {
         if (!email) return;
         try {
-            const idToken = firebaseUser ? await firebaseUser.getIdToken() : null;
+            // Force-refresh the token so we always send a fresh, valid ID token
+            // to the backend — cached tokens may be expired and would cause
+            // confusing "Invalid Firebase ID token" errors.
+            const idToken = firebaseUser ? await firebaseUser.getIdToken(true) : null;
             // Server sets httpOnly cookie via Set-Cookie header — no client-side cookie needed.
             await api.post('/api/auth/jwt', {
                 email,
@@ -50,7 +53,14 @@ const useSessionManager = () => {
                 photoURL: firebaseUser?.photoURL || ''
             });
         } catch (error) {
-            toast.error('Authentication failed. Please try again.');
+            // Distinguish backend auth errors from network errors so the user
+            // gets a specific message instead of a generic "try again".
+            const backendError = error.response?.data?.error;
+            if (backendError && error.response?.status === 401) {
+                toast.error(backendError);
+            } else {
+                toast.error('Authentication failed. Please try again.');
+            }
             throw error;
         }
     }, []);
