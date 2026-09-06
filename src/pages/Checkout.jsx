@@ -71,6 +71,7 @@ const Checkout = () => {
         notes: ''
     });
     const [screenshotFile, setScreenshotFile] = useState(null);
+    const [uploadProgress, setUploadProgress] = useState(null); // null = not uploading
     const [demoMode, setDemoMode] = useState(false);
     const [dirty, setDirty] = useState(false);
 
@@ -173,15 +174,21 @@ const Checkout = () => {
 
                 // Upload screenshot if selected
                 if (screenshotFile && paymentId) {
+                    const fd = new FormData();
+                    fd.append('screenshot', screenshotFile);
+                    fd.append('paymentId', paymentId);
+                    setUploadProgress(0);
                     try {
-                        const fd = new FormData();
-                        fd.append('screenshot', screenshotFile);
-                        fd.append('paymentId', paymentId);
                         await api.post('/api/upload/payment-screenshot', fd, {
-                            headers: { 'Content-Type': 'multipart/form-data' }
+                            headers: { 'Content-Type': 'multipart/form-data' },
+                            onUploadProgress: (e) => {
+                                if (e.total) setUploadProgress(Math.round((e.loaded / e.total) * 100));
+                            },
                         });
                     } catch {
-                        // Screenshot upload failed — payment still submitted
+                        toast.error(t('checkout.upload_failed') || 'Screenshot upload failed — your payment was still submitted.');
+                    } finally {
+                        setUploadProgress(null);
                     }
                 }
 
@@ -347,9 +354,22 @@ const Checkout = () => {
                                         />
                                     </label>
                                     {screenshotFile && (
-                                        <div className="mt-3 flex items-center gap-2 text-xs text-success">
-                                            <CheckCircle2 size={12} />
-                                            <span>{screenshotFile.name} ({(screenshotFile.size / 1024).toFixed(0)} KB)</span>
+                                        <div className="mt-3 flex flex-col gap-2 text-xs">
+                                            <div className="flex items-center gap-2 text-success">
+                                                <CheckCircle2 size={12} />
+                                                <span>{screenshotFile.name} ({(screenshotFile.size / 1024).toFixed(0)} KB)</span>
+                                            </div>
+                                            {uploadProgress !== null && (
+                                                <div className="space-y-1">
+                                                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-primary rounded-full transition-all duration-300"
+                                                            style={{ width: `${uploadProgress}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-muted-foreground">Uploading… {uploadProgress}%</span>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
