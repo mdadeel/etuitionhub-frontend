@@ -130,9 +130,19 @@ function buildOrgMenu(orgContext, hasPermission) {
   return items;
 }
 
-export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasPermission }) {
+export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasPermission, currentPath }) {
   if (globalRole === 'super_admin') {
-    return [
+    // When inside an organization workspace, render the org workspace menu
+    // with a dedicated link to switch back to the platform admin portal.
+    if (currentPath?.startsWith('/dashboard/org') && orgContext) {
+      return [
+        { path: "/super-admin", label: "← Platform Admin", icon: ShieldCheck, group: "Portal" },
+        ...buildOrgMenu(orgContext, hasPermission)
+      ];
+    }
+
+    // Default Super Admin menu for /super-admin and platform-level routes
+    const items = [
       { path: "/super-admin", label: "Overview", icon: LayoutDashboard, group: "Platform" },
       { path: "/super-admin/organizations", label: "Organizations", icon: Users, group: "Platform" },
       { path: "/super-admin/analytics", label: "Analytics", icon: History, group: "Platform" },
@@ -148,8 +158,18 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
       { path: "/super-admin/audit-logs", label: "Audit Logs", icon: History, group: "Operations" },
       { path: "/super-admin/testimonials", label: "Testimonials", icon: Star, group: "Operations" },
       { path: "/dashboard/disputes", label: "Disputes", icon: Scale, group: "Operations" },
-      ...(orgContext ? buildOrgMenu(orgContext, hasPermission) : []),
     ];
+
+    if (orgContext) {
+      items.push({
+        path: `/dashboard/org/${orgContext.orgId || orgContext.slug}`,
+        label: `→ ${orgContext.name}`,
+        icon: LayoutDashboard,
+        group: "Organization Workspace"
+      });
+    }
+
+    return items;
   }
 
   if (orgContext) {

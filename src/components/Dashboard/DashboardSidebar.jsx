@@ -26,14 +26,26 @@ const DashboardSidebar = ({ className = '' }) => {
   // role shown when the user is acting within an organization.
   const getOrgRoleInfo = () => {
     if (!orgContext) return null;
-    if (orgRole === 'org_admin') return { label: "Org Admin", variant: "primary" };
-    if (orgRole === 'teacher') return { label: "Org Teacher", variant: "primary" };
-    return { label: "Org Student", variant: "secondary" };
+    const roleSlug = (orgRole || orgContext?.role?.slug || '').toLowerCase();
+    if (orgContext.isOwner || roleSlug === 'owner') return { label: "Org Owner", variant: "primary" };
+    if (roleSlug === 'admin' || roleSlug === 'org_admin') return { label: "Org Admin", variant: "primary" };
+    if (roleSlug === 'coordinator') return { label: "Org Coordinator", variant: "primary" };
+    if (roleSlug === 'finance') return { label: "Org Finance", variant: "primary" };
+    if (roleSlug === 'teacher') return { label: "Org Teacher", variant: "primary" };
+    if (roleSlug === 'student') return { label: "Org Student", variant: "secondary" };
+    return { label: orgContext?.role?.name || "Org Member", variant: "secondary" };
   };
 
   const orgRoleInfo = getOrgRoleInfo();
 
-  const menuItems = getDashboardMenuItems({ globalRole, orgContext, orgRole, legacyRole, hasPermission });
+  const menuItems = getDashboardMenuItems({
+    globalRole,
+    orgContext,
+    orgRole,
+    legacyRole,
+    hasPermission,
+    currentPath: location.pathname
+  });
 
   // Group menu items by their group field
   const groupedItems = menuItems.reduce((acc, item) => {
@@ -99,7 +111,16 @@ const DashboardSidebar = ({ className = '' }) => {
             <span className="text-[11px] font-semibold text-foreground truncate">
               {user?.displayName || "User"}
             </span>
-            {orgContext ? (
+            {globalRole === 'super_admin' ? (
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <RoleBadge globalRole="super_admin" />
+                {orgContext && orgRoleInfo && (
+                  <span className="text-[10px] text-muted-foreground truncate">
+                    ({orgRoleInfo.label})
+                  </span>
+                )}
+              </div>
+            ) : orgContext ? (
               <span className="text-[10px] text-muted-foreground mt-0.5">
                 {orgRoleInfo?.label}
               </span>
