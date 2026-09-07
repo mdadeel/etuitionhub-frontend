@@ -47,7 +47,7 @@ function buildOrgMenu(orgContext, hasPermission) {
     { path: `${orgPath}/tuitions`, label: "Tuitions", icon: BookOpen, group: "Core" },
     { path: `${orgPath}/sessions`, label: "Sessions", icon: ClipboardCheck, group: "Core" },
   ];
-  if (hasPermission('member:read')) {
+  if (hasPermission('member:view')) {
     items.push({ path: `${orgPath}/members`, label: "Members", icon: Users, group: "People" });
   }
   if (hasPermission('student:view')) {
@@ -118,7 +118,7 @@ function buildOrgMenu(orgContext, hasPermission) {
   if (hasPermission('audit:view')) {
     items.push({ path: `${orgPath}/audit-logs`, label: "Audit Logs", icon: History, group: "Settings" });
   }
-  if (hasPermission('org:update')) {
+  if (hasPermission('settings:manage')) {
     items.push({ path: `${orgPath}/settings`, label: "Settings", icon: Settings, group: "Settings" });
   }
   return items;
