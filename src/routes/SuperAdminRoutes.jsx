@@ -1,7 +1,18 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import DashboardLayout from '../components/shared/DashboardLayout';
+
+const DashboardContentSkeleton = () => (
+  <div className="p-6 md:p-8 lg:p-12 space-y-6 max-w-7xl mx-auto animate-pulse">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="h-28 rounded-lg bg-muted/40 border border-border/50" />
+      ))}
+    </div>
+    <div className="h-96 rounded-lg bg-muted/30 border border-border/50" />
+  </div>
+);
 
 const PlatformOverview = lazy(() => import('../components/Dashboard/SuperAdmin/PlatformOverview'));
 const AllOrganizations = lazy(() => import('../components/Dashboard/SuperAdmin/AllOrganizations'));
@@ -32,6 +43,7 @@ const SuperAdminRoutes = () => {
 
   return (
     <DashboardLayout>
+      <Suspense fallback={<DashboardContentSkeleton />}>
       <Routes>
         <Route index element={<PlatformOverview />} />
         <Route path="organizations" element={<AllOrganizations />} />
@@ -51,6 +63,7 @@ const SuperAdminRoutes = () => {
         <Route path="settings" element={<DashSettings />} />
         <Route path="*" element={<Navigate to="" replace />} />
       </Routes>
+      </Suspense>
     </DashboardLayout>
   );
 };

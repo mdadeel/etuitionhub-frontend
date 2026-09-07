@@ -10,10 +10,9 @@ import { HelmetProvider } from 'react-helmet-async';
 import { getClientConfig } from './config/clientConfig';
 getClientConfig().catch(() => {});
 
-// Defer i18n initialization — only needed when a component calls useTranslation().
-// All such components (Navbar, Dashboard, Register) are lazy-loaded, so this
-// runs before they render but after the app shell is painted.
-import('./i18n');
+// Initialize i18n synchronously so navigation labels and translation dictionaries
+// are available immediately when the app shell mounts without suspending.
+import './i18n';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

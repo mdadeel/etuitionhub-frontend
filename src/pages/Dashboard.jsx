@@ -61,9 +61,21 @@ const Dashboard = () => {
     return <DashboardSkeleton />;
   }
 
+const DashboardContentSkeleton = () => (
+  <div className="p-6 md:p-8 lg:p-12 space-y-6 max-w-7xl mx-auto animate-pulse">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="h-28 rounded-lg bg-muted/40 border border-border/50" />
+      ))}
+    </div>
+    <div className="h-96 rounded-lg bg-muted/30 border border-border/50" />
+  </div>
+);
+
   return (
     <DashboardLayout>
       <SEO title="Dashboard | eTuitionBD" noIndex />
+      <Suspense fallback={<DashboardContentSkeleton />}>
       <Routes>
         {/* Multi-Tenant Dashboard Routes */}
         <Route path="org/:orgId/*" element={<OrgDashboardLayout />} />
@@ -155,6 +167,7 @@ const Dashboard = () => {
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
+      </Suspense>
     </DashboardLayout>
   );
 };

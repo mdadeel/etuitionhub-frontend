@@ -12,8 +12,8 @@ import {
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import toast, { Toaster } from "react-hot-toast";
-const Navbar = lazy(() => import("./components/shared/Navbar"));
-const MobileBottomNav = lazy(() => import("./components/shared/MobileBottomNav"));
+import Navbar from "./components/shared/Navbar";
+import MobileBottomNav from "./components/shared/MobileBottomNav";
 const Footer = lazy(() => import("./components/shared/Footer"));
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -97,7 +97,7 @@ const ConditionalNavbar = () => {
   const isDashboard = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/super-admin");
   const isSession = pathname.startsWith("/session");
   if (isDashboard || isSession) return null;
-  return <Suspense fallback={null}><Navbar /></Suspense>;
+  return <Navbar />;
 };
 
 const ConditionalFooter = () => {
@@ -117,7 +117,7 @@ const ConditionalMobileBottomNav = () => {
   const isSession = pathname.startsWith("/session");
   const isCheckout = pathname.startsWith("/checkout");
   if (isSession || isCheckout) return null;
-  return <Suspense fallback={null}><MobileBottomNav /></Suspense>;
+  return <MobileBottomNav />;
 };
 
 const ConditionalFloatingChat = () => {
