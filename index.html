@@ -66,6 +66,14 @@
             window.gtag('config', id, { send_page_view: false });
           })
           .catch(function () { /* analytics unavailable — never block page render */ });
+
+        // Prefetch popular tutor data IN PARALLEL with /api/config so card
+        // data is in flight before React even parses. TanStack Query hydrates
+        // from window.__ETUITION_TUTORS__ on boot — cards render instantly.
+        fetch(API_URL + '/api/tutors?page=1&limit=4&sort=ratings')
+          .then(function (res) { return res.ok ? res.json() : null; })
+          .then(function (data) { if (data) window.__ETUITION_TUTORS__ = data; })
+          .catch(function () { /* prefetch is optional — never block render */ });
       } catch (e) { /* never block page render */ }
     })();
   </script>

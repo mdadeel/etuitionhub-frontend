@@ -14,6 +14,24 @@ getClientConfig().catch(() => {});
 // are available immediately when the app shell mounts without suspending.
 import './i18n';
 
+// Hydrate TanStack Query with the tutor data prefetched in index.html.
+// index.html fires fetch('/api/tutors') before the JS bundle even parses —
+// by the time we reach this line, the response may already be done.
+// Setting the cache now means PopularTutors + HomeBanner render with data
+// on first mount instead of showing a skeleton and waiting for a fresh fetch.
+import { queryClient } from './lib/queryClient';
+if (window.__ETUITION_TUTORS__) {
+    try {
+        const raw = window.__ETUITION_TUTORS__.data
+            || window.__ETUITION_TUTORS__.tutors
+            || window.__ETUITION_TUTORS__;
+        const tutors = Array.isArray(raw) ? raw.slice(0, 4) : [];
+        if (tutors.length > 0) {
+            queryClient.setQueryData(['tutors', 'featured'], tutors);
+        }
+    } catch (e) { /* hydration optional — never block boot */ }
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HelmetProvider>
