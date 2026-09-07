@@ -28,12 +28,13 @@ const HomeBanner = () => {
     const navigate = useNavigate();
 
     const { data: tutorsData } = useQuery({
-        queryKey: ['tutors', 'hero'],
+        queryKey: ['tutors', 'featured'],
         queryFn: async () => {
-            const res = await api.get('/api/tutors?page=1&limit=3&sort=ratings');
+            const res = await api.get('/api/tutors?page=1&limit=4&sort=ratings');
             const raw = res.data?.data || res.data?.tutors || res.data;
-            return Array.isArray(raw) ? raw.slice(0, 3) : [];
+            return Array.isArray(raw) ? raw.slice(0, 4) : [];
         },
+        select: (data) => data.slice(0, 3),
         staleTime: 120_000,
     });
 

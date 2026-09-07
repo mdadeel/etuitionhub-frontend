@@ -13,7 +13,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { memo, useState, useEffect } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthUser } from "@/contexts/AuthContext";
 import api from "../../services/api";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
@@ -22,7 +22,7 @@ import TrustBadges from './TrustBadges';
 
 const TutorCard = memo(({ tutor, searchQuery = "", isBannerPreview = false, initialIsSaved = null }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuthUser();
   const [isSaved, setIsSaved] = useState(initialIsSaved === true);
   const [showLoginModal, setShowLoginModal] = useState(false);
 

@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Bookmark, MapPin, GraduationCap, ArrowRight } from "lucide-react";
 import Highlight from "./Highlight";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { formatRelativeTime } from "@/utils/dateUtils";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthUser } from "@/contexts/AuthContext";
 import LoginRequiredModal from "./LoginRequiredModal";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = null, onRequestTutor }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuthUser();
   const [isSaved, setIsSaved] = useState(initialIsSaved === true);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -169,4 +169,4 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
   );
 };
 
-export default TuitionCard;
+export default memo(TuitionCard);

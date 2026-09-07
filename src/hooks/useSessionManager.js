@@ -7,11 +7,31 @@ import { logError } from '../utils/devLogger';
 
 const useSessionManager = () => {
     const [user, setUser] = useState(null);
-    const [dbUser, setDbUser] = useState(null);
-    const [userRole, setUserRole] = useState('');
+    const [dbUser, setDbUser] = useState(() => {
+        try {
+            const cached = localStorage.getItem('cached-db-user');
+            return cached ? JSON.parse(cached).data : null;
+        } catch {
+            return null;
+        }
+    });
+    const [userRole, setUserRole] = useState(() => {
+        try {
+            return localStorage.getItem('cached-user-role') || '';
+        } catch {
+            return '';
+        }
+    });
     
     // Organization Context States
-    const [myOrgs, setMyOrgs] = useState([]);
+    const [myOrgs, setMyOrgs] = useState(() => {
+        try {
+            const cached = localStorage.getItem('cached-my-orgs');
+            return cached ? JSON.parse(cached) : [];
+        } catch {
+            return [];
+        }
+    });
     const [orgContext, setOrgContext] = useState(null);
     const [orgMember, setOrgMember] = useState(null);
     const [orgRole, setOrgRole] = useState(null);
@@ -67,7 +87,13 @@ const useSessionManager = () => {
 
     const refreshUserFromDB = useCallback(async (email) => {
         try {
-            let res = await api.get(`/api/users/${email}`);
+            const [res, orgRes] = await Promise.all([
+                api.get(`/api/users/${email}`),
+                api.get(`/api/users/${email}/organizations`).catch((err) => {
+                    logError('useSessionManager', 'failed to fetch user organizations', err);
+                    return { data: { data: [] } };
+                })
+            ]);
             setDbUser(res.data);
             setUserRole(res.data.role);
             setDbUserError(null);
@@ -76,27 +102,22 @@ const useSessionManager = () => {
             localStorage.setItem('cached-db-user', JSON.stringify({ email, data: res.data }));
             localStorage.setItem('cached-user-role', res.data.role);
 
-            try {
-                let orgRes = await api.get(`/api/users/${email}/organizations`);
-                const orgs = orgRes.data.data || [];
-                setMyOrgs(orgs);
-                
-                // Cache organization data
-                localStorage.setItem('cached-my-orgs', JSON.stringify(orgs));
+            const orgs = orgRes.data?.data || [];
+            setMyOrgs(orgs);
+            
+            // Cache organization data
+            localStorage.setItem('cached-my-orgs', JSON.stringify(orgs));
 
-                // Auto-select first org if context is empty, or maintain current context
-                // Use ref to avoid stale closure and unnecessary re-subscriptions
-                if (orgs.length > 0 && !orgContextRef.current) {
-                    const savedOrgId = localStorage.getItem('x-org-id');
-                    let targetOrg = orgs.find(o => o.orgId === savedOrgId);
-                    if (!targetOrg) targetOrg = orgs[0];
-                    setOrgContext(targetOrg);
-                    setOrgMember(targetOrg);
-                    setOrgRole(targetOrg.role?.slug || 'student');
-                    localStorage.setItem('x-org-id', targetOrg.orgId);
-                }
-            } catch (err) {
-                logError('useSessionManager', 'failed to fetch user organizations', err);
+            // Auto-select first org if context is empty, or maintain current context
+            // Use ref to avoid stale closure and unnecessary re-subscriptions
+            if (orgs.length > 0 && !orgContextRef.current) {
+                const savedOrgId = localStorage.getItem('x-org-id');
+                let targetOrg = orgs.find(o => o.orgId === savedOrgId);
+                if (!targetOrg) targetOrg = orgs[0];
+                setOrgContext(targetOrg);
+                setOrgMember(targetOrg);
+                setOrgRole(targetOrg.role?.slug || 'student');
+                localStorage.setItem('x-org-id', targetOrg.orgId);
             }
 
             return res.data;
@@ -270,7 +291,13 @@ const useSessionManager = () => {
 
                         if (jwtSuccess) {
                             try {
-                                let res = await api.get(`/api/users/${currentUser.email}`);
+                                const [res, orgRes] = await Promise.all([
+                                    api.get(`/api/users/${currentUser.email}`),
+                                    api.get(`/api/users/${currentUser.email}/organizations`).catch((err) => {
+                                        logError('useSessionManager', 'failed to fetch user organizations', err);
+                                        return { data: { data: [] } };
+                                    })
+                                ]);
                                 setDbUser(res.data);
                                 setUserRole(res.data.role);
                                 setDbUserError(null);
@@ -279,25 +306,20 @@ const useSessionManager = () => {
                                 localStorage.setItem('cached-db-user', JSON.stringify({ email: currentUser.email, data: res.data }));
                                 localStorage.setItem('cached-user-role', res.data.role);
 
-                                try {
-                                    let orgRes = await api.get(`/api/users/${currentUser.email}/organizations`);
-                                    const orgs = orgRes.data.data || [];
-                                    setMyOrgs(orgs);
-                                    
-                                    // Cache organization data
-                                    localStorage.setItem('cached-my-orgs', JSON.stringify(orgs));
+                                const orgs = orgRes.data?.data || [];
+                                setMyOrgs(orgs);
+                                
+                                // Cache organization data
+                                localStorage.setItem('cached-my-orgs', JSON.stringify(orgs));
 
-                                    if (orgs.length > 0) {
-                                        const savedOrgId = localStorage.getItem('x-org-id');
-                                        let targetOrg = orgs.find(o => o.orgId === savedOrgId);
-                                        if (!targetOrg) targetOrg = orgs[0];
-                                        setOrgContext(targetOrg);
-                                        setOrgMember(targetOrg);
-                                        setOrgRole(targetOrg.role?.slug || 'student');
-                                        localStorage.setItem('x-org-id', targetOrg.orgId);
-                                    }
-                                } catch (err) {
-                                    logError('useSessionManager', 'failed to fetch user organizations', err);
+                                if (orgs.length > 0) {
+                                    const savedOrgId = localStorage.getItem('x-org-id');
+                                    let targetOrg = orgs.find(o => o.orgId === savedOrgId);
+                                    if (!targetOrg) targetOrg = orgs[0];
+                                    setOrgContext(targetOrg);
+                                    setOrgMember(targetOrg);
+                                    setOrgRole(targetOrg.role?.slug || 'student');
+                                    localStorage.setItem('x-org-id', targetOrg.orgId);
                                 }
                             } catch (error) {
                                 const isNetworkError = !error.response || error.code === 'ERR_NETWORK';
