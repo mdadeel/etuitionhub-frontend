@@ -183,7 +183,7 @@ const GlobalUsers = () => {
             onClick={() => { setGlobalFilter(f.value); setPage(1); setSelectedIds([]); }}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1 ${
               globalFilter === f.value
-                ? 'bg-red-500 text-white'
+                ? 'bg-destructive text-destructive-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
@@ -236,7 +236,7 @@ const GlobalUsers = () => {
                 <div>
                   <p className="font-medium text-sm flex items-center gap-1">
                     {u.displayName}
-                    {u.globalRole === 'super_admin' && <Crown className="size-3 text-red-500" />}
+                    {u.globalRole === 'super_admin' && <Crown className="size-3 text-destructive" />}
                   </p>
                   <p className="text-xs text-muted-foreground">{u.email}</p>
                 </div>
@@ -268,7 +268,7 @@ const GlobalUsers = () => {
             label: 'Global',
             render: (val) => (
               <span className={`text-xs font-label font-semibold uppercase px-2 py-0.5 rounded ${
-                val === 'super_admin' ? 'bg-red-500/10 text-red-500' : 'bg-muted'
+                val === 'super_admin' ? 'bg-destructive/10 text-destructive border border-destructive/20' : 'bg-muted text-muted-foreground'
               }`}>
                 {val || 'user'}
               </span>
@@ -278,10 +278,10 @@ const GlobalUsers = () => {
             key: 'verificationStatus',
             label: 'Status',
             render: (val) => {
-              let color = 'bg-yellow-500/10 text-yellow-500';
-              if (val === 'verified_basic' || val === 'verified_premium') color = 'bg-green-500/10 text-green-500';
-              else if (val === 'banned') color = 'bg-red-500/10 text-red-500';
-              else if (val === 'suspended') color = 'bg-amber-500/10 text-amber-500';
+              let color = 'bg-warning/10 text-warning border border-warning/20';
+              if (val === 'verified_basic' || val === 'verified_premium') color = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+              else if (val === 'banned') color = 'bg-destructive/10 text-destructive border border-destructive/20';
+              else if (val === 'suspended') color = 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20';
 
               return (
                 <span className={`text-xs font-label font-semibold uppercase px-2 py-0.5 rounded ${color}`}>
@@ -304,7 +304,7 @@ const GlobalUsers = () => {
                     <button
                       onClick={() => handleDemote(u)}
                       disabled={busy || isSelf}
-                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       title={isSelf ? "Cannot demote yourself" : "Remove Super Admin"}
                     >
                       {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldMinus className="w-4 h-4" />}
@@ -313,7 +313,7 @@ const GlobalUsers = () => {
                     <button
                       onClick={() => handlePromote(u)}
                       disabled={busy}
-                      className="p-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-lg transition-colors disabled:opacity-40"
+                      className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-40"
                       title="Promote to Super Admin"
                     >
                       {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldPlus className="w-4 h-4" />}
@@ -323,7 +323,7 @@ const GlobalUsers = () => {
                     <button
                       onClick={() => handleImpersonate(u)}
                       disabled={busy}
-                      className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-lg transition-colors disabled:opacity-40"
+                      className="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors disabled:opacity-40"
                       title="Shadow Login (View as user)"
                     >
                       {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}

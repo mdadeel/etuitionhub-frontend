@@ -158,6 +158,7 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
       { path: "/super-admin/audit-logs", label: "Audit Logs", icon: History, group: "Operations" },
       { path: "/super-admin/testimonials", label: "Testimonials", icon: Star, group: "Operations" },
       { path: "/dashboard/disputes", label: "Disputes", icon: Scale, group: "Operations" },
+      { path: "/super-admin/settings", label: "Settings", icon: Settings, group: "Operations" },
     ];
 
     if (orgContext) {

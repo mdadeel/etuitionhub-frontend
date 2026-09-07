@@ -63,9 +63,18 @@ const PlatformOverview = () => {
     fetchBreakers();
   }, [fetchBreakers]);
 
-  const handleToggleBreaker = async (flag, currentVal) => {
-    setUpdatingFlag(flag);
+  const handleToggleBreaker = async (flag, currentVal, label) => {
     const newVal = !currentVal;
+    const enteringDanger = flag === "maintenanceMode" ? newVal : !newVal;
+    if (enteringDanger) {
+      const actionDesc = newVal ? "enable" : "disable";
+      const confirmed = window.confirm(
+        `EMERGENCY CONFIRMATION: Are you sure you want to ${actionDesc} "${label || flag}"? This will impact live platform operations immediately.`
+      );
+      if (!confirmed) return;
+    }
+
+    setUpdatingFlag(flag);
     setCircuitBreakers((prev) => ({ ...prev, [flag]: newVal }));
     try {
       const res = await api.patch("/api/admin/circuit-breakers", {
@@ -75,7 +84,7 @@ const PlatformOverview = () => {
       if (res.data?.data) {
         setCircuitBreakers(res.data.data);
       }
-      toast.success(`Circuit breaker updated: ${flag}`);
+      toast.success(`Circuit breaker updated: ${label || flag}`);
     } catch (err) {
       setCircuitBreakers((prev) => ({ ...prev, [flag]: currentVal }));
       toast.error(
@@ -452,7 +461,7 @@ const PlatformOverview = () => {
                       role="switch"
                       aria-checked={val}
                       disabled={isUpdating || loadingBreakers}
-                      onClick={() => handleToggleBreaker(breaker.key, val)}
+                      onClick={() => handleToggleBreaker(breaker.key, val, breaker.label)}
                       className={cn(
                         "relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                         val
