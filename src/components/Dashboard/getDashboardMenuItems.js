@@ -44,9 +44,11 @@ function buildOrgMenu(orgContext, hasPermission) {
   const orgPath = `/dashboard/org/${orgContext.orgId || orgContext.slug}`;
   const items = [
     { path: orgPath, label: "Overview", icon: LayoutDashboard, group: "Core" },
-    { path: `${orgPath}/tuitions`, label: "Tuitions", icon: BookOpen, group: "Core" },
     { path: `${orgPath}/sessions`, label: "Sessions", icon: ClipboardCheck, group: "Core" },
   ];
+  if (hasPermission('tuition:view')) {
+    items.push({ path: `${orgPath}/tuitions`, label: "Tuitions", icon: BookOpen, group: "Core" });
+  }
   if (hasPermission('member:view')) {
     items.push({ path: `${orgPath}/members`, label: "Members", icon: Users, group: "People" });
   }
@@ -81,10 +83,10 @@ function buildOrgMenu(orgContext, hasPermission) {
   if (hasPermission('branch:view')) {
     items.push({ path: `${orgPath}/branches`, label: "Branches", icon: GitBranch, group: "Academic" });
   }
-  if (hasPermission('exam:manage')) {
+  if (hasPermission('exam:view') || hasPermission('exam:manage')) {
     items.push({ path: `${orgPath}/exams`, label: "Exams", icon: FileSpreadsheet, group: "Academic" });
   }
-  if (hasPermission('result:manage')) {
+  if (hasPermission('result:view') || hasPermission('result:manage')) {
     items.push({ path: `${orgPath}/results`, label: "Results", icon: Trophy, group: "Academic" });
   }
   if (hasPermission('announcement:view')) {
@@ -93,7 +95,7 @@ function buildOrgMenu(orgContext, hasPermission) {
   if (hasPermission('message:send') || hasPermission('message:view')) {
     items.push({ path: `${orgPath}/messages`, label: "Messages", icon: MessageSquare, group: "Communication" });
   }
-  if (hasPermission('billing:read')) {
+  if (hasPermission('billing:read') || hasPermission('invoice:view') || hasPermission('payment:view_all')) {
     items.push({ path: `${orgPath}/payments`, label: "Payments", icon: Banknote, group: "Finance" });
     items.push({ path: `${orgPath}/billing`, label: "Subscription", icon: CreditCard, group: "Finance" });
     items.push({ path: `${orgPath}/invoices`, label: "Invoices", icon: Receipt, group: "Finance" });
@@ -104,9 +106,13 @@ function buildOrgMenu(orgContext, hasPermission) {
   if (hasPermission('payment:view_all')) {
     items.push({ path: `${orgPath}/expenses`, label: "Expenses", icon: Landmark, group: "Finance" });
   }
-  if (hasPermission('student:view')) {
+  if (hasPermission('student:enroll') || hasPermission('student:manage')) {
     items.push({ path: `${orgPath}/enrollments`, label: "Enrollments", icon: GraduationCap, group: "People" });
+  }
+  if (hasPermission('student:manage')) {
     items.push({ path: `${orgPath}/guardians`, label: "Guardians", icon: HeartHandshake, group: "People" });
+  }
+  if (hasPermission('student:manage') || hasPermission('billing:read')) {
     items.push({ path: `${orgPath}/scholarships`, label: "Scholarships", icon: PiggyBank, group: "Finance" });
   }
   if (hasPermission('role:view')) {

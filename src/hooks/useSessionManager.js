@@ -26,7 +26,7 @@ const useSessionManager = () => {
     // Organization Context States
     const [myOrgs, setMyOrgs] = useState(() => {
         try {
-            const cached = localStorage.getItem('cached-my-orgs-v2');
+            const cached = localStorage.getItem('cached-my-orgs-v3');
             return cached ? JSON.parse(cached) : [];
         } catch {
             return [];
@@ -106,7 +106,7 @@ const useSessionManager = () => {
             setMyOrgs(orgs);
             
             // Cache organization data
-            localStorage.setItem('cached-my-orgs-v2', JSON.stringify(orgs));
+            localStorage.setItem('cached-my-orgs-v3', JSON.stringify(orgs));
 
             // Auto-select first org if context is empty, or maintain current context
             // Use ref to avoid stale closure and unnecessary re-subscriptions
@@ -132,7 +132,7 @@ const useSessionManager = () => {
                             setDbUser(cachedUser.data);
                             setUserRole(cachedUser.data.role);
 
-                            const cachedOrgsStr = localStorage.getItem('cached-my-orgs-v2');
+                            const cachedOrgsStr = localStorage.getItem('cached-my-orgs-v3');
                             if (cachedOrgsStr) {
                                 const cachedOrgs = JSON.parse(cachedOrgsStr);
                                 setMyOrgs(cachedOrgs);
@@ -260,7 +260,7 @@ const useSessionManager = () => {
                                             setDbUser(cachedUser.data);
                                             setUserRole(cachedUser.data.role);
 
-                                            const cachedOrgsStr = localStorage.getItem('cached-my-orgs-v2');
+                                            const cachedOrgsStr = localStorage.getItem('cached-my-orgs-v3');
                                             if (cachedOrgsStr) {
                                                 const cachedOrgs = JSON.parse(cachedOrgsStr);
                                                 setMyOrgs(cachedOrgs);
@@ -310,7 +310,7 @@ const useSessionManager = () => {
                                 setMyOrgs(orgs);
                                 
                                 // Cache organization data
-                                localStorage.setItem('cached-my-orgs-v2', JSON.stringify(orgs));
+                                localStorage.setItem('cached-my-orgs-v3', JSON.stringify(orgs));
 
                                 if (orgs.length > 0) {
                                     const savedOrgId = localStorage.getItem('x-org-id');
@@ -332,7 +332,7 @@ const useSessionManager = () => {
                                                 setDbUser(cachedUser.data);
                                                 setUserRole(cachedUser.data.role);
 
-                                                const cachedOrgsStr = localStorage.getItem('cached-my-orgs-v2');
+                                                const cachedOrgsStr = localStorage.getItem('cached-my-orgs-v3');
                                                 if (cachedOrgsStr) {
                                                     const cachedOrgs = JSON.parse(cachedOrgsStr);
                                                     setMyOrgs(cachedOrgs);
@@ -380,7 +380,7 @@ const useSessionManager = () => {
                         localStorage.removeItem('x-org-id');
                         localStorage.removeItem('cached-db-user');
                         localStorage.removeItem('cached-user-role');
-                        localStorage.removeItem('cached-my-orgs-v2');
+                        localStorage.removeItem('cached-my-orgs-v3');
                     }
 
                     initialAuthDoneRef.current = true;
@@ -418,12 +418,18 @@ const useSessionManager = () => {
     const hasPermission = useCallback((permission) => {
         // Super admin has all permissions (canonical signal — role:'admin' is vestigial)
         if (dbUser?.globalRole === 'super_admin') return true;
+        // Org owner has full permissions
+        if (orgMember?.isOwner || orgMember?.role?.slug === 'owner' || orgRole?.slug === 'owner') return true;
         // Check org permissions
         if (orgMember && orgMember.role && orgMember.role.permissions) {
-            return orgMember.role.permissions.includes(permission);
+            const perms = orgMember.role.permissions;
+            if (perms.includes('*')) return true;
+            if (perms.includes(permission)) return true;
+            const domain = permission.split(':')[0];
+            if (perms.includes(`${domain}:*`)) return true;
         }
         return false;
-    }, [dbUser, orgMember]);
+    }, [dbUser, orgMember, orgRole]);
 
     return {
         user,
