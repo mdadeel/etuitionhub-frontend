@@ -1,17 +1,23 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../../services/api";
-import { toast } from "react-hot-toast";
-import { 
-  Users, 
-  Search, 
+import toast from "react-hot-toast";
+import {
+  Users,
+  Search,
   Loader2,
   AlertOctagon,
   Globe,
-  Building2
+  Building2,
+  ShieldPlus,
+  ShieldMinus,
+  Crown,
+  Eye,
 } from "lucide-react";
 import { Input } from "../../ui/input";
 import DataTable from "@/components/ui/data-table";
 import ModerationModal from "../ModerationModal";
+import BulkActionBar from "./BulkActionBar";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const ACCOUNT_FILTERS = [
   { label: 'All', value: 'all' },
@@ -19,42 +25,114 @@ const ACCOUNT_FILTERS = [
   { label: 'Org Member', value: 'org' },
 ];
 
+const GLOBAL_FILTERS = [
+  { label: 'All Roles', value: 'all' },
+  { label: 'Admins', value: 'super_admin' },
+  { label: 'Users', value: 'user' },
+];
+
 const GlobalUsers = () => {
+  const { dbUser } = useAuth();
+  const selfId = dbUser?._id?.toString();
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [accountFilter, setAccountFilter] = useState('all');
+  const [globalFilter, setGlobalFilter] = useState('all');
 
   const [showModerationModal, setShowModerationModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [actionLoading, setActionLoading] = useState(null);
 
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await api.get("/api/users", {
-        params: { search, page, limit: 10 }
-      });
+      const params = { search, page, limit: 10 };
+      if (accountFilter !== 'all') params.accountType = accountFilter;
+      if (globalFilter !== 'all') params.globalRole = globalFilter;
+      const res = await api.get("/api/users", { params });
       setUsers(res.data.data || res.data || []);
       setTotalPages(res.data.pagination?.pages || 1);
+      setTotal(res.data.pagination?.total || 0);
     } catch {
       toast.error("Failed to load users");
     } finally {
       setLoading(false);
     }
-  }, [search, page]);
+  }, [search, page, accountFilter, globalFilter]);
 
   useEffect(() => {
-    const timer = setTimeout(fetchUsers, 500);
+    const timer = setTimeout(fetchUsers, 400);
     return () => clearTimeout(timer);
   }, [fetchUsers]);
 
-  const filteredUsers = useMemo(() => {
-    if (accountFilter === 'public') return users.filter(u => !u.primaryOrgId);
-    if (accountFilter === 'org') return users.filter(u => u.primaryOrgId);
-    return users;
-  }, [users, accountFilter]);
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  };
+  const toggleSelectAll = () => {
+    if (selectedIds.length === users.length) setSelectedIds([]);
+    else setSelectedIds(users.map((u) => u._id));
+  };
+
+  const handlePromote = async (user) => {
+    if (!window.confirm(`Promote ${user.displayName} (${user.email}) to Super Admin? They will gain full platform access.`)) return;
+    setActionLoading(user._id);
+    try {
+      await api.patch(`/api/admin/promote-to-admin/${user._id}`);
+      toast.success(`${user.displayName} is now Super Admin`);
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Promote failed");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDemote = async (user) => {
+    if (user._id?.toString() === selfId) {
+      toast.error("You cannot demote yourself");
+      return;
+    }
+    if (!window.confirm(`Remove Super Admin from ${user.displayName} (${user.email})? They will revert to student.`)) return;
+    setActionLoading(user._id);
+    try {
+      await api.patch(`/api/admin/demote-from-admin/${user._id}`);
+      toast.success(`${user.displayName} demoted to user`);
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Demote failed");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleImpersonate = async (u) => {
+    if (!window.confirm(`Shadow Login as ${u.displayName} (${u.email})? You will navigate the platform from their perspective.`)) return;
+    setActionLoading(u._id);
+    try {
+      const res = await api.post(`/api/admin/impersonate/${u._id}`);
+      localStorage.setItem('impersonator-session', JSON.stringify({
+        adminToken: localStorage.getItem('token'),
+        targetEmail: u.email,
+        targetName: u.displayName,
+        targetRole: u.role,
+        startedAt: new Date().toISOString()
+      }));
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+      }
+      toast.success(`Now viewing platform as ${u.displayName}`);
+      window.location.href = '/dashboard';
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Impersonation failed");
+      setActionLoading(null);
+    }
+  };
 
   if (loading && users.length === 0) {
     return (
@@ -66,8 +144,11 @@ const GlobalUsers = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-heading font-bold">Users</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-heading font-bold flex items-center gap-2">
+          Users
+          {total > 0 && <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{total} total</span>}
+        </h2>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -79,12 +160,11 @@ const GlobalUsers = () => {
         </div>
       </div>
 
-      {/* Account Type Filter */}
-      <div className="flex gap-1.5">
+      <div className="flex flex-wrap gap-1.5">
         {ACCOUNT_FILTERS.map((f) => (
           <button
             key={f.value}
-            onClick={() => { setAccountFilter(f.value); setPage(1); }}
+            onClick={() => { setAccountFilter(f.value); setPage(1); setSelectedIds([]); }}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
               accountFilter === f.value
                 ? 'bg-primary text-primary-foreground'
@@ -96,10 +176,51 @@ const GlobalUsers = () => {
             {f.label}
           </button>
         ))}
+        <span className="w-px h-6 bg-border mx-1 self-center" />
+        {GLOBAL_FILTERS.map((f) => (
+          <button
+            key={f.value}
+            onClick={() => { setGlobalFilter(f.value); setPage(1); setSelectedIds([]); }}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1 ${
+              globalFilter === f.value
+                ? 'bg-red-500 text-white'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            {f.value === 'super_admin' && <Crown className="size-3" />}
+            {f.label}
+          </button>
+        ))}
       </div>
+
+      <BulkActionBar
+        selectedIds={selectedIds}
+        onClear={() => setSelectedIds([])}
+        onAction={fetchUsers}
+        total={total}
+      />
 
       <DataTable
         columns={[
+          {
+            key: 'select',
+            label: (
+              <input
+                type="checkbox"
+                checked={users.length > 0 && selectedIds.length === users.length}
+                onChange={toggleSelectAll}
+                className="rounded border-border"
+              />
+            ),
+            render: (_, u) => (
+              <input
+                type="checkbox"
+                checked={selectedIds.includes(u._id)}
+                onChange={() => toggleSelect(u._id)}
+                className="rounded border-border"
+              />
+            ),
+          },
           {
             key: 'user',
             label: 'User',
@@ -113,7 +234,10 @@ const GlobalUsers = () => {
                   </div>
                 )}
                 <div>
-                  <p className="font-medium text-sm">{u.displayName}</p>
+                  <p className="font-medium text-sm flex items-center gap-1">
+                    {u.displayName}
+                    {u.globalRole === 'super_admin' && <Crown className="size-3 text-red-500" />}
+                  </p>
                   <p className="text-xs text-muted-foreground">{u.email}</p>
                 </div>
               </div>
@@ -170,21 +294,57 @@ const GlobalUsers = () => {
             key: '_id',
             label: 'Actions',
             align: 'right',
-            render: (_, u) => (
-              <button
-                onClick={() => {
-                  setSelectedUser(u);
-                  setShowModerationModal(true);
-                }}
-                className="p-2 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors"
-                title="Moderate User"
-              >
-                <AlertOctagon className="w-4 h-4" />
-              </button>
-            ),
+            render: (_, u) => {
+              const isSelf = u._id?.toString() === selfId;
+              const isAdmin = u.globalRole === 'super_admin';
+              const busy = actionLoading === u._id;
+              return (
+                <div className="flex items-center justify-end gap-1">
+                  {isAdmin ? (
+                    <button
+                      onClick={() => handleDemote(u)}
+                      disabled={busy || isSelf}
+                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      title={isSelf ? "Cannot demote yourself" : "Remove Super Admin"}
+                    >
+                      {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldMinus className="w-4 h-4" />}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handlePromote(u)}
+                      disabled={busy}
+                      className="p-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-lg transition-colors disabled:opacity-40"
+                      title="Promote to Super Admin"
+                    >
+                      {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldPlus className="w-4 h-4" />}
+                    </button>
+                  )}
+                  {!isAdmin && !isSelf && (
+                    <button
+                      onClick={() => handleImpersonate(u)}
+                      disabled={busy}
+                      className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-lg transition-colors disabled:opacity-40"
+                      title="Shadow Login (View as user)"
+                    >
+                      {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setSelectedUser(u);
+                      setShowModerationModal(true);
+                    }}
+                    className="p-2 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors"
+                    title="Moderate User"
+                  >
+                    <AlertOctagon className="w-4 h-4" />
+                  </button>
+                </div>
+              );
+            },
           },
         ]}
-        data={filteredUsers}
+        data={users}
         rowKey={(u) => u._id}
         emptyState={
           <div className="flex flex-col items-center">
@@ -196,7 +356,7 @@ const GlobalUsers = () => {
 
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 gap-2">
-          <button 
+          <button
             disabled={page === 1}
             onClick={() => setPage(p => Math.max(1, p - 1))}
             className="px-3 py-1 bg-muted rounded disabled:opacity-50 text-sm"
@@ -206,7 +366,7 @@ const GlobalUsers = () => {
           <span className="px-3 py-1 text-sm text-muted-foreground flex items-center">
             Page {page} of {totalPages}
           </span>
-          <button 
+          <button
             disabled={page === totalPages}
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             className="px-3 py-1 bg-muted rounded disabled:opacity-50 text-sm"

@@ -14,6 +14,7 @@ import { queryClient } from "./lib/queryClient";
 import toast, { Toaster } from "react-hot-toast";
 import Navbar from "./components/shared/Navbar";
 import MobileBottomNav from "./components/shared/MobileBottomNav";
+import ImpersonationBanner from "./components/shared/ImpersonationBanner";
 const Footer = lazy(() => import("./components/shared/Footer"));
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -267,6 +268,7 @@ let App = () => {
                 }}
             />
             <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
+              <ImpersonationBanner />
               <ConditionalNavbar />
               <MainContent>
                 <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>}>

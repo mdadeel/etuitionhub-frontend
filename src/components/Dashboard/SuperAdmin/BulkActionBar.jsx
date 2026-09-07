@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import api from '../../../services/api';
 import { useAppMutation } from '../../../hooks/queries/useAppMutation';
+import toast from 'react-hot-toast';
 
 const ACTIONS = [
   { key: 'suspend', label: 'Suspend', icon: UserX, variant: 'warning' },

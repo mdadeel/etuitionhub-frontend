@@ -1,3 +1,6 @@
+import { useState, useEffect, useCallback } from "react";
+import toast from "react-hot-toast";
+import api from "../../../services/api";
 import { usePlatformOverview } from "../../../hooks/queries/usePlatformOverview";
 import {
   Banknote,
@@ -16,6 +19,10 @@ import {
   RefreshCw,
   Hash,
   Activity,
+  Power,
+  Sliders,
+  ShieldAlert,
+  AlertOctagon,
 } from "lucide-react";
 import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
@@ -28,6 +35,56 @@ import { cn } from "../../../lib/utils";
 
 const PlatformOverview = () => {
   const { data, isLoading, isError, error, refetch } = usePlatformOverview();
+
+  const [circuitBreakers, setCircuitBreakers] = useState({
+    payoutsEnabled: true,
+    aiAssistantEnabled: true,
+    maintenanceMode: false,
+    tuitionPostingEnabled: true,
+    registrationsEnabled: true,
+  });
+  const [loadingBreakers, setLoadingBreakers] = useState(true);
+  const [updatingFlag, setUpdatingFlag] = useState(null);
+
+  const fetchBreakers = useCallback(async () => {
+    try {
+      const res = await api.get("/api/admin/circuit-breakers");
+      if (res.data?.data) {
+        setCircuitBreakers(res.data.data);
+      }
+    } catch {
+      // keep defaults on network failure
+    } finally {
+      setLoadingBreakers(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBreakers();
+  }, [fetchBreakers]);
+
+  const handleToggleBreaker = async (flag, currentVal) => {
+    setUpdatingFlag(flag);
+    const newVal = !currentVal;
+    setCircuitBreakers((prev) => ({ ...prev, [flag]: newVal }));
+    try {
+      const res = await api.patch("/api/admin/circuit-breakers", {
+        flag,
+        value: newVal,
+      });
+      if (res.data?.data) {
+        setCircuitBreakers(res.data.data);
+      }
+      toast.success(`Circuit breaker updated: ${flag}`);
+    } catch (err) {
+      setCircuitBreakers((prev) => ({ ...prev, [flag]: currentVal }));
+      toast.error(
+        err.response?.data?.error || "Failed to update circuit breaker"
+      );
+    } finally {
+      setUpdatingFlag(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -308,6 +365,118 @@ const PlatformOverview = () => {
             icon={ArrowUpRight}
             variant={queues.withdrawals > 0 ? "warning" : "default"}
           />
+        </div>
+      </Section>
+
+      {/* Platform Emergency Circuit Breakers */}
+      <Section
+        label="Emergency Circuit Breakers"
+        description="Platform-wide emergency control switches to pause financial disbursements, mutations, or third-party AI dependencies."
+        icon={ShieldAlert}
+      >
+        <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                key: "payoutsEnabled",
+                label: "Tutor Withdrawals & Payouts",
+                desc: "Halt all tutor withdrawal disbursements and cashout approvals.",
+                dangerWhenFalse: true,
+              },
+              {
+                key: "tuitionPostingEnabled",
+                label: "Tuition Posting",
+                desc: "Allow students and parents to create new tuition postings.",
+                dangerWhenFalse: true,
+              },
+              {
+                key: "aiAssistantEnabled",
+                label: "AI Learning Assistant API",
+                desc: "Kill-switch for LLM token usage during API spikes or outages.",
+                dangerWhenFalse: true,
+              },
+              {
+                key: "registrationsEnabled",
+                label: "User Registrations",
+                desc: "Pause account registrations during spam or credential-stuffing attacks.",
+                dangerWhenFalse: true,
+              },
+              {
+                key: "maintenanceMode",
+                label: "Platform Maintenance Mode",
+                desc: "Lock platform into read-only mode and display maintenance notice.",
+                dangerWhenFalse: false,
+              },
+            ].map((breaker) => {
+              const val = circuitBreakers[breaker.key];
+              const isDanger = breaker.dangerWhenFalse ? !val : val;
+              const isUpdating = updatingFlag === breaker.key;
+
+              return (
+                <div
+                  key={breaker.key}
+                  className={cn(
+                    "p-4 rounded-xl border flex flex-col justify-between transition-colors",
+                    isDanger
+                      ? "bg-destructive/5 border-destructive/30"
+                      : "bg-background/60 border-border"
+                  )}
+                >
+                  <div className="space-y-1.5 mb-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-heading font-bold text-foreground">
+                        {breaker.label}
+                      </span>
+                      <span
+                        className={cn(
+                          "px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider",
+                          isDanger
+                            ? "bg-destructive/10 text-destructive border border-destructive/20"
+                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                        )}
+                      >
+                        {isDanger ? "PAUSED / HALTED" : "OPERATIONAL"}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {breaker.desc}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                    <span className="text-[10px] font-mono text-muted-foreground">
+                      Status: {val ? "Enabled" : "Disabled"}
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={val}
+                      disabled={isUpdating || loadingBreakers}
+                      onClick={() => handleToggleBreaker(breaker.key, val)}
+                      className={cn(
+                        "relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                        val
+                          ? breaker.dangerWhenFalse
+                            ? "bg-emerald-600"
+                            : "bg-destructive"
+                          : breaker.dangerWhenFalse
+                          ? "bg-destructive"
+                          : "bg-muted"
+                      )}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                          val ? "translate-x-5" : "translate-x-0"
+                        )}
+                      />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </Section>
 

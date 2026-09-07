@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,7 +9,12 @@ import {
     CheckCircle2, 
     XCircle,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    AlertTriangle,
+    ShieldAlert,
+    Banknote,
+    Layers,
+    AlertOctagon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +25,7 @@ import DataTable from "@/components/ui/data-table";
 import StatusBadge from '../shared/StatusBadge';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
 import EmptyState from '../shared/EmptyState';
+import { cn } from "@/lib/utils";
 
 const BkashIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -72,6 +78,36 @@ const DashPayments = () => {
     const [rejectId, setRejectId] = useState(null);
     const [rejectReason, setRejectReason] = useState('Invalid transaction ID');
 
+    const [reconciliation, setReconciliation] = useState(null);
+
+    const loadReconciliation = useCallback(async () => {
+        try {
+            const res = await api.get('/api/admin/finance/reconciliation');
+            if (res.data?.data) {
+                setReconciliation(res.data.data);
+            }
+        } catch {
+            // Non-admin or failed fetch silently handled
+        }
+    }, []);
+
+    useEffect(() => {
+        loadReconciliation();
+    }, [loadReconciliation]);
+
+    const duplicateTrxMap = useMemo(() => {
+        if (!reconciliation?.fraudAlerts) return new Map();
+        const map = new Map();
+        reconciliation.fraudAlerts.forEach(alert => {
+            map.set(alert.transactionId, alert);
+        });
+        return map;
+    }, [reconciliation]);
+
+    const duplicateTrxIds = useMemo(() => {
+        return new Set(duplicateTrxMap.keys());
+    }, [duplicateTrxMap]);
+
     const loadPayments = useCallback(async (pageNum = 1) => {
         setLoading(true);
         try {
@@ -112,7 +148,7 @@ const DashPayments = () => {
         try {
             await api.post(`/api/payments/${approveId}/approve`);
             toast.success('Payment approved — wallet credited, notifications sent');
-            await loadPayments(page);
+            await Promise.all([loadPayments(page), loadReconciliation()]);
         } catch (err) {
             toast.error(err.response?.data?.error || 'Approval failed');
         } finally {
@@ -133,7 +169,7 @@ const DashPayments = () => {
         try {
             await api.post(`/api/payments/${rejectId}/reject`, { reason: rejectReason.trim() });
             toast.success('Payment rejected — student notified');
-            await loadPayments(page);
+            await Promise.all([loadPayments(page), loadReconciliation()]);
         } catch (err) {
             toast.error(err.response?.data?.error || 'Rejection failed');
         } finally {
@@ -141,9 +177,13 @@ const DashPayments = () => {
         }
     };
 
-    const filteredPayments = filter === 'all'
-        ? payments
-        : payments.filter(p => p.status === filter);
+    const filteredPayments = useMemo(() => {
+        if (filter === 'fraud_duplicates') {
+            return payments.filter(p => duplicateTrxIds.has(p.transactionId));
+        }
+        if (filter === 'all') return payments;
+        return payments.filter(p => p.status === filter);
+    }, [filter, payments, duplicateTrxIds]);
 
     const pendingCount = payments.filter(p => p.status === 'pending_verification').length;
 
@@ -185,20 +225,112 @@ const DashPayments = () => {
                 )}
             />
 
+            {/* Reconciliation Snapshot */}
+            {reconciliation?.reconciliation && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="p-4 bg-card border border-border rounded-xl">
+                        <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                            <Banknote className="size-3.5 text-primary" />
+                            <span className="text-[10px] font-label font-semibold uppercase tracking-wider">Total Inbound</span>
+                        </div>
+                        <p className="text-lg md:text-xl font-heading font-black tabular-nums text-foreground">
+                            ৳{reconciliation.reconciliation.totalCollected.toLocaleString()}
+                        </p>
+                    </div>
+                    <div className="p-4 bg-card border border-border rounded-xl">
+                        <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                            <ShieldCheck className="size-3.5 text-emerald-500" />
+                            <span className="text-[10px] font-label font-semibold uppercase tracking-wider">Escrow Held</span>
+                        </div>
+                        <p className="text-lg md:text-xl font-heading font-black tabular-nums text-foreground">
+                            ৳{reconciliation.reconciliation.heldInEscrow.toLocaleString()}
+                        </p>
+                    </div>
+                    <div className="p-4 bg-card border border-border rounded-xl">
+                        <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                            <CheckCircle2 className="size-3.5 text-blue-500" />
+                            <span className="text-[10px] font-label font-semibold uppercase tracking-wider">Released to Tutors</span>
+                        </div>
+                        <p className="text-lg md:text-xl font-heading font-black tabular-nums text-foreground">
+                            ৳{reconciliation.reconciliation.releasedToTutors.toLocaleString()}
+                        </p>
+                    </div>
+                    <div className="p-4 bg-card border border-border rounded-xl">
+                        <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                            <Clock className="size-3.5 text-amber-500" />
+                            <span className="text-[10px] font-label font-semibold uppercase tracking-wider">Pending Payouts</span>
+                        </div>
+                        <p className="text-lg md:text-xl font-heading font-black tabular-nums text-foreground">
+                            ৳{reconciliation.reconciliation.pendingPayouts.toLocaleString()}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* Fraud & Duplicate TrxID Sentinel */}
+            {reconciliation?.duplicateTrxCount > 0 && (
+                <div className="p-4 md:p-5 rounded-xl border border-destructive/30 bg-destructive/5 space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                            <div className="size-8 rounded-lg bg-destructive/10 text-destructive border border-destructive/20 flex items-center justify-center shrink-0">
+                                <ShieldAlert className="size-4" />
+                            </div>
+                            <div>
+                                <h3 className="text-xs md:text-sm font-heading font-bold text-destructive flex items-center gap-2">
+                                    Fraud & Duplicate TrxID Sentinel
+                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-destructive/20 text-destructive">
+                                        {reconciliation.duplicateTrxCount} Anomaly{reconciliation.duplicateTrxCount > 1 ? 'ies' : ''} Detected
+                                    </span>
+                                </h3>
+                                <p className="text-[11px] text-muted-foreground">
+                                    Multiple payments share identical transaction IDs (TrxID). Verify bank/MFS statements before approving.
+                                </p>
+                            </div>
+                        </div>
+                        <Button
+                            size="sm"
+                            variant={filter === 'fraud_duplicates' ? 'default' : 'destructive'}
+                            onClick={() => setFilter(filter === 'fraud_duplicates' ? 'all' : 'fraud_duplicates')}
+                            className="h-8 text-[10px] font-heading font-bold uppercase tracking-wider"
+                        >
+                            {filter === 'fraud_duplicates' ? 'Show All Payments' : 'Isolate Flagged Duplicates'}
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-2 border-t border-destructive/15">
+                        {reconciliation.fraudAlerts.map(alert => (
+                            <div key={alert.transactionId} className="flex items-center justify-between px-3 py-2 rounded-lg bg-background/80 border border-destructive/20 text-[11px]">
+                                <span className="font-mono font-bold text-destructive">
+                                    {alert.transactionId}
+                                </span>
+                                <span className="text-muted-foreground text-[10px]">
+                                    {alert.count} submissions &middot; ৳{alert.totalAmount}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Matrix Filters */}
             <div className="flex flex-wrap bg-background p-1.5 rounded-lg gap-2 border border-border w-fit">
                 {[
                     { id: 'pending_verification', label: 'Verify' },
                     { id: 'confirmed', label: 'Verified' },
                     { id: 'rejected', label: 'Rejected' },
-                    { id: 'all', label: 'Universal' }
+                    { id: 'all', label: 'Universal' },
+                    ...(reconciliation?.duplicateTrxCount > 0 ? [{ id: 'fraud_duplicates', label: `⚠️ Duplicates (${reconciliation.duplicateTrxCount})`, isAlert: true }] : [])
                 ].map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setFilter(tab.id)}
                         className={`px-6 py-2.5 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border transition-all duration-300 active:scale-[0.98] ${filter === tab.id
-                            ? 'bg-primary border-primary text-primary-foreground shadow-sm'
-                            : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted'
+                            ? tab.isAlert
+                                ? 'bg-destructive border-destructive text-destructive-foreground shadow-sm'
+                                : 'bg-primary border-primary text-primary-foreground shadow-sm'
+                            : tab.isAlert
+                                ? 'text-destructive border-destructive/30 hover:bg-destructive/10'
+                                : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted'
                             }`}
                     >
                         {tab.label}
@@ -254,11 +386,26 @@ const DashPayments = () => {
                         label: 'Reference',
                         hideOn: 'xl',
                         align: 'center',
-                        render: (v) => (
-                            <span className="rounded-lg border border-primary/20 text-primary bg-primary/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest">
-                                {v}
-                            </span>
-                        ),
+                        render: (v) => {
+                            const isDup = duplicateTrxIds.has(v);
+                            return (
+                                <div className="flex flex-col items-center gap-0.5">
+                                    <span className={cn(
+                                        "rounded-lg border px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest",
+                                        isDup
+                                            ? "border-destructive/40 text-destructive bg-destructive/10"
+                                            : "border-primary/20 text-primary bg-primary/10"
+                                    )}>
+                                        {v}
+                                    </span>
+                                    {isDup && (
+                                        <span className="text-[8px] font-mono font-bold text-destructive flex items-center gap-0.5">
+                                            <ShieldAlert className="size-2.5" /> DUPLICATE
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        },
                     },
                     {
                         key: 'grossAmount',

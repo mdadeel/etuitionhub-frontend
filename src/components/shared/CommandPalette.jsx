@@ -36,6 +36,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
+import api from "../../services/api";
 
 const fuzzyMatch = (query, target) => {
   if (!query) return true;
@@ -272,6 +273,39 @@ const CommandPalette = ({ open, onOpenChange }) => {
     );
   }, [isAdmin, isTutor, isLoggedIn, theme]);
 
+  const [adminSearchResults, setAdminSearchResults] = useState(null);
+  const [isSearchingAdmin, setIsSearchingAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!isAdmin || !open) {
+      setAdminSearchResults(null);
+      setIsSearchingAdmin(false);
+      return;
+    }
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
+      setAdminSearchResults(null);
+      setIsSearchingAdmin(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearchingAdmin(true);
+      try {
+        const res = await api.get(`/api/admin/search?q=${encodeURIComponent(trimmed)}`);
+        if (res.data?.data) {
+          setAdminSearchResults(res.data.data);
+        }
+      } catch {
+        // silent fallback
+      } finally {
+        setIsSearchingAdmin(false);
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [query, isAdmin, open]);
+
   const filtered = useMemo(() => {
     const q = query.trim();
     const matched = items.filter(
@@ -280,11 +314,50 @@ const CommandPalette = ({ open, onOpenChange }) => {
         fuzzyMatch(q, item.section) ||
         item.keywords?.some((k) => fuzzyMatch(q, k)),
     );
-    return matched
+    const staticResults = matched
       .map((item) => ({ item, score: scoreItem(q, item) }))
       .sort((a, b) => b.score - a.score)
       .map((x) => x.item);
-  }, [items, query]);
+
+    if (!adminSearchResults) return staticResults;
+
+    const dynamicItems = [];
+    if (adminSearchResults.users?.length) {
+      adminSearchResults.users.forEach((u) => {
+        dynamicItems.push({
+          section: "Platform: Users",
+          label: `${u.name || u.email} (${u.role || "user"})`,
+          sublabel: u.email,
+          path: `/super-admin/users`,
+          icon: User,
+        });
+      });
+    }
+    if (adminSearchResults.tuitions?.length) {
+      adminSearchResults.tuitions.forEach((t) => {
+        dynamicItems.push({
+          section: "Platform: Tuitions",
+          label: `${t.title || t.subject || "Tuition"} — ${t.class || ""}`,
+          sublabel: t.location || t.student_email,
+          path: `/super-admin/tuitions`,
+          icon: BookOpen,
+        });
+      });
+    }
+    if (adminSearchResults.payments?.length) {
+      adminSearchResults.payments.forEach((p) => {
+        dynamicItems.push({
+          section: "Platform: Payments",
+          label: `TrxID: ${p.transactionId} (৳${p.amount})`,
+          sublabel: `${p.paymentMethod?.toUpperCase()} · ${p.status}`,
+          path: `/super-admin/payments`,
+          icon: CreditCard,
+        });
+      });
+    }
+
+    return [...dynamicItems, ...staticResults];
+  }, [items, query, adminSearchResults]);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -372,6 +445,9 @@ const CommandPalette = ({ open, onOpenChange }) => {
             spellCheck="false"
             data-testid="command-palette-input"
           />
+          {isSearchingAdmin && (
+            <span className="size-3 rounded-full border-2 border-primary border-t-transparent animate-spin shrink-0" />
+          )}
           <kbd className="hidden sm:inline-flex items-center gap-1 px-1.5 h-5 text-[10px] font-mono font-medium text-muted-foreground bg-background border border-border rounded">
             ESC
           </kbd>
@@ -420,9 +496,16 @@ const CommandPalette = ({ open, onOpenChange }) => {
                           )}
                         />
                       )}
-                      <span className="flex-1 truncate font-medium">
-                        {item.label}
-                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium">
+                          {item.label}
+                        </div>
+                        {item.sublabel && (
+                          <div className="text-[10px] text-muted-foreground truncate">
+                            {item.sublabel}
+                          </div>
+                        )}
+                      </div>
                       {item.path && !item.action && (
                         <ChevronRight
                           className={cn(
