@@ -7,9 +7,9 @@ import { Navigate } from 'react-router-dom';
  * the current user's permissions within their active organization context.
  *
  * @param {Object} props
- * @param {string} props.permission - The permission required (e.g., 'tuition:create')
- * @param {React.ReactNode} props.fallback - Optional fallback UI if permission is denied
- * @param {boolean} props.redirect - If true, redirects to dashboard instead of rendering fallback
+ * @param {string|string[]} [props.permission] - The permission(s) required (e.g., 'tuition:view' or ['billing:read', 'invoice:view'])
+ * @param {React.ReactNode} [props.fallback] - Optional fallback UI if permission is denied
+ * @param {boolean} [props.redirect] - If true, redirects to dashboard instead of rendering fallback
  */
 const OrgPermissionGate = ({ permission, fallback = null, redirect = false, children }) => {
     const { hasPermission, loading } = useAuth();

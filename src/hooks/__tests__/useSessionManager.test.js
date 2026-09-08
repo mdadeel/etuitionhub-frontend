@@ -34,3 +34,24 @@ describe('useSessionManager.setJWT source checks', () => {
         expect(getIdTokenCalls.some(call => call.includes('true'))).toBe(true);
     });
 });
+
+describe('useSessionManager.hasPermission source checks', () => {
+    it('supports array of permissions via some check', () => {
+        expect(source).toContain('Array.isArray(permission)');
+        expect(source).toContain('permission.some(checkSingle)');
+    });
+
+    it('grants access unconditionally if permission is null or falsy', () => {
+        expect(source).toContain('if (!permission) return true;');
+    });
+
+    it('grants full access to super_admin and org owner', () => {
+        expect(source).toContain("dbUser?.globalRole === 'super_admin'");
+        expect(source).toContain("orgMember?.isOwner || orgMember?.role?.slug === 'owner' || orgRole?.slug === 'owner'");
+    });
+
+    it('supports domain wildcard permissions (e.g. domain:*)', () => {
+        expect(source).toContain('perms.includes(`${domain}:*`)');
+    });
+});
+

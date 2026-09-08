@@ -2,6 +2,7 @@ import { lazy, useEffect } from 'react';
 import { Routes, Route, useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import OrgPermissionGate from '../shared/OrgPermissionGate';
+import { ORG_ROUTE_PERMISSIONS } from '../../constants/orgPermissions';
 
 const OrgSettings = lazy(() => import('./Organization/OrgSettings'));
 const OrgMembers = lazy(() => import('./Organization/OrgMembers'));
@@ -65,12 +66,19 @@ const OrgDashboardLayout = () => {
   return (
     <Routes>
       <Route index element={<OrgHome />} />
-      <Route path="tuitions" element={<OrgTuitions />} />
+      <Route 
+        path="tuitions" 
+        element={
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.tuitions} redirect>
+            <OrgTuitions />
+          </OrgPermissionGate>
+        } 
+      />
       <Route path="sessions" element={<OrgSessions />} />
       <Route 
         path="members" 
         element={
-          <OrgPermissionGate permission="member:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.members} redirect>
             <OrgMembers />
           </OrgPermissionGate>
         } 
@@ -78,7 +86,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="settings" 
         element={
-          <OrgPermissionGate permission="settings:manage" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.settings} redirect>
             <OrgSettings />
           </OrgPermissionGate>
         } 
@@ -86,7 +94,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="payments" 
         element={
-          <OrgPermissionGate permission="invoice:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.payments} redirect>
             <OrgPayments />
           </OrgPermissionGate>
         } 
@@ -94,7 +102,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="roles" 
         element={
-          <OrgPermissionGate permission="role:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.roles} redirect>
             <OrgRoles />
           </OrgPermissionGate>
         } 
@@ -102,7 +110,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="billing" 
         element={
-          <OrgPermissionGate permission="invoice:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.billing} redirect>
             <OrgBilling />
           </OrgPermissionGate>
         } 
@@ -110,7 +118,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="analytics" 
         element={
-          <OrgPermissionGate permission="analytics:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.analytics} redirect>
             <OrgAnalytics />
           </OrgPermissionGate>
         } 
@@ -118,7 +126,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="students" 
         element={
-          <OrgPermissionGate permission="student:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.students} redirect>
             <OrgStudents />
           </OrgPermissionGate>
         } 
@@ -126,7 +134,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="tutors" 
         element={
-          <OrgPermissionGate permission="tutor:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.tutors} redirect>
             <OrgTutors />
           </OrgPermissionGate>
         } 
@@ -134,7 +142,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="classes" 
         element={
-          <OrgPermissionGate permission="class:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.classes} redirect>
             <OrgClasses />
           </OrgPermissionGate>
         } 
@@ -142,7 +150,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="subjects" 
         element={
-          <OrgPermissionGate permission="subject:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.subjects} redirect>
             <OrgSubjects />
           </OrgPermissionGate>
         } 
@@ -150,7 +158,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="assignments" 
         element={
-          <OrgPermissionGate permission="assignment:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.assignments} redirect>
             <OrgAssignments />
           </OrgPermissionGate>
         } 
@@ -158,7 +166,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="materials" 
         element={
-          <OrgPermissionGate permission="material:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.materials} redirect>
             <OrgMaterials />
           </OrgPermissionGate>
         } 
@@ -166,7 +174,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="announcements" 
         element={
-          <OrgPermissionGate permission="announcement:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.announcements} redirect>
             <OrgAnnouncements />
           </OrgPermissionGate>
         } 
@@ -174,7 +182,7 @@ const OrgDashboardLayout = () => {
       <Route
         path="messages"
         element={
-          <OrgPermissionGate permission="message:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.messages} redirect>
             <OrgMessages />
           </OrgPermissionGate>
         }
@@ -182,7 +190,7 @@ const OrgDashboardLayout = () => {
       <Route
         path="attendance"
         element={
-          <OrgPermissionGate permission="attendance:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.attendance} redirect>
             <OrgAttendance />
           </OrgPermissionGate>
         } 
@@ -190,7 +198,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="branches" 
         element={
-          <OrgPermissionGate permission="member:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.branches} redirect>
             <OrgBranches />
           </OrgPermissionGate>
         } 
@@ -198,7 +206,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="enrollments" 
         element={
-          <OrgPermissionGate permission="student:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.enrollments} redirect>
             <OrgEnrollments />
           </OrgPermissionGate>
         } 
@@ -206,7 +214,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="guardians" 
         element={
-          <OrgPermissionGate permission="student:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.guardians} redirect>
             <OrgGuardians />
           </OrgPermissionGate>
         } 
@@ -214,7 +222,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="schedule" 
         element={
-          <OrgPermissionGate permission="class:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.schedule} redirect>
             <OrgSchedule />
           </OrgPermissionGate>
         } 
@@ -222,7 +230,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="exams" 
         element={
-          <OrgPermissionGate permission="exam:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.exams} redirect>
             <OrgExams />
           </OrgPermissionGate>
         } 
@@ -230,7 +238,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="results" 
         element={
-          <OrgPermissionGate permission="result:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.results} redirect>
             <OrgResults />
           </OrgPermissionGate>
         } 
@@ -238,7 +246,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="invoices" 
         element={
-          <OrgPermissionGate permission="invoice:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.invoices} redirect>
             <OrgInvoices />
           </OrgPermissionGate>
         } 
@@ -246,7 +254,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="salaries" 
         element={
-          <OrgPermissionGate permission="salary:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.salaries} redirect>
             <OrgSalaries />
           </OrgPermissionGate>
         } 
@@ -254,7 +262,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="expenses" 
         element={
-          <OrgPermissionGate permission="payment:view_all" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.expenses} redirect>
             <OrgExpenses />
           </OrgPermissionGate>
         } 
@@ -262,7 +270,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="scholarships" 
         element={
-          <OrgPermissionGate permission="student:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.scholarships} redirect>
             <OrgScholarships />
           </OrgPermissionGate>
         } 
@@ -270,7 +278,7 @@ const OrgDashboardLayout = () => {
       <Route
         path="audit-logs"
         element={
-          <OrgPermissionGate permission="audit:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS['audit-logs']} redirect>
             <OrgAuditLogs />
           </OrgPermissionGate>
         }
@@ -278,7 +286,7 @@ const OrgDashboardLayout = () => {
       <Route
         path="academic-years"
         element={
-          <OrgPermissionGate permission="class:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS['academic-years']} redirect>
             <OrgAcademicYears />
           </OrgPermissionGate>
         } 
@@ -286,7 +294,7 @@ const OrgDashboardLayout = () => {
       <Route 
         path="batches" 
         element={
-          <OrgPermissionGate permission="class:view" redirect>
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.batches} redirect>
             <OrgBatches />
           </OrgPermissionGate>
         } 

@@ -416,19 +416,28 @@ const useSessionManager = () => {
     }, [myOrgs]);
 
     const hasPermission = useCallback((permission) => {
+        if (!permission) return true;
         // Super admin has all permissions (canonical signal — role:'admin' is vestigial)
         if (dbUser?.globalRole === 'super_admin') return true;
         // Org owner has full permissions
         if (orgMember?.isOwner || orgMember?.role?.slug === 'owner' || orgRole?.slug === 'owner') return true;
-        // Check org permissions
-        if (orgMember && orgMember.role && orgMember.role.permissions) {
-            const perms = orgMember.role.permissions;
-            if (perms.includes('*')) return true;
-            if (perms.includes(permission)) return true;
-            const domain = permission.split(':')[0];
-            if (perms.includes(`${domain}:*`)) return true;
+
+        const checkSingle = (perm) => {
+            if (!perm) return true;
+            if (orgMember && orgMember.role && orgMember.role.permissions) {
+                const perms = orgMember.role.permissions;
+                if (perms.includes('*')) return true;
+                if (perms.includes(perm)) return true;
+                const domain = perm.split(':')[0];
+                if (perms.includes(`${domain}:*`)) return true;
+            }
+            return false;
+        };
+
+        if (Array.isArray(permission)) {
+            return permission.some(checkSingle);
         }
-        return false;
+        return checkSingle(permission);
     }, [dbUser, orgMember, orgRole]);
 
     return {

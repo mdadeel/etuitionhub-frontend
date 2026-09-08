@@ -39,6 +39,7 @@ import {
   Star,
   Search,
 } from "lucide-react";
+import { ORG_ROUTE_PERMISSIONS } from "../../constants/orgPermissions";
 
 function buildOrgMenu(orgContext, hasPermission) {
   const orgPath = `/dashboard/org/${orgContext.orgId || orgContext.slug}`;
@@ -46,85 +47,91 @@ function buildOrgMenu(orgContext, hasPermission) {
     { path: orgPath, label: "Overview", icon: LayoutDashboard, group: "Core" },
     { path: `${orgPath}/sessions`, label: "Sessions", icon: ClipboardCheck, group: "Core" },
   ];
-  if (hasPermission('tuition:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.tuitions)) {
     items.push({ path: `${orgPath}/tuitions`, label: "Tuitions", icon: BookOpen, group: "Core" });
   }
-  if (hasPermission('member:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.members)) {
     items.push({ path: `${orgPath}/members`, label: "Members", icon: Users, group: "People" });
   }
-  if (hasPermission('student:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.students)) {
     items.push({ path: `${orgPath}/students`, label: "Students", icon: User, group: "People" });
   }
-  if (hasPermission('tutor:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.tutors)) {
     items.push({ path: `${orgPath}/tutors`, label: "Tutors", icon: ShieldCheck, group: "People" });
   }
-  if (hasPermission('class:view') || hasPermission('class:manage')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.classes)) {
     items.push({ path: `${orgPath}/classes`, label: "Classes", icon: LayoutDashboard, group: "Academic" });
   }
-  if (hasPermission('class:manage')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS['academic-years'])) {
     items.push({ path: `${orgPath}/academic-years`, label: "Academic Years", icon: Calendar, group: "Academic" });
+  }
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.batches)) {
     items.push({ path: `${orgPath}/batches`, label: "Batches", icon: Layers, group: "Academic" });
   }
-  if (hasPermission('subject:manage')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.subjects)) {
     items.push({ path: `${orgPath}/subjects`, label: "Subjects", icon: FileStack, group: "Academic" });
   }
-  if (hasPermission('class:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.schedule)) {
     items.push({ path: `${orgPath}/schedule`, label: "Schedule", icon: Clock, group: "Academic" });
   }
-  if (hasPermission('assignment:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.assignments)) {
     items.push({ path: `${orgPath}/assignments`, label: "Assignments", icon: FileText, group: "Academic" });
   }
-  if (hasPermission('material:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.materials)) {
     items.push({ path: `${orgPath}/materials`, label: "Materials", icon: Bookmark, group: "Academic" });
   }
-  if (hasPermission('attendance:mark') || hasPermission('attendance:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.attendance)) {
     items.push({ path: `${orgPath}/attendance`, label: "Attendance", icon: Calendar, group: "Academic" });
   }
-  if (hasPermission('branch:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.branches)) {
     items.push({ path: `${orgPath}/branches`, label: "Branches", icon: GitBranch, group: "Academic" });
   }
-  if (hasPermission('exam:view') || hasPermission('exam:manage')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.exams)) {
     items.push({ path: `${orgPath}/exams`, label: "Exams", icon: FileSpreadsheet, group: "Academic" });
   }
-  if (hasPermission('result:view') || hasPermission('result:manage')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.results)) {
     items.push({ path: `${orgPath}/results`, label: "Results", icon: Trophy, group: "Academic" });
   }
-  if (hasPermission('announcement:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.announcements)) {
     items.push({ path: `${orgPath}/announcements`, label: "Announcements", icon: Mail, group: "Communication" });
   }
-  if (hasPermission('message:send') || hasPermission('message:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.messages)) {
     items.push({ path: `${orgPath}/messages`, label: "Messages", icon: MessageSquare, group: "Communication" });
   }
-  if (hasPermission('billing:read') || hasPermission('invoice:view') || hasPermission('payment:view_all')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.payments)) {
     items.push({ path: `${orgPath}/payments`, label: "Payments", icon: Banknote, group: "Finance" });
+  }
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.billing)) {
     items.push({ path: `${orgPath}/billing`, label: "Subscription", icon: CreditCard, group: "Finance" });
+  }
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.invoices)) {
     items.push({ path: `${orgPath}/invoices`, label: "Invoices", icon: Receipt, group: "Finance" });
   }
-  if (hasPermission('salary:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.salaries)) {
     items.push({ path: `${orgPath}/salaries`, label: "Salaries", icon: WalletCards, group: "Finance" });
   }
-  if (hasPermission('payment:view_all')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.expenses)) {
     items.push({ path: `${orgPath}/expenses`, label: "Expenses", icon: Landmark, group: "Finance" });
   }
-  if (hasPermission('student:enroll') || hasPermission('student:manage')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.enrollments)) {
     items.push({ path: `${orgPath}/enrollments`, label: "Enrollments", icon: GraduationCap, group: "People" });
   }
-  if (hasPermission('student:manage')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.guardians)) {
     items.push({ path: `${orgPath}/guardians`, label: "Guardians", icon: HeartHandshake, group: "People" });
   }
-  if (hasPermission('student:manage') || hasPermission('billing:read')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.scholarships)) {
     items.push({ path: `${orgPath}/scholarships`, label: "Scholarships", icon: PiggyBank, group: "Finance" });
   }
-  if (hasPermission('role:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.roles)) {
     items.push({ path: `${orgPath}/roles`, label: "Roles", icon: Shield, group: "Settings" });
   }
-  if (hasPermission('analytics:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.analytics)) {
     items.push({ path: `${orgPath}/analytics`, label: "Analytics", icon: BarChart3, group: "Settings" });
   }
-  if (hasPermission('audit:view')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS['audit-logs'])) {
     items.push({ path: `${orgPath}/audit-logs`, label: "Audit Logs", icon: History, group: "Settings" });
   }
-  if (hasPermission('settings:manage')) {
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.settings)) {
     items.push({ path: `${orgPath}/settings`, label: "Settings", icon: Settings, group: "Settings" });
   }
   return items;
