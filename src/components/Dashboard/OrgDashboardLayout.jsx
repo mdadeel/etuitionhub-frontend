@@ -55,17 +55,51 @@ const OrgDashboardLayout = () => {
 
   if (loading) return null;
 
-  // Validate that the user actually belongs to this org.
-  // Super admin bypasses membership — they manage every org (backend RBAC agrees).
   const isSuperAdmin = dbUser?.globalRole === 'super_admin';
   const isMember = isSuperAdmin || myOrgs.some(o => o.orgId === orgId || o.slug === orgId);
   if (!isMember) {
     return <Navigate to="/dashboard" replace />;
   }
 
+  const currentOrg = orgContext || myOrgs.find(o => o.orgId === orgId || o.slug === orgId);
+  const isBanned = currentOrg?.status === 'banned';
+  const isSuspended = currentOrg?.status === 'suspended';
+
+  if (isBanned && !isSuperAdmin) {
+    return (
+      <div className="p-8 max-w-2xl mx-auto my-12 text-center space-y-4">
+        <div className="p-6 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive space-y-3">
+          <h2 className="text-xl font-heading font-bold">Organization Banned</h2>
+          <p className="text-sm text-muted-foreground">
+            This organization workspace has been suspended or banned by platform administration. Access is restricted.
+          </p>
+          {currentOrg?.bannedReason && (
+            <p className="text-xs text-destructive/90 font-mono bg-destructive/10 p-2 rounded">
+              Reason: {currentOrg.bannedReason}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <Routes>
-      <Route index element={<OrgHome />} />
+    <div className="space-y-4">
+      {isSuspended && (
+        <div className="bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 px-4 py-3 rounded-lg text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">⚠️ Organization Suspended:</span>
+            <span>This workspace has been suspended by platform administration. Write operations are temporarily restricted.</span>
+          </div>
+          {currentOrg?.suspensionReason && (
+            <span className="text-xs opacity-80 font-mono">
+              Reason: {currentOrg.suspensionReason}
+            </span>
+          )}
+        </div>
+      )}
+      <Routes>
+        <Route index element={<OrgHome />} />
       <Route 
         path="tuitions" 
         element={
@@ -301,6 +335,7 @@ const OrgDashboardLayout = () => {
       />
       <Route path="*" element={<Navigate to="" replace />} />
     </Routes>
+    </div>
   );
 };
 
