@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
@@ -14,9 +14,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Send, ArrowLeft, GraduationCap, Plus, RefreshCw } from "lucide-react";
+import {
+  Send,
+  ArrowLeft,
+  GraduationCap,
+  Plus,
+  RefreshCw,
+  CheckCircle2,
+  ShieldCheck,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 import LoginRequiredModal from "../components/shared/LoginRequiredModal";
+import TutorCard from "../components/shared/TutorCard";
 import SEO from '../components/shared/SEO';
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 const CLASS_LEVELS = [
@@ -30,16 +42,30 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
   const { user, dbUser, loading: authLoading } = useAuth();
   const role = dbUser?.role?.toLowerCase();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialLoc = searchParams.get("location") || "";
+  const initialSubj = searchParams.get("subject") || "";
+
   const [submitting, setSubmitting] = useState(false);
-  const [subject, setSubject] = useState("");
+  const [subject, setSubject] = useState(initialSubj);
   const [className, setClassName] = useState("");
   const [salary, setSalary] = useState("");
   const [medium, setMedium] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(initialLoc);
   const [gender, setGender] = useState("");
   const [daysPerWeek, setDaysPerWeek] = useState("");
   const [description, setDescription] = useState("");
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // Instant Match Funnel State
+  const [submissionSuccess, setSubmissionSuccess] = useState(null);
+  const [matchedTutors, setMatchedTutors] = useState([]);
+  const [matchingLoading, setMatchingLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialLoc && !location) setLocation(initialLoc);
+    if (initialSubj && !subject) setSubject(initialSubj);
+  }, [initialLoc, initialSubj, location, subject]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,6 +104,14 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
       return;
     }
 
+    const submittedDetails = {
+      subject,
+      className,
+      salary: parsedSalary,
+      location,
+      medium,
+    };
+
     setSubmitting(true);
     try {
       await api.post("/api/tuitions", {
@@ -91,6 +125,30 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
         description: description || undefined,
       });
       toast.success(t('postTuition.success'));
+      setSubmissionSuccess(submittedDetails);
+
+      // Fetch instant candidate recommendations
+      setMatchingLoading(true);
+      try {
+        const matchRes = await api.get("/api/tutors", {
+          params: {
+            subject,
+            area: location,
+            limit: 3,
+          },
+        });
+        const list = Array.isArray(matchRes.data?.tutors)
+          ? matchRes.data.tutors
+          : Array.isArray(matchRes.data)
+            ? matchRes.data
+            : [];
+        setMatchedTutors(list);
+      } catch {
+        setMatchedTutors([]);
+      } finally {
+        setMatchingLoading(false);
+      }
+
       setSubject("");
       setClassName("");
       setSalary("");
@@ -99,11 +157,6 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
       setGender("");
       setDaysPerWeek("");
       setDescription("");
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate("/dashboard");
-      }
     } catch (err) {
       toast.error(err.response?.data?.error || t('postTuition.error_generic'));
     } finally {
@@ -313,7 +366,104 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
     </form>
   );
 
+  const instantMatchView = submissionSuccess && (
+    <div className="space-y-8 animate-in fade-in duration-300">
+      {/* Celebration Header */}
+      <div className="text-center space-y-3 max-w-xl mx-auto">
+        <div className="size-16 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-sm">
+          <CheckCircle2 size={32} />
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-heading font-bold text-foreground">
+          Tuition Request Successfully Posted!
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          We have broadcast your requirements to vetted tutors in <strong className="text-foreground">{submissionSuccess.location}</strong> teaching <strong className="text-foreground">{submissionSuccess.subject}</strong>.
+        </p>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+          <ShieldCheck size={14} />
+          <span>100% Parent Guarantee · First trial session is a Free Demo</span>
+        </div>
+      </div>
+
+      {/* Immediate Recommended Tutors */}
+      <div className="rounded-2xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-4">
+          <div>
+            <h3 className="text-lg font-heading font-bold text-foreground flex items-center gap-2">
+              <Sparkles size={18} className="text-primary" />
+              <span>Instant Matching Candidates</span>
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Top educators matching your criteria ready for an immediate demo session.
+            </p>
+          </div>
+          <Link
+            to={`/tutors?area=${encodeURIComponent(submissionSuccess.location)}&subject=${encodeURIComponent(submissionSuccess.subject)}`}
+            className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
+          >
+            <span>Browse all tutors in {submissionSuccess.location}</span>
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        {matchingLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="p-5 space-y-3">
+                <Skeleton className="size-12 rounded-xl" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </Card>
+            ))}
+          </div>
+        ) : matchedTutors.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {matchedTutors.map((tutor) => (
+              <TutorCard key={tutor._id} tutor={tutor} />
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 text-center text-sm text-muted-foreground bg-muted/20 rounded-2xl border border-dashed border-border/80">
+            Tutors are reviewing your tuition post right now. You will receive real-time notifications in your dashboard as soon as applicants apply!
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border/60">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setSubmissionSuccess(null)}
+            className="rounded-xl text-xs"
+          >
+            Post Another Tuition Request
+          </Button>
+
+          <Button
+            variant="primary"
+            onClick={() => {
+              if (onSuccess) onSuccess();
+              else navigate("/dashboard");
+            }}
+            className="rounded-xl font-bold shadow-sm"
+          >
+            <span>Go to My Dashboard</span>
+            <ArrowRight size={16} className="ml-1.5" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   if (isDashboard) {
+    if (submissionSuccess) {
+      return (
+        <Card className="p-6 md:p-10 max-w-4xl mx-auto">
+          {instantMatchView}
+        </Card>
+      );
+    }
+
     return (
       <Card className="p-8 md:p-12 max-w-4xl mx-auto relative overflow-hidden group">
         <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-lg -mr-32 -mt-32 blur-3xl transition-transform duration-700 group-hover:scale-110"></div>
@@ -340,51 +490,57 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
   return (
     <div className="bg-background min-h-screen py-12">
       <SEO title={t('postTuition.seo_title')} description={t('postTuition.seo_desc')} />
-      <div className="max-w-3xl mx-auto px-6">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
-          >
-            <ArrowLeft size={16} /> {t('common.back')}
-          </button>
-          <h1 className="text-2xl font-heading text-foreground mb-2">
-            {t('postTuition.title')}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('postTuition.subtitle')}
-          </p>
-        </div>
-
-        {!user ? (
-          <div className="bg-card border border-border p-8 rounded-xl text-center shadow-sm">
-            <div className="size-16 bg-muted rounded-xl flex items-center justify-center mx-auto mb-4">
-              <GraduationCap size={28} className="text-muted-foreground" />
-            </div>
-            <h2 className="text-lg font-heading text-foreground mb-2">
-              {t('common.login_required', 'Login required')}
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              {t('postTuition.login_msg', 'You need to be logged in to post a tuition request')}
-            </p>
-            <div className="flex items-center justify-center gap-4">
-              <Link
-                to="/login"
-                className="px-5 py-2.5 border border-border text-foreground font-medium rounded-lg hover:bg-background transition-colors"
-              >
-                {t('navigation.login', 'Sign In')}
-              </Link>
-              <Link
-                to="/register"
-                className="px-5 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                {t('navigation.get_started', 'Create Account')}
-              </Link>
-            </div>
-          </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        {submissionSuccess ? (
+          instantMatchView
         ) : (
-          formContent
+          <>
+            {/* Header */}
+            <div className="mb-8">
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
+              >
+                <ArrowLeft size={16} /> {t('common.back')}
+              </button>
+              <h1 className="text-2xl font-heading text-foreground mb-2">
+                {t('postTuition.title')}
+              </h1>
+              <p className="text-muted-foreground">
+                {t('postTuition.subtitle')}
+              </p>
+            </div>
+
+            {!user ? (
+              <div className="bg-card border border-border p-8 rounded-xl text-center shadow-sm">
+                <div className="size-16 bg-muted rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <GraduationCap size={28} className="text-muted-foreground" />
+                </div>
+                <h2 className="text-lg font-heading text-foreground mb-2">
+                  {t('common.login_required', 'Login required')}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {t('postTuition.login_msg', 'You need to be logged in to post a tuition request')}
+                </p>
+                <div className="flex items-center justify-center gap-4">
+                  <Link
+                    to="/login"
+                    className="px-5 py-2.5 border border-border text-foreground font-medium rounded-lg hover:bg-background transition-colors"
+                  >
+                    {t('navigation.login', 'Sign In')}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-5 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors"
+                  >
+                    {t('navigation.get_started', 'Create Account')}
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              formContent
+            )}
+          </>
         )}
       </div>
       <LoginRequiredModal open={showLoginModal} onOpenChange={setShowLoginModal} action="post a tuition" />

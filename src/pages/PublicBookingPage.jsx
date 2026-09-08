@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import {
-    Calendar, Clock, ChevronLeft, Send, Loader2, User, CheckCircle2
+    Calendar, Clock, ChevronLeft, Send, Loader2, User, CheckCircle2, ShieldCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -245,6 +245,11 @@ const PublicBookingPage = () => {
                                 You will need to log in after sending to track your request.
                             </p>
                         )}
+
+                        <div className="mt-3 p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 flex items-center gap-2 text-xs">
+                            <ShieldCheck className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                            <span>100% Parent Guarantee · First trial session is free · Escrow protection</span>
+                        </div>
 
                         <Button
                             onClick={handleSubmit}

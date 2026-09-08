@@ -76,6 +76,26 @@ export function breadcrumbJsonLd(crumbs) {
 }
 
 /**
+ * FAQPage schema — for landing & programmatic pages.
+ * @param {Array<{ question: string, answer: string }>} faqs
+ */
+export function faqPageJsonLd(faqs) {
+    if (!Array.isArray(faqs) || faqs.length === 0) return null;
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+                "@type": "Answer",
+                text: faq.answer,
+            },
+        })),
+    };
+}
+
+/**
  * Serialize a JSON-LD object to a <script> tag string.
  * Returns null if the object is empty/falsy.
  */

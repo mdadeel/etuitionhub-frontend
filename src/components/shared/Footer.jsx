@@ -115,12 +115,12 @@ const Footer = () => {
                             "space-y-3 transition-all duration-300 ease-in-out overflow-hidden md:max-h-none md:opacity-100",
                             openSection === 'areas' ? "max-h-64 opacity-100 mt-3" : "max-h-0 opacity-0 md:mt-0"
                         )}>
-                            <li><Link to="/tutors?area=Dhaka" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Dhaka</Link></li>
-                            <li><Link to="/tutors?area=Chattogram" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Chittagong</Link></li>
-                            <li><Link to="/tutors?area=Sylhet" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Sylhet</Link></li>
-                            <li><Link to="/tutors?area=Uttara" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Uttara, Dhaka</Link></li>
-                            <li><Link to="/tutors?area=Dhanmondi" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Dhanmondi, Dhaka</Link></li>
-                            <li><Link to="/tutors?area=Mirpur" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Mirpur, Dhaka</Link></li>
+                            <li><Link to="/tutors/dhaka" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Dhaka</Link></li>
+                            <li><Link to="/tutors/chattogram" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Chittagong</Link></li>
+                            <li><Link to="/tutors/sylhet" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Sylhet</Link></li>
+                            <li><Link to="/tutors/dhaka/uttara" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Uttara, Dhaka</Link></li>
+                            <li><Link to="/tutors/dhaka/dhanmondi" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Dhanmondi, Dhaka</Link></li>
+                            <li><Link to="/tutors/dhaka/mirpur" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Mirpur, Dhaka</Link></li>
                         </ul>
                     </div>
 
@@ -142,6 +142,7 @@ const Footer = () => {
                             <li><Link to="/tutors" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Browse Tutors</Link></li>
                             <li><Link to="/post-tuition" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Post a Tuition</Link></li>
                             <li><Link to="/become-tutor" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Join as a Tutor</Link></li>
+                            <li><Link to="/tutor-earnings" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutor Earnings Calculator</Link></li>
                             <li><Link to="/about" className="text-sm text-white/60 hover:text-white transition-colors duration-300">About Our Mission</Link></li>
                             <li><Link to="/docs/engineering" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Engineering Showcase</Link></li>
                             <li><Link to="/contact" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Contact Support</Link></li>

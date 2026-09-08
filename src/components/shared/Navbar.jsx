@@ -159,6 +159,7 @@ const Navbar = () => {
     ...(userRole !== "tutor" && !user
       ? [{ path: "/become-tutor", label: t("nav.become_tutor", "Become Tutor") }]
       : []),
+    { path: "/tutor-earnings", label: "Tutor Earnings" },
     { path: "/about", label: t("nav.about", "About") },
   ];
 

@@ -20,12 +20,14 @@ import { Card } from '@/components/ui/card';
 import FilterSelect from '@/components/shared/FilterSelect';
 import LocationFilter from '@/components/shared/LocationFilter';
 import TutorCard from '@/components/shared/TutorCard';
+import ParentGuaranteeModal from '@/components/shared/ParentGuaranteeModal';
 import { cn } from "@/lib/utils";
 
 
 const HomeBanner = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const [guaranteeOpen, setGuaranteeOpen] = useState(false);
 
     const { data: tutorsData } = useQuery({
         queryKey: ['tutors', 'featured'],
@@ -101,10 +103,18 @@ const handleSearch = (e) => {
                     {/* LEFT - Content & Search */}
                     <div className="lg:col-span-7 space-y-10">
                         <div className="space-y-6">
-                            <div>
+                            <div className="flex flex-wrap items-center gap-2.5">
                                 <Badge variant="secondary" className="px-4 py-1.5 rounded-full bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary-foreground/90 font-bold tracking-tight">
                                     {t('homeBanner.badge')}
                                 </Badge>
+                                <button
+                                    type="button"
+                                    onClick={() => setGuaranteeOpen(true)}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 transition-all cursor-pointer active:scale-95"
+                                >
+                                    <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400" />
+                                    <span>100% Parent Guarantee · Free Demo · Escrow Safe</span>
+                                </button>
                             </div>
 
                             <div className="space-y-4">
@@ -187,19 +197,29 @@ const handleSearch = (e) => {
                                     </div>
                                 </div>
 
-                                <div className="flex flex-wrap items-center gap-8 pt-4 border-t border-border/60">
-                                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-                                        <CheckCircle className="size-4 text-primary" />
-                                        <span>{t('tutors.vetted')}</span>
+                                <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border/60">
+                                    <div className="flex flex-wrap items-center gap-6">
+                                        <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                                            <CheckCircle className="size-4 text-primary" />
+                                            <span>{t('tutors.vetted')}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                                            <MessageCircle className="size-4 text-primary" />
+                                            <span>{t('homeBanner.stat_students')}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                                            <Users className="size-4 text-primary" />
+                                            <span>{t('homeBanner.trusted_by')}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-                                        <MessageCircle className="size-4 text-primary" />
-                                        <span>{t('homeBanner.stat_students')}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-                                        <Users className="size-4 text-primary" />
-                                        <span>{t('homeBanner.trusted_by')}</span>
-                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setGuaranteeOpen(true)}
+                                        className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                                    >
+                                        <ShieldCheck size={14} />
+                                        <span>Parent Guarantee Policy &rarr;</span>
+                                    </button>
                                 </div>
                             </Card>
                         </div>
@@ -268,6 +288,8 @@ const handleSearch = (e) => {
                     </div>
                 </div>
             </div>
+
+            <ParentGuaranteeModal open={guaranteeOpen} onOpenChange={setGuaranteeOpen} />
         </section>
     );
 };

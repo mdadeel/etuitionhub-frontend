@@ -29,7 +29,7 @@ if (window.__ETUITION_TUTORS__) {
         if (tutors.length > 0) {
             queryClient.setQueryData(['tutors', 'featured'], tutors);
         }
-    } catch (e) { /* hydration optional — never block boot */ }
+    } catch { /* hydration optional — never block boot */ }
 }
 
 createRoot(document.getElementById('root')).render(

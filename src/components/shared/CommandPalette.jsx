@@ -71,7 +71,6 @@ const CommandPalette = ({ open, onOpenChange }) => {
   const listRef = useRef(null);
 
   const isAdmin = dbUser?.globalRole === "super_admin";
-  const isTutor = dbUser?.role === "tutor";
   const isLoggedIn = !!user;
 
   const items = useMemo(() => {
@@ -271,7 +270,7 @@ const CommandPalette = ({ open, onOpenChange }) => {
     return list.filter(
       (item) => !item.requiresAuth || isLoggedIn,
     );
-  }, [isAdmin, isTutor, isLoggedIn, theme]);
+  }, [isAdmin, isLoggedIn, theme]);
 
   const [adminSearchResults, setAdminSearchResults] = useState(null);
   const [isSearchingAdmin, setIsSearchingAdmin] = useState(false);

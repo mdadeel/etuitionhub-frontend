@@ -87,6 +87,16 @@ const TrustBadges = ({ tutor, className, showExperience = true, showStatus = tru
     });
   }
 
+  if (tutor.freeDemoAvailable !== false) {
+    items.push({
+      key: 'free-demo',
+      icon: <Sparkles className="size-3 text-emerald-500 shrink-0" />,
+      label: 'Free Demo',
+      colorClass: 'text-emerald-600 dark:text-emerald-400 font-semibold',
+      title: 'Free 30-min trial session covered by 100% Parent Guarantee',
+    });
+  }
+
   if (items.length === 0) return null;
 
   return (

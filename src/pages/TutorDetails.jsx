@@ -485,6 +485,13 @@ const TutorDetails = () => {
                                         </p>
                                     </div>
                                 </div>
+                                <div className="mt-3.5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 dark:text-emerald-300 flex items-start gap-2 text-xs">
+                                    <ShieldCheck size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                                    <div>
+                                        <span className="font-semibold block">100% Parent Guarantee</span>
+                                        <span className="text-[11px] text-muted-foreground block mt-0.5">Free 30-min trial session · Zero-risk replacement · Escrow protected</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -728,6 +735,16 @@ const TutorDetails = () => {
                                     {tutor.expectedSalary && (
                                         <p className="text-[11px] text-muted-foreground mt-1">{t('tutorDetails.listed_rate', { rate: tutor.expectedSalary.toLocaleString() })}</p>
                                     )}
+                                </div>
+
+                                <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 flex items-start gap-2.5 text-xs text-emerald-950 dark:text-emerald-200">
+                                    <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                                    <div>
+                                        <p className="font-semibold">Zero Upfront Risk · 100% Parent Guarantee</p>
+                                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                                            First session is a free demo. Tuition fees are held securely in escrow and only released after you confirm satisfaction.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex gap-3 justify-end mt-6">

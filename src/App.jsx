@@ -63,6 +63,8 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const CityTutorsLanding = lazy(() => import("./pages/CityTutorsLanding"));
+const TutorEarningsPage = lazy(() => import("./pages/TutorEarningsPage"));
 const SessionRoom = lazy(() => import("./pages/SessionRoom"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
@@ -276,9 +278,12 @@ let App = () => {
                   <Route path="/" element={<RouteErrorBoundary><Home /></RouteErrorBoundary>} />
                   <Route path="/tuitions" element={<RouteErrorBoundary><Tuitions /></RouteErrorBoundary>} />
                   <Route path="/tutors" element={<RouteErrorBoundary><Tutors /></RouteErrorBoundary>} />
-                  <Route path="/tutors/:city" element={<RouteErrorBoundary><RedirectToTutorsCity /></RouteErrorBoundary>} />
+                  <Route path="/tutors/:city" element={<RouteErrorBoundary><CityTutorsLanding /></RouteErrorBoundary>} />
+                  <Route path="/tutors/:city/:thana" element={<RouteErrorBoundary><CityTutorsLanding /></RouteErrorBoundary>} />
                   <Route path="/tutor/:id" element={<RouteErrorBoundary><TutorDetails /></RouteErrorBoundary>} />
                   <Route path="/book/:tutorId" element={<RouteErrorBoundary><PublicBookingPage /></RouteErrorBoundary>} />
+                  <Route path="/tutor-earnings" element={<RouteErrorBoundary><TutorEarningsPage /></RouteErrorBoundary>} />
+                  <Route path="/pricing" element={<RouteErrorBoundary><TutorEarningsPage /></RouteErrorBoundary>} />
                   <Route path="/tuition/:id" element={<RouteErrorBoundary><TuitionDetails /></RouteErrorBoundary>} />
                   <Route path="/about" element={<RouteErrorBoundary><About /></RouteErrorBoundary>} />
                   <Route path="/contact" element={<RouteErrorBoundary><Contact /></RouteErrorBoundary>} />
