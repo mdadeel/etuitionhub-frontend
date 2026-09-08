@@ -123,10 +123,11 @@ const DashUsers = () => {
         return result;
     }, [users, filter]);
 
+    const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
+
     const handleDelete = async (id) => {
         if (!confirm('Delete this user? This action cannot be undone.')) return;
 
-        const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
             toast.error('Demo data is read-only');
             return;
@@ -151,7 +152,6 @@ const DashUsers = () => {
     };
 
     const handleEditClick = (user) => {
-        const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(user._id)) {
             toast.error('Demo data is read-only');
             return;

@@ -304,7 +304,6 @@ export default function AiAssistantHistory() {
     );
 }
 
-// eslint-disable-next-line no-unused-vars
 function EmptyState({ icon: Icon, title, hint }) {
     return (
         <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-12 text-center text-muted-foreground">

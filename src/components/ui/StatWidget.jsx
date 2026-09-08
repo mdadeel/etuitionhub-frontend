@@ -25,12 +25,6 @@ const StatWidget = ({
       : trend === "down"
         ? "error"
         : "secondary";
-  const trendColor =
-    trend === "up"
-      ? "text-success"
-      : trend === "down"
-        ? "text-destructive"
-        : "text-muted-foreground";
 
   return (
     <Card

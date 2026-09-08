@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import process from 'process';
 
-const sourcePath = path.resolve(__dirname, '../useSessionManager.js');
+const sourcePath = path.resolve(process.cwd(), 'src/hooks/useSessionManager.js');
 const source = fs.readFileSync(sourcePath, 'utf8');
 
 describe('useSessionManager.setJWT source checks', () => {

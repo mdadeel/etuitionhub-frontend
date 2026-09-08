@@ -91,7 +91,6 @@ const PaymentSuccess = () => {
     );
 };
 
-// eslint-disable-next-line no-unused-vars
 const TimelineStep = ({ icon: Icon, label, detail, status }) => {
     const colors = {
         done: 'bg-success/10 text-success',

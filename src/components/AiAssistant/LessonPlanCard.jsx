@@ -3,7 +3,6 @@
 // structured, tutor-friendly card. Sections mirror the schema fields.
 import { BookOpen, Clock, Target, ListChecks, Zap, BookText, Layers } from 'lucide-react';
 
-// eslint-disable-next-line no-unused-vars
 function SectionHeader({ icon: Icon, label }) {
     return (
         <div className="flex items-center gap-2 mb-2">

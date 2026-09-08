@@ -23,3 +23,5 @@ export { default as Stat } from './Stat';
 export * from './textarea';
 // eslint-disable-next-line react-refresh/only-export-components
 export * from './skeleton';
+// eslint-disable-next-line react-refresh/only-export-components
+export * from './heading';

@@ -113,7 +113,6 @@ const TutorWallet = () => {
     );
 };
 
-// eslint-disable-next-line no-unused-vars
 const BalanceCard = ({ icon: Icon, label, amount, accent, subtitle }) => {
     const colors = {
         emerald: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20',

@@ -85,6 +85,10 @@ const HireRequests = () => {
     counterMutation.mutate({ requestId: counterModal.requestId, rate: Number(counterRate), message: counterMessage });
   };
 
+  const handleAccept = (id) => acceptMutation.mutate(id);
+  const handleDecline = (id) => declineMutation.mutate(id);
+  const handleCancel = (id) => cancelMutation.mutate(id);
+
   const handleViewProfile = (req) => {
     const otherUser = tab === 'inbox' ? req.fromUserId : req.toUserId;
     if (otherUser?._id) {

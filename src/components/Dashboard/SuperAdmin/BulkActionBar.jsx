@@ -1,6 +1,5 @@
 import { Trash2, UserCheck, UserX, Download, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import api from '../../../services/api';
 import { useAppMutation } from '../../../hooks/queries/useAppMutation';
 import toast from 'react-hot-toast';
@@ -13,14 +12,12 @@ const ACTIONS = [
 ];
 
 const BulkActionBar = ({ selectedIds, onClear, onAction, total = 0 }) => {
-  if (selectedIds.length === 0) return null;
-
   const bulkMutation = useAppMutation({
     mutationFn: ({ userIds, action }) => api.patch('/api/admin/users/bulk', { userIds, action }),
     queryKey: ['users'],
     successMessage: false, // custom toast below
     invalidate: true,
-    onSuccess: (res, { action, userIds }) => {
+    onSuccess: (res, { action }) => {
       const msg = `${res.data.affected} ${action === 'delete' ? 'deleted' : action + 'd'}`;
       const skipped = res.data.skipped ? ` (${res.data.skipped} skipped — cannot affect self)` : '';
       toast.success(`${msg}${skipped}`);
@@ -29,6 +26,8 @@ const BulkActionBar = ({ selectedIds, onClear, onAction, total = 0 }) => {
     },
     errorTitle: 'Bulk action failed',
   });
+
+  if (selectedIds.length === 0) return null;
 
   const handleAction = (action) => {
     if (action === 'export') {
