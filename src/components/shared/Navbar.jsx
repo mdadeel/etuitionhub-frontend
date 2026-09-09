@@ -91,10 +91,10 @@ const Navbar = () => {
     setIsMobileSearchOpen(false);
   };
 
-  // Fetch autocomplete suggestions
+  // Fetch autocomplete suggestions — only when dropdown is open (onFocus) to avoid global polling on every page
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 2) {
-      setSuggestions({ tutors: [], tuitions: [], organizations: [] });
+    if (!showDropdown || !debouncedQuery || debouncedQuery.length < 2) {
+      if (!debouncedQuery || debouncedQuery.length < 2) setSuggestions({ tutors: [], tuitions: [], organizations: [] });
       return;
     }
     const controller = new AbortController();
@@ -116,7 +116,7 @@ const Navbar = () => {
       })
       .catch(() => {});
     return () => controller.abort();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, showDropdown]);
 
   // Click outside to close dropdown
   useEffect(() => {

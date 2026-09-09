@@ -56,8 +56,8 @@ const HomeBanner = () => {
             const res = await api.get(`/api/tutors/availability?${params.toString()}`);
             return res.data;
         },
-        staleTime: 60_000,
-        refetchInterval: 60_000,
+        staleTime: 300_000,
+        refetchInterval: false,
     });
     const [currentIndex, setCurrentIndex] = useState(0);
 

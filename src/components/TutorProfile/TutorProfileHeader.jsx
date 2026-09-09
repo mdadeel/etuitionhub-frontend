@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import CredibilityBadge from '@/components/CredibilityBadge';
 import SaveButton from '../Dashboard/SaveButton';
 import {
   GraduationCap,
@@ -15,7 +13,6 @@ import {
   Globe,
   Award,
   Sparkles,
-  CheckCircle,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -92,53 +89,8 @@ const TutorProfileHeader = ({
                 gender={tutor.gender}
                 className="size-full rounded-none object-cover"
               />
-              {isVerified && (
-                <div
-                  className="absolute bottom-1 right-1 size-5 sm:size-6 rounded-full bg-primary text-white flex items-center justify-center ring-2 ring-card shadow"
-                  title={t('tutorDetails.verified_tutor', 'Verified Tutor')}
-                >
-                  <ShieldCheck className="size-3.5 sm:size-4" />
-                </div>
-              )}
             </div>
 
-            {/* Credibility Badges Mobile Inline */}
-            <div className="sm:hidden flex flex-wrap gap-1.5 pb-1">
-              <CredibilityBadge
-                verificationStatus={tutor.verificationStatus}
-                requestsReceived={tutor.requestsReceived || 0}
-                requestsRespondedCount={tutor.requestsRespondedCount || 0}
-                reviewCount={tutor.reviewCount || reviewCount || 0}
-                rating={tutor.ratings || 0}
-              />
-            </div>
-          </div>
-
-          {/* Desktop Right Credibility Badges & Report */}
-          <div className="hidden sm:flex flex-col items-end gap-2 pb-1">
-            <div className="flex items-center gap-2">
-              <CredibilityBadge
-                verificationStatus={tutor.verificationStatus}
-                requestsReceived={tutor.requestsReceived || 0}
-                requestsRespondedCount={tutor.requestsRespondedCount || 0}
-                reviewCount={tutor.reviewCount || reviewCount || 0}
-                rating={tutor.ratings || 0}
-              />
-              {isVerified && (
-                <Badge variant="success" size="sm" className="gap-1 font-medium">
-                  <CheckCircle className="size-3 text-emerald-500" />
-                  {t('tutorDetails.verified_id', 'ID & Degree Verified')}
-                </Badge>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={onOpenReportModal}
-              className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors cursor-pointer"
-            >
-              <Flag className="size-3" />
-              {t('tutorDetails.report', 'Report profile')}
-            </button>
           </div>
         </div>
 
@@ -146,8 +98,16 @@ const TutorProfileHeader = ({
         <div className="space-y-3">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-bold font-heading text-foreground tracking-tight">
-                {tutor.displayName || t('tutorDetails.default_name', 'Tutor')}
+              <h1 className="text-2xl sm:text-3xl font-bold font-heading text-foreground tracking-tight inline-flex items-center gap-2">
+                <span>{tutor.displayName || t('tutorDetails.default_name', 'Tutor')}</span>
+                {isVerified && (
+                  <span
+                    className="inline-flex items-center justify-center size-6 rounded-full bg-primary text-white ring-2 ring-card shadow-sm shrink-0"
+                    title={t('tutorDetails.verified_tutor', 'Verified Tutor')}
+                  >
+                    <ShieldCheck className="size-3.5" />
+                  </span>
+                )}
               </h1>
               {tutor.gender && (
                 <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium capitalize">
@@ -236,6 +196,16 @@ const TutorProfileHeader = ({
                 {tutor.responseTimeMinutes ? `< ${tutor.responseTimeMinutes} min` : '~1 Hour'}
               </p>
             </div>
+          </div>
+          <div className="flex justify-end pt-3">
+            <button
+              type="button"
+              onClick={onOpenReportModal}
+              className="text-xs text-muted-foreground hover:text-destructive inline-flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <Flag className="size-3" />
+              {t('tutorDetails.report', 'Report profile')}
+            </button>
           </div>
         </div>
       </div>

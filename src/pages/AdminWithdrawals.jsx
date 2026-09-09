@@ -73,7 +73,8 @@ const AdminWithdrawals = () => {
         try {
             const url = status ? `/api/wallet/admin/withdrawals?status=${status}` : '/api/wallet/admin/withdrawals';
             const res = await api.get(url);
-            setWithdrawals(res.data || []);
+            const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+            setWithdrawals(data);
         } catch {
             toast.error('Failed to load withdrawals');
         } finally {
@@ -226,7 +227,7 @@ const AdminWithdrawals = () => {
                                                 </div>
                                             </td>
                                             <td className="px-4 md:px-6 py-5 text-sm font-heading font-bold text-foreground tabular-nums italic">
-                                                ৳{w.amount?.toLocaleString()}
+                                                ৳{(w.amount ?? 0).toLocaleString()}
                                             </td>
                                             <td className="hidden xl:table-cell px-6 py-5">
                                                 <p className="text-xs font-mono text-foreground">{w.accountNumber}</p>

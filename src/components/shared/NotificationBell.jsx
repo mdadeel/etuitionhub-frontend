@@ -56,7 +56,7 @@ const NotificationBell = () => {
         markAllAsRead,
         deleteNotification,
         handleAction,
-    } = useNotifications({ userId: user?.uid, enabled: !!dbUser });
+    } = useNotifications({ userId: user?.uid, enabled: !!dbUser, fetchOnMount: false });
 
     useEffect(() => {
         const handleClickOutside = (event) => {

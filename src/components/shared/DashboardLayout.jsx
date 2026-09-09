@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment, Suspense } from "react";
 import { useLocation, Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, Settings, ChevronRight, Inbox } from "lucide-react";
+import { Menu, X, Settings, ChevronRight, Inbox } from "lucide-react";
 
 import { useAuth } from "../../contexts/AuthContext";
 import DashboardSidebar from "../Dashboard/DashboardSidebar";

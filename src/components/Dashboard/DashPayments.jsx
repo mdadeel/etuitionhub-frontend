@@ -234,7 +234,7 @@ const DashPayments = () => {
                             <span className="text-[10px] font-label font-semibold uppercase tracking-wider">Total Inbound</span>
                         </div>
                         <p className="text-lg md:text-xl font-heading font-black tabular-nums text-foreground">
-                            ৳{reconciliation.reconciliation.totalCollected.toLocaleString()}
+                            ৳{(reconciliation?.reconciliation?.totalCollected ?? 0).toLocaleString()}
                         </p>
                     </div>
                     <div className="p-4 bg-card border border-border rounded-xl">
@@ -243,7 +243,7 @@ const DashPayments = () => {
                             <span className="text-[10px] font-label font-semibold uppercase tracking-wider">Escrow Held</span>
                         </div>
                         <p className="text-lg md:text-xl font-heading font-black tabular-nums text-foreground">
-                            ৳{reconciliation.reconciliation.heldInEscrow.toLocaleString()}
+                            ৳{(reconciliation?.reconciliation?.heldInEscrow ?? 0).toLocaleString()}
                         </p>
                     </div>
                     <div className="p-4 bg-card border border-border rounded-xl">
@@ -252,7 +252,7 @@ const DashPayments = () => {
                             <span className="text-[10px] font-label font-semibold uppercase tracking-wider">Released to Tutors</span>
                         </div>
                         <p className="text-lg md:text-xl font-heading font-black tabular-nums text-foreground">
-                            ৳{reconciliation.reconciliation.releasedToTutors.toLocaleString()}
+                            ৳{(reconciliation?.reconciliation?.releasedToTutors ?? 0).toLocaleString()}
                         </p>
                     </div>
                     <div className="p-4 bg-card border border-border rounded-xl">
@@ -261,7 +261,7 @@ const DashPayments = () => {
                             <span className="text-[10px] font-label font-semibold uppercase tracking-wider">Pending Payouts</span>
                         </div>
                         <p className="text-lg md:text-xl font-heading font-black tabular-nums text-foreground">
-                            ৳{reconciliation.reconciliation.pendingPayouts.toLocaleString()}
+                            ৳{(reconciliation?.reconciliation?.pendingPayouts ?? 0).toLocaleString()}
                         </p>
                     </div>
                 </div>

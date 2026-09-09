@@ -57,14 +57,14 @@ const DashAnalytics = () => {
     const loadFallback = async () => {
         try {
             const [usersRes, tuitionsRes, paymentsRes] = await Promise.all([
-                api.get('/api/users'),
-                api.get('/api/tuitions'),
+                api.get('/api/users').catch(() => ({ data: [] })),
+                api.get('/api/tuitions').catch(() => ({ data: [] })),
                 api.get('/api/payments/all').catch(() => ({ data: [] }))
             ]);
 
-            const users = usersRes.data?.data || usersRes.data || [];
-            const tuitions = tuitionsRes.data?.data || tuitionsRes.data || [];
-            const payments = paymentsRes.data?.data || paymentsRes.data || [];
+            const users = Array.isArray(usersRes.data?.data) ? usersRes.data.data : Array.isArray(usersRes.data) ? usersRes.data : [];
+            const tuitions = Array.isArray(tuitionsRes.data?.data) ? tuitionsRes.data.data : Array.isArray(tuitionsRes.data) ? tuitionsRes.data : [];
+            const payments = Array.isArray(paymentsRes.data?.data) ? paymentsRes.data.data : Array.isArray(paymentsRes.data) ? paymentsRes.data : [];
 
             const tutors = users.filter(u => u.role === 'tutor').length;
             const students = users.filter(u => u.role === 'student').length;
@@ -133,7 +133,7 @@ const DashAnalytics = () => {
                 />
                 <StatCard
                     title="Total Revenue"
-                    value={`৳${stats.totalRevenue.toLocaleString()}`}
+                    value={`৳${(stats.totalRevenue ?? 0).toLocaleString()}`}
                     unit="BDT"
                     icon={Banknote}
                     isPrimary
@@ -282,7 +282,7 @@ const DashAnalytics = () => {
                             label: 'Amount',
                             align: 'center',
                             render: (val) => (
-                                <span className="text-xs md:text-sm font-heading font-black text-primary tabular-nums">৳{val?.toLocaleString()}</span>
+                                <span className="text-xs md:text-sm font-heading font-black text-primary tabular-nums">৳{(val ?? 0).toLocaleString()}</span>
                             ),
                         },
                         {

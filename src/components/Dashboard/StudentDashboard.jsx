@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback, Suspense, lazy } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
-import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
 import { StatCardSkeleton } from "@/components/shared/skeletons";
@@ -20,10 +20,13 @@ import {
   Activity,
   Plus,
   Banknote,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DataTable from "@/components/ui/data-table";
-import SessionStatsCard from "./SessionStatsCard";
 import OnboardingChecklist from "./widgets/OnboardingChecklist";
 
 const PostTuition = lazy(() => import("../../pages/PostTuition"));
@@ -39,7 +42,7 @@ const tabs = [
 ];
  
 /**
- * StudentDashboard Component — Refined Apple Aesthetic
+ * StudentDashboard Component — Actionable, Low-Cognitive Load Workspace
  */
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -57,12 +60,11 @@ const StudentDashboard = () => {
       setActiveTab(searchParams.get("tab") || "overview");
     }
   }, [pathname, searchParams]);
+
   const [bookings, setBookings] = useState([]);
   const [myTuitions, setMyTuitions] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
- 
-  // react-hook-form initialization removed, handled in PostTuition component
  
   // Fetch tuitions for this student
   const fetchMyTuitions = useCallback(async () => {
@@ -132,8 +134,6 @@ const StudentDashboard = () => {
     ]);
   }, [fetchMyTuitions, fetchBookings, fetchApplications]);
  
-  // onPostTuition removed, handled in PostTuition component
- 
   const handleApprove = (id) => navigate(`/checkout/${id}`);
  
   const handleReject = async (id) => {
@@ -159,49 +159,51 @@ const StudentDashboard = () => {
       toast.error(t("student.delete_failed"));
     }
   };
+
+  const pendingApps = applications.filter(a => a.status === 'pending');
+  const activeBookings = bookings.filter(b => b.isAccepted);
  
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 animate-fade-in-up">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in duration-500">
       <DashboardPageHeader
-        title={t("student.hello", { name: user?.displayName?.split(" ")[0] })}
-        subtitle={t("student.subtitle")}
-        category={t("student.dashboard_badge")}
+        title={t("student.hello", { name: user?.displayName?.split(" ")[0] || "Student" })}
+        subtitle={t("student.subtitle", "Track your tuition requirements, tutor applications, and scheduled sessions.")}
+        category={t("student.dashboard_badge", "Student Workspace")}
       />
  
-      {/* Tab Navigation */}
-      <div className="w-full overflow-hidden">
-        <div className="flex items-center gap-1 bg-muted p-1 rounded-lg border border-border w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+      {/* Segmented Tab Navigation */}
+      <div className="w-full overflow-hidden border-b border-border pb-px">
+        <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar flex-nowrap">
           {tabs.map((tab) => (
             <button
               type="button"
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap min-w-fit active:scale-[0.98]",
+                "flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg border-b-2 transition-all shrink-0",
                 activeTab === tab.id
-                  ? "bg-card text-primary shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30",
+                  ? "border-primary text-primary bg-primary/5 shadow-none"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40",
               )}
             >
-              <tab.icon
-                size={14}
-                className={
-                  activeTab === tab.id ? "text-primary" : "opacity-50"
-                }
-              />
-              {t(`student.tab_${tab.label}`)}
+              <tab.icon size={14} className={activeTab === tab.id ? "text-primary" : "opacity-60"} />
+              <span>{t(`student.tab_${tab.label}`)}</span>
+              {tab.id === 'applications' && pendingApps.length > 0 && (
+                <span className="ml-1 size-5 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center font-bold">
+                  {pendingApps.length}
+                </span>
+              )}
             </button>
           ))}
         </div>
       </div>
  
       {/* Overview Content */}
-      {activeTab === "overview" &&
-        (loading ? (
+      {activeTab === "overview" && (
+        loading ? (
           <div className="space-y-6">
-            <SessionStatsCard />
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-              {[...Array(6)].map((_, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[...Array(3)].map((_, i) => (
                 <StatCardSkeleton key={i} />
               ))}
             </div>
@@ -209,64 +211,157 @@ const StudentDashboard = () => {
         ) : (
           <div className="space-y-6">
             <OnboardingChecklist />
-            <SessionStatsCard />
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-            <Card className="p-6 md:p-10 group" >
-              <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
-                <Database size={24} />
+
+            {/* Actionable Pending Banner */}
+            {pendingApps.length > 0 && (
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="size-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                    <Clock size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground">
+                      {pendingApps.length} Tutor {pendingApps.length === 1 ? 'Application' : 'Applications'} Awaiting Review
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Verified tutors have applied for your tuition job. Review their qualifications and approve a demo session.
+                    </p>
+                  </div>
+                </div>
+                <Button 
+                  size="sm" 
+                  onClick={() => setActiveTab('applications')}
+                  className="shrink-0 text-xs font-semibold gap-1.5 self-start sm:self-auto"
+                >
+                  <span>Review Applications</span>
+                  <ArrowRight size={13} />
+                </Button>
               </div>
-              <p className="text-xs font-semibold text-muted-foreground mb-2">
-                {t("student.active_requests")}
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
-                  {myTuitions.length}
-                </span>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {t("student.requests")}
-                </span>
+            )}
+
+            {/* Standardized Metric Cards Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Card className="p-5 bg-card border-border" hover={false}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Tuitions</span>
+                  <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                    <Database size={15} />
+                  </div>
+                </div>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-2xl font-bold font-mono text-foreground">{myTuitions.length}</span>
+                  <span className="text-xs text-muted-foreground">requirements</span>
+                </div>
+              </Card>
+
+              <Card className="p-5 bg-card border-border" hover={false}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Applications</span>
+                  <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                    <FileText size={15} />
+                  </div>
+                </div>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-2xl font-bold font-mono text-foreground">{applications.length}</span>
+                  <span className="text-xs text-muted-foreground">total received</span>
+                </div>
+              </Card>
+
+              <Card className="p-5 bg-card border-border" hover={false}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Tutors</span>
+                  <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                    <UserCheck size={15} />
+                  </div>
+                </div>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-2xl font-bold font-mono text-foreground">{activeBookings.length}</span>
+                  <span className="text-xs text-muted-foreground">hired instructors</span>
+                </div>
+              </Card>
+            </div>
+
+            {/* Recent Pending Applications Preview */}
+            {pendingApps.length > 0 && (
+              <Card className="p-6 bg-card border-border space-y-4" hover={false}>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-foreground">Pending Applications</h3>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('applications')}
+                    className="text-xs text-primary font-semibold hover:underline flex items-center gap-1"
+                  >
+                    <span>View all ({applications.length})</span>
+                    <ArrowRight size={12} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {pendingApps.slice(0, 2).map((app) => (
+                    <div key={app._id} className="p-4 rounded-lg bg-muted/30 border border-border space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="text-sm font-bold text-foreground">{app.tutorName}</h4>
+                          <p className="text-xs text-muted-foreground">{app.tutorEmail}</p>
+                        </div>
+                        <span className="text-xs font-mono font-bold text-primary">৳{app.expectedSalary}/mo</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground italic line-clamp-2">
+                        "{app.qualifications || 'No bio specified'}"
+                      </p>
+                      <div className="flex gap-2 pt-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-8"
+                          onClick={() => handleReject(app._id)}
+                        >
+                          Decline
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="flex-1 text-xs h-8"
+                          onClick={() => handleApprove(app._id)}
+                        >
+                          Accept &amp; Book
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* Quick Actions Strip */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-5 rounded-xl border border-border bg-card flex items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-xs font-bold text-foreground">Need Another Tutor?</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">Post a new requirement for instant matches.</p>
+                </div>
+                <Button size="sm" onClick={() => setActiveTab('post-job')} className="shrink-0 text-xs font-semibold gap-1.5">
+                  <Plus size={14} />
+                  <span>Post Tuition</span>
+                </Button>
               </div>
-            </Card>
- 
-            <Card className="p-6 md:p-10 group" >
-              <div className="size-12 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-indigo-500/20 shadow-sm">
-                <FileText size={24} />
+
+              <div className="p-5 rounded-xl border border-border bg-card flex items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-xs font-bold text-foreground">Browse Verified Tutors</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">Explore instructors across all curriculums.</p>
+                </div>
+                <Button variant="outline" size="sm" asChild className="shrink-0 text-xs font-semibold gap-1.5">
+                  <Link to="/tutors">
+                    <span>Explore</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                </Button>
               </div>
-              <p className="text-xs font-semibold text-muted-foreground mb-2">
-                {t("student.tutor_applications")}
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
-                  {applications.length}
-                </span>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {t("student.applications")}
-                </span>
-              </div>
-            </Card>
- 
-            <Card
-              className="p-6 md:p-10 group col-span-2 lg:col-span-1"
-              
-            >
-              <div className="size-12 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-emerald-500/20 shadow-sm">
-                <UserCheck size={24} />
-              </div>
-              <p className="text-xs font-semibold text-muted-foreground mb-2">
-                {t("student.engagements")}
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">
-                  {bookings.filter((b) => b.isAccepted).length}
-                </span>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {t("student.sessions")}
-                </span>
-              </div>
-            </Card>
+            </div>
           </div>
-          </div>
-        ))}
+        )
+      )}
+
       {/* Post Job Tab */}
       {activeTab === "post-job" && (
         <Suspense fallback={<div className="p-8 text-center text-muted-foreground text-sm italic">{t("student.loading")}</div>}>
@@ -285,15 +380,15 @@ const StudentDashboard = () => {
         <DataTable
           rowKey={(row) => row._id}
           data={myTuitions}
-          emptyState={<p className="italic">{t("student.no_active_requests")}</p>}
+          emptyState={<p className="italic py-8 text-center text-muted-foreground text-xs">{t("student.no_active_requests")}</p>}
           columns={[
             {
               key: "subject",
               label: t("student.subject"),
               render: (_, row) => (
                 <>
-                  <p className="text-sm font-bold text-foreground">{row.subject}</p>
-                  <p className="text-xs text-muted-foreground font-medium mt-1">{row.class_name}</p>
+                  <p className="text-xs font-bold text-foreground">{row.subject}</p>
+                  <p className="text-[11px] text-muted-foreground font-medium mt-0.5">{row.class_name}</p>
                 </>
               ),
             },
@@ -301,14 +396,14 @@ const StudentDashboard = () => {
               key: "salary",
               label: t("student.budget"),
               render: (val) => (
-                <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
+                <span className="text-xs font-bold font-mono text-primary">৳{val}</span>
               ),
             },
             {
               key: "status",
               label: t("student.status"),
               render: (val) => (
-                <Badge variant={val === "approved" ? "success" : "default"} className="rounded-lg">
+                <Badge variant={val === "approved" ? "success" : "default"} className="rounded-md text-[11px]">
                   {val === "approved" ? t("student.active") : t("student.pending")}
                 </Badge>
               ),
@@ -321,13 +416,13 @@ const StudentDashboard = () => {
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={() => navigate(`/tuition/${row._id}`)}
-                    className="text-xs font-bold text-primary hover:underline"
+                    className="text-xs font-semibold text-primary hover:underline"
                   >
                     {t("student.view")}
                   </button>
                   <button
                     onClick={() => handleDeleteTuition(row._id)}
-                    className="text-xs font-bold text-red-600 hover:underline"
+                    className="text-xs font-semibold text-destructive hover:underline"
                   >
                     {t("student.remove")}
                   </button>
@@ -340,75 +435,66 @@ const StudentDashboard = () => {
  
       {/* Applications Tab */}
       {activeTab === "applications" && (
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {applications.length === 0 ? (
-            <Card className="col-span-full p-32 text-center border-dashed">
+            <Card className="col-span-full p-16 text-center border-dashed" hover={false}>
               <Search
-                size={48}
-                className="text-muted-foreground/20 mx-auto mb-8"
-                strokeWidth={1}
+                size={36}
+                className="text-muted-foreground/30 mx-auto mb-4"
+                strokeWidth={1.5}
               />
-              <p className="text-sm font-medium text-muted-foreground italic">
+              <p className="text-xs font-medium text-muted-foreground italic">
                 {t("student.no_applications")}
               </p>
             </Card>
           ) : (
             applications.map((app) => (
-              <Card
-                key={app._id}
-                className="p-4 md:p-8 group relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 size-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground tracking-tight">
-                        {app.tutorName}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {app.tutorEmail}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={app.status === "approved" ? "success" : app.status === "rejected" ? "error" : "warning"}
-                      className="rounded-lg"
-                    >
-                      {app.status}
-                    </Badge>
+              <Card key={app._id} className="p-5 space-y-4" hover={false}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-sm font-bold text-foreground">
+                      {app.tutorName}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {app.tutorEmail}
+                    </p>
                   </div>
- 
-                  <div className="space-y-4 mb-8">
-                    <div className="p-4 rounded-lg bg-background border border-border text-xs text-muted-foreground leading-relaxed italic">
-                      "{app.qualifications}"
-                    </div>
-                    <div className="flex justify-between items-center pt-4 border-t border-border">
-                      <span className="text-xs font-semibold text-muted-foreground">
-                        {t("student.expected_salary")}
-                      </span>
-                      <span className="text-lg font-bold text-primary tabular-nums">
-                        ৳{app.expectedSalary}
-                      </span>
-                    </div>
-                  </div>
- 
-                  {app.status === "pending" && (
-                    <div className="flex gap-3">
-                      <Button
-                        variant="outline"
-                        className="flex-1 h-10 rounded-lg text-xs active:scale-[0.98]"
-                        onClick={() => handleReject(app._id)}
-                      >
-                        {t("student.decline")}
-                      </Button>
-                      <Button
-                        className="flex-1 h-10 rounded-lg text-xs active:scale-[0.98]"
-                        onClick={() => handleApprove(app._id)}
-                      >
-                        {t("student.approve")}
-                      </Button>
-                    </div>
-                  )}
+                  <Badge
+                    variant={app.status === "approved" ? "success" : app.status === "rejected" ? "error" : "warning"}
+                    className="rounded-md text-[11px]"
+                  >
+                    {app.status}
+                  </Badge>
                 </div>
+
+                <div className="p-3 rounded-lg bg-muted/40 border border-border text-xs text-muted-foreground leading-relaxed italic">
+                  "{app.qualifications || 'No bio specified'}"
+                </div>
+
+                <div className="flex justify-between items-center pt-2 border-t border-border">
+                  <span className="text-xs text-muted-foreground">Expected Salary</span>
+                  <span className="text-xs font-bold font-mono text-primary">৳{app.expectedSalary}/mo</span>
+                </div>
+
+                {app.status === "pending" && (
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs h-9"
+                      onClick={() => handleReject(app._id)}
+                    >
+                      {t("student.decline")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1 text-xs h-9"
+                      onClick={() => handleApprove(app._id)}
+                    >
+                      {t("student.approve")}
+                    </Button>
+                  </div>
+                )}
               </Card>
             ))
           )}
@@ -420,13 +506,13 @@ const StudentDashboard = () => {
         <DataTable
           rowKey={(row) => row._id}
           data={bookings}
-          emptyState={<p className="italic">{t("student.no_engagements")}</p>}
+          emptyState={<p className="italic py-8 text-center text-muted-foreground text-xs">{t("student.no_engagements")}</p>}
           columns={[
             {
               key: "tutor_name",
               label: t("student.tutor_name"),
               render: (_, row) => (
-                <p className="text-sm font-bold text-foreground">
+                <p className="text-xs font-bold text-foreground">
                   {row.tutor_name || row.tutorName}
                 </p>
               ),
@@ -435,7 +521,7 @@ const StudentDashboard = () => {
               key: "subject",
               label: t("student.subject"),
               render: (val) => (
-                <span className="text-sm font-semibold text-muted-foreground">{val}</span>
+                <span className="text-xs font-medium text-muted-foreground">{val}</span>
               ),
             },
             {
@@ -445,7 +531,7 @@ const StudentDashboard = () => {
               render: (val) => (
                 <a
                   href={`tel:${val}`}
-                  className="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1.5"
+                  className="text-xs font-medium text-primary hover:underline inline-flex items-center gap-1"
                 >
                   <Phone size={12} /> {val}
                 </a>
@@ -456,14 +542,14 @@ const StudentDashboard = () => {
               label: t("student.verification"),
               align: "right",
               render: (_, row) => (
-                <div className="flex flex-col items-end gap-2">
-                  <Badge variant="success" className="rounded-lg">
+                <div className="flex items-center justify-end gap-2">
+                  <Badge variant="success" className="rounded-md text-[11px]">
                     {t("student.active")}
                   </Badge>
                   {row.isAccepted && (
                     <Button
                       size="sm"
-                      className="h-7 px-3 text-xs rounded-lg active:scale-[0.98]"
+                      className="h-8 px-2.5 text-xs"
                       onClick={() => navigate(`/session/${row._id}`)}
                     >
                       {t("student.join_room")}

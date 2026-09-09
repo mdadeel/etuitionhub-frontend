@@ -2,12 +2,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import DataTable from "@/components/ui/data-table";
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContext";
 import { useChat } from '../../contexts/ChatContext';
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import TutorAvailability from './TutorAvailability';
@@ -17,26 +17,27 @@ import { computeProjectedThisMonth } from '@/lib/earningsForecast';
 import { 
     FileText, 
     Banknote, 
-    Database,
-    UserCheck,
-    MessageSquare,
-    ArrowUpRight,
-    TrendingUp,
-    Activity,
-    Calendar,
+    UserCheck, 
+    MessageSquare, 
+    Activity, 
+    Calendar, 
     BookOpen,
+    Search,
+    ArrowRight,
+    TrendingUp,
+    Wallet
 } from "lucide-react";
 import { cn } from '@/lib/utils';
-import SessionStatsCard from './SessionStatsCard';
 import OnboardingChecklist from './widgets/OnboardingChecklist';
  
 /**
- * TutorDashboard Component — Refined Apple Aesthetic
+ * TutorDashboard Component — High Signal-to-Noise Tutor Workspace
  */
 const TutorDashboard = () => {
     const { user } = useAuth();
     const { conversations, openChatWith, fetchConversations } = useChat();
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { pathname } = useLocation();
     const initialTab = pathname.includes('/applications') ? 'applications' : (searchParams.get('tab') || 'overview');
@@ -106,7 +107,8 @@ const TutorDashboard = () => {
         if (!confirm(t('tutorDashboard.confirm_delete'))) return;
         try {
             await api.delete(`/api/applications/${id}`);
-            toast.success(t('tutorDashboard.app_deleted'));            await fetchApplications();
+            toast.success(t('tutorDashboard.app_deleted'));
+            await fetchApplications();
         } catch (err) {
             toast.error(err.response?.data?.error || t('tutorDashboard.delete_failed'));
         }
@@ -123,7 +125,7 @@ const TutorDashboard = () => {
             }
             await api.post('/api/messages', {
                 receiverId: app.studentId || app.tuitionId?.studentId,
-                text: t('tutorDashboard.first_message')
+                text: t('tutorDashboard.first_message', "Hi! I am interested in discussing your tuition requirement.")
             });
             await fetchConversations();
             conv = conversations.find(c =>
@@ -137,7 +139,7 @@ const TutorDashboard = () => {
 
     if (loading) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-6 max-w-7xl mx-auto pb-12">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[...Array(4)].map((_, i) => (
                         <StatCardSkeleton key={i} />
@@ -158,30 +160,30 @@ const TutorDashboard = () => {
     ];
 
     return (
-        <div className="space-y-10 animate-fade-in-up">
-            
+        <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in duration-500">
             <DashboardPageHeader
-                title={t('tutorDashboard.hello', { name: user?.displayName?.split(' ')[0] })}
-                subtitle={t('tutorDashboard.subtitle')}
-                category={t('tutorDashboard.dashboard_badge')}
+                title={t('tutorDashboard.hello', { name: user?.displayName?.split(' ')[0] || "Tutor" })}
+                subtitle={t('tutorDashboard.subtitle', "Manage your applications, active engagements, schedule, and earnings.")}
+                category={t('tutorDashboard.dashboard_badge', "Tutor Workspace")}
             />
 
-            {/* Tab Navigation */}
-            <div className="w-full overflow-hidden">
-                <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border w-full max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
+            {/* Segmented Tab Navigation */}
+            <div className="w-full overflow-hidden border-b border-border pb-px">
+                <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar flex-nowrap">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
+                            type="button"
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "flex items-center gap-2 px-5 py-3 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap min-w-fit active:scale-[0.98]",
+                                "flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg border-b-2 transition-all shrink-0",
                                 activeTab === tab.id
-                                    ? "bg-card text-primary shadow-sm border border-border"
-                                    : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
+                                    ? "border-primary text-primary bg-primary/5"
+                                    : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40"
                             )}
                         >
-                            <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-50'} />
-                            {t(`tutorDashboard.tab_${tab.label}`)}
+                            <tab.icon size={14} className={activeTab === tab.id ? 'text-primary' : 'opacity-60'} />
+                            <span>{t(`tutorDashboard.tab_${tab.label}`)}</span>
                         </button>
                     ))}
                 </div>
@@ -189,83 +191,140 @@ const TutorDashboard = () => {
 
             {/* Overview Content */}
             {activeTab === 'overview' && (
-                <div className="space-y-10">
+                <div className="space-y-6">
                     <OnboardingChecklist />
-                    <SessionStatsCard />
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-                        <Card className="p-6 md:p-10 group" >
-                            <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
-                                <FileText size={24} />
+
+                    {/* Metric Cards Row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Card className="p-5 bg-card border-border" hover={false}>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    {t('tutorDashboard.total_applications')}
+                                </span>
+                                <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                                    <FileText size={15} />
+                                </div>
                             </div>
-                            <p className="text-xs font-semibold text-muted-foreground mb-2">{t('tutorDashboard.total_applications')}</p>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">{apps.length}</span>
-                                <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.sent')}</span>
+                            <div className="mt-3 flex items-baseline gap-2">
+                                <span className="text-2xl font-bold font-mono text-foreground tabular-nums">{apps.length}</span>
+                                <span className="text-xs text-muted-foreground">{t('tutorDashboard.sent')}</span>
                             </div>
                         </Card>
 
-                        <Card className="p-6 md:p-10 group" >
-                            <div className="size-12 rounded-lg bg-success/10 text-success flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-success/20 shadow-sm">
-                                <UserCheck size={24} />
+                        <Card className="p-5 bg-card border-border" hover={false}>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    {t('tutorDashboard.active_engagements')}
+                                </span>
+                                <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                                    <UserCheck size={15} />
+                                </div>
                             </div>
-                            <p className="text-xs font-semibold text-muted-foreground mb-2">{t('tutorDashboard.active_engagements')}</p>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-3xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">{activeEngagements}</span>
-                                <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.jobs')}</span>
-                            </div>
-                        </Card>
-
-                        <Card className="p-6 md:p-10 group" >
-                            <div className="size-12 rounded-lg bg-warning/10 text-warning flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-warning/20 shadow-sm">
-                                <TrendingUp size={24} />
-                            </div>
-                            <p className="text-xs font-semibold text-muted-foreground mb-2">{t('tutorDashboard.projected_month')}</p>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-2xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">৳{projectedThisMonth.toLocaleString()}</span>
-                                <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.net')}</span>
+                            <div className="mt-3 flex items-baseline gap-2">
+                                <span className="text-2xl font-bold font-mono text-foreground tabular-nums">{activeEngagements}</span>
+                                <span className="text-xs text-muted-foreground">{t('tutorDashboard.jobs')}</span>
                             </div>
                         </Card>
 
-                        <Card className="p-6 md:p-10 group" >
-                            <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-sm">
-                                <Banknote size={24} />
+                        <Card className="p-5 bg-card border-border" hover={false}>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    {t('tutorDashboard.projected_month')}
+                                </span>
+                                <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                                    <TrendingUp size={15} />
+                                </div>
                             </div>
-                            <p className="text-xs font-semibold text-muted-foreground mb-2">{t('tutorDashboard.total_earnings')}</p>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-2xl md:text-5xl font-bold text-foreground tracking-tighter tabular-nums">৳{totalEarnings}</span>
-                                <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.bdt')}</span>
+                            <div className="mt-3 flex items-baseline gap-2">
+                                <span className="text-2xl font-bold font-mono text-foreground tabular-nums">৳{projectedThisMonth.toLocaleString()}</span>
+                                <span className="text-xs text-muted-foreground">projected</span>
+                            </div>
+                        </Card>
+
+                        <Card className="p-5 bg-card border-border" hover={false}>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    {t('tutorDashboard.total_earnings')}
+                                </span>
+                                <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                                    <Wallet size={15} />
+                                </div>
+                            </div>
+                            <div className="mt-3 flex items-baseline gap-2">
+                                <span className="text-2xl font-bold font-mono text-foreground tabular-nums">৳{totalEarnings.toLocaleString()}</span>
+                                <span className="text-xs text-muted-foreground">withdrawn &amp; settled</span>
                             </div>
                         </Card>
                     </div>
 
-                    <Card className="p-8 overflow-hidden relative">
-                        <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-                        <div className="relative z-10">
-                            <h3 className="text-lg font-bold text-foreground tracking-tight mb-6">{t('tutorDashboard.recent_activity')}</h3>
-                            {apps.length === 0 ? (
-                                <p className="text-sm text-muted-foreground italic">{t('tutorDashboard.no_recent_activity')}</p>
-                            ) : (
-                                <div className="space-y-4">
-                                    {apps.slice(0, 3).map((app) => (
-                                        <div key={app._id} className="flex items-center justify-between p-4 rounded-lg bg-background border border-border">
-                                            <div className="flex items-center gap-4">
-                                                <div className="size-8 rounded-lg bg-background border border-border flex items-center justify-center">
-                                                    <FileText size={14} className="text-primary/60" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
-                                                    <p className="text-xs font-medium text-muted-foreground mt-0.5">{app.status}</p>
-                                                </div>
-                                            </div>
-                                            <span className="text-xs font-bold text-muted-foreground tabular-nums">
-                                                {new Date(app.createdAt).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
+                    {/* Recent Applications Activity */}
+                    <Card className="p-6 bg-card border-border space-y-4" hover={false}>
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-bold text-foreground">{t('tutorDashboard.recent_activity')}</h3>
+                            {apps.length > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('applications')}
+                                    className="text-xs text-primary font-semibold hover:underline flex items-center gap-1"
+                                >
+                                    <span>View all ({apps.length})</span>
+                                    <ArrowRight size={12} />
+                                </button>
                             )}
                         </div>
+
+                        {apps.length === 0 ? (
+                            <p className="text-xs text-muted-foreground italic py-4">{t('tutorDashboard.no_recent_activity')}</p>
+                        ) : (
+                            <div className="divide-y divide-border/60">
+                                {apps.slice(0, 3).map((app) => (
+                                    <div key={app._id} className="flex items-center justify-between py-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-foreground">
+                                                <FileText size={14} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-foreground">{app.tuitionId?.subject || "Tuition"}</p>
+                                                <p className="text-[11px] text-muted-foreground mt-0.5">
+                                                    Status: <span className="font-semibold text-foreground">{app.status}</span> · {app.studentEmail}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span className="text-xs font-mono text-muted-foreground">
+                                            {new Date(app.createdAt).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </Card>
+
+                    {/* Quick Actions Strip */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="p-5 rounded-xl border border-border bg-card flex items-center justify-between gap-4">
+                            <div>
+                                <h4 className="text-xs font-bold text-foreground">Find New Tuition Jobs</h4>
+                                <p className="text-xs text-muted-foreground mt-0.5">Browse open tuition posts in your area.</p>
+                            </div>
+                            <Button size="sm" asChild className="shrink-0 text-xs font-semibold gap-1.5">
+                                <Link to="/tuitions">
+                                    <span>Browse Jobs</span>
+                                    <ArrowRight size={13} />
+                                </Link>
+                            </Button>
+                        </div>
+
+                        <div className="p-5 rounded-xl border border-border bg-card flex items-center justify-between gap-4">
+                            <div>
+                                <h4 className="text-xs font-bold text-foreground">Withdraw Earnings</h4>
+                                <p className="text-xs text-muted-foreground mt-0.5">Transfer available balance to bKash/Nagad.</p>
+                            </div>
+                            <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/withdraw')} className="shrink-0 text-xs font-semibold gap-1.5">
+                                <Banknote size={14} />
+                                <span>Withdraw</span>
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -275,9 +334,9 @@ const TutorDashboard = () => {
                     rowKey={(row) => row._id}
                     data={apps}
                     emptyState={
-                        <div className="p-32 text-center">
-                            <Database size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-muted-foreground italic">{t('tutorDashboard.no_pipeline_apps')}</p>
+                        <div className="p-16 text-center">
+                            <Search size={36} className="text-muted-foreground/30 mx-auto mb-4" strokeWidth={1.5} />
+                            <p className="text-xs font-medium text-muted-foreground italic">{t('tutorDashboard.no_pipeline_apps')}</p>
                         </div>
                     }
                     columns={[
@@ -286,8 +345,8 @@ const TutorDashboard = () => {
                             label: t('tutorDashboard.subject'),
                             render: (_, app) => (
                                 <>
-                                    <p className="text-sm font-bold text-foreground">{app.tuitionId?.subject}</p>
-                                    <p className="text-xs text-muted-foreground font-medium mt-1">{app.studentEmail}</p>
+                                    <p className="text-xs font-bold text-foreground">{app.tuitionId?.subject || "Tuition"}</p>
+                                    <p className="text-[11px] text-muted-foreground mt-0.5">{app.studentEmail}</p>
                                 </>
                             ),
                         },
@@ -296,7 +355,7 @@ const TutorDashboard = () => {
                             label: t('tutorDashboard.expected_fee'),
                             align: 'center',
                             render: (val) => (
-                                <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
+                                <span className="text-xs font-bold font-mono text-primary">৳{val}</span>
                             ),
                         },
                         {
@@ -304,9 +363,9 @@ const TutorDashboard = () => {
                             label: t('tutorDashboard.status'),
                             align: 'center',
                             render: (val) => (
-                                <Badge
-                                    variant={val === 'approved' ? 'success' : val === 'rejected' ? 'error' : 'warning'}
-                                    className="rounded-lg"
+                                <Badge 
+                                    variant={val === 'approved' ? 'success' : val === 'rejected' ? 'error' : 'warning'} 
+                                    className="rounded-md text-[11px]"
                                 >
                                     {val}
                                 </Badge>
@@ -314,115 +373,115 @@ const TutorDashboard = () => {
                         },
                         {
                             key: '_id',
-                            label: t('tutorDashboard.action'),
+                            label: t('tutorDashboard.actions'),
                             align: 'right',
                             render: (_, app) => (
-                                app.status === 'pending' ? (
+                                <div className="flex items-center justify-end gap-2">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-8 px-2.5 text-xs gap-1"
+                                        onClick={() => handleContactStudent(app)}
+                                    >
+                                        <MessageSquare size={12} />
+                                        <span>Message</span>
+                                    </Button>
                                     <button
                                         onClick={() => handleDelete(app._id)}
-                                        className="text-xs font-bold text-destructive hover:underline active:scale-[0.98]"
+                                        className="text-xs font-semibold text-destructive hover:underline ml-2"
                                     >
-                                        {t('tutorDashboard.recall_application')}
+                                        {t('tutorDashboard.delete')}
                                     </button>
-                                ) : <span className="text-xs text-muted-foreground/40 italic">{t('tutorDashboard.locked')}</span>
+                                </div>
                             ),
                         },
                     ]}
                 />
             )}
 
-            {/* ongoing engagements */}
+            {/* Engagements Tab */}
             {activeTab === 'ongoing' && (
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-6">
-                    {apps.filter(a => a.status === 'approved').length === 0 ? (
-                        <Card className="md:col-span-2 p-32 text-center border-dashed">
-                             <UserCheck size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                            <p className="text-sm font-medium text-muted-foreground italic">{t('tutorDashboard.no_active_engagements')}</p>
-                        </Card>
-                    ) : (
-                        apps.filter(a => a.status === 'approved').map(app => (
-                            <Card key={app._id} className="p-4 md:p-8 group relative overflow-hidden">
-                                <div className="absolute top-0 right-0 size-32 bg-primary/5 rounded-lg -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
-                                <div className="relative z-10">
-                                    <div className="flex items-center gap-2 mb-6">
-                                        <div className="size-2 rounded-full bg-primary animate-pulse"></div>
-                                        <span className="text-xs font-bold text-primary">{t('tutorDashboard.active_connection')}</span>
-                                    </div>
-                                    <h3 className="text-xl font-bold text-foreground mb-8 tracking-tight">{app.tuitionId?.subject}</h3>
-
-                                    <div className="space-y-4 mb-8">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.student_email')}</span>
-                                            <span className="text-xs font-bold text-foreground">{app.studentEmail}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs font-semibold text-muted-foreground">{t('tutorDashboard.monthly_fee')}</span>
-                                            <span className="text-sm font-bold text-primary tabular-nums">৳{app.expectedSalary} <span className="text-xs text-muted-foreground opacity-50">{t('tutorDashboard.per_month')}</span></span>
-                                        </div>
-                                    </div>
-
-                                    <Button variant="outline" className="w-full h-11 rounded-lg active:scale-[0.98]" onClick={() => handleContactStudent(app)}>
-                                        <MessageSquare size={14} /> {t('tutorDashboard.send_message')} <ArrowUpRight size={14} />
+                <DataTable
+                    rowKey={(row) => row._id}
+                    data={apps.filter((a) => a.status === 'approved')}
+                    emptyState={
+                        <p className="italic py-8 text-center text-muted-foreground text-xs">{t('tutorDashboard.no_active_engagements')}</p>
+                    }
+                    columns={[
+                        {
+                            key: 'tuitionId',
+                            label: t('tutorDashboard.subject'),
+                            render: (_, app) => (
+                                <p className="text-xs font-bold text-foreground">{app.tuitionId?.subject || "Tuition"}</p>
+                            ),
+                        },
+                        {
+                            key: 'studentEmail',
+                            label: t('tutorDashboard.student_contact'),
+                            render: (val) => (
+                                <span className="text-xs text-muted-foreground">{val}</span>
+                            ),
+                        },
+                        {
+                            key: '_id',
+                            label: t('tutorDashboard.session_actions'),
+                            align: 'right',
+                            render: (_, app) => (
+                                <div className="flex items-center justify-end gap-2">
+                                    <Button
+                                        size="sm"
+                                        className="h-8 px-3 text-xs"
+                                        onClick={() => navigate(`/session/${app.tuitionId?._id || app._id}`)}
+                                    >
+                                        Enter Classroom
                                     </Button>
                                 </div>
-                            </Card>
-                        ))
-                    )}
-                </div>
+                            ),
+                        },
+                    ]}
+                />
             )}
 
-            {/* revenue tab */}
+            {/* Revenue Tab */}
             {activeTab === 'revenue' && (
-                <Card className="overflow-hidden">
-                    <div className="p-8 border-b border-border bg-background/50 flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div>
-                             <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
-                                <div className="size-2 rounded-full bg-primary"></div>
-                                {t('tutorDashboard.earnings_report')}
-                            </h2>
-                            <p className="text-xs font-medium text-muted-foreground mt-1">{t('tutorDashboard.earnings_subtitle')}</p>
-                        </div>
-                        <div className="bg-card px-8 py-4 rounded-xl border border-border shadow-sm">
-                            <p className="text-xs font-semibold text-muted-foreground mb-1">{t('tutorDashboard.total_earnings')}</p>
-                            <p className="text-2xl font-bold text-primary tracking-tight tabular-nums">৳{totalEarnings}</p>
-                        </div>
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Card className="p-5 bg-card border-border" hover={false}>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('tutorDashboard.total_settled_earnings')}</p>
+                            <p className="text-2xl font-bold font-mono text-foreground mt-2">৳{totalEarnings.toLocaleString()}</p>
+                        </Card>
+                        <Card className="p-5 bg-card border-border" hover={false}>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('tutorDashboard.projected_this_month')}</p>
+                            <p className="text-2xl font-bold font-mono text-primary mt-2">৳{projectedThisMonth.toLocaleString()}</p>
+                        </Card>
                     </div>
 
                     <DataTable
                         rowKey={(row) => row._id}
                         data={revenue}
-                        emptyState={
-                            <div className="p-32 text-center">
-                                <Banknote size={48} className="text-muted-foreground/20 mx-auto mb-8" strokeWidth={1} />
-                                <p className="text-sm font-medium text-muted-foreground italic">{t('tutorDashboard.no_payment_history')}</p>
-                            </div>
-                        }
+                        emptyState={<p className="italic py-8 text-center text-muted-foreground text-xs">{t('tutorDashboard.no_earnings_records')}</p>}
                         columns={[
                             {
                                 key: 'createdAt',
                                 label: t('tutorDashboard.date'),
                                 render: (val) => (
-                                    <span className="text-xs font-bold text-muted-foreground uppercase tabular-nums tracking-widest">
+                                    <span className="text-xs text-muted-foreground font-mono">
                                         {new Date(val).toLocaleDateString()}
                                     </span>
                                 ),
                             },
                             {
-                                key: 'tuitionId',
-                                label: t('tutorDashboard.subject_student'),
-                                render: (_, payment) => (
-                                    <>
-                                        <p className="text-sm font-bold text-foreground">{payment.tuitionId?.subject || t('tutorDashboard.tutoring_fee')}</p>
-                                        <p className="text-xs text-muted-foreground font-medium mt-1">{payment.studentEmail}</p>
-                                    </>
+                                key: 'paymentMethod',
+                                label: t('tutorDashboard.method'),
+                                render: (val) => (
+                                    <span className="text-xs font-semibold text-foreground uppercase">{val || 'bKash'}</span>
                                 ),
                             },
                             {
                                 key: 'grossAmount',
                                 label: t('tutorDashboard.amount'),
-                                align: 'center',
                                 render: (val) => (
-                                    <span className="text-sm font-bold text-primary tabular-nums">৳{val}</span>
+                                    <span className="text-xs font-bold font-mono text-primary">৳{val}</span>
                                 ),
                             },
                             {
@@ -430,19 +489,20 @@ const TutorDashboard = () => {
                                 label: t('tutorDashboard.status'),
                                 align: 'right',
                                 render: (val) => (
-                                    <Badge
-                                        variant={val === 'confirmed' ? 'success' : 'default'}
-                                        className="rounded-lg"
-                                    >
+                                    <Badge variant="success" className="rounded-md text-[11px]">
                                         {val}
                                     </Badge>
                                 ),
                             },
                         ]}
                     />
-                </Card>
+                </div>
             )}
+
+            {/* Availability Tab */}
             {activeTab === 'availability' && <TutorAvailability />}
+
+            {/* Assignments Tab */}
             {activeTab === 'assignments' && <Assignments />}
         </div>
     );

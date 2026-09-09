@@ -33,11 +33,13 @@ const SubscriptionManagement = () => {
     try {
       setLoading(true);
       const [plansRes, subsRes] = await Promise.all([
-        api.get("/api/v1/plans"),
-        api.get("/api/v1/subscriptions"),
+        api.get("/api/v1/plans").catch(() => ({ data: [] })),
+        api.get("/api/v1/subscriptions").catch(() => ({ data: [] })),
       ]);
-      setPlans(plansRes.data.data || []);
-      setSubscriptions(subsRes.data.data || []);
+      const pData = Array.isArray(plansRes.data?.data) ? plansRes.data.data : Array.isArray(plansRes.data) ? plansRes.data : [];
+      const sData = Array.isArray(subsRes.data?.data) ? subsRes.data.data : Array.isArray(subsRes.data) ? subsRes.data : [];
+      setPlans(pData);
+      setSubscriptions(sData);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -137,10 +139,10 @@ const SubscriptionManagement = () => {
       label: "Price",
       render: (_, plan) => (
         <div className="text-sm">
-          <span className="font-medium">৳{plan.price?.monthly?.toLocaleString() || 0}</span>
+          <span className="font-medium">৳{(plan.price?.monthly ?? 0).toLocaleString()}</span>
           <span className="text-muted-foreground">/mo</span>
-          {plan.price?.yearly > 0 && (
-            <span className="text-muted-foreground block text-xs">৳{plan.price.yearly.toLocaleString()}/yr</span>
+          {(plan.price?.yearly ?? 0) > 0 && (
+            <span className="text-muted-foreground block text-xs">৳{(plan.price?.yearly ?? 0).toLocaleString()}/yr</span>
           )}
         </div>
       ),
