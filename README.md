@@ -151,15 +151,33 @@ i18n foundation with English and Bengali translations (expandable via JSON local
 | **PWA** | vite-plugin-pwa (Workbox) |
 | **i18n** | i18next, react-i18next |
 
-## Setup
+## Setup & Testing
 
 ```bash
+# Requires Node.js 20.19+ or 24+
 npm install
 
-npm run dev    # Dev server
-npm run build  # Production build
-npm run lint   # Lint check
+npm run dev    # Starts Vite dev server (http://localhost:5173)
+npm run build  # Production build (PWA + Rollup chunks)
+npm run lint   # ESLint code style check
+npm test       # Vitest unit & integration test suite (172 tests)
 ```
+
+### Component Architecture
+
+- **Modular Tutor Profile (`src/components/TutorProfile/`):**
+  - `TutorProfileHeader`: Profile overview, verification badges, response time metrics.
+  - `TutorSubjectsBadges`: Curriculums, subjects, and grade level pill strips.
+  - `TutorCredentialsCard`: Academic background, certifications, institutional affiliations.
+  - `TutorAvailabilityGrid`: Interactive weekly timeslot matrix with booking action.
+  - `TutorReviewsSection`: Verified student reviews, rating breakdown, and sentiment summary.
+  - `TutorConversionSidebar` & `TutorMobileActionBar`: Direct hire CTA, sticky booking bar.
+- **Institutional Workspace (`src/components/Organizations/`):**
+  - `OrganizationCard`: Coaching center profile, admission details, branches list.
+  - `OrgAdmissionModal`: Direct enrollment and course enquiry dialog.
+  - `OrgDashboardLayout`: Multi-tenant portal with suspension/ban sticky status banners.
+- **Administrative Intelligence (`src/components/Dashboard/SuperAdmin/`):**
+  - `Reports.jsx`: Platform growth reports, user activity trends, and sanitized CSV exports.
 
 ## Environment Variables
 

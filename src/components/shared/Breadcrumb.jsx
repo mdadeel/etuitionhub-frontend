@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const Breadcrumb = ({ items = [] }) => {
+const Breadcrumb = ({ items = [], className }) => {
   if (!items.length) return null;
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-xs text-muted-foreground">
+    <nav aria-label="Breadcrumb" className={cn("flex items-center gap-1 text-xs text-muted-foreground", className)}>
       <Link
         to="/"
         className="flex items-center gap-1 hover:text-foreground transition-colors"
@@ -14,12 +14,14 @@ const Breadcrumb = ({ items = [] }) => {
         <Home size={13} />
         <span className="sr-only sm:not-sr-only">Home</span>
       </Link>
-      {items.map((item, i) => (
+      {items.map((item, i) => {
+        const href = item.to || item.href;
+        return (
         <span key={i} className="flex items-center gap-1">
           <ChevronRight size={12} className="text-muted-foreground/50" />
-          {item.to ? (
+          {href ? (
             <Link
-              to={item.to}
+              to={href}
               className="hover:text-foreground transition-colors font-medium"
             >
               {item.label}
@@ -30,7 +32,8 @@ const Breadcrumb = ({ items = [] }) => {
             </span>
           )}
         </span>
-      ))}
+        );
+      })}
     </nav>
   );
 };

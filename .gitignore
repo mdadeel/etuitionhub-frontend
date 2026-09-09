@@ -57,3 +57,4 @@ design.html
 capture-*.mjs
 analyze-*.mjs
 login-*.har
+scratch*

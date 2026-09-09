@@ -32,7 +32,7 @@ const AdminVerifications = () => {
     }, []);
 
     const aiExtractMutation = useAppMutation({
-        mutationFn: ({ vid }) => api.post(`/api/users/verification/${vid}/ai-extract`),
+        mutationFn: ({ vid }) => api.post(`/api/v1/verifications/${vid}/ai-extract`),
         onSuccess: (res, { userId }) => {
             setExtractions((s) => ({ ...s, [userId]: res.data }));
             const flagCount = res.data.flags?.length || 0;

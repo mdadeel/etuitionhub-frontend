@@ -17,12 +17,18 @@ import {
     Briefcase,
     Star,
     User,
-    Compass
+    Compass,
+    KeyRound,
+    Lock,
+    Eye,
+    EyeOff,
+    CheckCircle2
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import RoleBadge from '@/components/shared/RoleBadge';
+import PasswordStrength from '../shared/PasswordStrength';
 import NotificationPreferences from './NotificationPreferences';
 import { cn } from '@/lib/utils';
 import {
@@ -34,8 +40,21 @@ import {
 } from '../../utils/constants';
 
 const Profile = () => {
-    const { user, dbUser, refreshUserFromDB, updateUserProfile } = useAuth();
+    const { user, dbUser, refreshUserFromDB, updateUserProfile, changePassword } = useAuth();
     const [loading, setLoading] = useState(false);
+
+    // Password change states
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showCurrentPass, setShowCurrentPass] = useState(false);
+    const [showNewPass, setShowNewPass] = useState(false);
+    const [showConfirmPass, setShowConfirmPass] = useState(false);
+    const [passwordLoading, setPasswordLoading] = useState(false);
+
+    const isGoogleOnly = user?.providerData?.length > 0 &&
+        user.providerData.every((p) => p.providerId === 'google.com');
 
     const fileInputRef = useRef(null);
 
@@ -652,19 +671,178 @@ const Profile = () => {
                             </Card>
 
                             <div className="mt-8">
-                                <Card className="p-6 bg-primary/5 border border-primary/10" hover={false}>
-                                    <div className="flex items-start gap-4">
-                                        <div className="size-10 rounded-lg bg-card flex items-center justify-center shrink-0 shadow-sm border border-border">
-                                            <ShieldCheck className="text-primary" size={20} />
+                                <Card className="p-6 bg-card border border-border" hover={false}>
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div className="flex items-start gap-4">
+                                            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 shadow-sm border border-primary/20">
+                                                <ShieldCheck className="text-primary" size={20} />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-sm font-semibold text-foreground">Account Security</h4>
+                                                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                                                    Manage your password and authentication credentials.
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-foreground">Account Security</h4>
-                                            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                                                Your account is protected by industry-standard encryption.
-                                                Keep your information accurate so verification stays quick and easy.
-                                            </p>
-                                        </div>
+                                        {isGoogleOnly ? (
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/60 px-3 py-1.5 rounded-lg border border-border self-start sm:self-auto">
+                                                <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
+                                                <span>Signed in with Google OAuth</span>
+                                            </div>
+                                        ) : (
+                                            <Button
+                                                type="button"
+                                                variant={showPasswordForm ? "outline" : "default"}
+                                                size="sm"
+                                                onClick={() => setShowPasswordForm(!showPasswordForm)}
+                                                className="self-start sm:self-auto text-xs font-semibold gap-1.5"
+                                            >
+                                                <KeyRound size={14} />
+                                                {showPasswordForm ? "Cancel" : "Change Password"}
+                                            </Button>
+                                        )}
                                     </div>
+
+                                    {showPasswordForm && !isGoogleOnly && (
+                                        <form 
+                                            onSubmit={async (e) => {
+                                                e.preventDefault();
+                                                if (!currentPassword) {
+                                                    toast.error("Please enter your current password");
+                                                    return;
+                                                }
+                                                if (newPassword.length < 6) {
+                                                    toast.error("New password must be at least 6 characters");
+                                                    return;
+                                                }
+                                                if (newPassword !== confirmPassword) {
+                                                    toast.error("New passwords do not match");
+                                                    return;
+                                                }
+                                                setPasswordLoading(true);
+                                                try {
+                                                    await changePassword(currentPassword, newPassword);
+                                                    setCurrentPassword('');
+                                                    setNewPassword('');
+                                                    setConfirmPassword('');
+                                                    setShowPasswordForm(false);
+                                                } catch {
+                                                    // error handled in changePassword
+                                                } finally {
+                                                    setPasswordLoading(false);
+                                                }
+                                            }} 
+                                            className="mt-6 pt-6 border-t border-border space-y-4 max-w-lg"
+                                        >
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                                    Current Password
+                                                </label>
+                                                <div className="relative">
+                                                    <input
+                                                        type={showCurrentPass ? "text" : "password"}
+                                                        value={currentPassword}
+                                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                                        placeholder="Enter current password"
+                                                        required
+                                                        className="w-full bg-background border border-border px-3.5 py-2.5 rounded-lg text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary pr-10"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowCurrentPass(!showCurrentPass)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                                        tabIndex={-1}
+                                                    >
+                                                        {showCurrentPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                                    New Password
+                                                </label>
+                                                <div className="relative">
+                                                    <input
+                                                        type={showNewPass ? "text" : "password"}
+                                                        value={newPassword}
+                                                        onChange={(e) => setNewPassword(e.target.value)}
+                                                        placeholder="Enter new password (min. 6 characters)"
+                                                        required
+                                                        className="w-full bg-background border border-border px-3.5 py-2.5 rounded-lg text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary pr-10"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowNewPass(!showNewPass)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                                        tabIndex={-1}
+                                                    >
+                                                        {showNewPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                                                    </button>
+                                                </div>
+                                                <PasswordStrength password={newPassword} />
+                                            </div>
+
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                                    Confirm New Password
+                                                </label>
+                                                <div className="relative">
+                                                    <input
+                                                        type={showConfirmPass ? "text" : "password"}
+                                                        value={confirmPassword}
+                                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                                        placeholder="Confirm new password"
+                                                        required
+                                                        className="w-full bg-background border border-border px-3.5 py-2.5 rounded-lg text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary pr-10"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowConfirmPass(!showConfirmPass)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                                        tabIndex={-1}
+                                                    >
+                                                        {showConfirmPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                                                    </button>
+                                                </div>
+                                                {confirmPassword && newPassword !== confirmPassword && (
+                                                    <p className="text-[11px] text-destructive">Passwords do not match</p>
+                                                )}
+                                            </div>
+
+                                            <div className="flex items-center gap-3 pt-2">
+                                                <Button
+                                                    type="submit"
+                                                    disabled={passwordLoading || !currentPassword || !newPassword || newPassword !== confirmPassword}
+                                                    size="sm"
+                                                    className="text-xs font-semibold"
+                                                >
+                                                    {passwordLoading ? (
+                                                        <>
+                                                            <RefreshCw className="size-3.5 animate-spin mr-1.5" />
+                                                            Updating...
+                                                        </>
+                                                    ) : (
+                                                        "Update Password"
+                                                    )}
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setShowPasswordForm(false);
+                                                        setCurrentPassword('');
+                                                        setNewPassword('');
+                                                        setConfirmPassword('');
+                                                    }}
+                                                    className="text-xs"
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    )}
                                 </Card>
                             </div>
 

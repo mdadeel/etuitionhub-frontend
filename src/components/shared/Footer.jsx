@@ -140,6 +140,7 @@ const Footer = () => {
                             openSection === 'resources' ? "max-h-64 opacity-100 mt-3" : "max-h-0 opacity-0 md:mt-0"
                         )}>
                             <li><Link to="/tutors" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Browse Tutors</Link></li>
+                            <li><Link to="/organizations" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Browse Institutions</Link></li>
                             <li><Link to="/post-tuition" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Post a Tuition</Link></li>
                             <li><Link to="/become-tutor" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Join as a Tutor</Link></li>
                             <li><Link to="/tutor-earnings" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutor Earnings Calculator</Link></li>

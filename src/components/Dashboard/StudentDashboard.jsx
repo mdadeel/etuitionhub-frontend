@@ -24,6 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 import DataTable from "@/components/ui/data-table";
 import SessionStatsCard from "./SessionStatsCard";
+import OnboardingChecklist from "./widgets/OnboardingChecklist";
 
 const PostTuition = lazy(() => import("../../pages/PostTuition"));
  
@@ -207,6 +208,7 @@ const StudentDashboard = () => {
           </div>
         ) : (
           <div className="space-y-6">
+            <OnboardingChecklist />
             <SessionStatsCard />
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             <Card className="p-6 md:p-10 group" >

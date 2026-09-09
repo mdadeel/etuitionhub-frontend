@@ -63,6 +63,10 @@ api.interceptors.request.use(config => {
     if (sessionDead) {
         return Promise.reject({ __sessionDead: true, config });
     }
+    const authToken = localStorage.getItem('token');
+    if (authToken && !config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${authToken}`;
+    }
     if (!['get', 'head', 'options'].includes(config.method?.toLowerCase())) {
         const token = getCsrfToken();
         if (token) {

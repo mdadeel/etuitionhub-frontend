@@ -31,6 +31,7 @@ const AdminWithdrawals = lazy(() => import('../pages/AdminWithdrawals'));
 const DashPayments = lazy(() => import('../components/Dashboard/DashPayments'));
 const AdminContacts = lazy(() => import('../components/Dashboard/AdminContacts'));
 const AdminTestimonials = lazy(() => import('../components/Dashboard/AdminTestimonials'));
+const Reports = lazy(() => import('../components/Dashboard/SuperAdmin/Reports'));
 
 const SuperAdminRoutes = () => {
   const { dbUser, loading } = useAuth();
@@ -60,6 +61,7 @@ const SuperAdminRoutes = () => {
         <Route path="audit-logs" element={<AdminAuditLogs />} />
         <Route path="testimonials" element={<AdminTestimonials />} />
         <Route path="search-analytics" element={<SearchAnalytics />} />
+        <Route path="reports" element={<Reports />} />
         <Route path="settings" element={<DashSettings />} />
         <Route path="*" element={<Navigate to="" replace />} />
       </Routes>

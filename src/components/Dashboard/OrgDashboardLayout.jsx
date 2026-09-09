@@ -1,5 +1,6 @@
 import { lazy, useEffect } from 'react';
 import { Routes, Route, useParams, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import OrgPermissionGate from '../shared/OrgPermissionGate';
 import { ORG_ROUTE_PERMISSIONS } from '../../constants/orgPermissions';
@@ -39,6 +40,7 @@ const OrgBatches = lazy(() => import('./Organization/OrgBatches'));
 const OrgDashboardLayout = () => {
   const { orgId } = useParams();
   const { myOrgs, switchOrg, orgContext, dbUser, loading } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!loading && orgId) {
@@ -69,13 +71,13 @@ const OrgDashboardLayout = () => {
     return (
       <div className="p-8 max-w-2xl mx-auto my-12 text-center space-y-4">
         <div className="p-6 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive space-y-3">
-          <h2 className="text-xl font-heading font-bold">Organization Banned</h2>
+          <h2 className="text-xl font-heading font-bold">{t('org.banned_title', 'Organization Banned')}</h2>
           <p className="text-sm text-muted-foreground">
-            This organization workspace has been suspended or banned by platform administration. Access is restricted.
+            {t('org.banned_desc', 'This organization workspace has been suspended or banned by platform administration. Access is restricted.')}
           </p>
           {currentOrg?.bannedReason && (
             <p className="text-xs text-destructive/90 font-mono bg-destructive/10 p-2 rounded">
-              Reason: {currentOrg.bannedReason}
+              {t('common.reason', 'Reason')}: {currentOrg.bannedReason}
             </p>
           )}
         </div>
@@ -88,12 +90,12 @@ const OrgDashboardLayout = () => {
       {isSuspended && (
         <div className="bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 px-4 py-3 rounded-lg text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="font-semibold">⚠️ Organization Suspended:</span>
-            <span>This workspace has been suspended by platform administration. Write operations are temporarily restricted.</span>
+            <span className="font-semibold">{t('org.suspended_badge', '⚠️ Organization Suspended:')}</span>
+            <span>{t('org.suspended_desc', 'This workspace has been suspended by platform administration. Write operations are temporarily restricted.')}</span>
           </div>
           {currentOrg?.suspensionReason && (
             <span className="text-xs opacity-80 font-mono">
-              Reason: {currentOrg.suspensionReason}
+              {t('common.reason', 'Reason')}: {currentOrg.suspensionReason}
             </span>
           )}
         </div>

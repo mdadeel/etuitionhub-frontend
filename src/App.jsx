@@ -111,7 +111,8 @@ const ConditionalFooter = () => {
   const isAuth = pathname === "/login" || pathname === "/register";
   const isTutors = pathname.startsWith("/tutors");
   const isTuitions = pathname.startsWith("/tuitions");
-  if (isDashboard || isSession || isAiAssistant || isAuth || isTutors || isTuitions) return null;
+  const isOrganizations = pathname.startsWith("/organizations");
+  if (isDashboard || isSession || isAiAssistant || isAuth || isTutors || isTuitions || isOrganizations) return null;
   return <Suspense fallback={null}><Footer /></Suspense>;
 };
 
@@ -154,7 +155,7 @@ const MainContent = ({ children }) => {
         id="main-content"
         className={cn(
           "flex-grow transition-all duration-300",
-          !isDashboard && !isSession ? "pt-14 safe-bottom" : "pt-0",
+          !isDashboard && !isSession ? "pt-16 safe-bottom" : "pt-0",
         )}
       >
         {children}

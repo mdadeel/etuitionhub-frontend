@@ -522,10 +522,11 @@ const FloatingChat = () => {
             {/* ── Floating Trigger Button ── */}
             <button
                 onClick={() => setIsFloatingOpen(!isFloatingOpen)}
-                className="size-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg flex items-center justify-center relative"
+                className="size-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg flex items-center justify-center relative transition-transform active:scale-95"
                 title={isFloatingOpen ? "Close messages" : "Open messages"}
+                aria-label={isFloatingOpen ? "Close messages" : "Open messages"}
             >
-                {isFloatingOpen ? <X size={22} strokeWidth={2.5} /> : <Bot size={24} strokeWidth={2} />}
+                {isFloatingOpen ? <X size={22} strokeWidth={2.5} /> : <MessageCircle size={24} strokeWidth={2} />}
 
                 {/* Unread Badge */}
                 {!isFloatingOpen && unreadTotal > 0 && (

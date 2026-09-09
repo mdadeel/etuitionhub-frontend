@@ -268,7 +268,6 @@ const TuitionDetails = () => {
                 <Breadcrumb
                     className="mb-4"
                     items={[
-                        { label: t('nav.home', 'Home'), to: '/' },
                         { label: t('nav.find_tuitions', 'Tuitions'), to: '/tuitions' },
                         { label: tuition?.subject || t('tuitionDetails.title', 'Tuition Details') },
                     ]}

@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { getFirebase } from '../utils/firebase';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -235,6 +235,35 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         }
     };
 
+    const changePassword = async (currentPassword, newPassword) => {
+        setLoading(true);
+        try {
+            const { auth } = await getFirebase();
+            const currentUser = auth.currentUser;
+            if (!currentUser || !currentUser.email) {
+                throw new Error('No authenticated user session found');
+            }
+            const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+            await reauthenticateWithCredential(currentUser, credential);
+            await updatePassword(currentUser, newPassword);
+            toast.success('Password updated successfully');
+            return true;
+        } catch (err) {
+            if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                toast.error('Current password is incorrect');
+                throw new Error('Current password is incorrect');
+            } else if (err.code === 'auth/weak-password') {
+                toast.error('New password must be at least 6 characters');
+                throw new Error('New password must be at least 6 characters');
+            } else {
+                toast.error(err.message || 'Failed to update password');
+                throw err;
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         register,
         login,
@@ -245,6 +274,7 @@ const useAuthActions = ({ setUser, setDbUser, setUserRole, setLoading, setJWT, r
         resetPassword,
         verifyResetCode,
         confirmReset,
+        changePassword,
         updateUserProfile,
     };
 };

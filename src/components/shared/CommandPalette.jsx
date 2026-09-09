@@ -26,6 +26,8 @@ import {
   HelpCircle,
   ExternalLink,
   ChevronRight,
+  Power,
+  FileSpreadsheet,
 } from "lucide-react";
 import {
   Dialog,
@@ -37,6 +39,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 import api from "../../services/api";
+import { toast } from "react-hot-toast";
 
 const fuzzyMatch = (query, target) => {
   if (!query) return true;
@@ -72,6 +75,8 @@ const CommandPalette = ({ open, onOpenChange }) => {
 
   const isAdmin = dbUser?.globalRole === "super_admin";
   const isLoggedIn = !!user;
+  const [breakers, setBreakers] = useState(null);
+  const [breakerBusy, setBreakerBusy] = useState(null);
 
   const items = useMemo(() => {
     const list = [
@@ -228,7 +233,48 @@ const CommandPalette = ({ open, onOpenChange }) => {
           icon: Settings,
           keywords: ["admin", "settings", "config"],
         },
+        {
+          section: "Admin",
+          label: "Org Requests",
+          path: "/super-admin/org-requests",
+          icon: Building2,
+          keywords: ["admin", "org", "requests", "approvals"],
+        },
+        {
+          section: "Admin",
+          label: "Tuitions",
+          path: "/super-admin/tuitions",
+          icon: BookOpen,
+          keywords: ["admin", "tuitions", "jobs", "posts"],
+        },
+        {
+          section: "Admin",
+          label: "Reports & Digests",
+          path: "/super-admin/reports",
+          icon: FileSpreadsheet,
+          keywords: ["admin", "reports", "digest", "weekly", "scheduled"],
+        },
       );
+    }
+
+    if (isAdmin && breakers) {
+      const BREAKER_LABELS = {
+        payoutsEnabled: "Payouts",
+        aiAssistantEnabled: "AI Assistant",
+        tuitionPostingEnabled: "Tuition Posting",
+        registrationsEnabled: "Registrations",
+        maintenanceMode: "Maintenance Mode",
+      };
+      for (const [key, label] of Object.entries(BREAKER_LABELS)) {
+        list.push({
+          section: "Admin Actions",
+          label: `${breakers[key] ? "Disable" : "Enable"} ${label}`,
+          icon: Power,
+          keywords: ["circuit", "breaker", "toggle", "emergency", key, label.toLowerCase()],
+          action: "toggleBreaker",
+          breakerKey: key,
+        });
+      }
     }
 
     list.push(
@@ -270,7 +316,7 @@ const CommandPalette = ({ open, onOpenChange }) => {
     return list.filter(
       (item) => !item.requiresAuth || isLoggedIn,
     );
-  }, [isAdmin, isLoggedIn, theme]);
+  }, [isAdmin, isLoggedIn, theme, breakers]);
 
   const [adminSearchResults, setAdminSearchResults] = useState(null);
   const [isSearchingAdmin, setIsSearchingAdmin] = useState(false);
@@ -279,6 +325,7 @@ const CommandPalette = ({ open, onOpenChange }) => {
     if (!isAdmin || !open) {
       setAdminSearchResults(null);
       setIsSearchingAdmin(false);
+      setBreakers(null);
       return;
     }
     const trimmed = query.trim();
@@ -304,6 +351,39 @@ const CommandPalette = ({ open, onOpenChange }) => {
 
     return () => clearTimeout(timer);
   }, [query, isAdmin, open]);
+
+  // Load circuit breaker states lazily once per open so admins get one-keystroke
+  // incident-response actions without navigating to Platform Overview first.
+  useEffect(() => {
+    if (!isAdmin || !open || breakers) return;
+    let cancelled = false;
+    api
+      .get("/api/admin/circuit-breakers")
+      .then((res) => {
+        if (!cancelled && res.data?.data) setBreakers(res.data.data);
+      })
+      .catch(() => {
+        // palette actions stay hidden if breakers can't be loaded
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin, open, breakers]);
+
+  const toggleBreaker = async (key) => {
+    if (breakerBusy) return;
+    const next = !(breakers?.[key] ?? true);
+    setBreakerBusy(key);
+    try {
+      await api.patch("/api/admin/circuit-breakers", { key, value: next });
+      setBreakers((b) => ({ ...b, [key]: next }));
+      toast.success(`${key} ${next ? "enabled" : "disabled"}`);
+    } catch {
+      toast.error("Failed to update circuit breaker");
+    } finally {
+      setBreakerBusy(null);
+    }
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim();
@@ -381,6 +461,10 @@ const CommandPalette = ({ open, onOpenChange }) => {
   }, [activeIndex]);
 
   const runItem = (item) => {
+    if (item.action === "toggleBreaker") {
+      toggleBreaker(item.breakerKey);
+      return; // keep palette open so the admin sees the state flip
+    }
     onOpenChange(false);
     if (item.action === "toggleTheme") {
       toggleTheme();

@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useRef } from "react";
-import { User, LogOut, Menu, X, Search, Sun, Moon, Plus } from "lucide-react";
+import { User, LogOut, Menu, X, Search, Sun, Moon, Plus, Building2 } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
 import NotificationBell from "./NotificationBell";
 import Logo from "./Logo";
@@ -25,7 +25,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { t } = useTranslation();
   const searchInputRef = useRef(null);
-  const [suggestions, setSuggestions] = useState({ tutors: [], tuitions: [] });
+  const [suggestions, setSuggestions] = useState({ tutors: [], tuitions: [], organizations: [] });
   const [showDropdown, setShowDropdown] = useState(false);
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
@@ -94,20 +94,24 @@ const Navbar = () => {
   // Fetch autocomplete suggestions
   useEffect(() => {
     if (!debouncedQuery || debouncedQuery.length < 2) {
-      setSuggestions({ tutors: [], tuitions: [] });
+      setSuggestions({ tutors: [], tuitions: [], organizations: [] });
       return;
     }
     const controller = new AbortController();
     fetch(
       `${API_URL}/api/search/combined?q=${encodeURIComponent(debouncedQuery)}&limit=5`,
-      { signal: controller.signal },
+      { signal: controller.signal, credentials: "include" },
     )
       .then((r) => r.json())
       .then((data) => {
-        if (data && Array.isArray(data.tutors) && Array.isArray(data.tuitions)) {
-          setSuggestions(data);
+        if (data && (Array.isArray(data.tutors) || Array.isArray(data.tuitions) || Array.isArray(data.organizations))) {
+          setSuggestions({
+            tutors: data.tutors || [],
+            tuitions: data.tuitions || [],
+            organizations: data.organizations || []
+          });
         } else {
-          setSuggestions({ tutors: [], tuitions: [] });
+          setSuggestions({ tutors: [], tuitions: [], organizations: [] });
         }
       })
       .catch(() => {});
@@ -146,10 +150,11 @@ const Navbar = () => {
   const centerNavTabs = [
     { path: "/tutors", label: t("nav.find_tutors", "Find Tutors") },
     { path: "/tuitions", label: t("nav.tuitions", "Tuitions") },
+    { path: "/organizations", label: t("nav.organizations", "Institutions") },
     {
       path: "/ai-assistant",
       label: t("nav.ai_tutor", "Porua AI"),
-      icon: (props) => <PoruaLogo iconOnly size={18} {...props} />,
+      icon: ({ className } = {}) => <PoruaLogo iconOnly size={18} className={className} />,
     },
   ];
 
@@ -159,7 +164,7 @@ const Navbar = () => {
     ...(userRole !== "tutor" && !user
       ? [{ path: "/become-tutor", label: t("nav.become_tutor", "Become Tutor") }]
       : []),
-    { path: "/tutor-earnings", label: "Tutor Earnings" },
+    { path: "/tutor-earnings", label: t("nav.tutor_earnings", "Tutor Earnings") },
     { path: "/about", label: t("nav.about", "About") },
   ];
 
@@ -198,7 +203,7 @@ const Navbar = () => {
               type="submit"
               className="px-4 h-10 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium rounded-full transition-all active:scale-95 shadow-sm"
             >
-              Search
+              {t("common.search", "Search")}
             </button>
           </form>
         </div>
@@ -213,45 +218,47 @@ const Navbar = () => {
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-lg lg:hidden transition-colors"
-            aria-label="Toggle navigation menu"
+            className="p-2 -ml-2 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-full md:hidden transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
             {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          {/* Logo with minimal surrounding margin */}
-          <Link to="/" className="shrink-0 flex items-center mr-1">
-            <Logo
-              boxSize="size-9"
-              iconSize="size-5"
-              textSize="text-lg"
-              className="hidden sm:flex"
-            />
-            <Logo
-              boxSize="size-9"
-              iconSize="size-5"
-              showText={false}
-              className="sm:hidden"
-            />
-          </Link>
+          {/* Platform Logo */}
+          <div className="shrink-0 flex items-center">
+            <Logo />
+          </div>
 
-          {/* Integrated Search Input (Desktop): 280px-400px responsive width */}
-          {!isAuthPage && (
-            <div className="hidden md:block relative w-[280px] lg:w-[320px] xl:w-[360px] 2xl:w-[400px] shrink-0">
-              <form onSubmit={handleSearch} className="relative flex items-center w-full" data-tour="search-bar">
-                <Search className="absolute left-3.5 size-4 text-muted-foreground pointer-events-none" />
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search tutors, subjects, tuitions…"
-                  autoComplete="off"
-                  className="w-full pl-9 pr-12 h-10 rounded-full text-xs sm:text-sm bg-muted/70 hover:bg-muted/90 border border-border/60 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 focus:bg-background transition-all duration-200 placeholder:text-muted-foreground/70"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setShowDropdown(true)}
-                />
-                <div className="absolute right-3.5 hidden lg:flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground/70 bg-background/80 rounded border border-border/50 pointer-events-none select-none">
-                  ⌘K
+          {/* Desktop Search Bar (Expandable + Keyboard-Aware) */}
+          {!isAdminPath(location.pathname) && (
+            <div className="relative hidden md:block w-full max-w-xs transition-all duration-300 focus-within:max-w-sm">
+              <form onSubmit={handleSearch} className="relative w-full">
+                <div className="relative w-full">
+                  <Search
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground size-4 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <input
+                    ref={searchInputRef}
+                    type="search"
+                    name="search"
+                    placeholder={t("navbar.search_placeholder", "Search tutors by subject or location…")}
+                    autoComplete="off"
+                    aria-label="Search tutors"
+                    className="w-full pl-10 pr-9 h-10 rounded-full text-xs font-medium bg-muted/60 hover:bg-muted focus:bg-background border border-border/80 focus:border-primary/50 text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setShowDropdown(true)}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
                 </div>
               </form>
 
@@ -264,9 +271,10 @@ const Navbar = () => {
                   >
                     {searchQuery.length >= 2 &&
                       suggestions.tutors.length === 0 &&
-                      suggestions.tuitions.length === 0 && (
+                      suggestions.tuitions.length === 0 &&
+                      (suggestions.organizations?.length || 0) === 0 && (
                         <div className="px-4 py-3 text-xs text-muted-foreground text-center">
-                          No results for &ldquo;{searchQuery}&rdquo;
+                          {t("search.no_results_for", "No results for")} &ldquo;{searchQuery}&rdquo;
                         </div>
                       )}
 
@@ -274,7 +282,7 @@ const Navbar = () => {
                     {searchQuery.length < 2 && recentSearches.length > 0 && (
                       <div>
                         <div className="px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-muted/40">
-                          Recent Searches
+                          {t("search.recent_searches", "Recent Searches")}
                         </div>
                         {recentSearches.map((s, i) => (
                           <button
@@ -306,7 +314,7 @@ const Navbar = () => {
                     {suggestions.tutors.length > 0 && (
                       <div>
                         <div className="px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-muted/40">
-                          Tutors
+                          {t("nav.tutors", "Tutors")}
                         </div>
                         {suggestions.tutors.map((tutor) => (
                           <Link
@@ -315,18 +323,22 @@ const Navbar = () => {
                             onClick={() => setShowDropdown(false)}
                             className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors"
                           >
-                            <div className="size-7 bg-primary/10 rounded-full flex items-center justify-center text-xs font-semibold text-primary">
-                              {tutor.displayName?.charAt(0)}
-                            </div>
+                            <Avatar className="size-7">
+                              <AvatarImage
+                                src={tutor.photoURL}
+                                alt={tutor.displayName}
+                              />
+                              <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                                {tutor.displayName?.[0] || "T"}
+                              </AvatarFallback>
+                            </Avatar>
                             <div className="min-w-0 flex-1">
                               <p className="text-xs font-medium text-foreground truncate">
                                 {tutor.displayName}
                               </p>
-                              {tutor.subjects && (
-                                <p className="text-[11px] text-muted-foreground truncate">
-                                  {tutor.subjects}
-                                </p>
-                              )}
+                              <p className="text-[11px] text-muted-foreground truncate">
+                                {tutor.qualification || tutor.location}
+                              </p>
                             </div>
                           </Link>
                         ))}
@@ -337,7 +349,7 @@ const Navbar = () => {
                     {suggestions.tuitions.length > 0 && (
                       <div>
                         <div className="px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-muted/40">
-                          Tuitions
+                          {t("nav.tuitions", "Tuitions")}
                         </div>
                         {suggestions.tuitions.map((tuition) => (
                           <Link
@@ -364,6 +376,39 @@ const Navbar = () => {
                       </div>
                     )}
 
+                    {/* Organization Suggestions */}
+                    {suggestions.organizations?.length > 0 && (
+                      <div>
+                        <div className="px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-muted/40">
+                          {t("nav.organizations", "Institutions")}
+                        </div>
+                        {suggestions.organizations.map((org) => (
+                          <Link
+                            key={org._id}
+                            to={`/organizations/${org.slug}`}
+                            onClick={() => setShowDropdown(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors"
+                          >
+                            {org.profile?.logo ? (
+                              <img src={org.profile.logo} alt={org.name} className="size-7 rounded-lg object-cover" />
+                            ) : (
+                              <div className="size-7 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                                <Building2 className="size-4 text-primary" />
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-foreground truncate">
+                                {org.name}
+                              </p>
+                              <p className="text-[11px] text-muted-foreground truncate">
+                                {org.profile?.address || org.type?.replace(/_/g, ' ') || 'Educational Center'}
+                              </p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+
                     {/* View All */}
                     {searchQuery.length >= 2 && (
                       <Link
@@ -371,7 +416,7 @@ const Navbar = () => {
                         onClick={() => setShowDropdown(false)}
                         className="block px-4 py-2.5 text-center text-xs font-medium text-primary bg-muted/20 hover:bg-muted/50 border-t border-border/60 transition-colors"
                       >
-                        View All Results &rarr;
+                        {t("search.view_all_results", "View All Results")} &rarr;
                       </Link>
                     )}
                   </div>
@@ -446,7 +491,7 @@ const Navbar = () => {
             <Link to="/post-tuition">
               <Plus size={15} strokeWidth={2.5} />
               <span className="hidden xs:inline">{t("nav.post_tuition_btn", "Post Tuition")}</span>
-              <span className="xs:hidden">Post</span>
+              <span className="xs:hidden">{t("nav.post", "Post")}</span>
             </Link>
           </Button>
 

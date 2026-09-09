@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { cn } from '@/lib/utils';
 import SessionStatsCard from './SessionStatsCard';
+import OnboardingChecklist from './widgets/OnboardingChecklist';
  
 /**
  * TutorDashboard Component — Refined Apple Aesthetic
@@ -189,6 +190,7 @@ const TutorDashboard = () => {
             {/* Overview Content */}
             {activeTab === 'overview' && (
                 <div className="space-y-10">
+                    <OnboardingChecklist />
                     <SessionStatsCard />
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                         <Card className="p-6 md:p-10 group" >

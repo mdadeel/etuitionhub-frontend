@@ -47,9 +47,8 @@ const CityTutorsLanding = () => {
 
   const breadcrumbs = useMemo(() => {
     const crumbs = [
-      { label: 'Home', href: '/' },
-      { label: 'Tutors', href: '/tutors' },
-      { label: loc.cityName, href: `/tutors/${loc.canonicalCitySlug}` },
+      { label: 'Tutors', to: '/tutors' },
+      { label: loc.cityName, to: `/tutors/${loc.canonicalCitySlug}` },
     ];
     if (loc.thanaName) {
       crumbs.push({ label: loc.thanaName });
