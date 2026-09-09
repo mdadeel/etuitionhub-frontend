@@ -59,17 +59,8 @@ function buildOrgMenu(orgContext, hasPermission) {
   if (hasPermission(ORG_ROUTE_PERMISSIONS.tutors)) {
     items.push({ path: `${orgPath}/tutors`, label: "Tutors", icon: ShieldCheck, group: "People" });
   }
-  if (hasPermission(ORG_ROUTE_PERMISSIONS.classes)) {
-    items.push({ path: `${orgPath}/classes`, label: "Classes", icon: LayoutDashboard, group: "Academic" });
-  }
-  if (hasPermission(ORG_ROUTE_PERMISSIONS['academic-years'])) {
-    items.push({ path: `${orgPath}/academic-years`, label: "Academic Years", icon: Calendar, group: "Academic" });
-  }
-  if (hasPermission(ORG_ROUTE_PERMISSIONS.batches)) {
-    items.push({ path: `${orgPath}/batches`, label: "Batches", icon: Layers, group: "Academic" });
-  }
-  if (hasPermission(ORG_ROUTE_PERMISSIONS.subjects)) {
-    items.push({ path: `${orgPath}/subjects`, label: "Subjects", icon: FileStack, group: "Academic" });
+  if (hasPermission(ORG_ROUTE_PERMISSIONS.classes) || hasPermission(ORG_ROUTE_PERMISSIONS.subjects) || hasPermission(ORG_ROUTE_PERMISSIONS.batches)) {
+    items.push({ path: `${orgPath}/academic-setup`, label: "Academic Setup", icon: LayoutDashboard, group: "Academic" });
   }
   if (hasPermission(ORG_ROUTE_PERMISSIONS.schedule)) {
     items.push({ path: `${orgPath}/schedule`, label: "Schedule", icon: Clock, group: "Academic" });
@@ -153,14 +144,12 @@ export function getDashboardMenuItems({ globalRole, orgContext, legacyRole, hasP
       { path: "/super-admin", label: "Overview", icon: LayoutDashboard, group: "Platform" },
       { path: "/super-admin/organizations", label: "Organizations", icon: Users, group: "Platform" },
       { path: "/super-admin/analytics", label: "Analytics", icon: History, group: "Platform" },
-      { path: "/super-admin/subscriptions", label: "Subscriptions", icon: CreditCard, group: "Platform" },
       { path: "/super-admin/search-analytics", label: "Search Analytics", icon: Search, group: "Platform" },
       { path: "/super-admin/users", label: "All Users", icon: User, group: "Users & Content" },
       { path: "/super-admin/tutors", label: "Tutors", icon: ShieldCheck, group: "Users & Content" },
       { path: "/super-admin/tuitions", label: "Tuitions", icon: FileText, group: "Users & Content" },
       { path: "/super-admin/verifications", label: "Verifications", icon: ClipboardCheck, group: "Users & Content" },
-      { path: "/super-admin/withdrawals", label: "Withdrawals", icon: ArrowDownToLine, group: "Finance" },
-      { path: "/super-admin/payments", label: "Payments", icon: DollarSign, group: "Finance" },
+      { path: "/super-admin/finance", label: "Financial Hub", icon: DollarSign, group: "Finance" },
       { path: "/super-admin/contacts", label: "Contacts", icon: Mail, group: "Operations" },
       { path: "/super-admin/audit-logs", label: "Audit Logs", icon: History, group: "Operations" },
       { path: "/super-admin/reports", label: "Reports & Digests", icon: FileSpreadsheet, group: "Operations" },

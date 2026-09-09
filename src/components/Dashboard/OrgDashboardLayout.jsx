@@ -33,9 +33,9 @@ const OrgInvoices = lazy(() => import('./Organization/OrgInvoices'));
 const OrgSalaries = lazy(() => import('./Organization/OrgSalaries'));
 const OrgExpenses = lazy(() => import('./Organization/OrgExpenses'));
 const OrgAuditLogs = lazy(() => import('./Organization/OrgAuditLogs'));
-const OrgScholarships = lazy(() => import('./Organization/OrgScholarships'));
 const OrgAcademicYears = lazy(() => import('./Organization/OrgAcademicYears'));
 const OrgBatches = lazy(() => import('./Organization/OrgBatches'));
+const OrgAcademicSetup = lazy(() => import('./Organization/OrgAcademicSetup'));
 
 const OrgDashboardLayout = () => {
   const { orgId } = useParams();
@@ -88,7 +88,7 @@ const OrgDashboardLayout = () => {
   return (
     <div className="space-y-4">
       {isSuspended && (
-        <div className="bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 px-4 py-3 rounded-lg text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="bg-warning/15 border border-warning/30 text-warning px-4 py-3 rounded-lg text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="font-semibold">{t('org.suspended_badge', '⚠️ Organization Suspended:')}</span>
             <span>{t('org.suspended_desc', 'This workspace has been suspended by platform administration. Write operations are temporarily restricted.')}</span>
@@ -176,10 +176,18 @@ const OrgDashboardLayout = () => {
         } 
       />
       <Route 
+        path="academic-setup" 
+        element={
+          <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.classes} redirect>
+            <OrgAcademicSetup />
+          </OrgPermissionGate>
+        } 
+      />
+      <Route 
         path="classes" 
         element={
           <OrgPermissionGate permission={ORG_ROUTE_PERMISSIONS.classes} redirect>
-            <OrgClasses />
+            <OrgAcademicSetup />
           </OrgPermissionGate>
         } 
       />
