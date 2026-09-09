@@ -15,6 +15,7 @@ import {
   Scale,
 } from "lucide-react";
 import { toggleCompare, MAX_COMPARE } from "../lib/tutorCompare";
+import FacetedFilterSidebar from "../components/shared/FacetedFilterSidebar";
 import FilterSelect from "../components/shared/FilterSelect";
 import SearchEmptyState from "../components/shared/SearchEmptyState";
 import SaveSearchButton from "../components/shared/SaveSearchButton";
@@ -357,7 +358,7 @@ const Tutors = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 pl-3.5">
-                  <ShieldCheck size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <ShieldCheck size={16} className="text-success shrink-0" />
                   <span className="text-[11px] font-semibold text-foreground tracking-wide">
                     100% Identity & Degree Vetted
                   </span>
@@ -399,142 +400,92 @@ const Tutors = () => {
 
         <div className="grid lg:grid-cols-4 gap-6 flex-1 min-h-0 overflow-hidden">
 
-          {/* Sidebar Filters */}
-          <aside
-            className={cn(
-              "lg:col-span-1 h-full",
-              "fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
-              isMobileFiltersOpen
-                ? "opacity-100"
-                : "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto",
-            )}
+          {/* Standardized Sidebar Filters */}
+          <FacetedFilterSidebar
+            isOpen={isMobileFiltersOpen}
+            onClose={() => setIsMobileFiltersOpen(false)}
+            title={t('tutors.filters')}
+            activeCount={activeFilters.length}
+            onClearAll={handleClear}
+            clearLabel={t('tutors.clear_all')}
+            applyLabel={t('tutors.apply_filters')}
           >
-            <div
-              className={cn(
-                "bg-card w-full max-w-none h-[85vh] absolute bottom-0 lg:h-full p-6 lg:p-4 lg:rounded-lg lg:border lg:border-border lg:w-full lg:shadow-sm transition-transform duration-300 rounded-t-lg lg:rounded-lg overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)] custom-scrollbar",
-                isMobileFiltersOpen
-                  ? "translate-y-0"
-                  : "translate-y-full lg:translate-y-0",
-              )}
-            >
-              <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-6 lg:hidden" />
-              <div className="flex items-center justify-between mb-6 lg:hidden">
-                <h3 className="text-xl font-heading tracking-tight">{t('tutors.filters')}</h3>
-                <button
-                  onClick={() => setIsMobileFiltersOpen(false)}
-                  className="p-2 hover:bg-background rounded-full touch-manipulation"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-              <h3 className="hidden lg:flex text-sm font-semibold text-foreground mb-4 items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <Filter size={16} className="text-primary" /> {t('tutors.filters')}
-                </span>
-                {activeFilters.length > 0 && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
-                    {activeFilters.length} active
-                  </span>
-                )}
-              </h3>
+            <FilterSelect
+              label={t('tutors.sort_by')}
+              value={sortBy}
+              onValueChange={setSortBy}
+              icon={SlidersHorizontal}
+              options={[
+                { value: "ratings", label: "Highest Rated" },
+                { value: "name-az", label: t('tutors.sort_name_az') },
+                { value: "name-za", label: t('tutors.sort_name_za') },
+                { value: "salary-high", label: t('tutors.sort_fee_high') },
+                { value: "salary-low", label: t('tutors.sort_fee_low') },
+              ]}
+            />
 
-              <div className="space-y-4">
-                <FilterSelect
-                  label={t('tutors.sort_by')}
-                  value={sortBy}
-                  onValueChange={setSortBy}
-                  icon={SlidersHorizontal}
-                  options={[
-                    { value: "ratings", label: "Highest Rated" },
-                    { value: "name-az", label: t('tutors.sort_name_az') },
-                    { value: "name-za", label: t('tutors.sort_name_za') },
-                    { value: "salary-high", label: t('tutors.sort_fee_high') },
-                    { value: "salary-low", label: t('tutors.sort_fee_low') },
-                  ]}
-                />
+            <FilterSelect
+              label={t('tutors.area_label')}
+              value={selectedArea}
+              onValueChange={setSelectedArea}
+              placeholder={t('tutors.area_placeholder')}
+              options={allAreas}
+            />
 
-                <FilterSelect
-                  label={t('tutors.area_label')}
-                  value={selectedArea}
-                  onValueChange={setSelectedArea}
-                  placeholder={t('tutors.area_placeholder')}
-                  options={allAreas}
-                />
+            <FilterSelect
+              label={t('tutors.language_label')}
+              value={selectedLanguage}
+              onValueChange={setSelectedLanguage}
+              options={[
+                { value: "all", label: t('tutors.lang_all') },
+                { value: "english", label: t('tutors.lang_english') },
+                { value: "bangla", label: t('tutors.lang_bangla') },
+                { value: "both", label: t('tutors.lang_both') },
+              ]}
+            />
 
-                <FilterSelect
-                  label={t('tutors.language_label')}
-                  value={selectedLanguage}
-                  onValueChange={setSelectedLanguage}
-                  options={[
-                    { value: "all", label: t('tutors.lang_all') },
-                    { value: "english", label: t('tutors.lang_english') },
-                    { value: "bangla", label: t('tutors.lang_bangla') },
-                    { value: "both", label: t('tutors.lang_both') },
-                  ]}
-                />
+            <FilterSelect
+              label={t('tutors.gender_label')}
+              value={selectedGender}
+              onValueChange={setSelectedGender}
+              options={[
+                { value: "all", label: t('tutors.lang_all') },
+                { value: "male", label: t('tutors.gender_male') },
+                { value: "female", label: t('tutors.gender_female') },
+              ]}
+            />
 
-                <FilterSelect
-                  label={t('tutors.gender_label')}
-                  value={selectedGender}
-                  onValueChange={setSelectedGender}
-                  options={[
-                    { value: "all", label: t('tutors.lang_all') },
-                    { value: "male", label: t('tutors.gender_male') },
-                    { value: "female", label: t('tutors.gender_female') },
-                  ]}
-                />
-
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block">
-                      {t('tutors.subjects')}
-                    </label>
-                    {selectedSubjects.length > 0 && (
-                      <button
-                        onClick={() => setSelectedSubjects([])}
-                        className="text-xs text-primary hover:underline font-medium"
-                      >
-                        {t('tutors.reset')}
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2 max-h-[250px] overflow-y-auto pr-1">
-                    {allSubjects.map((subject) => (
-                      <button
-                        key={subject}
-                        onClick={() => toggleSubject(subject)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors min-h-[36px] border ${
-                          selectedSubjects.includes(subject)
-                            ? "bg-primary text-white border-primary"
-                            : "bg-background text-muted-foreground border-border hover:bg-muted"
-                        }`}
-                      >
-                        {subject}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-border mt-6 space-y-2">
-                {activeFilters.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block">
+                  {t('tutors.subjects')}
+                </label>
+                {selectedSubjects.length > 0 && (
                   <button
-                    onClick={handleClear}
-                    className="w-full px-3 py-2.5 text-xs font-semibold text-muted-foreground border border-border rounded-xl hover:bg-muted hover:text-foreground flex items-center justify-center gap-2 transition-all"
+                    onClick={() => setSelectedSubjects([])}
+                    className="text-xs text-primary hover:underline font-medium cursor-pointer"
                   >
-                    <X size={14} /> {t('tutors.clear_all')} ({activeFilters.length})
+                    {t('tutors.reset')}
                   </button>
                 )}
-
-                <button
-                  onClick={() => setIsMobileFiltersOpen(false)}
-                  className="w-full px-3 py-3 bg-primary text-white rounded-xl font-semibold text-xs lg:hidden shadow-sm active:scale-[0.98] transition-all"
-                >
-                  {t('tutors.apply_filters')}
-                </button>
+              </div>
+              <div className="flex flex-wrap gap-2 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
+                {allSubjects.map((subject) => (
+                  <button
+                    key={subject}
+                    onClick={() => toggleSubject(subject)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors min-h-[36px] border cursor-pointer ${
+                      selectedSubjects.includes(subject)
+                        ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                        : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground"
+                    }`}
+                  >
+                    {subject}
+                  </button>
+                ))}
               </div>
             </div>
-          </aside>
+          </FacetedFilterSidebar>
 
           {/* Main Content */}
           <main onScroll={handleMainScroll} className="lg:col-span-3 relative pb-24 md:pb-0 overflow-y-auto custom-scrollbar pr-1">

@@ -18,6 +18,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import FilterSelect from "../components/shared/FilterSelect";
+import FacetedFilterSidebar from "../components/shared/FacetedFilterSidebar";
 import { cn } from "@/lib/utils";
 import SEO from '../components/shared/SEO';
 import { TuitionCardGridSkeleton } from "@/components/shared/skeletons";
@@ -193,131 +194,91 @@ const Tuitions = () => {
 
         <div className="grid lg:grid-cols-4 gap-6 flex-1 min-h-0 overflow-hidden">
 
-          {/* Sidebar Filters */}
-          <aside
-            className={cn(
-              "lg:col-span-1 h-full",
-              "fixed inset-0 z-[60] bg-black/55 lg:relative lg:inset-auto lg:z-auto lg:bg-transparent transition-opacity",
-              isMobileFiltersOpen
-                ? "opacity-100"
-                : "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto",
-            )}
+          {/* Standardized Sidebar Filters */}
+          <FacetedFilterSidebar
+            isOpen={isMobileFiltersOpen}
+            onClose={() => setIsMobileFiltersOpen(false)}
+            title={t('tuitions.filters')}
+            activeCount={(filters.subjects.length > 0 ? filters.subjects.length : 0) + (filters.classFilter ? 1 : 0) + (filters.locationFilter ? 1 : 0)}
+            onClearAll={handleClearAll}
+            clearLabel={t('tuitions.clear_filters')}
+            applyLabel={t('tuitions.apply_filters')}
           >
-            <div
-              className={cn(
-                "bg-card w-[85%] max-w-sm h-full p-6 lg:p-4 lg:rounded-lg lg:border lg:border-border lg:w-full lg:shadow-sm transition-transform duration-300 overflow-y-auto custom-scrollbar",
-                isMobileFiltersOpen
-                  ? "translate-x-0"
-                  : "-translate-x-full lg:translate-x-0",
-              )}
-            >
-              <div className="flex items-center justify-between mb-6 lg:hidden">
-                <h3 className="text-lg font-heading">{t('tuitions.filters')}</h3>
-                <button
-                  onClick={() => setIsMobileFiltersOpen(false)}
-                  className="p-2 hover:bg-background rounded-full"
-                >
-                  <X size={20} />
-                </button>
+            <FilterSelect
+              label={t('tuitions.sort_by')}
+              value={filters.sortBy}
+              onValueChange={(val) => updateFilter("sortBy", val)}
+              icon={SlidersHorizontal}
+              options={[
+                { value: "newest", label: t('tuitions.sort_newest') },
+                { value: "oldest", label: t('tuitions.sort_oldest') },
+                { value: "salary-high", label: t('tuitions.sort_salary_high') },
+                { value: "salary-low", label: t('tuitions.sort_salary_low') },
+              ]}
+            />
+
+            <FilterSelect
+              label={t('tuitions.class_label')}
+              value={filters.classFilter || "all"}
+              onValueChange={(val) =>
+                updateFilter("classFilter", val === "all" ? "" : val)
+              }
+              icon={LayoutGrid}
+              placeholder={t('tuitions.all_classes')}
+              options={["all", ...(filterOptions?.classes || [])]}
+            />
+
+            <FilterSelect
+              label={t('tuitions.location_label')}
+              value={filters.locationFilter || "all"}
+              onValueChange={(val) =>
+                updateFilter("locationFilter", val === "all" ? "" : val)
+              }
+              icon={MapPin}
+              placeholder={t('tuitions.all_locations')}
+              options={[
+                "all",
+                ...(filterOptions?.locations?.filter((loc) => !!loc) || []),
+              ]}
+            />
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block">
+                  {t('tuitions.subjects')}
+                </label>
+                {filters.subjects.length > 0 && (
+                  <button
+                    onClick={() => updateFilter("subjects", [])}
+                    className="text-xs text-primary hover:underline cursor-pointer"
+                  >
+                    {t('tuitions.reset')}
+                  </button>
+                )}
               </div>
-              <h3 className="hidden lg:flex text-sm font-medium text-foreground mb-4 flex items-center gap-2">
-                <Filter size={14} /> {t('tuitions.filters')}
-              </h3>
-
-              <div className="space-y-4">
-                <FilterSelect
-                  label={t('tuitions.sort_by')}
-                  value={filters.sortBy}
-                  onValueChange={(val) => updateFilter("sortBy", val)}
-                  icon={SlidersHorizontal}
-                  options={[
-                    { value: "newest", label: t('tuitions.sort_newest') },
-                    { value: "oldest", label: t('tuitions.sort_oldest') },
-                    { value: "salary-high", label: t('tuitions.sort_salary_high') },
-                    { value: "salary-low", label: t('tuitions.sort_salary_low') },
-                  ]}
-                />
-
-                <FilterSelect
-                  label={t('tuitions.class_label')}
-                  value={filters.classFilter || "all"}
-                  onValueChange={(val) =>
-                    updateFilter("classFilter", val === "all" ? "" : val)
-                  }
-                  icon={LayoutGrid}
-                  placeholder={t('tuitions.all_classes')}
-                  options={["all", ...(filterOptions?.classes || [])]}
-                />
-
-                <FilterSelect
-                  label={t('tuitions.location_label')}
-                  value={filters.locationFilter || "all"}
-                  onValueChange={(val) =>
-                    updateFilter("locationFilter", val === "all" ? "" : val)
-                  }
-                  icon={MapPin}
-                  placeholder={t('tuitions.all_locations')}
-                  options={[
-                    "all",
-                    ...(filterOptions?.locations?.filter((loc) => !!loc) || []),
-                  ]}
-                />
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-muted-foreground block">
-                      {t('tuitions.subjects')}
-                    </label>
-                    {filters.subjects.length > 0 && (
-                      <button
-                        onClick={() => updateFilter("subjects", [])}
-                        className="text-xs text-primary hover:underline"
-                      >
-                        {t('tuitions.reset')}
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
-                    {processedSubjects.map((subject) => (
-                      <button
-                        key={subject}
-                        onClick={() => {
-                          const current = filters.subjects;
-                          const updated = current.includes(subject)
-                            ? current.filter((s) => s !== subject)
-                            : [...current, subject];
-                          updateFilter("subjects", updated);
-                        }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
-                          filters.subjects.includes(subject)
-                            ? "bg-primary text-white"
-                            : "bg-background text-muted-foreground hover:bg-muted border border-border"
-                        }`}
-                      >
-                        {subject}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              <div className="flex flex-wrap gap-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">
+                {processedSubjects.map((subject) => (
+                  <button
+                    key={subject}
+                    onClick={() => {
+                      const current = filters.subjects;
+                      const updated = current.includes(subject)
+                        ? current.filter((s) => s !== subject)
+                        : [...current, subject];
+                      updateFilter("subjects", updated);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                      filters.subjects.includes(subject)
+                        ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                        : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+                    }`}
+                  >
+                    {subject}
+                  </button>
+                ))}
               </div>
-
-              {hasActiveFilters && (
-                <button
-                  onClick={handleClearAll}
-                  className="w-full mt-4 px-3 py-2 text-sm text-muted-foreground border border-border rounded-xl hover:bg-background flex items-center justify-center gap-2 transition-colors"
-                >
-                  <X size={14} /> {t('tuitions.clear_filters')}
-                </button>
-              )}
-
-              <button
-                onClick={() => setIsMobileFiltersOpen(false)}
-                className="w-full mt-4 px-3 py-3 bg-primary text-white rounded-xl font-medium text-sm lg:hidden"
-              >
-                {t('tuitions.apply_filters')}
-              </button>
             </div>
-          </aside>
+          </FacetedFilterSidebar>
 
           {/* Main Content */}
           <main onScroll={handleMainScroll} className="lg:col-span-3 overflow-y-auto custom-scrollbar pr-1 relative pb-24 md:pb-0">

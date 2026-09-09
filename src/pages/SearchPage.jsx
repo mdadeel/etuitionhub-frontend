@@ -43,6 +43,8 @@ const SearchPage = () => {
       setTutors([]);
       setTuitions([]);
       setOrganizations([]);
+      setSuggestions({ tutors: [], tuitions: [], organizations: [] });
+      setShowSuggestions(false);
       return;
     }
     setLoading(true);
@@ -57,51 +59,29 @@ const SearchPage = () => {
         setTutors(tutorsRes.data.data || []);
         const tuitionData = tuitionsRes.data.data || tuitionsRes.data.tuitions || [];
         setTuitions(tuitionData);
-        setOrganizations(combinedRes.data?.organizations || []);
+        const orgs = combinedRes.data?.organizations || [];
+        setOrganizations(orgs);
+        // Reuse same combined response for suggestions (was duplicate GET limit=4)
+        const d = combinedRes.data || {};
+        setSuggestions({
+          tutors: (d.tutors || []).slice(0, 4),
+          tuitions: (d.tuitions || []).slice(0, 4),
+          organizations: orgs.slice(0, 4),
+        });
+        setShowSuggestions(true);
         setActiveIndex(-1);
       } catch (err) {
         if (err.name !== "CanceledError" && err.name !== "AbortError") {
           setTutors([]);
           setTuitions([]);
           setOrganizations([]);
+          setSuggestions({ tutors: [], tuitions: [], organizations: [] });
         }
       } finally {
         setLoading(false);
       }
     };
     fetchAll();
-    return () => controller.abort();
-  }, [debouncedQuery]);
-
-  // Fetch suggestions for autocomplete dropdown
-  useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 2) {
-      setSuggestions({ tutors: [], tuitions: [], organizations: [] });
-      return;
-    }
-    const controller = new AbortController();
-    const fetchSuggestions = async () => {
-      try {
-        const res = await api.get(
-          `/api/search/combined?q=${encodeURIComponent(debouncedQuery)}&limit=4`,
-          { signal: controller.signal }
-        );
-        if (res.status === 200) {
-          const data = res.data;
-          setSuggestions({
-            tutors: (data.tutors || []).slice(0, 4),
-            tuitions: (data.tuitions || []).slice(0, 4),
-            organizations: (data.organizations || []).slice(0, 4),
-          });
-          setShowSuggestions(true);
-        }
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setSuggestions({ tutors: [], tuitions: [], organizations: [] });
-        }
-      }
-    };
-    fetchSuggestions();
     return () => controller.abort();
   }, [debouncedQuery]);
 

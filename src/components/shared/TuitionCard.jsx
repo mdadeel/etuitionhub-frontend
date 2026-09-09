@@ -142,7 +142,7 @@ const TuitionCard = ({ tuition, className, searchQuery = "", initialIsSaved = nu
           <span className="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md bg-success/10 text-success font-semibold">Home</span>
         )}
         {tuition.mode === 'both' && (
-          <span className="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md bg-teal-500/10 text-teal-600 dark:text-teal-400 font-semibold">Both</span>
+          <span className="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-md bg-secondary text-secondary-foreground font-semibold">Both</span>
         )}
       </div>
 

@@ -26,6 +26,7 @@ import { BANGLADESH_DIVISIONS } from "../utils/constants";
 import { cn } from "@/lib/utils";
 import OrgAdmissionModal from "../components/Organizations/OrgAdmissionModal";
 import OrganizationCard from "../components/Organizations/OrganizationCard";
+import FacetedFilterSidebar from "../components/shared/FacetedFilterSidebar";
 import useDebouncedValue from "../hooks/useDebouncedValue";
 
 const TYPE_LABELS = Object.freeze({
@@ -284,193 +285,140 @@ const OrganizationDirectory = () => {
 
         {/* 2-Column Responsive Layout: Left Filter Sidebar (1 col) + Right Content Area (3 cols) */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0 overflow-hidden">
-          {/* LEFT SIDEBAR: FILTERS */}
-          <aside
-            className={cn(
-              "lg:col-span-1 h-full",
-              "fixed inset-0 z-[60] bg-black/60 backdrop-blur-xs transition-opacity duration-200",
-              "lg:relative lg:inset-auto lg:z-auto lg:bg-transparent",
-              isMobileFiltersOpen
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto"
-            )}
+          {/* Standardized LEFT SIDEBAR: FILTERS */}
+          <FacetedFilterSidebar
+            isOpen={isMobileFiltersOpen}
+            onClose={() => setIsMobileFiltersOpen(false)}
+            title={t("common.filters", "Filters")}
+            activeCount={(search ? 1 : 0) + (activeCategory !== "all" ? 1 : 0) + (selectedDivision ? 1 : 0) + (verifiedOnly ? 1 : 0)}
+            onClearAll={clearFilters}
+            clearLabel={t("common.reset_all", "Reset all")}
+            applyLabel={`${t("common.view_results", "View Results")} (${organizations.length})`}
           >
-            <div
-              className={cn(
-                "bg-card w-full max-w-none h-[88vh] absolute bottom-0 lg:relative lg:bottom-auto lg:h-full p-6 lg:p-5 lg:rounded-2xl lg:border lg:border-border lg:shadow-xs transition-transform duration-300 rounded-t-3xl lg:rounded-2xl overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)] lg:pb-5 custom-scrollbar space-y-5",
-                isMobileFiltersOpen ? "translate-y-0" : "translate-y-full lg:translate-y-0"
-              )}
-            >
-              {/* Mobile Drawer Handle & Header */}
-              <div className="w-12 h-1 bg-border rounded-full mx-auto mb-4 lg:hidden" />
-              <div className="flex items-center justify-between pb-3 border-b border-border/60 lg:hidden">
-                <h3 className="text-base font-bold font-heading text-foreground flex items-center gap-2">
-                  <Filter className="size-4 text-primary" />
-                  <span>{t("common.filters", "Filters")}</span>
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setIsMobileFiltersOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                  aria-label="Close filters"
-                >
-                  <X className="size-5" />
-                </button>
-              </div>
-
-              {/* Desktop Filter Header */}
-              <div className="hidden lg:flex items-center justify-between pb-3 border-b border-border/60">
-                <span className="text-sm font-bold font-heading text-foreground flex items-center gap-2">
-                  <Filter className="size-4 text-primary" />
-                  <span>{t("common.filters", "Filters")}</span>
-                </span>
-                {hasActiveFilters && (
+            {/* Filter 1: Search */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-foreground block">
+                {t("common.search", "Search")}
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder={t(
+                    "org.search_placeholder",
+                    "Search by name, subject or keyword..."
+                  )}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-9 pr-8 h-10 bg-background border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
+                />
+                {search && (
                   <button
                     type="button"
-                    onClick={clearFilters}
-                    className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 font-medium cursor-pointer"
+                    onClick={() => setSearch("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                    aria-label="Clear search"
                   >
-                    <RotateCcw className="size-3" />
-                    <span>{t("common.reset_all", "Reset all")}</span>
+                    <X className="size-3.5" />
                   </button>
                 )}
               </div>
+            </div>
 
-              {/* Filter 1: Search */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground block">
-                  {t("common.search", "Search")}
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                  <input
-                    type="text"
-                    placeholder={t(
-                      "org.search_placeholder",
-                      "Search by name, subject or keyword..."
-                    )}
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-9 pr-8 h-10 bg-background border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
-                  />
-                  {search && (
+            {/* Filter 2: Institution Types / Categories */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-foreground block">
+                {t("org.categories_label", "Institution Type")}
+              </label>
+              <div className="space-y-1">
+                {CATEGORIES.map((cat) => {
+                  const CatIcon = cat.icon;
+                  const isSelected = activeCategory === cat.id;
+                  return (
                     <button
+                      key={cat.id}
                       type="button"
-                      onClick={() => setSearch("")}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                      aria-label="Clear search"
-                    >
-                      <X className="size-3.5" />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Filter 2: Institution Types / Categories */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-foreground block">
-                  {t("org.categories_label", "Institution Type")}
-                </label>
-                <div className="space-y-1">
-                  {CATEGORIES.map((cat) => {
-                    const CatIcon = cat.icon;
-                    const isSelected = activeCategory === cat.id;
-                    return (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => setActiveCategory(cat.id)}
-                        className={cn(
-                          "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-left cursor-pointer",
-                          isSelected
-                            ? "bg-primary text-primary-foreground shadow-xs"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                        )}
-                      >
-                        <span className="flex items-center gap-2.5 truncate">
-                          <CatIcon
-                            className={cn(
-                              "size-4 shrink-0",
-                              isSelected ? "text-primary-foreground" : "text-primary"
-                            )}
-                          />
-                          <span>{cat.label}</span>
-                        </span>
-                        {isSelected && (
-                          <span className="size-2 rounded-full bg-primary-foreground shrink-0" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Filter 3: Division / Location Dropdown */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <MapPin className="size-3.5 text-primary" />
-                  <span>{t("common.division", "Division / Region")}</span>
-                </label>
-                <div className="relative">
-                  <select
-                    value={selectedDivision}
-                    onChange={(e) => setSelectedDivision(e.target.value)}
-                    className="w-full h-10 px-3 pr-8 bg-background border border-border rounded-xl text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
-                  >
-                    <option value="">{t("common.all_divisions", "All Divisions")}</option>
-                    {BANGLADESH_DIVISIONS.map((div) => (
-                      <option key={div} value={div}>
-                        {div}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="size-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Filter 4: Verified Only Toggle */}
-              <div className="pt-2 border-t border-border/60">
-                <button
-                  type="button"
-                  onClick={() => setVerifiedOnly((prev) => !prev)}
-                  className={cn(
-                    "w-full flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-all select-none cursor-pointer",
-                    verifiedOnly
-                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400"
-                      : "bg-background border-border text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <span className="flex items-center gap-2">
-                    <ShieldCheck
+                      onClick={() => setActiveCategory(cat.id)}
                       className={cn(
-                        "size-4",
-                        verifiedOnly
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-muted-foreground"
+                        "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all text-left cursor-pointer",
+                        isSelected
+                          ? "bg-primary text-primary-foreground shadow-xs"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                       )}
-                    />
-                    <span>{t("common.verified_only", "Verified Campuses Only")}</span>
-                  </span>
-                  <span
-                    className={cn(
-                      "size-2.5 rounded-full transition-colors",
-                      verifiedOnly ? "bg-emerald-500" : "bg-muted-foreground/30"
-                    )}
-                  />
-                </button>
-              </div>
-
-              {/* Mobile Drawer Close Action */}
-              <div className="pt-2 lg:hidden">
-                <Button
-                  onClick={() => setIsMobileFiltersOpen(false)}
-                  className="w-full h-11 text-xs font-bold rounded-xl"
-                >
-                  {t("common.view_results", "View Results")} ({organizations.length})
-                </Button>
+                    >
+                      <span className="flex items-center gap-2.5 truncate">
+                        <CatIcon
+                          className={cn(
+                            "size-4 shrink-0",
+                            isSelected ? "text-primary-foreground" : "text-primary"
+                          )}
+                        />
+                        <span>{cat.label}</span>
+                      </span>
+                      {isSelected && (
+                        <span className="size-2 rounded-full bg-primary-foreground shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          </aside>
+
+            {/* Filter 3: Division / Location Dropdown */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <MapPin className="size-3.5 text-primary" />
+                <span>{t("common.division", "Division / Region")}</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedDivision}
+                  onChange={(e) => setSelectedDivision(e.target.value)}
+                  className="w-full h-10 px-3 pr-8 bg-background border border-border rounded-xl text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+                >
+                  <option value="">{t("common.all_divisions", "All Divisions")}</option>
+                  {BANGLADESH_DIVISIONS.map((div) => (
+                    <option key={div} value={div}>
+                      {div}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="size-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Filter 4: Verified Only Toggle */}
+            <div className="pt-2 border-t border-border/60">
+              <button
+                type="button"
+                onClick={() => setVerifiedOnly((prev) => !prev)}
+                className={cn(
+                  "w-full flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-all select-none cursor-pointer",
+                  verifiedOnly
+                    ? "bg-success/10 border-success/30 text-success"
+                    : "bg-background border-border text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="flex items-center gap-2">
+                  <ShieldCheck
+                    className={cn(
+                      "size-4",
+                      verifiedOnly
+                        ? "text-success"
+                        : "text-muted-foreground"
+                    )}
+                  />
+                  <span>{t("common.verified_only", "Verified Campuses Only")}</span>
+                </span>
+                <span
+                  className={cn(
+                    "size-2.5 rounded-full transition-colors",
+                    verifiedOnly ? "bg-success" : "bg-muted-foreground/30"
+                  )}
+                />
+              </button>
+            </div>
+          </FacetedFilterSidebar>
 
           {/* RIGHT CONTENT AREA: (AFFILIATED ORGS + CONTROLS + CARDS) */}
           <section

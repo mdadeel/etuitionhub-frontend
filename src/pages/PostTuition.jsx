@@ -370,7 +370,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Celebration Header */}
       <div className="text-center space-y-3 max-w-xl mx-auto">
-        <div className="size-16 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-sm">
+        <div className="size-16 rounded-full bg-success/10 text-success flex items-center justify-center mx-auto border border-success/20 shadow-sm">
           <CheckCircle2 size={32} />
         </div>
         <h2 className="text-2xl sm:text-3xl font-heading font-bold text-foreground">
@@ -379,7 +379,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
         <p className="text-sm text-muted-foreground leading-relaxed">
           We have broadcast your requirements to vetted tutors in <strong className="text-foreground">{submissionSuccess.location}</strong> teaching <strong className="text-foreground">{submissionSuccess.subject}</strong>.
         </p>
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-success/10 text-success border border-success/20">
           <ShieldCheck size={14} />
           <span>100% Parent Guarantee · First trial session is a Free Demo</span>
         </div>
