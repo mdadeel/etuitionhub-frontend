@@ -3,26 +3,23 @@ import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { 
-    ShieldCheck, 
-    RefreshCw,
     Camera,
-    Phone,
     GraduationCap,
-    BookOpen,
-    Calendar,
     DollarSign,
     MapPin,
     Save,
     Wallet,
     Briefcase,
     Star,
-    User,
-    Compass,
     KeyRound,
     Lock,
     Eye,
     EyeOff,
-    CheckCircle2
+    User,
+    ShieldCheck,
+    Bell,
+    Check,
+    RefreshCw
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from '@/components/ui/card';
@@ -41,10 +38,11 @@ import {
 
 const Profile = () => {
     const { user, dbUser, refreshUserFromDB, updateUserProfile, changePassword } = useAuth();
+    const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'security' | 'notifications'
     const [loading, setLoading] = useState(false);
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
     // Password change states
-    const [showPasswordForm, setShowPasswordForm] = useState(false);
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -66,6 +64,7 @@ const Profile = () => {
     // Tutor specific states
     const [qualification, setQualification] = useState('');
     const [subjects, setSubjects] = useState([]);
+    const [subjectSearch, setSubjectSearch] = useState('');
     const [expectedSalary, setExpectedSalary] = useState('');
     const [location, setLocation] = useState('');
     const [gender, setGender] = useState('');
@@ -76,20 +75,6 @@ const Profile = () => {
 
     const isTutor = dbUser?.role?.toLowerCase() === 'tutor';
 
-    const handlePhotoUpload = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            const res = await api.post('/api/upload', formData);
-            setPhotoInput(res.data.url);
-            toast.success('Photo uploaded');
-        } catch {
-            toast.error('Upload failed');
-        }
-    };
-
     useEffect(() => {
         if (dbUser || user) {
             setNameInput(dbUser?.displayName || user?.displayName || '');
@@ -97,10 +82,9 @@ const Profile = () => {
             setMobileInput(dbUser?.mobileNumber || '');
             
             if (isTutor) {
-
                 setQualification(dbUser.qualification || '');
                 setSubjects(dbUser.subjects || []);
-                setExpectedSalary(dbUser.expectedSalary || '');
+                setExpectedSalary(dbUser.expectedSalary ? String(dbUser.expectedSalary) : '');
                 setLocation(dbUser.location || '');
                 setGender(dbUser.gender || '');
                 setLanguagePreference(dbUser.languagePreference || 'both');
@@ -110,6 +94,23 @@ const Profile = () => {
             }
         }
     }, [dbUser, user, isTutor]);
+
+    const handlePhotoUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        setUploadingPhoto(true);
+        try {
+            const res = await api.post('/api/upload', formData);
+            setPhotoInput(res.data.url);
+            toast.success('Photo uploaded');
+        } catch {
+            toast.error('Upload failed');
+        } finally {
+            setUploadingPhoto(false);
+        }
+    };
 
     const toggleDay = (day) => {
         setAvailableDays((prev) =>
@@ -123,24 +124,36 @@ const Profile = () => {
         );
     };
 
-    const onSubmitAccount = async (e) => {
+    const onSubmitProfile = async (e) => {
         e.preventDefault();
         if (!user?.email) { toast.error('Not signed in'); return; }
-        setLoading(true);
-        if (nameInput.length < 3) {
-            toast.error('Please use a name with at least 3 characters');
-            setLoading(false);
+        if (nameInput.trim().length < 3) {
+            toast.error('Please provide a full name with at least 3 characters');
             return;
         }
 
+        setLoading(true);
         try {
-            await api.patch(`/api/users/by-email/${encodeURIComponent(user.email)}`, {
-                displayName: nameInput,
+            const payload = {
+                displayName: nameInput.trim(),
                 photoURL: photoInput,
-                mobileNumber: mobileInput
-            });
+                mobileNumber: mobileInput.trim(),
+            };
 
-            toast.success('Account profile updated successfully');
+            if (isTutor) {
+                payload.qualification = qualification.trim();
+                payload.subjects = subjects;
+                payload.expectedSalary = expectedSalary ? parseInt(expectedSalary, 10) : undefined;
+                payload.location = location;
+                payload.gender = gender;
+                payload.languagePreference = languagePreference;
+                payload.availableDays = availableDays;
+                payload.bio = bio.trim();
+                payload.experience = experience.trim();
+            }
+
+            await api.patch(`/api/users/by-email/${encodeURIComponent(user.email)}`, payload);
+            toast.success(isTutor ? 'Tutor profile updated successfully' : 'Account profile updated successfully');
             await refreshUserFromDB(user.email);
             await updateUserProfile({ displayName: nameInput, photoURL: photoInput });
         } catch (err) {
@@ -150,63 +163,122 @@ const Profile = () => {
         }
     };
 
-    const onSubmitTutor = async (e) => {
+    const onSubmitPasswordChange = async (e) => {
         e.preventDefault();
-        if (!user?.email) { toast.error('Not signed in'); return; }
-        setLoading(true);
-        try {
-            const updateData = {
-                displayName: nameInput,
-                photoURL: photoInput,
-                mobileNumber: mobileInput,
-                qualification,
-                subjects,
-                expectedSalary: expectedSalary ? parseInt(expectedSalary) : undefined,
-                location,
-                gender,
-                languagePreference,
-                availableDays,
-                bio,
-                experience,
-            };
+        if (!currentPassword) {
+            toast.error("Please enter your current password");
+            return;
+        }
+        if (newPassword.length < 6) {
+            toast.error("New password must be at least 6 characters");
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            toast.error("New passwords do not match");
+            return;
+        }
 
-            await api.patch(`/api/users/by-email/${encodeURIComponent(user.email)}`, updateData);
-            toast.success('Tutor professional profile updated successfully');
-            await refreshUserFromDB(user.email);
+        setPasswordLoading(true);
+        try {
+            await changePassword(currentPassword, newPassword);
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            toast.success("Password changed successfully");
         } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to update professional profile');
+            toast.error(err.message || "Failed to update password");
         } finally {
-            setLoading(false);
+            setPasswordLoading(false);
         }
     };
 
-    return (
-        <div className="animate-fade-in-up animate-in fade-in duration-700 space-y-8">
-            {isTutor ? (
-                <>
-                    <div className="mb-10">
-                        <div className="flex items-center justify-between mb-2">
-                            <div>
-                                <h1 className="text-2xl font-bold text-foreground tracking-tight">Professional Profile</h1>
-                                <p className="text-sm text-muted-foreground mt-1">Manage your teaching credentials and public tutor profile.</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <RoleBadge globalRole={dbUser?.globalRole} role={dbUser?.role} />
-                            </div>
-                        </div>
-                    </div>
+    const filteredSubjects = SUBJECT_OPTIONS.filter(s => 
+        s.toLowerCase().includes(subjectSearch.toLowerCase())
+    );
 
-                    {/* Tutor Overview Card */}
-                    <div className="bg-card border border-border rounded-xl shadow-none">
-                        <div className="p-6 md:p-8 flex flex-col md:flex-row gap-8">
-                            <div className="relative shrink-0 mx-auto md:mx-0">
-                                <div className="size-48 md:w-56 md:h-56 rounded-lg overflow-hidden border border-border bg-slate-950">
-                                    <img
-                                        src={photoInput && (photoInput.startsWith('http://') || photoInput.startsWith('https://') || photoInput.startsWith('data:image/')) ? photoInput : "https://i.ibb.co/4pDNDk1/default-avatar.png"}
-                                        className="size-full object-cover"
-                                        alt="Profile Preview"
+    return (
+        <div className="space-y-6 max-w-5xl mx-auto pb-12">
+            {/* Header / Identity Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground tracking-tight">
+                        {isTutor ? "Tutor Profile & Settings" : "Account Settings"}
+                    </h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        {isTutor 
+                            ? "Manage your verified teaching credentials, subjects, schedule, and account security." 
+                            : "Manage your personal information, contact details, and account security."
+                        }
+                    </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <RoleBadge globalRole={dbUser?.globalRole} role={dbUser?.role} />
+                </div>
+            </div>
+
+            {/* Segmented Tab Navigation */}
+            <div className="flex items-center gap-2 border-b border-border pb-px overflow-x-auto custom-scrollbar">
+                <button
+                    type="button"
+                    onClick={() => setActiveTab('profile')}
+                    className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg border-b-2 transition-all shrink-0",
+                        activeTab === 'profile'
+                            ? "border-primary text-primary bg-primary/5"
+                            : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                    )}
+                >
+                    <User size={15} />
+                    <span>{isTutor ? "Teaching Profile & Bio" : "Personal Profile"}</span>
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setActiveTab('security')}
+                    className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg border-b-2 transition-all shrink-0",
+                        activeTab === 'security'
+                            ? "border-primary text-primary bg-primary/5"
+                            : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                    )}
+                >
+                    <Lock size={15} />
+                    <span>Account Security</span>
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setActiveTab('notifications')}
+                    className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg border-b-2 transition-all shrink-0",
+                        activeTab === 'notifications'
+                            ? "border-primary text-primary bg-primary/5"
+                            : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                    )}
+                >
+                    <Bell size={15} />
+                    <span>Notification Preferences</span>
+                </button>
+            </div>
+
+            {/* TAB 1: PROFILE & CREDENTIALS */}
+            {activeTab === 'profile' && (
+                <form onSubmit={onSubmitProfile} className="space-y-6">
+                    {/* Compact Identity Card */}
+                    <Card className="p-6 bg-card border-border" hover={false}>
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                            <div className="relative group shrink-0">
+                                <Avatar className="size-24 rounded-xl border border-border bg-muted overflow-hidden">
+                                    <AvatarImage 
+                                        src={photoInput} 
+                                        alt={nameInput || user?.displayName}
+                                        gender={dbUser?.gender}
+                                        className="object-cover"
                                     />
-                                </div>
+                                    <AvatarFallback className="text-base font-bold bg-muted text-muted-foreground">
+                                        {(nameInput || user?.displayName || 'U').charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                </Avatar>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -214,644 +286,414 @@ const Profile = () => {
                                     ref={fileInputRef}
                                     onChange={handlePhotoUpload}
                                 />
-                                <div
-                                    className="absolute bottom-2 right-2 size-10 bg-card rounded-lg flex items-center justify-center shadow-lg border border-border cursor-pointer hover:scale-110 transition-transform text-muted-foreground hover:text-primary"
+                                <button
+                                    type="button"
+                                    disabled={uploadingPhoto}
+                                    className="absolute -bottom-1 -right-1 size-8 bg-card rounded-lg flex items-center justify-center shadow-md border border-border cursor-pointer hover:text-primary transition-colors"
                                     onClick={() => fileInputRef.current?.click()}
-                                    role="button"
                                     aria-label="Upload profile photo"
                                 >
-                                    <Camera size={18} />
-                                </div>
+                                    {uploadingPhoto ? <RefreshCw className="size-3.5 animate-spin" /> : <Camera size={14} />}
+                                </button>
                             </div>
 
-                            <div className="flex-1 flex flex-col justify-center space-y-4">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-muted text-muted-foreground rounded-lg text-[9px] font-label font-semibold uppercase tracking-wider border border-border">
-                                        <MapPin size={10} />
-                                        {location || "Location not set"}
+                            <div className="flex-1 text-center sm:text-left space-y-2">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <div>
+                                        <h2 className="text-lg font-bold text-foreground">{nameInput || "Your Name"}</h2>
+                                        <p className="text-xs text-muted-foreground">{user?.email}</p>
                                     </div>
-                                </div>
-
-                                <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tighter uppercase leading-none">
-                                    {nameInput || "Tutor Name"}
-                                </h2>
-
-                                <div className="flex items-center gap-2 text-muted-foreground font-bold uppercase tracking-tight">
-                                    <GraduationCap className="text-primary" size={18} />
-                                    <span className="text-xs">
-                                        {qualification || "Qualifications not specified"}
-                                    </span>
-                                </div>
-
-                                <div className="pt-4 border-t border-border">
-                                    <p className="text-muted-foreground text-xs font-bold leading-relaxed max-w-2xl italic uppercase tracking-tight">
-                                        "{bio || 'No bio added yet'}"
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-background border-t border-border px-6 md:px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
-                            <div className="flex items-center gap-4">
-                                <div className="size-10 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground">
-                                    <Wallet size={16} />
-                                </div>
-                                <div>
-                                    <p className="text-[8px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                        Monthly Fee
-                                    </p>
-                                    <p className="text-lg font-black text-foreground tracking-tighter">
-                                        ৳{parseInt(expectedSalary || 0).toLocaleString()}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-4">
-                                <div className="size-10 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground">
-                                    <Briefcase size={16} />
-                                </div>
-                                <div>
-                                    <p className="text-[8px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                        Experience
-                                    </p>
-                                    <p className="text-lg font-black text-foreground tracking-tighter">
-                                        {experience || 'N/A'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-4 col-span-2">
-                                <div className="size-10 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground">
-                                    <Star size={16} className="fill-primary text-primary" />
-                                </div>
-                                <div>
-                                    <p className="text-[8px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                        Rating
-                                    </p>
-                                    <div className="flex items-baseline gap-1.5">
-                                        {dbUser?.ratings > 0 ? (
-                                            <p className="text-lg font-black text-foreground tracking-tighter">
-                                                {Number(dbUser.ratings).toFixed(1)}
-                                            </p>
-                                        ) : (
-                                            <p className="text-lg font-black text-foreground tracking-tighter">
-                                                New
-                                            </p>
-                                        )}
-                                        {dbUser?.reviewCount > 0 && (
-                                            <p className="text-[10px] text-muted-foreground font-bold">
-                                                ({dbUser.reviewCount} {dbUser.reviewCount === 1 ? 'review' : 'reviews'})
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Edit Form Fields */}
-                    <form onSubmit={onSubmitTutor} className="space-y-8">
-                        <div className="space-y-6">
-                            <div className="p-8 bg-card border border-border rounded-xl shadow-none">
-                                <h3 className="text-sm font-bold text-foreground uppercase tracking-widest mb-8 flex items-center gap-3">
-                                    <ShieldCheck className="text-primary" size={16} />
-                                    Basic Tutor Contact Info
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Full Name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="w-full h-11 bg-background border border-border px-4 rounded-lg text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                            value={nameInput}
-                                            onChange={(e) => setNameInput(e.target.value)}
-                                            placeholder="Your full name"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Phone Number
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            className="w-full h-11 bg-background border border-border px-4 rounded-lg text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                            value={mobileInput}
-                                            onChange={(e) => setMobileInput(e.target.value)}
-                                            placeholder="01700000000"
-                                        />
-                                    </div>
-                                    <div className="space-y-2 md:col-span-2">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Profile Photo URL
-                                        </label>
-                                        <input
-                                            type="url"
-                                            className="w-full h-11 bg-background border border-border px-4 rounded-lg text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                            value={photoInput}
-                                            onChange={(e) => setPhotoInput(e.target.value)}
-                                            placeholder="https://example.com/photo.jpg"
-                                        />
-                                    </div>
-                                    <div className="space-y-2 md:col-span-2">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Division
-                                        </label>
-                                        <select
-                                            value={location}
-                                            onChange={(e) => setLocation(e.target.value)}
-                                            className="w-full h-11 bg-background border border-border px-4 text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                        >
-                                            <option value="">Select division</option>
-                                            {BANGLADESH_DIVISIONS.map((d) => (
-                                                <option key={d} value={d}>
-                                                    {d}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="p-8 bg-card border border-border rounded-xl shadow-none">
-                                <h3 className="text-sm font-bold text-foreground uppercase tracking-widest mb-8 flex items-center gap-3">
-                                    <GraduationCap className="text-primary" size={16} />
-                                    Academic & Teaching Details
-                                </h3>
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Qualification
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="w-full h-11 bg-background border border-border px-4 rounded-lg text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                            value={qualification}
-                                            onChange={(e) => setQualification(e.target.value)}
-                                            placeholder="e.g. B.Sc in Engineering, HSC with GPA 5"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Experience Details
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="w-full h-11 bg-background border border-border px-4 rounded-lg text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                            value={experience}
-                                            onChange={(e) => setExperience(e.target.value)}
-                                            placeholder="e.g. 3 years teaching HSC Physics"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Short Bio
-                                        </label>
-                                        <textarea
-                                            rows={3}
-                                            className="w-full bg-background border border-border px-4 py-3 rounded-lg text-xs font-bold text-foreground focus:border-primary outline-none transition-all resize-none"
-                                            value={bio}
-                                            onChange={(e) => setBio(e.target.value)}
-                                            placeholder="Describe your teaching methodology and style..."
-                                        />
-                                    </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Subjects You Can Teach
-                                        </label>
-                                        <div className="flex flex-wrap gap-2">
-                                            {SUBJECT_OPTIONS.map((subject) => (
-                                                <button
-                                                    key={subject}
-                                                    type="button"
-                                                    onClick={() => toggleSubject(subject)}
-                                                    className={cn(
-                                                        "px-4 py-2 text-[10px] font-semibold rounded-lg border transition-all uppercase tracking-wider",
-                                                        subjects.includes(subject)
-                                                            ? "bg-primary text-primary-foreground border-primary"
-                                                            : "bg-background border-border text-muted-foreground hover:border-foreground hover:text-foreground"
-                                                    )}
-                                                >
-                                                    {subject}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                            Available Days
-                                        </label>
-                                        <div className="flex flex-wrap gap-2">
-                                            {WEEK_DAYS.map((day) => (
-                                                <button
-                                                    key={day}
-                                                    type="button"
-                                                    onClick={() => toggleDay(day)}
-                                                    className={cn(
-                                                        "px-4 py-2 text-[10px] font-semibold rounded-lg border transition-all uppercase tracking-wider",
-                                                        availableDays.includes(day)
-                                                            ? "bg-primary text-primary-foreground border-primary"
-                                                            : "bg-background border-border text-muted-foreground hover:border-foreground hover:text-foreground"
-                                                    )}
-                                                >
-                                                    {day}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-2">
-                                            <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                                Gender
-                                            </label>
-                                            <select
-                                                value={gender}
-                                                onChange={(e) => setGender(e.target.value)}
-                                                className="w-full h-11 bg-background border border-border px-4 text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                            >
-                                                <option value="">Select gender</option>
-                                                {GENDER_OPTIONS.map((g) => (
-                                                    <option key={g} value={g}>
-                                                        {g}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                                Language Preference
-                                            </label>
-                                            <select
-                                                value={languagePreference}
-                                                onChange={(e) => setLanguagePreference(e.target.value)}
-                                                className="w-full h-11 bg-background border border-border px-4 text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                            >
-                                                {LANGUAGE_OPTIONS.map((opt) => (
-                                                    <option key={opt.value} value={opt.value}>
-                                                        {opt.label}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-2">
-                                            <label className="text-[9px] font-label font-semibold uppercase tracking-wider text-muted-foreground">
-                                                Expected Monthly Salary (BDT)
-                                            </label>
-                                            <div className="relative">
-                                                <DollarSign
-                                                    size={14}
-                                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                                                />
-                                                <input
-                                                    type="number"
-                                                    className="w-full h-11 bg-background border border-border pl-11 pr-4 rounded-lg text-xs font-bold text-foreground focus:border-primary outline-none transition-all"
-                                                    value={expectedSalary}
-                                                    onChange={(e) => setExpectedSalary(e.target.value)}
-                                                    placeholder="5000"
-                                                />
+                                    {isTutor && (
+                                        <div className="flex items-center justify-center sm:justify-start gap-4 pt-1 sm:pt-0">
+                                            <div className="text-center sm:text-right">
+                                                <p className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Monthly Fee</p>
+                                                <p className="text-base font-bold text-foreground font-mono">
+                                                    ৳{parseInt(expectedSalary || 0, 10).toLocaleString()}
+                                                </p>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground text-[11px] font-semibold uppercase tracking-wider rounded-lg transition-all shadow-none flex items-center justify-center gap-3"
-                            >
-                                {loading ? (
-                                    <>
-                                        <RefreshCw className="size-4 animate-spin" />
-                                        Saving...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="size-4" />
-                                        Save Tutor Profile
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </form>
-
-                    {/* Notification Preferences */}
-                    <NotificationPreferences />
-                </>
-            ) : (
-                <>
-                    <div className="mb-10">
-                        <div className="flex items-center justify-between mb-2">
-                            <div>
-                                <h1 className="text-2xl font-bold text-foreground tracking-tight">Account Settings</h1>
-                                <p className="text-sm text-muted-foreground mt-1">Manage your personal information and profile details.</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <RoleBadge globalRole={dbUser?.globalRole} role={dbUser?.role} />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                        <div className="lg:col-span-4">
-                            <Card className="p-8 md:p-10 flex flex-col items-center text-center space-y-6 md:space-y-8" hover={false}>
-                                <div className="relative group">
-                                    <Avatar className="size-32 md:h-44 md:w-44 rounded-lg border border-border shadow-none overflow-hidden bg-slate-950 transition-all duration-500 group-hover:scale-105">
-                                        <AvatarImage 
-                                            src={photoInput} 
-                                            alt={nameInput || user?.displayName}
-                                            gender={dbUser?.gender}
-                                            className="object-cover"
-                                        />
-                                        <AvatarFallback className="bg-slate-900 border border-slate-800 rounded-lg animate-none" />
-                                    </Avatar>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        ref={fileInputRef}
-                                        onChange={handlePhotoUpload}
-                                    />
-                                    <div
-                                        className="absolute bottom-1 right-1 size-12 bg-card rounded-lg flex items-center justify-center shadow-lg border border-border cursor-pointer hover:scale-110 transition-transform text-muted-foreground hover:text-primary"
-                                        onClick={() => fileInputRef.current?.click()}
-                                    >
-                                        <Camera size={20} />
-                                    </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <h3 className="font-bold text-xl text-foreground tracking-tight">{nameInput || 'Guest User'}</h3>
-                                    <p className="text-xs text-muted-foreground">{user?.email}</p>
-                                </div>
-                            </Card>
-                        </div>
-
-                        <div className="lg:col-span-8">
-                            <Card className="p-8 md:p-12" hover={false}>
-                                <form onSubmit={onSubmitAccount} className="space-y-8">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground ml-1">Full Name</label>
-                                            <input 
-                                                type="text"
-                                                className="w-full bg-background border border-border px-4 py-3.5 rounded-lg text-xs font-semibold text-foreground transition-all focus:outline-none focus:ring-0 focus:border-primary"
-                                                value={nameInput}
-                                                onChange={(e) => setNameInput(e.target.value)}
-                                                placeholder="Enter your name"
-                                            />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground ml-1">Email</label>
-                                            <div className="relative group">
-                                                <input 
-                                                    type="email"
-                                                    className="w-full bg-muted border border-border px-4 py-3.5 rounded-lg text-xs font-semibold text-muted-foreground cursor-not-allowed transition-all"
-                                                    value={user?.email || ''}
-                                                    readOnly
-                                                />
-                                                <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-primary opacity-30" />
-                                            </div>
-                                            <p className="text-[10px] text-muted-foreground/50 ml-1">Email cannot be changed.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground ml-1">Phone Number</label>
-                                            <input 
-                                                type="tel"
-                                                className="w-full bg-background border border-border px-4 py-3.5 rounded-lg text-xs font-semibold text-foreground transition-all focus:outline-none focus:ring-0 focus:border-primary"
-                                                value={mobileInput}
-                                                onChange={(e) => setMobileInput(e.target.value)}
-                                                placeholder="e.g. 01700000000"
-                                            />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground ml-1">Profile Image URL</label>
-                                            <div className="relative group">
-                                                <input 
-                                                    type="url"
-                                                    className="w-full bg-background border border-border px-4 py-3.5 rounded-lg text-xs font-semibold text-foreground transition-all focus:outline-none focus:ring-0 focus:border-primary"
-                                                    value={photoInput}
-                                                    onChange={(e) => setPhotoInput(e.target.value)}
-                                                    placeholder="https://example.com/photo.jpg"
-                                                />
-                                                <Camera className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border">
-                                        <div className="flex items-center gap-3">
-                                            <div className="size-2 bg-emerald-500 rounded-full"></div>
-                                            <span className="text-xs text-muted-foreground">Changes sync automatically</span>
-                                        </div>
-                                        <Button
-                                            type="submit"
-                                            disabled={loading}
-                                            className="w-full sm:w-auto h-12 min-w-[200px] text-xs font-bold rounded-lg"
-                                        >
-                                            {loading ? (
-                                                <>
-                                                    <RefreshCw className="size-4 animate-spin mr-2" />
-                                                    Saving...
-                                                </>
-                                            ) : (
-                                                'Save Changes'
-                                            )}
-                                        </Button>
-                                    </div>
-                                </form>
-                            </Card>
-
-                            <div className="mt-8">
-                                <Card className="p-6 bg-card border border-border" hover={false}>
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div className="flex items-start gap-4">
-                                            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 shadow-sm border border-primary/20">
-                                                <ShieldCheck className="text-primary" size={20} />
-                                            </div>
-                                            <div>
-                                                <h4 className="text-sm font-semibold text-foreground">Account Security</h4>
-                                                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                                                    Manage your password and authentication credentials.
+                                            <div className="text-center sm:text-right border-l border-border pl-4">
+                                                <p className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Rating</p>
+                                                <p className="text-base font-bold text-foreground flex items-center gap-1">
+                                                    <Star size={14} className="fill-primary text-primary" />
+                                                    {dbUser?.ratings > 0 ? Number(dbUser.ratings).toFixed(1) : "New"}
                                                 </p>
                                             </div>
                                         </div>
-                                        {isGoogleOnly ? (
-                                            <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/60 px-3 py-1.5 rounded-lg border border-border self-start sm:self-auto">
-                                                <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
-                                                <span>Signed in with Google OAuth</span>
-                                            </div>
-                                        ) : (
-                                            <Button
-                                                type="button"
-                                                variant={showPasswordForm ? "outline" : "default"}
-                                                size="sm"
-                                                onClick={() => setShowPasswordForm(!showPasswordForm)}
-                                                className="self-start sm:self-auto text-xs font-semibold gap-1.5"
-                                            >
-                                                <KeyRound size={14} />
-                                                {showPasswordForm ? "Cancel" : "Change Password"}
-                                            </Button>
-                                        )}
-                                    </div>
-
-                                    {showPasswordForm && !isGoogleOnly && (
-                                        <form 
-                                            onSubmit={async (e) => {
-                                                e.preventDefault();
-                                                if (!currentPassword) {
-                                                    toast.error("Please enter your current password");
-                                                    return;
-                                                }
-                                                if (newPassword.length < 6) {
-                                                    toast.error("New password must be at least 6 characters");
-                                                    return;
-                                                }
-                                                if (newPassword !== confirmPassword) {
-                                                    toast.error("New passwords do not match");
-                                                    return;
-                                                }
-                                                setPasswordLoading(true);
-                                                try {
-                                                    await changePassword(currentPassword, newPassword);
-                                                    setCurrentPassword('');
-                                                    setNewPassword('');
-                                                    setConfirmPassword('');
-                                                    setShowPasswordForm(false);
-                                                } catch {
-                                                    // error handled in changePassword
-                                                } finally {
-                                                    setPasswordLoading(false);
-                                                }
-                                            }} 
-                                            className="mt-6 pt-6 border-t border-border space-y-4 max-w-lg"
-                                        >
-                                            <div className="space-y-1.5">
-                                                <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                                    Current Password
-                                                </label>
-                                                <div className="relative">
-                                                    <input
-                                                        type={showCurrentPass ? "text" : "password"}
-                                                        value={currentPassword}
-                                                        onChange={(e) => setCurrentPassword(e.target.value)}
-                                                        placeholder="Enter current password"
-                                                        required
-                                                        className="w-full bg-background border border-border px-3.5 py-2.5 rounded-lg text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary pr-10"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowCurrentPass(!showCurrentPass)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                                        tabIndex={-1}
-                                                    >
-                                                        {showCurrentPass ? <EyeOff size={14} /> : <Eye size={14} />}
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-1.5">
-                                                <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                                    New Password
-                                                </label>
-                                                <div className="relative">
-                                                    <input
-                                                        type={showNewPass ? "text" : "password"}
-                                                        value={newPassword}
-                                                        onChange={(e) => setNewPassword(e.target.value)}
-                                                        placeholder="Enter new password (min. 6 characters)"
-                                                        required
-                                                        className="w-full bg-background border border-border px-3.5 py-2.5 rounded-lg text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary pr-10"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowNewPass(!showNewPass)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                                        tabIndex={-1}
-                                                    >
-                                                        {showNewPass ? <EyeOff size={14} /> : <Eye size={14} />}
-                                                    </button>
-                                                </div>
-                                                <PasswordStrength password={newPassword} />
-                                            </div>
-
-                                            <div className="space-y-1.5">
-                                                <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                                    Confirm New Password
-                                                </label>
-                                                <div className="relative">
-                                                    <input
-                                                        type={showConfirmPass ? "text" : "password"}
-                                                        value={confirmPassword}
-                                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                                        placeholder="Confirm new password"
-                                                        required
-                                                        className="w-full bg-background border border-border px-3.5 py-2.5 rounded-lg text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary pr-10"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowConfirmPass(!showConfirmPass)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                                        tabIndex={-1}
-                                                    >
-                                                        {showConfirmPass ? <EyeOff size={14} /> : <Eye size={14} />}
-                                                    </button>
-                                                </div>
-                                                {confirmPassword && newPassword !== confirmPassword && (
-                                                    <p className="text-[11px] text-destructive">Passwords do not match</p>
-                                                )}
-                                            </div>
-
-                                            <div className="flex items-center gap-3 pt-2">
-                                                <Button
-                                                    type="submit"
-                                                    disabled={passwordLoading || !currentPassword || !newPassword || newPassword !== confirmPassword}
-                                                    size="sm"
-                                                    className="text-xs font-semibold"
-                                                >
-                                                    {passwordLoading ? (
-                                                        <>
-                                                            <RefreshCw className="size-3.5 animate-spin mr-1.5" />
-                                                            Updating...
-                                                        </>
-                                                    ) : (
-                                                        "Update Password"
-                                                    )}
-                                                </Button>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        setShowPasswordForm(false);
-                                                        setCurrentPassword('');
-                                                        setNewPassword('');
-                                                        setConfirmPassword('');
-                                                    }}
-                                                    className="text-xs"
-                                                >
-                                                    Cancel
-                                                </Button>
-                                            </div>
-                                        </form>
                                     )}
-                                </Card>
-                            </div>
-
-                            <div className="mt-8">
-                                <NotificationPreferences />
+                                </div>
                             </div>
                         </div>
+                    </Card>
+
+                    {/* Basic Info Section */}
+                    <Card className="p-6 bg-card border-border space-y-4" hover={false}>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                            <User size={14} className="text-primary" />
+                            Basic Contact Information
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-foreground">Full Name *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full h-10 bg-background border border-border px-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors"
+                                    value={nameInput}
+                                    onChange={(e) => setNameInput(e.target.value)}
+                                    placeholder="Full Name"
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-foreground">Phone Number</label>
+                                <input
+                                    type="tel"
+                                    className="w-full h-10 bg-background border border-border px-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors"
+                                    value={mobileInput}
+                                    onChange={(e) => setMobileInput(e.target.value)}
+                                    placeholder="01700000000"
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-foreground">Location / Division</label>
+                                <select
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                    className="w-full h-10 bg-background border border-border px-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors"
+                                >
+                                    <option value="">Select division</option>
+                                    {BANGLADESH_DIVISIONS.map((d) => (
+                                        <option key={d} value={d}>{d}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-foreground">Profile Photo URL</label>
+                                <input
+                                    type="url"
+                                    className="w-full h-10 bg-background border border-border px-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors"
+                                    value={photoInput}
+                                    onChange={(e) => setPhotoInput(e.target.value)}
+                                    placeholder="https://example.com/photo.jpg"
+                                />
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Tutor Professional Details Section */}
+                    {isTutor && (
+                        <Card className="p-6 bg-card border-border space-y-5" hover={false}>
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                                <GraduationCap size={14} className="text-primary" />
+                                Professional Teaching Credentials
+                            </h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-foreground">Academic Qualification</label>
+                                    <input
+                                        type="text"
+                                        className="w-full h-10 bg-background border border-border px-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors"
+                                        value={qualification}
+                                        onChange={(e) => setQualification(e.target.value)}
+                                        placeholder="e.g. B.Sc in CSE (BUET), HSC GPA 5.0"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-foreground">Teaching Experience</label>
+                                    <input
+                                        type="text"
+                                        className="w-full h-10 bg-background border border-border px-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors"
+                                        value={experience}
+                                        onChange={(e) => setExperience(e.target.value)}
+                                        placeholder="e.g. 3+ years teaching HSC Science"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-foreground">Expected Monthly Salary (BDT)</label>
+                                    <div className="relative">
+                                        <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                        <input
+                                            type="number"
+                                            className="w-full h-10 bg-background border border-border pl-9 pr-3 rounded-lg text-xs font-medium text-foreground font-mono focus:border-primary outline-none transition-colors"
+                                            value={expectedSalary}
+                                            onChange={(e) => setExpectedSalary(e.target.value)}
+                                            placeholder="5000"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-foreground">Language Medium</label>
+                                    <select
+                                        value={languagePreference}
+                                        onChange={(e) => setLanguagePreference(e.target.value)}
+                                        className="w-full h-10 bg-background border border-border px-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors"
+                                    >
+                                        {LANGUAGE_OPTIONS.map((opt) => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-foreground">Gender</label>
+                                    <select
+                                        value={gender}
+                                        onChange={(e) => setGender(e.target.value)}
+                                        className="w-full h-10 bg-background border border-border px-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors"
+                                    >
+                                        <option value="">Select Gender</option>
+                                        {GENDER_OPTIONS.map((g) => (
+                                            <option key={g} value={g}>{g}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Bio */}
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-foreground">Tutor Bio & Pedagogy</label>
+                                <textarea
+                                    rows={3}
+                                    className="w-full bg-background border border-border p-3 rounded-lg text-xs font-medium text-foreground focus:border-primary outline-none transition-colors resize-none leading-relaxed"
+                                    value={bio}
+                                    onChange={(e) => setBio(e.target.value)}
+                                    placeholder="Describe your teaching approach, background, and strengths..."
+                                />
+                            </div>
+
+                            {/* Available Days */}
+                            <div className="space-y-2 pt-2">
+                                <label className="text-xs font-medium text-foreground flex items-center justify-between">
+                                    <span>Available Days of Week</span>
+                                    <span className="text-[11px] text-muted-foreground">{availableDays.length} selected</span>
+                                </label>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+                                    {WEEK_DAYS.map((day) => {
+                                        const isSelected = availableDays.includes(day);
+                                        return (
+                                            <button
+                                                key={day}
+                                                type="button"
+                                                onClick={() => toggleDay(day)}
+                                                className={cn(
+                                                    "h-9 text-xs font-semibold rounded-lg border transition-all flex items-center justify-center gap-1.5",
+                                                    isSelected
+                                                        ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                                        : "bg-background border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                                                )}
+                                            >
+                                                {isSelected && <Check size={12} />}
+                                                {day.slice(0, 3)}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Teaching Subjects */}
+                            <div className="space-y-2 pt-2">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <label className="text-xs font-medium text-foreground">
+                                        Subjects You Can Teach ({subjects.length} selected)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="Filter subjects..."
+                                        value={subjectSearch}
+                                        onChange={(e) => setSubjectSearch(e.target.value)}
+                                        className="h-8 w-44 bg-background border border-border px-2.5 rounded-md text-xs outline-none focus:border-primary"
+                                    />
+                                </div>
+
+                                <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-2 border border-border/60 rounded-lg bg-muted/20 custom-scrollbar">
+                                    {filteredSubjects.map((subject) => {
+                                        const isSelected = subjects.includes(subject);
+                                        return (
+                                            <button
+                                                key={subject}
+                                                type="button"
+                                                onClick={() => toggleSubject(subject)}
+                                                className={cn(
+                                                    "px-3 py-1.5 text-xs font-medium rounded-md border transition-all flex items-center gap-1",
+                                                    isSelected
+                                                        ? "bg-primary text-primary-foreground border-primary font-semibold"
+                                                        : "bg-background border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+                                                )}
+                                            >
+                                                {isSelected && <Check size={12} />}
+                                                {subject}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
+                    {/* Bottom Save Action */}
+                    <div className="flex items-center justify-end gap-4 pt-2">
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            className="h-11 px-6 text-xs font-bold gap-2"
+                        >
+                            {loading ? (
+                                <>
+                                    <RefreshCw className="size-3.5 animate-spin" />
+                                    Saving Profile...
+                                </>
+                            ) : (
+                                <>
+                                    <Save size={15} />
+                                    Save Profile Changes
+                                </>
+                            )}
+                        </Button>
                     </div>
-                </>
+                </form>
+            )}
+
+            {/* TAB 2: ACCOUNT SECURITY */}
+            {activeTab === 'security' && (
+                <div className="space-y-6">
+                    <Card className="p-6 bg-card border-border" hover={false}>
+                        <div className="flex items-start gap-4">
+                            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-primary">
+                                <ShieldCheck size={20} />
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="text-sm font-semibold text-foreground">Authentication & Sign-in Method</h3>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    {isGoogleOnly 
+                                        ? "Your account is authenticated securely via Google OAuth."
+                                        : "Your account is authenticated via Email & Password."
+                                    }
+                                </p>
+                                <div className="mt-3 inline-flex items-center gap-2 text-xs font-medium px-2.5 py-1 rounded-md bg-muted border border-border text-muted-foreground">
+                                    <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
+                                    <span>{user?.email}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {!isGoogleOnly ? (
+                        <Card className="p-6 bg-card border-border space-y-5" hover={false}>
+                            <div>
+                                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                    <KeyRound size={16} className="text-primary" />
+                                    Change Account Password
+                                </h3>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    Update your login password. We recommend using a strong password with letters, numbers, and symbols.
+                                </p>
+                            </div>
+
+                            <form onSubmit={onSubmitPasswordChange} className="space-y-4 max-w-lg">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-foreground">Current Password</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showCurrentPass ? "text" : "password"}
+                                            value={currentPassword}
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                            placeholder="Enter current password"
+                                            required
+                                            className="w-full bg-background border border-border px-3.5 h-10 rounded-lg text-xs text-foreground focus:outline-none focus:border-primary pr-10"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowCurrentPass(!showCurrentPass)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                            tabIndex={-1}
+                                        >
+                                            {showCurrentPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-foreground">New Password</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showNewPass ? "text" : "password"}
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            placeholder="Enter new password (min. 6 chars)"
+                                            required
+                                            className="w-full bg-background border border-border px-3.5 h-10 rounded-lg text-xs text-foreground focus:outline-none focus:border-primary pr-10"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewPass(!showNewPass)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                            tabIndex={-1}
+                                        >
+                                            {showNewPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                                        </button>
+                                    </div>
+                                    <PasswordStrength password={newPassword} />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-medium text-foreground">Confirm New Password</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showConfirmPass ? "text" : "password"}
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            placeholder="Confirm new password"
+                                            required
+                                            className="w-full bg-background border border-border px-3.5 h-10 rounded-lg text-xs text-foreground focus:outline-none focus:border-primary pr-10"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPass(!showConfirmPass)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                            tabIndex={-1}
+                                        >
+                                            {showConfirmPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                                        </button>
+                                    </div>
+                                    {confirmPassword && newPassword !== confirmPassword && (
+                                        <p className="text-xs text-destructive">Passwords do not match</p>
+                                    )}
+                                </div>
+
+                                <div className="pt-2">
+                                    <Button
+                                        type="submit"
+                                        disabled={passwordLoading || !currentPassword || !newPassword || newPassword !== confirmPassword}
+                                        className="h-10 px-5 text-xs font-semibold"
+                                    >
+                                        {passwordLoading ? (
+                                            <>
+                                                <RefreshCw className="size-3.5 animate-spin mr-1.5" />
+                                                Updating Password...
+                                            </>
+                                        ) : (
+                                            "Update Password"
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Card>
+                    ) : null}
+                </div>
+            )}
+
+            {/* TAB 3: NOTIFICATION PREFERENCES */}
+            {activeTab === 'notifications' && (
+                <div>
+                    <NotificationPreferences />
+                </div>
             )}
         </div>
     );
