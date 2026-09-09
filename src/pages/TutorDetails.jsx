@@ -19,6 +19,7 @@ import { breadcrumbJsonLd, serializeJsonLd } from '../lib/jsonLd';
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
 import Breadcrumb from '../components/shared/Breadcrumb';
 import ReportModal from '../components/shared/ReportModal';
+import HireRequestModal from '../components/HireRequestModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton } from '@/components/shared/skeletons';
 
@@ -106,10 +107,6 @@ const TutorDetails = () => {
 
   // Hire Request State
   const [isHireModalOpen, setIsHireModalOpen] = useState(false);
-  const [hireMessage, setHireMessage] = useState('');
-  const [hireRate, setHireRate] = useState('');
-  const [selectedSubjects, setSelectedSubjects] = useState([]);
-  const [submittingHire, setSubmittingHire] = useState(false);
   const [existingRequest, setExistingRequest] = useState(null);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [cancellingRequest, setCancellingRequest] = useState(false);
@@ -266,41 +263,7 @@ const TutorDetails = () => {
     }
   };
 
-  const handleHireRequest = async (e) => {
-    e.preventDefault();
-    if (!hireMessage.trim()) {
-      toast.error(t('tutorDetails.toast_hire_message_required', 'Please enter a message'));
-      return;
-    }
 
-    setSubmittingHire(true);
-    try {
-      const res = await api.post('/api/hire-requests', {
-        toUserId: tutor._id,
-        message: hireMessage,
-        proposedRate: hireRate ? Number(hireRate) : undefined,
-        subjects: selectedSubjects,
-      });
-      toast.success(t('tutorDetails.toast_hire_sent', 'Hire request sent!'));
-      const created = res.data?.data || res.data;
-      setExistingRequest({
-        _id: created._id,
-        toUserId: { _id: tutor._id, displayName: tutor.displayName },
-        proposedRate: created.proposedRate,
-        subjects: created.subjects || selectedSubjects,
-        message: created.message || hireMessage,
-        status: 'pending',
-      });
-      setIsHireModalOpen(false);
-      setHireMessage('');
-      setHireRate('');
-      setSelectedSubjects([]);
-    } catch (err) {
-      toast.error(err.response?.data?.error || t('tutorDetails.toast_hire_failed', 'Failed to send hire request'));
-    } finally {
-      setSubmittingHire(false);
-    }
-  };
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -540,147 +503,22 @@ const TutorDetails = () => {
         )}
 
         {/* Hire Request Modal */}
-        {isHireModalOpen && (
-          <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-card w-full max-w-md rounded-2xl border border-border/80 shadow-xl p-6 animate-in fade-in zoom-in duration-200">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold font-heading text-foreground">
-                  {t('tutorDetails.hire_title', {
-                    firstName,
-                    defaultValue: `Hire Request for ${firstName}`,
-                  })}
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setIsHireModalOpen(false)}
-                  aria-label={t('tutorDetails.close', 'Close')}
-                  className="text-muted-foreground hover:text-foreground text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded p-1 cursor-pointer"
-                >
-                  &times;
-                </button>
-              </div>
-              <form onSubmit={handleHireRequest}>
-                <div className="space-y-4">
-                  {/* Subject Selector */}
-                  <div>
-                    <label className="block text-xs font-semibold text-muted-foreground mb-2">
-                      {t('tutorDetails.subject_s', 'Subjects Needed')}
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {Array.isArray(tutor.subjects) &&
-                        tutor.subjects.map((subject) => (
-                          <button
-                            key={subject}
-                            type="button"
-                            onClick={() => {
-                              setSelectedSubjects((prev) =>
-                                prev.includes(subject)
-                                  ? prev.filter((s) => s !== subject)
-                                  : [...prev, subject]
-                              );
-                            }}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                              selectedSubjects.includes(subject)
-                                ? 'bg-emerald-600 text-white'
-                                : 'bg-background text-muted-foreground hover:bg-muted border border-border'
-                            }`}
-                          >
-                            {subject}
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-
-                  {/* Message */}
-                  <div>
-                    <label
-                      className="block text-xs font-semibold text-muted-foreground mb-1"
-                      htmlFor="hire-message-textarea"
-                    >
-                      {t('tutorDetails.message_label', 'Requirements & Student Details')}
-                    </label>
-                    <textarea
-                      id="hire-message-textarea"
-                      value={hireMessage}
-                      onChange={(e) => setHireMessage(e.target.value)}
-                      placeholder={t('tutorDetails.hire_placeholder', {
-                        firstName,
-                        defaultValue: `Mention student class, curriculum, preferred days and requirements...`,
-                      })}
-                      maxLength={500}
-                      className="w-full h-24 bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary resize-none transition-all"
-                    />
-                    <p className="text-[11px] text-muted-foreground mt-1 text-right">
-                      {hireMessage.length}/500
-                    </p>
-                  </div>
-
-                  {/* Proposed Rate */}
-                  <div>
-                    <label
-                      className="block text-xs font-semibold text-muted-foreground mb-1"
-                      htmlFor="proposed-rate-input"
-                    >
-                      {t('tutorDetails.proposed_rate', 'Proposed Monthly Budget (BDT)')}
-                    </label>
-                    <input
-                      id="proposed-rate-input"
-                      type="number"
-                      value={hireRate}
-                      onChange={(e) => setHireRate(e.target.value)}
-                      placeholder={
-                        tutor.expectedSalary
-                          ? `e.g. ${tutor.expectedSalary}`
-                          : t('tutorDetails.rate_placeholder', 'e.g. 8000')
-                      }
-                      className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all"
-                    />
-                    {tutor.expectedSalary && (
-                      <p className="text-[11px] text-muted-foreground mt-1">
-                        {t('tutorDetails.listed_rate', {
-                          rate: tutor.expectedSalary.toLocaleString(),
-                          defaultValue: `Tutor's expected fee: ৳${tutor.expectedSalary.toLocaleString()}/month`,
-                        })}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* SafePay escrow note */}
-                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3.5 flex items-start gap-2.5 text-xs text-foreground">
-                    <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-emerald-800 dark:text-emerald-300">
-                        Zero Upfront Risk · 100% Parent Guarantee
-                      </p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                        First session is an evaluation demo. Tuition fees are protected through safe escrow and only released after your confirmation.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 justify-end mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setIsHireModalOpen(false)}
-                    className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all cursor-pointer"
-                  >
-                    {t('tutorDetails.cancel', 'Cancel')}
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submittingHire || !hireMessage.trim()}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl disabled:opacity-50 flex items-center gap-2 transition-all shadow-sm cursor-pointer"
-                  >
-                    {submittingHire
-                      ? t('tutorDetails.sending', 'Sending...')
-                      : t('tutorDetails.send_request', 'Send Hire Request')}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        <HireRequestModal
+          isOpen={isHireModalOpen}
+          onClose={() => setIsHireModalOpen(false)}
+          tutor={tutor}
+          onSuccess={(created) => {
+            setExistingRequest({
+              _id: created._id,
+              toUserId: { _id: tutor._id, displayName: tutor.displayName },
+              proposedRate: created.proposedRate,
+              subjects: created.subjects || [],
+              message: created.message,
+              status: 'pending',
+            });
+          }}
+          onOpenLogin={() => setShowLoginModal(true)}
+        />
 
         {/* Hire Request Status Modal */}
         {isStatusModalOpen && existingRequest && (
