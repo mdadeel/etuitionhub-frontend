@@ -18,7 +18,8 @@ const DashSettings = () => {
         setLoading(true);
         try {
             const res = await api.get('/api/settings');
-            setSettings(res.data || []);
+            const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+            setSettings(data);
             setModifiedKeys(new Set());
         } catch {
             toast.error('Failed to load system configurations');
@@ -32,7 +33,7 @@ const DashSettings = () => {
     }, [loadSettings]);
 
     const handleInputChange = (key, value) => {
-        setSettings(prev => prev.map(s => s.key === key ? { ...s, value } : s));
+        setSettings(prev => (Array.isArray(prev) ? prev : []).map(s => s.key === key ? { ...s, value } : s));
         setModifiedKeys(prev => new Set(prev).add(key));
     };
 
@@ -43,7 +44,7 @@ const DashSettings = () => {
         }
 
         setIsSaving(true);
-        const settingsToUpdate = settings
+        const settingsToUpdate = (Array.isArray(settings) ? settings : [])
             .filter(s => modifiedKeys.has(s.key))
             .map(s => ({ key: s.key, value: s.value }));
 
@@ -58,7 +59,8 @@ const DashSettings = () => {
         }
     };
 
-    const groupedSettings = settings.reduce((acc, s) => {
+    const groupedSettings = (Array.isArray(settings) ? settings : []).reduce((acc, s) => {
+        if (!s || !s.category) return acc;
         if (!acc[s.category]) acc[s.category] = [];
         acc[s.category].push(s);
         return acc;

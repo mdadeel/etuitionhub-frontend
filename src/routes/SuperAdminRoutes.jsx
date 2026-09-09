@@ -27,11 +27,10 @@ const AdminVerifications = lazy(() => import('../components/Dashboard/AdminVerif
 const SubscriptionManagement = lazy(() => import('../components/Dashboard/SuperAdmin/SubscriptionManagement'));
 const SearchAnalytics = lazy(() => import('../components/Dashboard/SuperAdmin/SearchAnalytics'));
 // Merged from the collapsed /admin route set (AdminRoutes now redirects to /super-admin).
-const AdminWithdrawals = lazy(() => import('../pages/AdminWithdrawals'));
-const DashPayments = lazy(() => import('../components/Dashboard/DashPayments'));
+const AdminFinanceWorkspace = lazy(() => import('../components/Dashboard/SuperAdmin/AdminFinanceWorkspace'));
+const Reports = lazy(() => import('../components/Dashboard/SuperAdmin/Reports'));
 const AdminContacts = lazy(() => import('../components/Dashboard/AdminContacts'));
 const AdminTestimonials = lazy(() => import('../components/Dashboard/AdminTestimonials'));
-const Reports = lazy(() => import('../components/Dashboard/SuperAdmin/Reports'));
 
 const SuperAdminRoutes = () => {
   const { dbUser, loading } = useAuth();
@@ -54,10 +53,11 @@ const SuperAdminRoutes = () => {
         <Route path="tutors" element={<AdminTutors />} />
         <Route path="tuitions" element={<DashTuitions />} />
         <Route path="verifications" element={<AdminVerifications />} />
-        <Route path="withdrawals" element={<AdminWithdrawals />} />
-        <Route path="payments" element={<DashPayments />} />
+        <Route path="finance" element={<AdminFinanceWorkspace />} />
+        <Route path="withdrawals" element={<AdminFinanceWorkspace />} />
+        <Route path="payments" element={<AdminFinanceWorkspace />} />
+        <Route path="subscriptions" element={<AdminFinanceWorkspace />} />
         <Route path="contacts" element={<AdminContacts />} />
-        <Route path="subscriptions" element={<SubscriptionManagement />} />
         <Route path="audit-logs" element={<AdminAuditLogs />} />
         <Route path="testimonials" element={<AdminTestimonials />} />
         <Route path="search-analytics" element={<SearchAnalytics />} />

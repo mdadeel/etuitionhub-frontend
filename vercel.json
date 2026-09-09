@@ -2,6 +2,10 @@
     "name": "e-tuitionhub",
     "rewrites": [
         {
+            "source": "/api/(.*)",
+            "destination": "https://etuitionhub-backend.vercel.app/api/$1"
+        },
+        {
             "source": "/((?!sitemap\\.xml|robots\\.txt|assets/|images/|locales/|favicon\\.ico|.*\\.(?:xml|txt|png|jpg|jpeg|svg|ico|json|js|css)).*)",
             "destination": "/index.html"
         }

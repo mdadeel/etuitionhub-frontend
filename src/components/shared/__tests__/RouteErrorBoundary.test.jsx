@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import RouteErrorBoundary from '../RouteErrorBoundary';
 
 // Component that throws on render
@@ -13,9 +14,11 @@ const NormalComponent = () => <div>Normal content</div>;
 describe('RouteErrorBoundary', () => {
   it('renders children normally when no error', () => {
     render(
-      <RouteErrorBoundary>
-        <NormalComponent />
-      </RouteErrorBoundary>
+      <MemoryRouter>
+        <RouteErrorBoundary>
+          <NormalComponent />
+        </RouteErrorBoundary>
+      </MemoryRouter>
     );
     expect(screen.getByText('Normal content')).toBeInTheDocument();
   });
@@ -25,9 +28,11 @@ describe('RouteErrorBoundary', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     
     render(
-      <RouteErrorBoundary>
-        <ThrowingComponent />
-      </RouteErrorBoundary>
+      <MemoryRouter>
+        <RouteErrorBoundary>
+          <ThrowingComponent />
+        </RouteErrorBoundary>
+      </MemoryRouter>
     );
     
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();

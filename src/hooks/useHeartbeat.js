@@ -8,6 +8,7 @@ export default function useHeartbeat() {
 
     useEffect(() => {
         if (!user || !dbUser) return;
+        if (dbUser.role !== 'tutor' && dbUser.globalRole !== 'super_admin') return;
 
         const beat = () => {
             api.post('/api/tutors/heartbeat').catch(() => {});

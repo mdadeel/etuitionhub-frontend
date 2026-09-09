@@ -7,13 +7,14 @@ import api from '../../services/api';
  *
  * Admin-only endpoint; no pagination, no filters — just the full snapshot.
  */
-export const usePlatformOverview = () =>
+export const usePlatformOverview = (enabled = true) =>
     useQuery({
         queryKey: ['analytics', 'platform-overview'],
         queryFn: async () => {
             const res = await api.get('/api/analytics/platform-overview');
             return res.data.data;
         },
+        enabled: !!enabled,
         // 60s stale time — admin landing page doesn't need sub-second accuracy.
         staleTime: 60_000,
     });

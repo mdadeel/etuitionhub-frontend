@@ -41,6 +41,15 @@ const DashUsers = () => {
     const [roleFilter, setRoleFilter] = useState('');
     const [locationFilter, setLocationFilter] = useState(null);
 
+    // Filtered users memo
+    const filtered = useMemo(() => {
+        let result = Array.isArray(users) ? users : [];
+        if (filter !== 'all') {
+            result = result.filter(u => u.role === filter);
+        }
+        return result;
+    }, [users, filter]);
+
     // Bulk action selection
     const [selectedIds, setSelectedIds] = useState([]);
     const allSelected = filtered.length > 0 && selectedIds.length === filtered.length;
@@ -111,17 +120,6 @@ const DashUsers = () => {
     useEffect(() => {
         loadUsers();
     }, [loadUsers]);
-
-    const filtered = useMemo(() => {
-        let result = users;
-        
-        // Filter by role
-        if (filter !== 'all') {
-            result = result.filter(u => u.role === filter);
-        }
-        
-        return result;
-    }, [users, filter]);
 
     const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
 

@@ -40,9 +40,11 @@ const AdminAuditLogs = () => {
             const params = new URLSearchParams();
             Object.entries(filters).forEach(([k, v]) => { if (v) params.append(k, v); });
             const res = await api.get(`/api/audit-logs?${params.toString()}`);
-            setLogs(res.data.logs || []);
+            const data = Array.isArray(res.data?.logs) ? res.data.logs : Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+            setLogs(data);
         } catch {
             toast.error('Failed to load audit logs');
+            setLogs([]);
         } finally {
             setLoading(false);
         }
@@ -51,7 +53,8 @@ const AdminAuditLogs = () => {
     const loadActions = useCallback(async () => {
         try {
             const res = await api.get('/api/audit-logs/actions');
-            setActions(res.data || []);
+            const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+            setActions(data);
         } catch { /* non-fatal */ }
     }, []);
 
@@ -60,7 +63,11 @@ const AdminAuditLogs = () => {
 
     const stats = useMemo(() => {
         const byAction = {};
-        logs.forEach(l => { byAction[l.action] = (byAction[l.action] || 0) + 1; });
+        (Array.isArray(logs) ? logs : []).forEach(l => {
+            if (l?.action) {
+                byAction[l.action] = (byAction[l.action] || 0) + 1;
+            }
+        });
         return Object.entries(byAction).slice(0, 4);
     }, [logs]);
 

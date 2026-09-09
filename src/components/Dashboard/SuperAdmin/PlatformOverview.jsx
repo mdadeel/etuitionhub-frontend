@@ -34,7 +34,7 @@ import EmptyState from "../../shared/EmptyState";
 import { cn } from "../../../lib/utils";
 
 const PlatformOverview = () => {
-  const { data, isLoading, isError, error, refetch } = usePlatformOverview();
+  const { data, isLoading, isError, error, refetch } = usePlatformOverview(true);
 
   const [circuitBreakers, setCircuitBreakers] = useState({
     payoutsEnabled: true,
@@ -240,7 +240,9 @@ const PlatformOverview = () => {
     );
   }
 
-  const { money, growth, funnel, queues, activity } = data;
+  const { money = {}, growth = {}, funnel = {}, queues = {}, activity = {} } = data || {};
+  const recentSignups = Array.isArray(activity?.recentSignups) ? activity.recentSignups : [];
+  const recentAuditLogs = Array.isArray(activity?.recentAuditLogs) ? activity.recentAuditLogs : [];
 
   return (
     <div className="space-y-8">
@@ -268,14 +270,14 @@ const PlatformOverview = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <StatCard
             title="Commission Revenue"
-            value={`৳${money.commissionRevenue.toLocaleString()}`}
+            value={`৳${(money?.commissionRevenue ?? 0).toLocaleString()}`}
             subtitle="Total platform commission earned"
             icon={TrendingUp}
             accent="border-l-primary"
           />
           <StatCard
             title="Pending Payouts"
-            value={`৳${money.pendingPayouts.toLocaleString()}`}
+            value={`৳${(money?.pendingPayouts ?? 0).toLocaleString()}`}
             subtitle="Amount awaiting tutor withdrawal"
             icon={Clock}
             accent="border-l-warning"
@@ -290,11 +292,11 @@ const PlatformOverview = () => {
         icon={TrendingUp}
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <StatCard title="Total Users" value={growth.totalUsers} subtitle="Registered accounts" icon={Users} />
-          <StatCard title="Tutors" value={growth.totalTutors} subtitle="Verified tutors" icon={UserCheck} />
-          <StatCard title="Students" value={growth.totalStudents} subtitle="Active students" icon={Users} />
-          <StatCard title="Tuitions" value={growth.totalTuitions} subtitle="Active listings" icon={BookOpen} />
-          <StatCard title="Applications" value={growth.totalApplications} subtitle="Tutor applications" icon={FileText} />
+          <StatCard title="Total Users" value={growth?.totalUsers ?? 0} subtitle="Registered accounts" icon={Users} />
+          <StatCard title="Tutors" value={growth?.totalTutors ?? 0} subtitle="Verified tutors" icon={UserCheck} />
+          <StatCard title="Students" value={growth?.totalStudents ?? 0} subtitle="Active students" icon={Users} />
+          <StatCard title="Tuitions" value={growth?.totalTuitions ?? 0} subtitle="Active listings" icon={BookOpen} />
+          <StatCard title="Applications" value={growth?.totalApplications ?? 0} subtitle="Tutor applications" icon={FileText} />
         </div>
       </Section>
 
@@ -307,28 +309,28 @@ const PlatformOverview = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <FunnelStep
             label="Tuitions"
-            value={funnel.tuitions}
+            value={funnel?.tuitions ?? 0}
             subtitle="Listings posted"
             icon={BookOpen}
             step={1}
           />
           <FunnelStep
             label="Applications"
-            value={funnel.applications}
+            value={funnel?.applications ?? 0}
             subtitle="Tutors applied"
             icon={FileText}
             step={2}
           />
           <FunnelStep
             label="Confirmed"
-            value={funnel.confirmed}
+            value={funnel?.confirmed ?? 0}
             subtitle="Sessions booked"
             icon={CheckCircle2}
             step={3}
           />
           <FunnelStep
             label="Paid"
-            value={funnel.paid}
+            value={funnel?.paid ?? 0}
             subtitle="Payments settled"
             icon={CreditCard}
             step={4}
@@ -346,33 +348,33 @@ const PlatformOverview = () => {
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           <QueueCard
             label="Payment Verification"
-            count={queues.paymentVerification}
+            count={queues?.paymentVerification ?? 0}
             icon={CreditCard}
-            variant={queues.paymentVerification > 0 ? "warning" : "default"}
+            variant={(queues?.paymentVerification ?? 0) > 0 ? "warning" : "default"}
           />
           <QueueCard
             label="Tutor Verification"
-            count={queues.tutorVerification}
+            count={queues?.tutorVerification ?? 0}
             icon={UserCheck}
-            variant={queues.tutorVerification > 0 ? "warning" : "default"}
+            variant={(queues?.tutorVerification ?? 0) > 0 ? "warning" : "default"}
           />
           <QueueCard
             label="Moderation"
-            count={queues.moderation}
+            count={queues?.moderation ?? 0}
             icon={Search}
-            variant={queues.moderation > 0 ? "warning" : "default"}
+            variant={(queues?.moderation ?? 0) > 0 ? "warning" : "default"}
           />
           <QueueCard
             label="Disputes"
-            count={queues.disputes}
+            count={queues?.disputes ?? 0}
             icon={AlertTriangle}
-            variant={queues.disputes > 0 ? "destructive" : "default"}
+            variant={(queues?.disputes ?? 0) > 0 ? "destructive" : "default"}
           />
           <QueueCard
             label="Withdrawals"
-            count={queues.withdrawals}
+            count={queues?.withdrawals ?? 0}
             icon={ArrowUpRight}
-            variant={queues.withdrawals > 0 ? "warning" : "default"}
+            variant={(queues?.withdrawals ?? 0) > 0 ? "warning" : "default"}
           />
         </div>
       </Section>
@@ -501,7 +503,7 @@ const PlatformOverview = () => {
             <h3 className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mb-4">
               Recent Signups
             </h3>
-            {activity.recentSignups.length === 0 ? (
+            {recentSignups.length === 0 ? (
               <EmptyState
                 icon={Users}
                 title="No recent signups"
@@ -509,17 +511,17 @@ const PlatformOverview = () => {
               />
             ) : (
               <ul className="space-y-3">
-                {activity.recentSignups.map((user) => (
-                  <li key={user._id} className="flex items-center gap-3">
+                {recentSignups.map((user, i) => (
+                  <li key={user?._id || user?.id || `signup-${i}`} className="flex items-center gap-3">
                     <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Users className="size-3.5 text-primary" strokeWidth={2.5} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-foreground truncate">
-                        {user.displayName || user.email}
+                        {user?.displayName || user?.name || user?.email || "Unknown User"}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
-                        {user.role} &middot; {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        {user?.role || "user"} &middot; {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Recently"}
                       </p>
                     </div>
                   </li>
@@ -533,7 +535,7 @@ const PlatformOverview = () => {
             <h3 className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mb-4">
               Recent Audit Logs
             </h3>
-            {activity.recentAuditLogs.length === 0 ? (
+            {recentAuditLogs.length === 0 ? (
               <EmptyState
                 icon={Activity}
                 title="No audit logs"
@@ -541,19 +543,19 @@ const PlatformOverview = () => {
               />
             ) : (
               <ul className="space-y-3">
-                {activity.recentAuditLogs.map((log) => (
-                  <li key={log._id} className="flex items-center gap-3">
+                {recentAuditLogs.map((log, i) => (
+                  <li key={log?._id || log?.id || `log-${i}`} className="flex items-center gap-3">
                     <div className="size-8 rounded-lg bg-muted flex items-center justify-center">
                       <Shield className="size-3.5 text-muted-foreground" strokeWidth={2.5} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-foreground capitalize truncate">
-                        {log.action.replace(/_/g, " ")}
+                        {String(log?.action || "Action").replace(/_/g, " ")}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
-                        {log.userEmail || log.userId} &middot;{" "}
-                        {log.entityType} &middot;{" "}
-                        {new Date(log.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        {log?.userEmail || log?.userId || "System"} &middot;{" "}
+                        {log?.entityType || "General"} &middot;{" "}
+                        {log?.createdAt ? new Date(log.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Recently"}
                       </p>
                     </div>
                   </li>

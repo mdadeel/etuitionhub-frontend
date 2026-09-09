@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import { useRealtimeStore } from '../store/realtimeStore';
 import { getSocket } from './useSocketEvents';
@@ -12,14 +13,15 @@ const isSafeRedirect = (url) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const useNotifications = ({ userId, pageSize = 20, enabled = true, category = null } = {}) => {
+const useNotifications = ({ userId, pageSize = 20, enabled = true, category = null, fetchOnMount = true } = {}) => {
     const [notifications, setNotifications] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(fetchOnMount ? true : false);
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
     const unreadCount = useRealtimeStore((s) => s.unreadCount);
     const setUnreadCount = useRealtimeStore((s) => s.setUnreadCount);
     const decrementUnread = useRealtimeStore((s) => s.decrementUnread);
     const resetUnread = useRealtimeStore((s) => s.resetUnread);
+    const queryClient = useQueryClient();
 
     const refetch = useCallback(async (page = 1) => {
         try {
@@ -46,28 +48,28 @@ const useNotifications = ({ userId, pageSize = 20, enabled = true, category = nu
         }
     }, [pageSize, category]);
 
-    // Initial fetch + periodic poll. On Vercel socket.IO is disabled, so the
-    // badge count is driven by a 30-second REST poll instead of real-time events.
+    // Shared unread-count via React Query — one network hit for all bells/pages, deduped + 30s poll.
+    const { data: unreadQueryData } = useQuery({
+        queryKey: ['notifications', 'unread-count'],
+        queryFn: async () => (await api.get('/api/notifications/unread-count')).data.count || 0,
+        enabled: !!enabled,
+        staleTime: 30_000,
+        refetchInterval: 30_000,
+        refetchIntervalInBackground: true,
+    });
     useEffect(() => {
-        // Wait until the backend session is ready (enabled = !!dbUser). Firing
-        // before the token cookie is minted just produces a 401 cascade.
+        if (typeof unreadQueryData === 'number') setUnreadCount(unreadQueryData);
+    }, [unreadQueryData, setUnreadCount]);
+
+    // List fetch is now lazy: Bell opens → refetch(1), NotificationPage mounts → fetchOnMount=true.
+    useEffect(() => {
         if (!enabled) {
             setIsLoading(false);
             return;
         }
-        refetch(1);
-        api.get('/api/notifications/unread-count')
-            .then((res) => setUnreadCount(res.data.count || 0))
-            .catch(() => {});
-
-        // Poll unread count every 30s so the badge updates on Vercel
-        const interval = setInterval(() => {
-            api.get('/api/notifications/unread-count')
-                .then((res) => setUnreadCount(res.data.count || 0))
-                .catch(() => {});
-        }, 30000);
-        return () => clearInterval(interval);
-    }, [enabled, refetch, setUnreadCount]);
+        if (fetchOnMount) refetch(1);
+        else setIsLoading(false);
+    }, [enabled, fetchOnMount, refetch]);
 
     // Prepend new notifications from socket events for instant display
     useEffect(() => {
@@ -90,20 +92,22 @@ const useNotifications = ({ userId, pageSize = 20, enabled = true, category = nu
                 n._id === id ? { ...n, isRead: true } : n
             ));
             decrementUnread();
+            queryClient.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
         } catch (err) {
             if (import.meta.env.DEV) console.warn('Error marking as read:', err);
         }
-    }, [decrementUnread]);
+    }, [decrementUnread, queryClient]);
 
     const markAllAsRead = useCallback(async () => {
         try {
             await api.put('/api/notifications/read-all');
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
             resetUnread();
+            queryClient.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
         } catch (err) {
             if (import.meta.env.DEV) console.warn('Error marking all as read:', err);
         }
-    }, [resetUnread]);
+    }, [resetUnread, queryClient]);
 
     const deleteNotification = useCallback(async (id) => {
         try {

@@ -16,10 +16,12 @@ const AdminContacts = () => {
     const fetchContacts = async () => {
         try {
             const res = await api.get('/api/contact');
-            setContacts(res.data);
+            const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+            setContacts(data);
         } catch (error) {
             console.error('Failed to fetch contacts', error);
             toast.error('Could not load contact submissions');
+            setContacts([]);
         } finally {
             setLoading(false);
         }
@@ -33,7 +35,7 @@ const AdminContacts = () => {
         if (currentStatus === 'read') return;
         try {
             await api.patch(`/api/contact/${id}`, { status: 'read' });
-            setContacts(contacts.map(c => c._id === id ? { ...c, status: 'read' } : c));
+            setContacts(prev => (Array.isArray(prev) ? prev : []).map(c => c._id === id ? { ...c, status: 'read' } : c));
         } catch (error) {
             console.error(error);
             toast.error('Failed to mark as read');
@@ -168,7 +170,7 @@ const AdminContacts = () => {
                                         <span className="text-[10px] text-muted-foreground">{contact.email}</span>
                                     </div>
                                     <span className="text-[10px] font-label text-muted-foreground whitespace-nowrap ml-4">
-                                        {new Date(contact.createdAt).toLocaleDateString()}
+                                        {contact.createdAt ? new Date(contact.createdAt).toLocaleDateString() : '—'}
                                     </span>
                                 </div>
                                 <p className="text-sm text-muted-foreground leading-relaxed pr-8 whitespace-pre-line">
