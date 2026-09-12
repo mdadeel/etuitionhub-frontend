@@ -63,7 +63,7 @@ const TutorConversionSidebar = ({
               <button
                 type="button"
                 onClick={onRequireLogin}
-                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                className="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <Sparkles className="size-4" />
                 {t('tutorDetails.request_to_hire', 'Request to Hire')}
@@ -81,7 +81,7 @@ const TutorConversionSidebar = ({
               <button
                 type="button"
                 onClick={onShowStatusModal}
-                className="w-full py-3 px-4 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold rounded-xl text-sm transition-all border border-emerald-500/30 flex items-center justify-center gap-2 cursor-pointer hover:bg-emerald-500/20 active:scale-98"
+                className="w-full py-3 px-4 bg-primary/10 text-primary font-semibold rounded-xl text-sm transition-all border border-primary/25 flex items-center justify-center gap-2 cursor-pointer hover:bg-primary/15 active:scale-98"
               >
                 <CheckCircle2 className="size-4.5" />
                 {t('tutorDetails.hire_request_sent', 'Hire Request Sent')}
@@ -101,7 +101,7 @@ const TutorConversionSidebar = ({
               <button
                 type="button"
                 onClick={onHireRequest}
-                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                className="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <Sparkles className="size-4" />
                 {t('tutorDetails.request_to_hire', 'Request to Hire')}
@@ -139,9 +139,9 @@ const TutorConversionSidebar = ({
       </div>
 
       {/* Parent Guarantee Trust Card */}
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20 p-5">
+      <div className="rounded-2xl border border-success/30 bg-success/5 dark:bg-success/10 p-5">
         <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+          <div className="p-2 rounded-xl bg-success/10 text-success shrink-0">
             <ShieldCheck className="size-5" />
           </div>
           <div className="space-y-1">
@@ -154,27 +154,27 @@ const TutorConversionSidebar = ({
           </div>
         </div>
 
-        <ul className="mt-3.5 space-y-1.5 pt-3 border-t border-emerald-500/20 text-xs text-foreground/80">
+        <ul className="mt-3.5 space-y-1.5 pt-3 border-t border-success/20 text-xs text-foreground/80">
           <li className="flex items-center gap-2">
-            <Check className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <Check className="size-3.5 text-success shrink-0" />
             <span>Verified NID & Academic Degrees</span>
           </li>
           <li className="flex items-center gap-2">
-            <Check className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <Check className="size-3.5 text-success shrink-0" />
             <span>Free 1st Trial Demonstration</span>
           </li>
           <li className="flex items-center gap-2">
-            <Check className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <Check className="size-3.5 text-success shrink-0" />
             <span>Flexible replacement if unsatisfied</span>
           </li>
         </ul>
 
-        <div className="mt-4 flex items-center justify-between text-[11px] text-muted-foreground pt-2 border-t border-emerald-500/15">
+        <div className="mt-4 flex items-center justify-between text-[11px] text-muted-foreground pt-2 border-t border-border/50">
           <span className="flex items-center gap-1">
             <Lock className="size-3" />
             <span>Bank-grade Escrow Security</span>
           </span>
-          <span className="font-semibold text-emerald-700 dark:text-emerald-400">eTuitionHub SafePay™</span>
+          <span className="font-semibold text-success">eTuitionHub SafePay™</span>
         </div>
       </div>
     </aside>

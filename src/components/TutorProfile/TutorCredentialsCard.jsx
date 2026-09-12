@@ -79,7 +79,7 @@ const TutorCredentialsCard = ({ tutor }) => {
           </div>
 
           <div className="p-4 rounded-xl border border-border/60 bg-muted/20 flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+            <div className="p-2 rounded-lg bg-success/10 text-success shrink-0">
               <ShieldCheck className="size-5" />
             </div>
             <div>
@@ -87,7 +87,7 @@ const TutorCredentialsCard = ({ tutor }) => {
                 Identity & Background
               </p>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <CheckCircle className="size-4 text-emerald-600 dark:text-emerald-400" />
+                <CheckCircle className="size-4 text-success" />
                 <span className="text-sm font-semibold text-foreground">Govt. Verified ID</span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">

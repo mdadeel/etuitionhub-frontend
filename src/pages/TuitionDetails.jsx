@@ -340,7 +340,7 @@ const TuitionDetails = () => {
                         {/* Summary & Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-card p-4 rounded-lg border border-border">
-                                <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
+                                <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                                     <Target size={14} className="text-primary" /> Tutor Requirements
                                 </h2>
                                 <div className="space-y-3">
@@ -358,7 +358,7 @@ const TuitionDetails = () => {
                                         <span className="text-xs text-muted-foreground">Preferred Days</span>
                                         <div className="flex gap-1 flex-wrap justify-end">
                                             {tuition.available_days?.slice(0, 4).map((day, idx) => (
-                                                <span key={idx} className="bg-neutral-100 dark:bg-neutral-950 text-neutral-700 dark:text-neutral-100 border border-border/40 dark:border-neutral-800 px-2 py-0.5 rounded text-xs font-medium capitalize">{day}</span>
+                                                <span key={idx} className="bg-muted text-muted-foreground border border-border/40 px-2 py-0.5 rounded text-xs font-medium capitalize">{day}</span>
                                             ))}
                                         </div>
                                     </div>
@@ -366,7 +366,7 @@ const TuitionDetails = () => {
                             </div>
 
                             <div className="bg-card p-4 rounded-lg border border-border">
-                                <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
+                                <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                                     <BookOpen size={14} className="text-primary" /> Job Description
                                 </h2>
                                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -413,7 +413,7 @@ const TuitionDetails = () => {
 
                                 <div className="space-y-2">
                                     {!user ? (
-                                        <Link to="/login" className="block w-full px-4 py-2.5 bg-muted hover:bg-muted/80 text-neutral-800 dark:text-neutral-200 font-semibold rounded-lg text-sm text-center transition-colors border border-border/50">
+                                        <Link to="/login" className="block w-full px-4 py-2.5 bg-muted hover:bg-muted/80 text-foreground font-semibold rounded-lg text-sm text-center transition-colors border border-border/50">
                                             Login to Apply
                                         </Link>
                                     ) : !dbUser ? (
@@ -518,7 +518,7 @@ const TuitionDetails = () => {
 
                         {/* Safety Tips */}
                         <div className="bg-card p-4 rounded-lg border border-border">
-                            <h4 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3 flex items-center gap-2">
+                            <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                                 <ShieldAlert size={14} className="text-warning dark:text-warning" /> Safety Tips
                             </h4>
                             <ul className="space-y-2">

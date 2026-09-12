@@ -17,23 +17,23 @@ import { Button } from '@/components/ui/button';
 const TYPE_STYLES = Object.freeze({
   coaching_center: {
     label: 'Coaching Center',
-    badge: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/25',
+    badge: 'bg-primary/10 text-primary border-primary/20',
   },
   school: {
     label: 'School',
-    badge: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/25',
+    badge: 'bg-accent/15 text-accent-foreground border-accent/25',
   },
   college: {
     label: 'College',
-    badge: 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/25',
+    badge: 'bg-secondary/15 text-secondary-foreground border-secondary/25',
   },
   academy: {
     label: 'Training Academy',
-    badge: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/25',
+    badge: 'bg-muted text-muted-foreground border-border',
   },
   other: {
     label: 'Institution',
-    badge: 'bg-primary/10 text-primary border-primary/25',
+    badge: 'bg-primary/10 text-primary border-primary/20',
   },
 });
 
@@ -108,7 +108,7 @@ const OrganizationCard = ({ org, isMember, onApply }) => {
               <h3 className="text-base sm:text-lg font-bold font-heading text-foreground tracking-tight line-clamp-1 inline-flex items-center gap-1.5">
                 <span className="truncate">{org.name}</span>
                 {org.verificationStatus === 'verified' && (
-                  <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                  <CheckCircle2 className="size-4 text-primary shrink-0" />
                 )}
               </h3>
             </Link>
@@ -136,36 +136,38 @@ const OrganizationCard = ({ org, isMember, onApply }) => {
               )}
           </p>
 
-          {/* Stat Badges Strip */}
-          <div className="grid grid-cols-3 gap-2 pt-3 border-t border-border/60 text-center">
-            <div className="bg-muted/30 dark:bg-muted/15 p-2 rounded-xl border border-border/30">
-              <p className="text-xs font-bold text-foreground flex items-center justify-center gap-1">
-                <Users className="size-3 text-primary" />
-                <span>{studentCount > 0 ? studentCount.toLocaleString() : '300+'}</span>
-              </p>
-              <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mt-0.5">
-                Students
-              </p>
-            </div>
+          {/* Micro Stats Row */}
+          <div className="mt-5 pt-4 border-t border-border/60">
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="bg-muted/30 dark:bg-muted/15 p-2 rounded-xl border border-border/30">
+                <p className="text-xs font-bold text-foreground flex items-center justify-center gap-1">
+                  <Users className="size-3 text-primary" />
+                  <span>{studentCount > 0 ? studentCount : '100+'}</span>
+                </p>
+                <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mt-0.5">
+                  Students
+                </p>
+              </div>
 
-            <div className="bg-muted/30 dark:bg-muted/15 p-2 rounded-xl border border-border/30">
-              <p className="text-xs font-bold text-foreground flex items-center justify-center gap-1">
-                <GraduationCap className="size-3 text-emerald-600 dark:text-emerald-400" />
-                <span>{tutorCount > 0 ? tutorCount : '15+'}</span>
-              </p>
-              <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mt-0.5">
-                Faculty
-              </p>
-            </div>
+              <div className="bg-muted/30 dark:bg-muted/15 p-2 rounded-xl border border-border/30">
+                <p className="text-xs font-bold text-foreground flex items-center justify-center gap-1">
+                  <GraduationCap className="size-3 text-primary" />
+                  <span>{tutorCount > 0 ? tutorCount : '15+'}</span>
+                </p>
+                <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mt-0.5">
+                  Faculty
+                </p>
+              </div>
 
-            <div className="bg-muted/30 dark:bg-muted/15 p-2 rounded-xl border border-border/30">
-              <p className="text-xs font-bold text-foreground flex items-center justify-center gap-1">
-                <Layers className="size-3 text-amber-500" />
-                <span>{classCount > 0 ? classCount : 'Active'}</span>
-              </p>
-              <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mt-0.5">
-                Programs
-              </p>
+              <div className="bg-muted/30 dark:bg-muted/15 p-2 rounded-xl border border-border/30">
+                <p className="text-xs font-bold text-foreground flex items-center justify-center gap-1">
+                  <Layers className="size-3 text-accent" />
+                  <span>{classCount > 0 ? classCount : 'Active'}</span>
+                </p>
+                <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mt-0.5">
+                  Programs
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -187,9 +189,9 @@ const OrganizationCard = ({ org, isMember, onApply }) => {
           variant="outline"
           size="sm"
           onClick={() => onApply(org)}
-          className="h-10 text-xs font-semibold px-4 rounded-xl border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/50 transition-all active:scale-98"
+          className="h-10 text-xs font-semibold px-4 rounded-xl border-border text-foreground hover:bg-muted hover:border-primary/40 transition-all active:scale-98"
         >
-          <Sparkles className="size-3 mr-1" />
+          <Sparkles className="size-3 mr-1 text-primary" />
           <span>{t('org.quick_apply', 'Apply')}</span>
         </Button>
       </div>

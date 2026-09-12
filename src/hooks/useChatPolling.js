@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../services/api';
 
 const useChatPolling = (user, dbUser, socket) => {
     const [conversations, setConversations] = useState([]);
     const [unreadTotal, setUnreadTotal] = useState(0);
-    const [pollingIntervalId, setPollingIntervalId] = useState(null);
 
     const fetchConversations = async () => {
         // Gate on dbUser, not the raw Firebase user: dbUser only resolves after
@@ -64,19 +63,30 @@ const useChatPolling = (user, dbUser, socket) => {
         setUnreadTotal(total);
     }, [conversations]);
 
-    const startMessagePolling = useCallback((conversationId) => {
-        if (pollingIntervalId?.stop) {
-            pollingIntervalId.stop();
+    const pollingRef = useRef(null);
+
+    const stopMessagePolling = useCallback(() => {
+        if (pollingRef.current) {
+            pollingRef.current.isCancelled = true;
+            clearTimeout(pollingRef.current.timeoutId);
+            pollingRef.current = null;
         }
+    }, []);
 
-        if (socket?.connected) return;
+    const startMessagePolling = useCallback((conversationId) => {
+        stopMessagePolling();
 
+        if (socket?.connected || !conversationId) return;
+
+        const state = { isCancelled: false, timeoutId: null };
+        pollingRef.current = state;
         let consecutiveEmpty = 0;
-        let timeoutId = null;
 
         const poll = async () => {
+            if (state.isCancelled) return;
             try {
                 const res = await api.get(`/api/messages/${conversationId}`);
+                if (state.isCancelled) return;
                 const msgs = Array.isArray(res.data) ? res.data : (res.data.messages || []);
                 
                 if (msgs.length > 0) {
@@ -92,23 +102,24 @@ const useChatPolling = (user, dbUser, socket) => {
             } catch (err) {
             }
 
+            if (state.isCancelled) return;
+
             // Adaptive interval: 5s when active, up to 30s when idle
             const interval = consecutiveEmpty === 0 
                 ? 5000 
                 : Math.min(30000, 5000 * Math.pow(1.5, consecutiveEmpty));
-            timeoutId = setTimeout(poll, interval);
+            state.timeoutId = setTimeout(poll, interval);
         };
 
         poll();
-        setPollingIntervalId({ timeoutId, stop: () => clearTimeout(timeoutId) });
-    }, [pollingIntervalId, socket]);
+    }, [socket, stopMessagePolling]);
 
-    const stopMessagePolling = useCallback(() => {
-        if (pollingIntervalId?.stop) {
-            pollingIntervalId.stop();
-            setPollingIntervalId(null);
-        }
-    }, [pollingIntervalId]);
+    // Unmount cleanup to prevent timer leaks
+    useEffect(() => {
+        return () => {
+            stopMessagePolling();
+        };
+    }, [stopMessagePolling]);
 
     return {
         conversations,

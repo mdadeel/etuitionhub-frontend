@@ -43,7 +43,7 @@ const TutorMobileActionBar = ({
             <button
               type="button"
               onClick={onRequireLogin}
-              className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95"
             >
               <Sparkles className="size-4" />
               <span>{t('tutorDetails.request_to_hire', 'Hire Tutor')}</span>
@@ -62,7 +62,7 @@ const TutorMobileActionBar = ({
             <button
               type="button"
               onClick={onShowStatusModal}
-              className="px-4 py-2.5 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="px-4 py-2.5 rounded-xl bg-success/15 text-success border border-success/30 text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95"
             >
               <CheckCircle2 className="size-4" />
               <span>{t('tutorDetails.sent', 'Request Sent')}</span>
@@ -81,7 +81,7 @@ const TutorMobileActionBar = ({
             <button
               type="button"
               onClick={onHireRequest}
-              className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95"
             >
               <Sparkles className="size-4" />
               <span>{t('tutorDetails.request_to_hire', 'Hire Tutor')}</span>

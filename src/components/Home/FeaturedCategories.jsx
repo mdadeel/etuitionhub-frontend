@@ -87,18 +87,18 @@ const categories = [
 const tagConfig = {
     "Most popular": { icon: Flame, className: "bg-success/10 text-success dark:text-success border-success/20" },
     Trending: { icon: TrendingUp, className: "bg-primary/10 text-primary dark:text-primary border-primary/20" },
-    "High demand": { icon: Star, className: "bg-muted/10 text-muted-foreground dark:text-muted-foreground border-slate-500/20" },
+    "High demand": { icon: Star, className: "bg-muted/50 text-muted-foreground border-border" },
 };
 
 const accentStyles = {
-    emerald: { text: "text-success dark:text-success", bg: "bg-success/10", border: "border-success/20", ring: "ring-success/20" },
-    blue: { text: "text-primary dark:text-primary", bg: "bg-primary/10", border: "border-primary/20", ring: "ring-primary/20" },
-    orange: { text: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", ring: "ring-orange-500/20" },
-    cyan: { text: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", ring: "ring-cyan-500/20" },
-    slate: { text: "text-muted-foreground dark:text-muted-foreground", bg: "bg-muted/10", border: "border-slate-500/20", ring: "ring-slate-500/20" },
-    teal: { text: "text-teal-600 dark:text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20", ring: "ring-teal-500/20" },
-    pink: { text: "text-pink-600 dark:text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20", ring: "ring-pink-500/20" },
-    rose: { text: "text-rose-600 dark:text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", ring: "ring-rose-500/20" },
+    emerald: { text: "text-success", bg: "bg-success/10", border: "border-success/20", ring: "ring-success/20" },
+    blue: { text: "text-primary", bg: "bg-primary/10", border: "border-primary/20", ring: "ring-primary/20" },
+    orange: { text: "text-warning", bg: "bg-warning/10", border: "border-warning/20", ring: "ring-warning/20" },
+    cyan: { text: "text-accent", bg: "bg-accent/15", border: "border-accent/25", ring: "ring-accent/20" },
+    slate: { text: "text-muted-foreground", bg: "bg-muted", border: "border-border", ring: "ring-border/30" },
+    teal: { text: "text-secondary-foreground", bg: "bg-secondary/15", border: "border-secondary/25", ring: "ring-secondary/20" },
+    pink: { text: "text-primary", bg: "bg-primary/10", border: "border-primary/20", ring: "ring-primary/20" },
+    rose: { text: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/20", ring: "ring-destructive/20" },
 };
 
 /* ---------- card (3×3 grid, compact) ---------- */

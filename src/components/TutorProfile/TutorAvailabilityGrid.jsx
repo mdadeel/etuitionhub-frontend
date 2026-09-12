@@ -51,7 +51,7 @@ const TutorAvailabilityGrid = ({ availableDays = [], location, thana }) => {
           {/* Home Tutoring */}
           <div className="p-4 rounded-xl border border-border/60 bg-muted/20 flex flex-col justify-between">
             <div className="space-y-2">
-              <div className="size-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <div className="size-8 rounded-lg bg-success/10 text-success flex items-center justify-center">
                 <Home className="size-4.5" />
               </div>
               <h3 className="text-sm font-semibold text-foreground">In-Person Home Visits</h3>
@@ -60,7 +60,7 @@ const TutorAvailabilityGrid = ({ availableDays = [], location, thana }) => {
                 <strong className="text-foreground">{thana || location?.split(',')[0] || 'designated area'}</strong>.
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-border/40 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+            <div className="mt-3 pt-2 border-t border-border/40 flex items-center gap-1.5 text-xs text-success font-medium">
               <CheckCircle className="size-3.5" />
               <span>Available</span>
             </div>
@@ -69,7 +69,7 @@ const TutorAvailabilityGrid = ({ availableDays = [], location, thana }) => {
           {/* Online Live */}
           <div className="p-4 rounded-xl border border-border/60 bg-muted/20 flex flex-col justify-between">
             <div className="space-y-2">
-              <div className="size-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+              <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
                 <Laptop className="size-4.5" />
               </div>
               <h3 className="text-sm font-semibold text-foreground">Online 1-on-1 Live</h3>
@@ -77,7 +77,7 @@ const TutorAvailabilityGrid = ({ availableDays = [], location, thana }) => {
                 High-definition live interactive sessions via Zoom/Meet with digital writing pad.
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-border/40 flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-medium">
+            <div className="mt-3 pt-2 border-t border-border/40 flex items-center gap-1.5 text-xs text-primary font-medium">
               <CheckCircle className="size-3.5" />
               <span>Available Nationwide</span>
             </div>
@@ -86,7 +86,7 @@ const TutorAvailabilityGrid = ({ availableDays = [], location, thana }) => {
           {/* Small Batch */}
           <div className="p-4 rounded-xl border border-border/60 bg-muted/20 flex flex-col justify-between">
             <div className="space-y-2">
-              <div className="size-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+              <div className="size-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
                 <Users className="size-4.5" />
               </div>
               <h3 className="text-sm font-semibold text-foreground">Batch & Coaching</h3>
@@ -94,7 +94,7 @@ const TutorAvailabilityGrid = ({ availableDays = [], location, thana }) => {
                 Focused small-group batches for board exam & competitive admissions prep.
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-border/40 flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400 font-medium">
+            <div className="mt-3 pt-2 border-t border-border/40 flex items-center gap-1.5 text-xs text-secondary font-medium">
               <CheckCircle className="size-3.5" />
               <span>Upon Request</span>
             </div>
@@ -123,14 +123,14 @@ const TutorAvailabilityGrid = ({ availableDays = [], location, thana }) => {
                 key={day}
                 className={`p-3 rounded-xl border text-center transition-all ${
                   available
-                    ? 'border-emerald-500/40 bg-emerald-500/10 dark:bg-emerald-950/20 text-foreground shadow-xs'
+                    ? 'border-success/40 bg-success/10 text-foreground shadow-xs'
                     : 'border-border/40 bg-muted/15 text-muted-foreground/50 opacity-60'
                 }`}
               >
                 <p className="text-xs font-semibold">{day.slice(0, 3)}</p>
                 <p className="text-[11px] mt-1 font-medium">
                   {available ? (
-                    <span className="text-emerald-700 dark:text-emerald-400">Available</span>
+                    <span className="text-success">Available</span>
                   ) : (
                     <span>Off</span>
                   )}

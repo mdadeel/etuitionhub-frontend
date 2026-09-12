@@ -6,26 +6,15 @@ import { logError } from '../utils/devLogger';
 
 const ChatContext = createContext();
 
-const defaultChatValue = {
-    socket: null,
-    conversations: [],
-    setConversations: () => {},
-    unreadTotal: 0,
-    fetchConversations: async () => {},
-    markAsRead: async () => {},
-    isFloatingOpen: false,
-    setIsFloatingOpen: () => {},
-    floatingActiveConv: null,
-    setFloatingActiveConv: () => {},
-    openChatWith: () => {},
-    onlineUsers: [],
-    typingUsers: new Map(),
-    startMessagePolling: () => {},
-    stopMessagePolling: () => {},
-};
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useChat = () => useContext(ChatContext) ?? defaultChatValue;
+export const useChat = () => {
+    const context = useContext(ChatContext);
+    if (!context) {
+        throw new Error('useChat must be used within a ChatProvider');
+    }
+    return context;
+};
 
 export const ChatProvider = ({ children }) => {
     const { user, dbUser } = useAuth();

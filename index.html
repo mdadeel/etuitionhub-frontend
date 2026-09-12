@@ -25,6 +25,21 @@
     }
   </script>
   <script>
+    // Auto-reload on stale chunk 404 after production deployments
+    window.addEventListener('error', function(e) {
+      var msg = (e && e.message) || '';
+      if (msg.indexOf('Failed to fetch dynamically imported module') !== -1 ||
+          msg.indexOf('Importing a module script failed') !== -1 ||
+          (e.target && e.target.tagName === 'SCRIPT' && e.target.src && e.target.src.indexOf('/assets/') !== -1)) {
+        var key = 'chunk_reload_' + (e.target ? e.target.src : 'mod');
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, '1');
+          window.location.reload();
+        }
+      }
+    }, true);
+  </script>
+  <script>
     (function() {
       try {
         var storedTheme = localStorage.getItem('theme');

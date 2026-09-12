@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { Trash2, RotateCcw, MailOpen, AlertCircle, MailPlus } from 'lucide-react';
 import api from '../../services/api';
@@ -23,6 +23,14 @@ const AdminContacts = () => {
         placeholderData: keepPreviousData,
     });
     const [deletedItems, setDeletedItems] = useState({});
+    const timersRef = useRef({});
+
+    useEffect(() => {
+        const timers = timersRef.current;
+        return () => {
+            Object.values(timers).forEach(clearTimeout);
+        };
+    }, []);
 
     const updateCachedContacts = (updater) => {
         queryClient.setQueryData(['admin', 'contacts'], (prev) => updater(Array.isArray(prev) ? prev : []));
@@ -42,7 +50,8 @@ const AdminContacts = () => {
     const handleDeleteIntent = (id) => {
         setDeletedItems(prev => ({ ...prev, [id]: true }));
 
-        const timer = setTimeout(async () => {
+        timersRef.current[id] = setTimeout(async () => {
+            delete timersRef.current[id];
             try {
                 await api.delete(`/api/contact/${id}`);
                 updateCachedContacts((prev) => prev.filter(c => c._id !== id));
@@ -55,17 +64,16 @@ const AdminContacts = () => {
                 return newState;
             });
         }, 30000);
-
-        setDeletedItems(prev => ({ ...prev, [`${id}_timer`]: timer }));
     };
 
     const undoDelete = (id) => {
-        const timerId = deletedItems[`${id}_timer`];
-        if (timerId) clearTimeout(timerId);
+        if (timersRef.current[id]) {
+            clearTimeout(timersRef.current[id]);
+            delete timersRef.current[id];
+        }
         setDeletedItems(prev => {
             const newState = { ...prev };
             delete newState[id];
-            delete newState[`${id}_timer`];
             return newState;
         });
         toast.success('Action undone');

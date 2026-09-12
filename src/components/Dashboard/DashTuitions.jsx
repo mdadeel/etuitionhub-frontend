@@ -51,7 +51,7 @@ const DashTuitions = () => {
         locationFilter
     });
 
-    const rawTuitions = Array.isArray(data) ? data : (data?.data || []);
+    const rawTuitions = useMemo(() => (Array.isArray(data) ? data : (data?.data || [])), [data]);
     const pagination = data?.pagination || {};
     const totalPages = pagination.totalPages ?? pagination.pages ?? 1;
     const totalTuitions = pagination.totalItems ?? pagination.total ?? rawTuitions.length;

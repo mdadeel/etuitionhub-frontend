@@ -47,7 +47,7 @@ const DashUsers = () => {
         locationFilter
     });
 
-    const users = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+    const users = useMemo(() => (Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : [])), [data]);
     const pagination = data?.pagination || {};
     const totalPages = pagination.totalPages ?? pagination.pages ?? 1;
     const totalUsers = pagination.totalItems ?? pagination.total ?? users.length;

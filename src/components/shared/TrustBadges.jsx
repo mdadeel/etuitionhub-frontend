@@ -19,41 +19,41 @@ const TrustBadges = ({ tutor, className, showExperience = true, showStatus = tru
   if (status === 'verified_basic') {
     items.push({
       key: 'status-basic',
-      icon: <CheckCircle2 className="size-3 text-blue-500 shrink-0" />,
+      icon: <CheckCircle2 className="size-3 text-primary shrink-0" />,
       label: 'Basic',
-      colorClass: 'text-blue-600 dark:text-blue-400 font-medium',
+      colorClass: 'text-primary font-medium',
       title: 'Basic Verified Tutor Profile',
     });
   } else if (status === 'verified_premium') {
     items.push({
       key: 'status-premium',
-      icon: <Award className="size-3 text-amber-500 shrink-0" />,
+      icon: <Award className="size-3 text-accent shrink-0" />,
       label: 'Premium',
-      colorClass: 'text-amber-600 dark:text-amber-400 font-semibold',
+      colorClass: 'text-accent-foreground font-semibold',
       title: 'Premium Verified Tutor Profile',
     });
   } else if (status === 'pending_review') {
     items.push({
       key: 'status-review',
-      icon: <Clock className="size-3 text-amber-500 shrink-0" />,
+      icon: <Clock className="size-3 text-warning shrink-0" />,
       label: 'Review',
-      colorClass: 'text-amber-600 dark:text-amber-400 font-medium',
+      colorClass: 'text-warning font-medium',
       title: 'Verification Pending Review',
     });
   } else if (status === 'unverified') {
     items.push({
       key: 'status-unverified',
-      icon: <AlertCircle className="size-3 text-slate-400 shrink-0" />,
+      icon: <AlertCircle className="size-3 text-muted-foreground shrink-0" />,
       label: 'None',
-      colorClass: 'text-slate-500 dark:text-slate-400 font-medium',
+      colorClass: 'text-muted-foreground font-medium',
       title: 'Unverified Tutor Profile',
     });
   } else if (!status && isSuperTutor) {
     items.push({
       key: 'super-tutor',
-      icon: <Award className="size-3 text-amber-500 shrink-0" />,
+      icon: <Award className="size-3 text-accent shrink-0" />,
       label: 'Super Tutor',
-      colorClass: 'text-amber-600 dark:text-amber-400 font-semibold',
+      colorClass: 'text-accent-foreground font-semibold',
       title: 'Super Tutor: Rated 4.9+ with 30+ verified reviews',
     });
   }
@@ -61,9 +61,9 @@ const TrustBadges = ({ tutor, className, showExperience = true, showStatus = tru
   if (isSeniorTutor) {
     items.push({
       key: 'senior-tutor',
-      icon: <Sparkles className="size-3 text-indigo-500 shrink-0" />,
+      icon: <Sparkles className="size-3 text-secondary-foreground shrink-0" />,
       label: `${expYears}+ Yrs Senior`,
-      colorClass: 'text-indigo-600 dark:text-indigo-400 font-medium',
+      colorClass: 'text-secondary-foreground font-medium',
       title: '5+ Years of professional tutoring experience',
     });
   }
@@ -71,9 +71,9 @@ const TrustBadges = ({ tutor, className, showExperience = true, showStatus = tru
   if (isNidVerified) {
     items.push({
       key: 'nid-verified',
-      icon: <ShieldCheck className="size-3 text-emerald-500 shrink-0" />,
+      icon: <ShieldCheck className="size-3 text-success shrink-0" />,
       label: 'NID Verified',
-      colorClass: 'text-emerald-600 dark:text-emerald-400 font-medium',
+      colorClass: 'text-success font-medium',
       title: 'National ID & identity documents verified',
     });
   }
@@ -81,18 +81,18 @@ const TrustBadges = ({ tutor, className, showExperience = true, showStatus = tru
   if (hasVerifiedReviews) {
     items.push({
       key: 'verified-reviews',
-      icon: <Star className="size-3 fill-sky-400 text-sky-500 shrink-0" />,
+      icon: <Star className="size-3 fill-accent text-accent shrink-0" />,
       label: `${tutor.verifiedReviewsCount} verified review${tutor.verifiedReviewsCount === 1 ? '' : 's'}`,
-      colorClass: 'text-sky-600 dark:text-sky-400 font-medium',
+      colorClass: 'text-foreground font-medium',
     });
   }
 
   if (tutor.freeDemoAvailable !== false) {
     items.push({
       key: 'free-demo',
-      icon: <Sparkles className="size-3 text-emerald-500 shrink-0" />,
+      icon: <Sparkles className="size-3 text-primary shrink-0" />,
       label: 'Free Demo',
-      colorClass: 'text-emerald-600 dark:text-emerald-400 font-semibold',
+      colorClass: 'text-primary font-semibold',
       title: 'Free 30-min trial session covered by 100% Parent Guarantee',
     });
   }

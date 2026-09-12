@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Trash2, RotateCcw, Bookmark, BookmarkCheck, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
@@ -14,11 +14,20 @@ const SavedSearchAlerts = () => {
     const queryClient = useQueryClient();
     const { data: alerts = [], isLoading: loading } = useSavedSearchAlertsQuery();
     const [deletedItems, setDeletedItems] = useState({});
+    const timersRef = useRef({});
+
+    useEffect(() => {
+        const timers = timersRef.current;
+        return () => {
+            Object.values(timers).forEach(clearTimeout);
+        };
+    }, []);
 
     const handleDeleteIntent = (id) => {
         setDeletedItems(prev => ({ ...prev, [id]: true }));
 
-        const timer = setTimeout(async () => {
+        timersRef.current[id] = setTimeout(async () => {
+            delete timersRef.current[id];
             try {
                 await api.delete(`/api/search-alerts/${id}`);
                 queryClient.invalidateQueries({ queryKey: ['search-alerts'] });
@@ -31,17 +40,16 @@ const SavedSearchAlerts = () => {
                 return newState;
             });
         }, 30000);
-
-        setDeletedItems(prev => ({ ...prev, [`${id}_timer`]: timer }));
     };
 
     const undoDelete = (id) => {
-        const timerId = deletedItems[`${id}_timer`];
-        if (timerId) clearTimeout(timerId);
+        if (timersRef.current[id]) {
+            clearTimeout(timersRef.current[id]);
+            delete timersRef.current[id];
+        }
         setDeletedItems(prev => {
             const newState = { ...prev };
             delete newState[id];
-            delete newState[`${id}_timer`];
             return newState;
         });
         toast.success('Action undone');

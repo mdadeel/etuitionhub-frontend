@@ -42,7 +42,7 @@ export default defineConfig({
       },
     }),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
         name: 'e-tuitionBD',
@@ -67,10 +67,9 @@ export default defineConfig({
         ]
       },
       workbox: {
-        // ponytail: app-shell-only precache — 453 lazy JS chunks (13MB) must not
-        // download on every fresh visit (BD low-bandwidth mandate); browser HTTP
-        // cache handles repeat loads. No /api runtime caching: StaleWhileRevalidate
-        // served stale lists after mutations and cached PII-bearing authed responses.
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         globPatterns: ['index.html', 'assets/*.css', 'manifest.webmanifest', 'favicon.ico', 'pwa-192x192.png', 'pwa-512x512.png'],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         runtimeCaching: [

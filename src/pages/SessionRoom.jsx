@@ -30,6 +30,7 @@ export default function SessionRoom() {
     const userVideo = useRef();
     const connectionRef = useRef();
     const socket = useRef();
+    const streamRef = useRef(null);
 
     useEffect(() => {
         const verifyBooking = async () => {
@@ -87,7 +88,7 @@ export default function SessionRoom() {
         });
 
         connectionRef.current = peer;
-    };
+    }
 
     useEffect(() => {
         // No WebRTC on Vercel (serverless, no persistent connections)
@@ -117,6 +118,7 @@ export default function SessionRoom() {
         const s = socket.current;
 
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((currentStream) => {
+            streamRef.current = currentStream;
             setStream(currentStream);
             if (myVideo.current) {
                 myVideo.current.srcObject = currentStream;
@@ -130,8 +132,11 @@ export default function SessionRoom() {
             });
 
             s.on('signal', (data) => {
-                // If we receive a signal from another user
-                if (!callAccepted) {
+                // Unified signal handler: forward to active peer, or queue for caller
+                if (connectionRef.current && !connectionRef.current.destroyed) {
+                    setCallAccepted(true);
+                    connectionRef.current.signal(data.signal);
+                } else if (!callAccepted) {
                     setReceivingCall(true);
                     setCallerSignal(data.signal);
                 }
@@ -149,17 +154,20 @@ export default function SessionRoom() {
                 s.off('chat-message');
                 s.disconnect();
             }
-            if (connectionRef.current) connectionRef.current.destroy();
-            if (stream) {
-                stream.getTracks().forEach(track => {
+            if (connectionRef.current) {
+                connectionRef.current.destroy();
+                connectionRef.current = null;
+            }
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => {
                     track.stop();
                     track.enabled = false;
                 });
+                streamRef.current = null;
             }
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [peerLibLoaded, bookingId, user, dbUser]);
-
 
 
     const answerCall = () => {
@@ -191,7 +199,17 @@ export default function SessionRoom() {
 
     const leaveCall = () => {
         setCallEnded(true);
-        if (connectionRef.current) connectionRef.current.destroy();
+        if (connectionRef.current) {
+            connectionRef.current.destroy();
+            connectionRef.current = null;
+        }
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => {
+                track.stop();
+                track.enabled = false;
+            });
+            streamRef.current = null;
+        }
         navigate(-1);
     };
 

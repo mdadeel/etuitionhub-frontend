@@ -14,10 +14,10 @@ import { Calendar, Clock, Video, MapPin, Loader2, Users } from 'lucide-react';
 // the schedule/complete flow, not here.
 const STATUS_CONFIG = {
   scheduled: { label: 'Scheduled', variant: 'outline', className: 'bg-primary/10 text-primary border-primary/20' },
-  in_progress: { label: 'In Progress', variant: 'outline', className: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
-  completed: { label: 'Completed', variant: 'outline', className: 'bg-green-500/10 text-green-600 border-green-500/20' },
-  cancelled: { label: 'Cancelled', variant: 'outline', className: 'bg-red-500/10 text-red-600 border-red-500/20' },
-  no_show: { label: 'No Show', variant: 'outline', className: 'bg-zinc-500/10 text-zinc-600 border-zinc-500/20' },
+  in_progress: { label: 'In Progress', variant: 'outline', className: 'bg-warning/10 text-warning border-warning/20' },
+  completed: { label: 'Completed', variant: 'outline', className: 'bg-success/10 text-success border-success/20' },
+  cancelled: { label: 'Cancelled', variant: 'outline', className: 'bg-destructive/10 text-destructive border-destructive/20' },
+  no_show: { label: 'No Show', variant: 'outline', className: 'bg-muted text-muted-foreground border-border' },
 };
 
 const TABS = [

@@ -119,7 +119,7 @@ const TutorReviewsSection = ({
                     <div>
                       <p className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                         <span>{reviewerName}</span>
-                        <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-success bg-success/10 px-1.5 py-0.5 rounded-full">
                           <ShieldCheck className="size-3" />
                           <span>Verified Student</span>
                         </span>

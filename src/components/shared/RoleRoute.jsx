@@ -15,6 +15,10 @@ const RoleRoute = ({ children, allowedRoles = [], allowedGlobalRoles = [], redir
 
   if (loading) return null;
 
+  if (!dbUser) {
+    return <Navigate to="/login" replace />;
+  }
+
   const userRole = dbUser?.role?.toLowerCase();
   const userGlobalRole = dbUser?.globalRole;
 

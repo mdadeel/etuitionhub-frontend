@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
-const SEO = ({ title, description, keywords }) => {
+const SEO = ({ title, description, keywords, noIndex = false, noindex = false }) => {
+    const shouldNoIndex = Boolean(noIndex || noindex);
     const siteName = "e-tuitionBD";
     // Production canonical domain — og:image must be an absolute public URL,
     // so it is pinned to the deployed origin rather than window.location
@@ -27,6 +28,7 @@ const SEO = ({ title, description, keywords }) => {
         <Helmet>
             <title>{fullTitle}</title>
             <link rel="canonical" href={canonical} />
+            {shouldNoIndex && <meta name="robots" content="noindex, nofollow" />}
             <meta name="description" content={description || defaultDescription} />
             {keywords && <meta name="keywords" content={keywords} />}
 

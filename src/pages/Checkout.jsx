@@ -25,11 +25,11 @@ import { Badge } from "@/components/ui/badge";
 import SEO from '@/components/shared/SEO';
 
 const PAYMENT_METHODS = [
-    { id: 'bkash_pg', name: 'bKash Gateway', color: 'bg-[#D12053]', badge: 'Instant ⚡' },
-    { id: 'sslcommerz', name: 'SSLCommerz (Cards/Internet Banking)', color: 'bg-[#0072BC]', badge: 'Instant ⚡' },
-    { id: 'bkash', name: 'bKash Manual', color: 'bg-[#D12053]', badge: 'Manual' },
-    { id: 'nagad', name: 'Nagad Manual', color: 'bg-[#F7941D]', badge: 'Manual' },
-    { id: 'rocket', name: 'Rocket', color: 'bg-[#8C3494]', badge: 'Manual' },
+    { id: 'bkash_pg', name: 'bKash Gateway', color: 'bg-primary', badge: 'Instant ⚡' },
+    { id: 'sslcommerz', name: 'SSLCommerz (Cards/Internet Banking)', color: 'bg-primary', badge: 'Instant ⚡' },
+    { id: 'bkash', name: 'bKash Manual', color: 'bg-primary', badge: 'Manual' },
+    { id: 'nagad', name: 'Nagad Manual', color: 'bg-warning', badge: 'Manual' },
+    { id: 'rocket', name: 'Rocket', color: 'bg-secondary', badge: 'Manual' },
     { id: 'bank', name: 'Bank Transfer', color: 'bg-primary', badge: 'Manual' }
 ];
 

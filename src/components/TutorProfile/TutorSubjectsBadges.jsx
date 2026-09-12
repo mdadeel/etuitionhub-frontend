@@ -4,18 +4,18 @@ import { useTranslation } from 'react-i18next';
 import { BookOpen, Layers, CheckCircle2 } from 'lucide-react';
 
 const SUBJECT_COLORS = {
-  math: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20',
-  mathematics: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20',
-  'higher math': 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/20',
-  physics: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20',
-  chemistry: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20',
-  biology: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
-  english: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20',
-  bangla: 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/20',
-  bengali: 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/20',
-  ict: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-500/20',
-  accounting: 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/20',
-  economics: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 border-yellow-500/20',
+  math: 'bg-primary/10 text-primary border-primary/20',
+  mathematics: 'bg-primary/10 text-primary border-primary/20',
+  'higher math': 'bg-primary/10 text-primary border-primary/20',
+  physics: 'bg-secondary/15 text-secondary-foreground border-secondary/25',
+  chemistry: 'bg-accent/15 text-accent-foreground border-accent/25',
+  biology: 'bg-success/10 text-success border-success/20',
+  english: 'bg-primary/10 text-primary border-primary/20',
+  bangla: 'bg-secondary/15 text-secondary-foreground border-secondary/25',
+  bengali: 'bg-secondary/15 text-secondary-foreground border-secondary/25',
+  ict: 'bg-accent/15 text-accent-foreground border-accent/25',
+  accounting: 'bg-warning/10 text-warning border-warning/20',
+  economics: 'bg-warning/10 text-warning border-warning/20',
 };
 
 const getSubjectClass = (subjectName) => {

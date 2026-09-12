@@ -192,7 +192,7 @@ const TutorProfileHeader = ({
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                 {t('tutorDetails.response_time', 'Response Time')}
               </p>
-              <p className="text-sm sm:text-base font-bold font-heading text-emerald-600 dark:text-emerald-400 mt-0.5">
+              <p className="text-sm sm:text-base font-bold font-heading text-success mt-0.5">
                 {tutor.responseTimeMinutes ? `< ${tutor.responseTimeMinutes} min` : '~1 Hour'}
               </p>
             </div>

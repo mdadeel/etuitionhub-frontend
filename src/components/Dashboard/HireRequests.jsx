@@ -214,12 +214,12 @@ const HireRequests = () => {
                       )}
 
                       {isCountered && (
-                        <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
-                          <p className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                        <div className="mt-2 p-2 bg-warning/10 border border-warning/20 rounded-lg">
+                          <p className="text-xs font-medium text-warning">
                             Original offer: ৳{req.proposedRate?.toLocaleString()} → Counter: ৳{req.counterRate?.toLocaleString()}/mo
                           </p>
                           {req.counterMessage && (
-                            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 italic">"{req.counterMessage}"</p>
+                            <p className="text-xs text-muted-foreground mt-1 italic">"{req.counterMessage}"</p>
                           )}
                         </div>
                       )}

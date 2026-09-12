@@ -22,11 +22,21 @@ const badgeSizes = {
   default: 'size-5',
 };
 
-const getFullUrl = (url) => {
+const getFullUrl = (url, size = 'md') => {
   if (!url || typeof url !== 'string') return url;
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-  if (url.startsWith('/')) return `${API_URL}${url}`;
-  return url;
+  let targetUrl = url;
+  if (url.startsWith('/')) targetUrl = `${API_URL}${url}`;
+
+  // Automatically optimize Cloudinary avatars to webp/auto, thumbnail crop, and max 128px
+  if (targetUrl.includes('res.cloudinary.com') && targetUrl.includes('/upload/')) {
+    const dim = size === 'xl' || size === 'lg' ? 128 : 96;
+    const transform = `c_thumb,w_${dim},h_${dim},q_auto,f_auto`;
+    if (!targetUrl.includes('c_thumb,') && !targetUrl.includes('w_')) {
+      targetUrl = targetUrl.replace('/upload/', `/upload/${transform}/`);
+    }
+  }
+
+  return targetUrl;
 };
 
 function Avatar({
