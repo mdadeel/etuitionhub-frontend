@@ -1,32 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, FileText, Upload, Download } from "lucide-react";
-import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 
 const OrgMaterials = () => {
   const { orgId } = useParams();
   const { hasPermission } = useAuth();
   const canUpload = hasPermission('material:upload');
-  const [materials, setMaterials] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: materials = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'materials');
 
   useEffect(() => {
-    const fetchMaterials = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/materials`);
-        setMaterials(res.data.data);
-      } catch {
-        toast.error("Failed to fetch materials");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMaterials();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch materials");
+  }, [isError]);
 
   return (
     <div className="space-y-6">

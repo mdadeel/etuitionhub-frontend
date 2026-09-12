@@ -1,29 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, Award } from "lucide-react";
-import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 
 const OrgScholarships = () => {
   const { orgId } = useParams();
-  const [scholarships, setScholarships] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: scholarships = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'scholarships');
 
   useEffect(() => {
-    const fetchScholarships = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/scholarships`);
-        setScholarships(res.data.data);
-      } catch {
-        toast.error("Failed to fetch scholarships");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchScholarships();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch scholarships");
+  }, [isError]);
 
   const getStatusColor = (s) => ({
     active: 'bg-green-100 text-green-700', paused: 'bg-yellow-100 text-yellow-700',

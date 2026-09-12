@@ -1,29 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, Megaphone, Pin, Calendar } from "lucide-react";
-import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 
 const OrgAnnouncements = () => {
   const { orgId } = useParams();
-  const [announcements, setAnnouncements] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: announcements = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'announcements');
 
   useEffect(() => {
-    const fetchAnnouncements = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/announcements`);
-        setAnnouncements(res.data.data);
-      } catch {
-        toast.error("Failed to fetch announcements");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAnnouncements();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch announcements");
+  }, [isError]);
 
   return (
     <div className="space-y-6">

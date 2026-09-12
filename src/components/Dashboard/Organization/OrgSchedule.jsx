@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -13,32 +15,36 @@ const DAYS = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'];
 
 const OrgSchedule = () => {
   const { orgId } = useParams();
-  const [timetable, setTimetable] = useState({});
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  // ponytail: only the timetable list is cached via TanStack Query; the
+  // tutors/subjects-list fetches stay raw because they feed <select>
+  // options (not the list) and have different consumers/refresh needs.
+  const { data: timetable = {}, isLoading: loading, isError } = useOrgListQuery(orgId, 'schedules/timetable');
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ tutorId: '', dayOfWeek: 'sat', startTime: '', endTime: '', room: '', subjectId: '' });
   const [tutors, setTutors] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const [scheduleRes, tutorsRes, subjectsRes] = await Promise.all([
-        api.get(`/api/v1/organizations/${orgId}/schedules/timetable`),
-        api.get(`/api/v1/organizations/${orgId}/tutors`),
-        api.get(`/api/v1/organizations/${orgId}/subjects-list`)
-      ]);
-      setTimetable(scheduleRes.data.data);
-      setTutors(tutorsRes.data.data);
-      setSubjects(subjectsRes.data.data);
-    } catch {
-      toast.error("Failed to fetch schedule");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
+  useEffect(() => {
+    if (isError) toast.error("Failed to fetch schedule");
+  }, [isError]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [tutorsRes, subjectsRes] = await Promise.all([
+          api.get(`/api/v1/organizations/${orgId}/tutors`),
+          api.get(`/api/v1/organizations/${orgId}/subjects-list`)
+        ]);
+        setTutors(tutorsRes.data.data);
+        setSubjects(subjectsRes.data.data);
+      } catch {
+        toast.error("Failed to fetch schedule");
+      }
+    };
+    if (orgId) fetchOptions();
+  }, [orgId]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -48,7 +54,7 @@ const OrgSchedule = () => {
       toast.success("Schedule created");
       setShowCreate(false);
       setForm({ tutorId: '', dayOfWeek: 'sat', startTime: '', endTime: '', room: '', subjectId: '' });
-      fetchData();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'schedules/timetable'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to create schedule");
     } finally {

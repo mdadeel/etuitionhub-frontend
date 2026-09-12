@@ -1,25 +1,31 @@
-import { useEffect, useState, useMemo } from 'react';
-import api from '../../services/api';
+import { useState, useMemo } from 'react';
+import { useTutorSessionsQuery } from '@/hooks/queries/useTutorQuery';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSkeleton, LineSkeleton } from "@/components/shared/skeletons";
 import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
-import toast from 'react-hot-toast';
 import { Calendar, Clock, Video, MapPin, Loader2, Users } from 'lucide-react';
 
+// Batch 1 (audit Exec #4): status vocabulary aligned to the backend Session
+// model (scheduled/in_progress/completed/cancelled/no_show). There is no
+// tutor-side accept/decline endpoint (confirm/dispute are student-only), so
+// the dead Confirm/Decline block was removed — tutors manage sessions via
+// the schedule/complete flow, not here.
 const STATUS_CONFIG = {
-  pending: { label: 'Pending', variant: 'outline', className: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
-  accepted: { label: 'Confirmed', variant: 'outline', className: 'bg-green-500/10 text-green-600 border-green-500/20' },
-  completed: { label: 'Completed', variant: 'outline', className: 'bg-primary/10 text-primary border-primary/20' },
+  scheduled: { label: 'Scheduled', variant: 'outline', className: 'bg-primary/10 text-primary border-primary/20' },
+  in_progress: { label: 'In Progress', variant: 'outline', className: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
+  completed: { label: 'Completed', variant: 'outline', className: 'bg-green-500/10 text-green-600 border-green-500/20' },
   cancelled: { label: 'Cancelled', variant: 'outline', className: 'bg-red-500/10 text-red-600 border-red-500/20' },
+  no_show: { label: 'No Show', variant: 'outline', className: 'bg-zinc-500/10 text-zinc-600 border-zinc-500/20' },
 };
 
 const TABS = [
   { key: 'all', label: 'All' },
-  { key: 'pending', label: 'Pending' },
-  { key: 'accepted', label: 'Confirmed' },
+  { key: 'scheduled', label: 'Scheduled' },
+  { key: 'in_progress', label: 'In Progress' },
   { key: 'completed', label: 'Completed' },
+  { key: 'cancelled', label: 'Cancelled' },
 ];
 
 function SessionCardSkeleton() {
@@ -39,23 +45,8 @@ function SessionCardSkeleton() {
 }
 
 export default function TutorSessions() {
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: sessions = [], isLoading: loading } = useTutorSessionsQuery('tutor');
   const [tab, setTab] = useState('all');
-
-  useEffect(() => {
-    const fetchSessions = async () => {
-      try {
-        const res = await api.get('/api/sessions', { params: { scope: 'tutor' } });
-        setSessions(res.data.data || res.data || []);
-      } catch {
-        toast.error('Failed to load sessions');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSessions();
-  }, []);
 
   const filtered = useMemo(() => {
     if (tab === 'all') return sessions;
@@ -64,9 +55,10 @@ export default function TutorSessions() {
 
   const counts = useMemo(() => ({
     all: sessions.length,
-    pending: sessions.filter(s => s.status === 'pending').length,
-    accepted: sessions.filter(s => s.status === 'accepted').length,
+    scheduled: sessions.filter(s => s.status === 'scheduled').length,
+    in_progress: sessions.filter(s => s.status === 'in_progress').length,
     completed: sessions.filter(s => s.status === 'completed').length,
+    cancelled: sessions.filter(s => s.status === 'cancelled').length,
   }), [sessions]);
 
   if (loading) {
@@ -127,7 +119,7 @@ export default function TutorSessions() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map(session => {
-            const statusConfig = STATUS_CONFIG[session.status] || STATUS_CONFIG.pending;
+            const statusConfig = STATUS_CONFIG[session.status] || STATUS_CONFIG.scheduled;
             return (
               <Card key={session._id} className="p-5 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between mb-3">
@@ -163,17 +155,6 @@ export default function TutorSessions() {
                     </div>
                   )}
                 </div>
-
-                {session.status === 'pending' && (
-                  <div className="mt-4 pt-3 border-t border-border flex gap-2">
-                    <button className="flex-1 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors">
-                      Confirm
-                    </button>
-                    <button className="px-3 py-1.5 text-xs text-muted-foreground hover:text-red-500 border border-border rounded-lg hover:bg-red-500/5 transition-colors">
-                      Decline
-                    </button>
-                  </div>
-                )}
               </Card>
             );
           })}

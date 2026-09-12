@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, AlertTriangle, Users } from "lucide-react";
 import api from "../../services/api";
@@ -13,14 +14,19 @@ import { WEEKDAYS, DAYS_IN_GRID, dayKey, monthStart, monthEnd, buildGridDays, gr
 const SessionCalendar = () => {
   const navigate = useNavigate();
   const [cursor, setCursor] = useState(() => monthStart(new Date()));
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const fetchSessions = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
+  // Batch 4b: cached month query — rapid month flips cancel via signal and
+  // keepPreviousData holds the old grid instead of flashing a skeleton.
+  const monthKey = `${cursor.getFullYear()}-${cursor.getMonth()}`;
+  const {
+    data: sessions = [],
+    isLoading,
+    isError,
+    error: queryError,
+    refetch,
+  } = useQuery({
+    queryKey: ["sessions", "calendar", monthKey],
+    queryFn: async ({ signal }) => {
       const res = await api.get("/api/sessions", {
         params: {
           status: "scheduled",
@@ -28,19 +34,18 @@ const SessionCalendar = () => {
           endDate: monthEnd(cursor).toISOString(),
           limit: 100,
         },
+        signal,
       });
-      setSessions(res.data?.data || res.data || []);
-    } catch (err) {
-      console.error("Failed to load calendar sessions", err);
-      setError(err.response?.data?.error || "Could not load your session calendar");
-    } finally {
-      setLoading(false);
-    }
-  }, [cursor]);
+      return res.data?.data || res.data || [];
+    },
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
 
-  useEffect(() => {
-    fetchSessions();
-  }, [fetchSessions]);
+  const loading = isLoading;
+  const error = isError
+    ? queryError?.response?.data?.error || "Could not load your session calendar"
+    : null;
 
   const byDay = useMemo(() => groupByDay(sessions), [sessions]);
 
@@ -130,7 +135,7 @@ const SessionCalendar = () => {
           <AlertTriangle className="size-8 text-destructive mx-auto mb-3" />
           <p className="text-sm font-semibold text-foreground">Could not load your calendar</p>
           <p className="text-xs text-muted-foreground mt-1">{error}</p>
-          <Button variant="primary" size="sm" className="mt-4 rounded-lg" onClick={fetchSessions}>
+          <Button variant="primary" size="sm" className="mt-4 rounded-lg" onClick={() => refetch()}>
             Retry
           </Button>
         </Card>

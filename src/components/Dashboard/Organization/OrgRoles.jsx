@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
@@ -30,8 +32,8 @@ const PERMISSION_GROUPS = {
 
 const OrgRoles = () => {
   const { orgId } = useParams();
-  const [roles, setRoles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: roles = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'roles');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
 
@@ -43,21 +45,9 @@ const OrgRoles = () => {
   const [expandedGroups, setExpandedGroups] = useState({});
   const [saving, setSaving] = useState(false);
 
-  const fetchRoles = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/api/v1/organizations/${orgId}/roles`);
-      setRoles(res.data.data);
-    } catch {
-      toast.error("Failed to load roles");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
-
   useEffect(() => {
-    fetchRoles();
-  }, [fetchRoles]);
+    if (isError) toast.error("Failed to load roles");
+  }, [isError]);
 
   const toggleGroup = (group) => {
     setExpandedGroups((prev) => ({ ...prev, [group]: !prev[group] }));
@@ -118,7 +108,7 @@ const OrgRoles = () => {
         toast.success("Role created");
       }
       setShowCreateModal(false);
-      fetchRoles();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'roles'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to save role");
     } finally {
@@ -135,7 +125,7 @@ const OrgRoles = () => {
     try {
       await api.delete(`/api/v1/organizations/${orgId}/roles/${role._id}`);
       toast.success("Role deleted");
-      fetchRoles();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'roles'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to delete role");
     }

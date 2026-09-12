@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Users, BookOpen, Calendar, CheckCircle2, Hash, Layers } from "lucide-react";
-import api from "../../../services/api";
+import { useOrgAcademicTabQuery } from "@/hooks/queries/useOrgQuery";
 import { useParams, useSearchParams } from "react-router-dom";
-import toast from "react-hot-toast";
 import { useAuth } from "../../../contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -21,81 +20,23 @@ const OrgAcademicSetup = () => {
   const { hasPermission } = useAuth();
   const canManage = hasPermission('class:manage');
 
-  // Classes state
-  const [classes, setClasses] = useState([]);
-  const [classesLoading, setClassesLoading] = useState(true);
+  // Lazy tab data query — background tabs DO NOT fetch until selected
+  const { data: tabData = [], isLoading: tabLoading } = useOrgAcademicTabQuery(orgId, activeTab);
 
-  // Subjects state
-  const [subjects, setSubjects] = useState([]);
-  const [subjectsLoading, setSubjectsLoading] = useState(false);
+  const classes = activeTab === 'classes' ? tabData : [];
+  const subjects = activeTab === 'subjects' ? tabData : [];
+  const years = activeTab === 'years' ? tabData : [];
+  const batches = activeTab === 'batches' ? tabData : [];
 
-  // Years state
-  const [years, setYears] = useState([]);
-  const [yearsLoading, setYearsLoading] = useState(false);
-
-  // Batches state
-  const [batches, setBatches] = useState([]);
-  const [batchesLoading, setBatchesLoading] = useState(false);
+  const classesLoading = activeTab === 'classes' && tabLoading;
+  const subjectsLoading = activeTab === 'subjects' && tabLoading;
+  const yearsLoading = activeTab === 'years' && tabLoading;
+  const batchesLoading = activeTab === 'batches' && tabLoading;
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     setSearchParams({ tab: tabId }, { replace: true });
   };
-
-  const fetchClasses = useCallback(async () => {
-    setClassesLoading(true);
-    try {
-      const res = await api.get(`/api/v1/organizations/${orgId}/classes`);
-      setClasses(res.data.data || []);
-    } catch {
-      toast.error("Failed to fetch classes");
-    } finally {
-      setClassesLoading(false);
-    }
-  }, [orgId]);
-
-  const fetchSubjects = useCallback(async () => {
-    setSubjectsLoading(true);
-    try {
-      const res = await api.get(`/api/v1/organizations/${orgId}/subjects-list`);
-      setSubjects(res.data.data || []);
-    } catch {
-      toast.error("Failed to fetch subjects");
-    } finally {
-      setSubjectsLoading(false);
-    }
-  }, [orgId]);
-
-  const fetchYears = useCallback(async () => {
-    setYearsLoading(true);
-    try {
-      const res = await api.get(`/api/v1/organizations/${orgId}/academic-years`);
-      setYears(res.data.data || []);
-    } catch {
-      toast.error("Failed to fetch academic years");
-    } finally {
-      setYearsLoading(false);
-    }
-  }, [orgId]);
-
-  const fetchBatches = useCallback(async () => {
-    setBatchesLoading(true);
-    try {
-      const res = await api.get(`/api/v1/organizations/${orgId}/batches`);
-      setBatches(res.data.data || []);
-    } catch {
-      toast.error("Failed to fetch batches");
-    } finally {
-      setBatchesLoading(false);
-    }
-  }, [orgId]);
-
-  useEffect(() => {
-    if (activeTab === "classes") fetchClasses();
-    else if (activeTab === "subjects") fetchSubjects();
-    else if (activeTab === "years") fetchYears();
-    else if (activeTab === "batches") fetchBatches();
-  }, [activeTab, fetchClasses, fetchSubjects, fetchYears, fetchBatches]);
 
   const getStatusBadge = (status) => {
     const map = {

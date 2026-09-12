@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
+import { usePendingVerificationsQuery } from '@/hooks/queries/useAdminQuery';
 import { CheckCircle, ExternalLink, ShieldAlert, Sparkles, AlertTriangle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,25 +13,9 @@ import { cn } from '@/lib/utils';
 import { useAppMutation } from '../../hooks/queries/useAppMutation';
 
 const AdminVerifications = () => {
-    const [pendingUsers, setPendingUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const { data: pendingUsers = [], isLoading: loading } = usePendingVerificationsQuery();
     const [extractions, setExtractions] = useState({});
-
-    const fetchPendingVerifications = async () => {
-        try {
-            const res = await api.get('/api/users?verificationStatus=pending_review&limit=50');
-            setPendingUsers(res.data.data || []);
-        } catch (error) {
-            console.error('Failed to fetch pending verifications', error);
-            toast.error('Could not load pending verifications');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchPendingVerifications();
-    }, []);
 
     const aiExtractMutation = useAppMutation({
         mutationFn: ({ vid }) => api.post(`/api/v1/verifications/${vid}/ai-extract`),
@@ -64,9 +50,9 @@ const AdminVerifications = () => {
             ]);
         },
         successMessage: false,
-        onSuccess: (_, { userId, action }) => {
+        onSuccess: (_, { action }) => {
             toast.success(`User ${action}d successfully`);
-            setPendingUsers((prev) => prev.filter((u) => u._id !== userId));
+            queryClient.invalidateQueries({ queryKey: ['admin', 'verifications', 'pending'] });
         },
         errorTitle: 'Verification failed',
     });

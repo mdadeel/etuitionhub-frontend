@@ -1,52 +1,51 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { CheckCircle, XCircle, Clock, AlertTriangle, User } from 'lucide-react';
 import api from '../../services/api';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 import { useAppMutation } from '../../hooks/queries/useAppMutation';
 
 const SessionConfirmationList = () => {
-    const [sessions, setSessions] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [disputeReason, setDisputeReason] = useState('');
     const [showDisputeFor, setShowDisputeFor] = useState(null);
+
+    // Batch 6: ?studentStatus= is now filtered server-side (was a full
+    // scheduled-list download + client filter).
+    const { data: sessions = [], isLoading: loading } = useQuery({
+        queryKey: ['sessions', 'pending-confirm'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get('/api/sessions', { params: { status: 'scheduled', studentStatus: 'pending', limit: 50 }, signal });
+            const list = res.data?.data || res.data || [];
+            return Array.isArray(list) ? list : [];
+        },
+        staleTime: 30_000,
+        placeholderData: keepPreviousData,
+    });
+
+    const refreshSessions = () => {
+        queryClient.invalidateQueries({ queryKey: ['sessions', 'pending-confirm'] });
+    };
 
     const confirmMutation = useAppMutation({
         mutationFn: (sessionId) => api.patch(`/api/sessions/${sessionId}/confirm`),
         successMessage: 'Session confirmed',
-        onSuccess: (_, sessionId) => setSessions((prev) => prev.filter((s) => s._id !== sessionId)),
+        onSuccess: () => refreshSessions(),
     });
 
     const disputeMutation = useAppMutation({
         mutationFn: ({ sessionId, reason }) => api.patch(`/api/sessions/${sessionId}/dispute`, { reason }),
         successMessage: 'Session disputed',
-        onSuccess: (_, { sessionId }) => {
-            setSessions((prev) => prev.filter((s) => s._id !== sessionId));
+        onSuccess: () => {
+            refreshSessions();
             setDisputeReason('');
             setShowDisputeFor(null);
         },
     });
-
-    const fetchSessions = useCallback(async () => {
-        try {
-            const res = await api.get('/api/sessions', { params: { status: 'scheduled', limit: 50 } });
-            const pendingSessions = (res.data || []).filter(s => s.studentStatus === 'pending');
-            setSessions(pendingSessions);
-        } catch (error) {
-            console.error('Failed to fetch sessions', error);
-            toast.error('Could not load sessions');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchSessions();
-    }, [fetchSessions]);
 
     const [now, setNow] = useState(() => Date.now());
 

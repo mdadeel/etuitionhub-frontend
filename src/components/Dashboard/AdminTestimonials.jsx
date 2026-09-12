@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { Plus, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api';
@@ -19,8 +20,6 @@ import DashboardPageHeader from '../shared/DashboardPageHeader';
 
 const AdminTestimonials = () => {
   const { t } = useTranslation();
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
@@ -35,21 +34,17 @@ const AdminTestimonials = () => {
     featured: false,
   });
 
-  const fetchTestimonials = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/api/testimonials?limit=50');
-      setTestimonials(res.data?.data || res.data || []);
-    } catch {
-      toast.error(t('admin.testimonials.load_failed'));
-    } finally {
-      setLoading(false);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    fetchTestimonials();
-  }, [fetchTestimonials]);
+  const queryClient = useQueryClient();
+  // Batch 4c: cached, cancellable list fetch (signal cancels on unmount).
+  const { data: testimonials = [], isLoading: loading } = useQuery({
+    queryKey: ['admin', 'testimonials'],
+    queryFn: async ({ signal }) => {
+      const res = await api.get('/api/testimonials?limit=50', { signal });
+      return res.data?.data || res.data || [];
+    },
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,7 +55,7 @@ const AdminTestimonials = () => {
       toast.success(t('admin.testimonials.created'));
       setShowModal(false);
       setForm({ name: '', role: '', school: '', location: '', quote: '', photoURL: '', videoURL: '', rating: 5, featured: false });
-      fetchTestimonials();
+      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] });
     } catch (err) {
       toast.error(err.response?.data?.error || t('admin.testimonials.create_failed'));
     } finally {

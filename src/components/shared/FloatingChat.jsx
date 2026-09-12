@@ -61,6 +61,8 @@ const FloatingChat = () => {
     const [replyingToMessage, setReplyingToMessage] = useState(null);
     const [editingMessage, setEditingMessage] = useState(null);
     const messagesEndRef = useRef(null);
+    // Batch 4e: abort stale history fetches on fast conversation switches.
+    const fetchAbortRef = useRef(null);
 
     const scrollToBottom = useCallback(() => {
         setTimeout(() => {
@@ -76,10 +78,17 @@ const FloatingChat = () => {
         if (!append && socket) {
             socket.emit('join-room', floatingActiveConv._id);
         }
+        // A fresh (non-append) load supersedes any in-flight history fetch.
+        let signal;
+        if (!append) {
+            fetchAbortRef.current?.abort();
+            fetchAbortRef.current = new AbortController();
+            signal = fetchAbortRef.current.signal;
+        }
         try {
             const params = new URLSearchParams({ limit: '50' });
             if (cursor) params.set('cursor', cursor);
-            const res = await api.get(`/api/messages/${floatingActiveConv._id}?${params.toString()}`);
+            const res = await api.get(`/api/messages/${floatingActiveConv._id}?${params.toString()}`, { signal });
             const msgs = Array.isArray(res.data) ? res.data : (res.data.messages || []);
             const filtered = msgs.filter(m => m && m.text);
             if (append) setMessages(prev => [...filtered, ...prev]);
@@ -91,6 +100,7 @@ const FloatingChat = () => {
                 if (floatingActiveConv.unreadCount > 0) markAsRead(floatingActiveConv._id);
             }
         } catch (err) {
+            if (err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError' || err?.name === 'AbortError') return;
             if (!append) setError(err?.response?.data?.error || err?.response?.data?.message || 'Failed to load messages');
             console.error('Error fetching messages:', err);
         } finally {
@@ -103,6 +113,7 @@ const FloatingChat = () => {
     useEffect(() => {
         if (!floatingActiveConv) return;
         fetchMessages();
+        return () => { fetchAbortRef.current?.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [floatingActiveConv]);
 

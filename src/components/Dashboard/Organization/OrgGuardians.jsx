@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -11,24 +13,15 @@ import toast from "react-hot-toast";
 
 const OrgGuardians = () => {
   const { orgId } = useParams();
-  const [guardians, setGuardians] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: guardians = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'guardians');
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', email: '', relationship: 'parent' });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchGuardians = useCallback(async () => {
-    try {
-      const res = await api.get(`/api/v1/organizations/${orgId}/guardians`);
-      setGuardians(res.data.data);
-    } catch {
-      toast.error("Failed to fetch guardians");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
-
-  useEffect(() => { fetchGuardians(); }, [fetchGuardians]);
+  useEffect(() => {
+    if (isError) toast.error("Failed to fetch guardians");
+  }, [isError]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -38,7 +31,7 @@ const OrgGuardians = () => {
       toast.success("Guardian added");
       setShowCreate(false);
       setForm({ name: '', phone: '', email: '', relationship: 'parent' });
-      fetchGuardians();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'guardians'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to add guardian");
     } finally {
@@ -51,7 +44,7 @@ const OrgGuardians = () => {
     try {
       await api.delete(`/api/v1/organizations/${orgId}/guardians/${guardianId}`);
       toast.success("Guardian removed");
-      fetchGuardians();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'guardians'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to remove guardian");
     }

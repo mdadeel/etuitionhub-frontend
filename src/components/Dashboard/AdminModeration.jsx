@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
+import { useAdminTutorsModerationQuery } from '@/hooks/queries/useAdminQuery';
 import { CheckCircle, XCircle, RefreshCw, ShieldAlert, ExternalLink } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
@@ -16,45 +17,31 @@ const TABS = [
 ];
 
 const AdminModeration = () => {
+    const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState('pending');
-    const [tutors, setTutors] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data: tutors = [], isLoading: loading } = useAdminTutorsModerationQuery(activeTab);
 
-    const fetchTutors = async (tab) => {
-        setLoading(true);
-        try {
-            const endpoint = tab === 'pending' ? '/api/admin/tutors/pending' : '/api/admin/tutors/approved';
-            const res = await api.get(endpoint);
-            setTutors(res.data.data || []);
-        } catch (error) {
-            console.error('Failed to fetch tutors', error);
-            toast.error('Could not load tutors');
-        } finally {
-            setLoading(false);
-        }
+    const invalidateModeration = () => {
+        queryClient.invalidateQueries({ queryKey: ['admin', 'tutors', 'moderation'] });
     };
-
-    useEffect(() => {
-        fetchTutors(activeTab);
-    }, [activeTab]);
 
     const approveMutation = useAppMutation({
         mutationFn: (tutorId) => api.post(`/api/admin/tutors/${tutorId}/approve`),
         successMessage: 'Tutor approved',
-        onSuccess: (_, tutorId) => setTutors((prev) => prev.filter((t) => t._id !== tutorId)),
+        onSuccess: invalidateModeration,
     });
 
     const rejectMutation = useAppMutation({
         mutationFn: ({ tutorId, reason }) => api.post(`/api/admin/tutors/${tutorId}/reject`, { reason }),
         successMessage: 'Tutor rejected',
-        onSuccess: (_, { tutorId }) => setTutors((prev) => prev.filter((t) => t._id !== tutorId)),
+        onSuccess: invalidateModeration,
     });
 
     const resubmitMutation = useAppMutation({
         mutationFn: ({ tutorId, reason }) =>
             api.post(`/api/admin/tutors/${tutorId}/request-resubmission`, { reason }),
         successMessage: 'Resubmission requested',
-        onSuccess: (_, { tutorId }) => setTutors((prev) => prev.filter((t) => t._id !== tutorId)),
+        onSuccess: invalidateModeration,
     });
 
     const handleAction = (tutorId, action) => {

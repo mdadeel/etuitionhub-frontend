@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Users, GraduationCap, BookOpen, TrendingUp, DollarSign, BarChart3, Building2 } from "lucide-react";
 import api from "../../../services/api";
@@ -9,39 +10,30 @@ const EMPTY_BRANCH_ROWS = { branches: [], unassigned: null };
 
 const OrgAnalytics = () => {
   const { orgId } = useParams();
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [branchRows, setBranchRows] = useState(EMPTY_BRANCH_ROWS);
-  const [branchLoading, setBranchLoading] = useState(true);
-  const [branchError, setBranchError] = useState(false);
+  const { data, isLoading: loading, isError } = useQuery({
+    queryKey: ['org', orgId, 'analytics'],
+    queryFn: async ({ signal }) => {
+      const dashboardRes = await api.get(`/api/v1/organizations/${orgId}/analytics/dashboard`, { signal });
+      const branchRes = await api.get(`/api/v1/organizations/${orgId}/analytics/branches`, { signal }).catch(() => null);
+      return {
+        stats: dashboardRes.data.data,
+        branchRows: branchRes?.data?.data ?? EMPTY_BRANCH_ROWS,
+        branchError: !branchRes,
+      };
+    },
+    enabled: Boolean(orgId),
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
+  });
+
+  const stats = data?.stats ?? null;
+  const branchRows = data?.branchRows ?? EMPTY_BRANCH_ROWS;
+  const branchError = data?.branchError ?? false;
+  const branchLoading = loading;
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/analytics/dashboard`);
-        setStats(res.data.data);
-      } catch {
-        toast.error("Failed to fetch analytics");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, [orgId]);
-
-  useEffect(() => {
-    const fetchBranchStats = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/analytics/branches`);
-        setBranchRows(res.data.data);
-      } catch {
-        setBranchError(true);
-      } finally {
-        setBranchLoading(false);
-      }
-    };
-    fetchBranchStats();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch analytics");
+  }, [isError]);
 
   if (loading) {
     return (

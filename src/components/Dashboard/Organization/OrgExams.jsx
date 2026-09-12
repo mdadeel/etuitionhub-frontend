@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -11,24 +13,15 @@ import toast from "react-hot-toast";
 
 const OrgExams = () => {
   const { orgId } = useParams();
-  const [exams, setExams] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: exams = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'exams');
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', examDate: '', startTime: '', endTime: '', totalMarks: 100, passingMarks: 40, examType: 'other' });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchExams = useCallback(async () => {
-    try {
-      const res = await api.get(`/api/v1/organizations/${orgId}/exams`);
-      setExams(res.data.data);
-    } catch {
-      toast.error("Failed to fetch exams");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
-
-  useEffect(() => { fetchExams(); }, [fetchExams]);
+  useEffect(() => {
+    if (isError) toast.error("Failed to fetch exams");
+  }, [isError]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -38,7 +31,7 @@ const OrgExams = () => {
       toast.success("Exam created");
       setShowCreate(false);
       setForm({ title: '', description: '', examDate: '', startTime: '', endTime: '', totalMarks: 100, passingMarks: 40, examType: 'other' });
-      fetchExams();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'exams'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to create exam");
     } finally {

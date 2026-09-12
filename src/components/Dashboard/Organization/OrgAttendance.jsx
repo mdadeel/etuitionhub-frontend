@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Calendar, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
@@ -11,30 +12,28 @@ const OrgAttendance = () => {
   const { orgId } = useParams();
   const { hasPermission } = useAuth();
   const canMark = hasPermission('attendance:mark');
-  const [summary, setSummary] = useState(null);
-  const [lowAttendance, setLowAttendance] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const { data, isLoading: loading, isError } = useQuery({
+    queryKey: ['org', orgId, 'attendance', date],
+    queryFn: async ({ signal }) => {
+      const [summaryRes, lowRes] = await Promise.all([
+        api.get(`/api/v1/organizations/${orgId}/attendance/summary`, {
+          signal, params: { startDate: date, endDate: date }
+        }),
+        api.get(`/api/v1/organizations/${orgId}/attendance/low`, { signal }).catch(() => ({ data: { data: [] } }))
+      ]);
+      return { summary: summaryRes.data.data, lowAttendance: lowRes.data.data || [] };
+    },
+    enabled: Boolean(orgId && date),
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
+  });
+  const summary = data?.summary ?? null;
+  const lowAttendance = data?.lowAttendance ?? [];
 
   useEffect(() => {
-    const fetchAttendance = async () => {
-      try {
-        const [summaryRes, lowRes] = await Promise.all([
-          api.get(`/api/v1/organizations/${orgId}/attendance/summary`, {
-            params: { startDate: date, endDate: date }
-          }),
-          api.get(`/api/v1/organizations/${orgId}/attendance/low`).catch(() => ({ data: { data: [] } }))
-        ]);
-        setSummary(summaryRes.data.data);
-        setLowAttendance(lowRes.data.data || []);
-      } catch {
-        toast.error("Failed to fetch attendance");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAttendance();
-  }, [orgId, date]);
+    if (isError) toast.error("Failed to fetch attendance");
+  }, [isError]);
 
   return (
     <div className="space-y-6">

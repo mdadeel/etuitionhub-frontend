@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import api from "../../../services/api";
-import { toast } from "react-hot-toast";
 import {
   DollarSign,
   Loader2,
@@ -13,42 +13,22 @@ import DataTable from "@/components/ui/data-table";
 
 const OrgPayments = () => {
   const { orgId } = useParams();
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
-  useEffect(() => {
-    const fetchPayments = async () => {
-      try {
-        setLoading(true);
-        // Fetch tuitions for this org, then derive payments from bookings
-        const tuitionsRes = await api.get(`/api/v1/organizations/${orgId}/tuitions`).catch(() => ({ data: { data: [] } }));
-        const tuitions = tuitionsRes.data.data || [];
-
-        // Fetch payments for each tuition's bookings
-        const paymentPromises = tuitions.map(t =>
-          api.get(`/api/payments`, { params: { tuitionId: t._id } }).catch(() => ({ data: { data: [] } }))
-        );
-        const paymentResults = await Promise.all(paymentPromises);
-
-        const allPayments = [];
-        paymentResults.forEach((res) => {
-          const list = res.data?.data || [];
-          allPayments.push(...list);
-        });
-
-        setPayments(allPayments);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load payments");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPayments();
-  }, [orgId]);
-
-  const filtered = filter === "all" ? payments : payments.filter(p => p.status === filter);
+  // Batch 6: single org-scoped endpoint (Payment.orgId is indexed).
+  // The old N+1 hit /api/payments?tuitionId= — a param getAll ignores — so
+  // every fan-out call returned the same unfiltered page, duplicated N×.
+  const { data: payments = [], isLoading: loading } = useQuery({
+    queryKey: ["org", orgId, "payments", filter],
+    queryFn: async ({ signal }) => {
+      const params = filter === "all" ? "" : `?status=${filter}`;
+      const res = await api.get(`/api/v1/organizations/${orgId}/payments${params}`, { signal });
+      return res.data?.data || [];
+    },
+    enabled: Boolean(orgId),
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
 
   const totalConfirmed = payments.filter(p => p.status === 'confirmed' || p.status === 'withdrawn').reduce((sum, p) => sum + (p.grossAmount || 0), 0);
   const totalPending = payments.filter(p => p.status === 'pending_verification').reduce((sum, p) => sum + (p.grossAmount || 0), 0);
@@ -158,7 +138,7 @@ const OrgPayments = () => {
       {/* Payments Table */}
       <DataTable
         columns={columns}
-        data={filtered}
+        data={payments}
         rowKey={(p) => p._id}
         resizable
         emptyState={

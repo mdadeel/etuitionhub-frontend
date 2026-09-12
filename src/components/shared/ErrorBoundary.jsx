@@ -23,6 +23,14 @@ class ErrorBoundary extends React.Component {
     console.error('ErrorBoundary caught:', error, errorInfo);
   }
 
+  componentDidUpdate(prevProps) {
+    // RouteErrorBoundary reuses one instance across navigations (reset via
+    // resetKey prop, no remount) — allow one chunk-retry per route.
+    if (prevProps.resetKey !== this.props.resetKey) {
+      this._hasRetriedChunk = false;
+    }
+  }
+
   render() {
     if (this.state.hasError) {
       const msg = this.state.error?.message || '';

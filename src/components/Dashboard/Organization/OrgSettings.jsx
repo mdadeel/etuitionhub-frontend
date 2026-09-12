@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import { 
@@ -22,7 +23,14 @@ import { Textarea } from "../../ui/textarea";
 const OrgSettings = () => {
   const { orgId } = useParams();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: org, isLoading: loading, isError, error } = useQuery({
+    queryKey: ['org', orgId, 'doc'],
+    queryFn: ({ signal }) => api.get(`/api/v1/organizations/${orgId}`, { signal }).then((r) => r.data?.data),
+    enabled: Boolean(orgId),
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
   const [saving, setSaving] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -39,34 +47,28 @@ const OrgSettings = () => {
   });
 
   useEffect(() => {
-    const fetchOrg = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get(`/api/v1/organizations/${orgId}`);
-        const org = res.data.data;
-        if (org) {
-          setFormData({
-            name: org.name || "",
-            slug: org.slug || "",
-            logo: org.profile?.logo || "",
-            banner: org.profile?.banner || "",
-            description: org.profile?.description || "",
-            publicEmail: org.profile?.publicEmail || "",
-            publicPhone: org.profile?.publicPhone || "",
-            address: org.profile?.address || "",
-            allowPublicListings: org.settings?.allowPublicListings ?? true,
-            requireInviteToJoin: org.settings?.requireInviteToJoin ?? true
-          });
-        }
-      } catch (error) {
-        toast.error("Failed to load organization settings");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrg();
-  }, [orgId]);
+    if (org) {
+      setFormData({
+        name: org.name || "",
+        slug: org.slug || "",
+        logo: org.profile?.logo || "",
+        banner: org.profile?.banner || "",
+        description: org.profile?.description || "",
+        publicEmail: org.profile?.publicEmail || "",
+        publicPhone: org.profile?.publicPhone || "",
+        address: org.profile?.address || "",
+        allowPublicListings: org.settings?.allowPublicListings ?? true,
+        requireInviteToJoin: org.settings?.requireInviteToJoin ?? true
+      });
+    }
+  }, [org]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("Failed to load organization settings");
+      console.error(error);
+    }
+  }, [isError, error]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -99,6 +101,7 @@ const OrgSettings = () => {
 
       await api.patch(`/api/v1/organizations/${orgId}`, payload);
       toast.success("Organization settings updated successfully");
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'doc'] });
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to update settings");
       console.error(error);

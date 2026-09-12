@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import api from "../../../services/api";
+import { useOrgMembersQuery } from "@/hooks/queries/useOrgQuery";
 import { toast } from "react-hot-toast";
 import {
   Users,
@@ -18,21 +20,24 @@ import {
 } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
 import ModerationModal from "../ModerationModal";
+import ConfirmModal from "@/components/shared/ConfirmModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const OrgMembers = () => {
   const { orgId } = useParams();
-  const [members, setMembers] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [joinRequests, setJoinRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: orgData, isLoading: loading } = useOrgMembersQuery(orgId);
+
+  const members = orgData?.members || [];
+  const roles = orgData?.roles || [];
+  const joinRequests = orgData?.joinRequests || [];
   const [activeTab, setActiveTab] = useState("members");
   
   // Invite Modal State
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRoleId, setInviteRoleId] = useState("");
+  const [inviteRoleId, setInviteRoleId] = useState(roles[0]?._id || "");
   const [inviting, setInviting] = useState(false);
   const [inviteResult, setInviteResult] = useState(null);
 
@@ -44,38 +49,9 @@ const OrgMembers = () => {
   const [roleEditMember, setRoleEditMember] = useState(null);
   const [roleEditValue, setRoleEditValue] = useState("");
 
-  const fetchMembersAndRoles = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [membersRes, rolesRes] = await Promise.all([
-        api.get(`/api/v1/organizations/${orgId}/members`),
-        api.get(`/api/v1/organizations/${orgId}/roles`)
-      ]);
-      setMembers(membersRes.data.data);
-      setRoles(rolesRes.data.data);
-      if (rolesRes.data.data.length > 0) {
-        setInviteRoleId(rolesRes.data.data[0]._id);
-      }
-
-      // Fetch pending join requests
-      try {
-        const joinRequestsRes = await api.get(`/api/v1/organizations/${orgId}/join-requests?status=pending`);
-        setJoinRequests(joinRequestsRes.data.data || []);
-      } catch {
-        // User might not have permission - that's fine
-        setJoinRequests([]);
-      }
-    } catch (error) {
-      toast.error("Failed to load members or roles");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
-
-  useEffect(() => {
-    fetchMembersAndRoles();
-  }, [fetchMembersAndRoles]);
+  const invalidateMembers = () => {
+    queryClient.invalidateQueries({ queryKey: ['org', orgId, 'members-and-roles'] });
+  };
 
   const handleInvite = async (e) => {
     e.preventDefault();
@@ -87,6 +63,7 @@ const OrgMembers = () => {
       });
       toast.success("Invitation generated!");
       setInviteResult(res.data.data);
+      invalidateMembers();
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to create invite");
     } finally {
@@ -105,47 +82,52 @@ const OrgMembers = () => {
     setInviteResult(null);
   };
 
-  const handleRemoveMember = async (memberId, memberName) => {
-    if (!window.confirm(`Are you sure you want to remove ${memberName} from the organization?`)) {
-      return;
-    }
-    try {
-      await api.delete(`/api/v1/organizations/${orgId}/members/${memberId}`);
-      toast.success("Member removed successfully");
-      fetchMembersAndRoles();
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to remove member");
-    }
+  const handleRemoveMember = (memberId, memberName) => {
+    // Batch 2 (audit Exec #6): arm the modal; the delete fires on confirm.
+    setMemberAction({ kind: "remove", id: memberId, name: memberName });
   };
 
-  const handleApproveRequest = async (requestId, userName) => {
-    if (!window.confirm(`Approve ${userName}'s request to join?`)) {
-      return;
-    }
-    try {
-      await api.patch(`/api/v1/organizations/${orgId}/join-requests/${requestId}`, {
-        action: 'approve'
-      });
-      toast.success(`${userName} has been approved and added to the organization`);
-      fetchMembersAndRoles();
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to approve request");
-    }
+  const handleApproveRequest = (requestId, userName) => {
+    setMemberAction({ kind: "approve", id: requestId, name: userName });
   };
 
-  const handleRejectRequest = async (requestId, userName) => {
-    const reason = window.prompt(`Reason for rejecting ${userName}? (optional)`);
-    if (reason === null) return;
+  const handleRejectRequest = (requestId, userName) => {
+    setRejectReason("");
+    setMemberAction({ kind: "reject", id: requestId, name: userName });
+  };
 
+  // Batch 2 (audit Exec #6): one arm-then-confirm flow replaces the three
+  // native window.confirm/prompt calls below (member removal is destructive,
+  // rejection keeps its optional reason via the modal textarea).
+  const [memberAction, setMemberAction] = useState(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [acting, setActing] = useState(false);
+
+  const handleConfirmMemberAction = async () => {
+    if (!memberAction) return;
+    setActing(true);
     try {
-      await api.patch(`/api/v1/organizations/${orgId}/join-requests/${requestId}`, {
-        action: 'reject',
-        rejectionReason: reason || ''
-      });
-      toast.success(`${userName}'s request has been rejected`);
-      fetchMembersAndRoles();
+      if (memberAction.kind === "remove") {
+        await api.delete(`/api/v1/organizations/${orgId}/members/${memberAction.id}`);
+        toast.success("Member removed successfully");
+      } else if (memberAction.kind === "approve") {
+        await api.patch(`/api/v1/organizations/${orgId}/join-requests/${memberAction.id}`, {
+          action: 'approve'
+        });
+        toast.success(`${memberAction.name} has been approved and added to the organization`);
+      } else {
+        await api.patch(`/api/v1/organizations/${orgId}/join-requests/${memberAction.id}`, {
+          action: 'reject',
+          rejectionReason: rejectReason.trim()
+        });
+        toast.success(`${memberAction.name}'s request has been rejected`);
+      }
+      setMemberAction(null);
+      invalidateMembers();
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to reject request");
+      toast.error(error.response?.data?.error || "Action failed");
+    } finally {
+      setActing(false);
     }
   };
 
@@ -154,7 +136,7 @@ const OrgMembers = () => {
       await api.patch(`/api/v1/organizations/${orgId}/members/${memberId}`, { roleId: newRoleId });
       toast.success("Member role updated");
       setRoleEditMember(null);
-      fetchMembersAndRoles();
+      invalidateMembers();
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to update role");
     }
@@ -495,9 +477,48 @@ const OrgMembers = () => {
           }}
           targetUser={selectedUser}
           organizationId={orgId}
-          onModerationComplete={fetchMembersAndRoles}
+          onModerationComplete={invalidateMembers}
         />
       )}
+
+      <ConfirmModal
+        open={!!memberAction}
+        onOpenChange={(open) => { if (!open) setMemberAction(null); }}
+        title={
+          memberAction?.kind === "remove"
+            ? `Remove ${memberAction?.name} from the organization?`
+            : memberAction?.kind === "approve"
+              ? `Approve ${memberAction?.name}'s request to join?`
+              : `Reject ${memberAction?.name}'s request?`
+        }
+        description={
+          memberAction?.kind === "remove"
+            ? "They will lose access to this workspace immediately."
+            : memberAction?.kind === "approve"
+              ? "They will be added as an organization member."
+              : "They will be notified of the rejection."
+        }
+        confirmLabel={memberAction?.kind === "approve" ? "Approve" : memberAction?.kind === "reject" ? "Reject" : "Remove"}
+        confirmVariant={memberAction?.kind === "approve" ? "default" : "destructive"}
+        loadingLabel="Working..."
+        loading={acting}
+        onConfirm={handleConfirmMemberAction}
+      >
+        {memberAction?.kind === "reject" && (
+          <div className="py-1">
+            <label className="text-xs font-semibold text-foreground block mb-1">
+              Reason (optional)
+            </label>
+            <textarea
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+              rows={3}
+              placeholder="Why is this request being rejected?"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            />
+          </div>
+        )}
+      </ConfirmModal>
     </div>
   );
 };

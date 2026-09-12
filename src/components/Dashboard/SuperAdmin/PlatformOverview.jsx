@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import api from "../../../services/api";
+import { useQuery } from "@tanstack/react-query";
 import { usePlatformOverview } from "../../../hooks/queries/usePlatformOverview";
 import {
   Banknote,
@@ -43,25 +44,22 @@ const PlatformOverview = () => {
     tuitionPostingEnabled: true,
     registrationsEnabled: true,
   });
-  const [loadingBreakers, setLoadingBreakers] = useState(true);
   const [updatingFlag, setUpdatingFlag] = useState(null);
 
-  const fetchBreakers = useCallback(async () => {
-    try {
-      const res = await api.get("/api/admin/circuit-breakers");
-      if (res.data?.data) {
-        setCircuitBreakers(res.data.data);
-      }
-    } catch {
-      // keep defaults on network failure
-    } finally {
-      setLoadingBreakers(false);
-    }
-  }, []);
+  // Route is super-admin-only and the overview query above is always enabled,
+  // so the breaker query carries no extra gate (enabled equivalent: true).
+  const { data: breakerData, isLoading: loadingBreakers } = useQuery({
+    queryKey: ['admin', 'circuit-breakers'],
+    queryFn: async ({ signal }) => {
+      const res = await api.get("/api/admin/circuit-breakers", { signal });
+      return res.data?.data ?? null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
-    fetchBreakers();
-  }, [fetchBreakers]);
+    if (breakerData) setCircuitBreakers(breakerData);
+  }, [breakerData]);
 
   const handleToggleBreaker = async (flag, currentVal, label) => {
     const newVal = !currentVal;

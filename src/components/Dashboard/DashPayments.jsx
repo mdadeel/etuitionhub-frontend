@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -61,13 +62,45 @@ const PAYMENT_METHOD_LABELS = {
 };
 
 const DashPayments = () => {
-    const [payments, setPayments] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [filter, setFilter] = useState('pending_verification');
     const [processingId, setProcessingId] = useState(null);
     const [page, setPage] = useState(1);
-    const [total, setTotal] = useState(0);
     const limit = 25;
+
+    // Batch 6: ?status= is filtered server-side (was a page-slice + client
+    // filter mismatch). 'all' and the client-side fraud view omit the param.
+    const { data: paymentsEnvelope, isLoading: loading } = useQuery({
+        queryKey: ['admin', 'payments', page, filter],
+        queryFn: async ({ signal }) => {
+            const params = new URLSearchParams({ page, limit });
+            if (filter !== 'all' && filter !== 'fraud_duplicates') params.append('status', filter);
+            const res = await api.get(`/api/payments/all?${params.toString()}`, { signal });
+            return res.data;
+        },
+        staleTime: 30_000,
+        placeholderData: keepPreviousData,
+    });
+    const { data: reconciliation = null } = useQuery({
+        queryKey: ['admin', 'finance', 'reconciliation'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get('/api/admin/finance/reconciliation', { signal });
+            return res.data?.data || null;
+        },
+        staleTime: 60_000,
+        placeholderData: keepPreviousData,
+    });
+
+    // Backend returns { payments, total, page, limit } or just array.
+    const { payments, total } = useMemo(() => {
+        if (Array.isArray(paymentsEnvelope)) return { payments: paymentsEnvelope, total: paymentsEnvelope.length };
+        return { payments: paymentsEnvelope?.payments || [], total: paymentsEnvelope?.total || 0 };
+    }, [paymentsEnvelope]);
+
+    const refreshPayments = () => {
+        queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
+        queryClient.invalidateQueries({ queryKey: ['admin', 'finance', 'reconciliation'] });
+    };
 
     // Modal state for approve confirm
     const [approveOpen, setApproveOpen] = useState(false);
@@ -78,22 +111,6 @@ const DashPayments = () => {
     const [rejectId, setRejectId] = useState(null);
     const [rejectReason, setRejectReason] = useState('Invalid transaction ID');
 
-    const [reconciliation, setReconciliation] = useState(null);
-
-    const loadReconciliation = useCallback(async () => {
-        try {
-            const res = await api.get('/api/admin/finance/reconciliation');
-            if (res.data?.data) {
-                setReconciliation(res.data.data);
-            }
-        } catch {
-            // Non-admin or failed fetch silently handled
-        }
-    }, []);
-
-    useEffect(() => {
-        loadReconciliation();
-    }, [loadReconciliation]);
 
     const duplicateTrxMap = useMemo(() => {
         if (!reconciliation?.fraudAlerts) return new Map();
@@ -107,30 +124,6 @@ const DashPayments = () => {
     const duplicateTrxIds = useMemo(() => {
         return new Set(duplicateTrxMap.keys());
     }, [duplicateTrxMap]);
-
-    const loadPayments = useCallback(async (pageNum = 1) => {
-        setLoading(true);
-        try {
-            const res = await api.get(`/api/payments/all?page=${pageNum}&limit=${limit}`);
-            const data = res.data;
-            // Backend returns { payments, total, page, limit } or just array
-            if (Array.isArray(data)) {
-                setPayments(data);
-                setTotal(data.length);
-            } else {
-                setPayments(data.payments || []);
-                setTotal(data.total || 0);
-            }
-        } catch {
-            toast.error('Failed to load payments');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        loadPayments(page);
-    }, [loadPayments, page]);
 
     // Reset to page 1 when filter changes
     useEffect(() => {
@@ -148,7 +141,7 @@ const DashPayments = () => {
         try {
             await api.post(`/api/payments/${approveId}/approve`);
             toast.success('Payment approved — wallet credited, notifications sent');
-            await Promise.all([loadPayments(page), loadReconciliation()]);
+            await refreshPayments();
         } catch (err) {
             toast.error(err.response?.data?.error || 'Approval failed');
         } finally {
@@ -169,7 +162,7 @@ const DashPayments = () => {
         try {
             await api.post(`/api/payments/${rejectId}/reject`, { reason: rejectReason.trim() });
             toast.success('Payment rejected — student notified');
-            await Promise.all([loadPayments(page), loadReconciliation()]);
+            await refreshPayments();
         } catch (err) {
             toast.error(err.response?.data?.error || 'Rejection failed');
         } finally {
@@ -177,12 +170,13 @@ const DashPayments = () => {
         }
     };
 
+    // Batch 6: status slices arrive pre-filtered from the server; only the
+    // fraud-duplicates view still narrows the current page client-side.
     const filteredPayments = useMemo(() => {
         if (filter === 'fraud_duplicates') {
             return payments.filter(p => duplicateTrxIds.has(p.transactionId));
         }
-        if (filter === 'all') return payments;
-        return payments.filter(p => p.status === filter);
+        return payments;
     }, [filter, payments, duplicateTrxIds]);
 
     const pendingCount = payments.filter(p => p.status === 'pending_verification').length;

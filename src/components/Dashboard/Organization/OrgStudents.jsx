@@ -1,31 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, Users, Mail, GraduationCap, Download, Upload, Loader2 } from "lucide-react";
 import api from "../../../services/api";
+import { useOrgStudentsQuery } from "@/hooks/queries/useOrgQuery";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const OrgStudents = () => {
   const { orgId } = useParams();
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: students = [], isLoading: loading } = useOrgStudentsQuery(orgId);
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
-
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/students`);
-        setStudents(res.data.data);
-      } catch {
-        toast.error("Failed to fetch students");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStudents();
-  }, [orgId]);
 
   const handleExport = async () => {
     try {
@@ -69,7 +57,7 @@ const OrgStudents = () => {
         const res = await api.post(`/api/v1/organizations/${orgId}/students/import`, { students });
         const { created, skipped, errors } = res.data.data;
         toast.success(`Imported: ${created} created, ${skipped} skipped${errors?.length ? `, ${errors.length} errors` : ''}`);
-        window.location.reload();
+        queryClient.invalidateQueries({ queryKey: ['org', orgId, 'students'] });
       } catch {
         toast.error("Failed to import students");
       } finally {

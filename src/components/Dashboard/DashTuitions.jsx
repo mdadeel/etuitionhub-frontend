@@ -1,8 +1,10 @@
-// tuition management dashboard - admin approve/reject
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { useDashTuitionsQuery } from '@/hooks/queries/useAdminQuery';
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { ShieldAlert, Edit2, Eye, MapPin, DollarSign, BookOpen, Calendar, Globe, User, FileText } from 'lucide-react';
 import DataTable from "@/components/ui/data-table";
 import EditModal from './EditModal';
@@ -25,17 +27,38 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const DashTuitions = () => {
-    const [tuitions, setTuitions] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState('all');
+    const queryClient = useQueryClient();
+    // Batch 7: status filter in URL for deep-linking.
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [filter, setFilterState] = useState(
+        ['all', 'pending', 'approved'].includes(searchParams.get('status')) ? searchParams.get('status') : 'all'
+    );
+    const setFilter = (next) => {
+        setFilterState(next);
+        setSearchParams(next === 'all' ? {} : { status: next }, { replace: true });
+    };
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalTuitions, setTotalTuitions] = useState(0);
 
     // Advanced filters
     const [subjectFilter, setSubjectFilter] = useState(null);
     const [classFilter, setClassFilter] = useState(null);
     const [locationFilter, setLocationFilter] = useState(null);
+
+    const { data, isLoading: loading } = useDashTuitionsQuery({
+        page,
+        subjectFilter,
+        classFilter,
+        locationFilter
+    });
+
+    const rawTuitions = Array.isArray(data) ? data : (data?.data || []);
+    const pagination = data?.pagination || {};
+    const totalPages = pagination.totalPages ?? pagination.pages ?? 1;
+    const totalTuitions = pagination.totalItems ?? pagination.total ?? rawTuitions.length;
+
+    const invalidateTuitions = () => {
+        queryClient.invalidateQueries({ queryKey: ['admin', 'tuitions'] });
+    };
 
     // Reset page when any filter changes
     useEffect(() => {
@@ -59,36 +82,10 @@ const DashTuitions = () => {
         { name: 'salary', label: 'Salary (BDT)', type: 'number', placeholder: 'e.g. 5000' }
     ];
 
-    const loadTuitions = useCallback(async () => {
-        setLoading(true);
-        try {
-            const params = { page };
-            if (subjectFilter) params.subjects = subjectFilter;
-            if (classFilter) params.classFilter = classFilter;
-            if (locationFilter) params.locationFilter = locationFilter;
-
-            const res = await api.get('/api/tuitions', { params });
-            const data = res.data;
-            setTuitions(Array.isArray(data) ? data : (data?.data || []));
-            if (data?.pagination) {
-                setTotalPages(data.pagination.totalPages ?? data.pagination.pages ?? 1);
-                setTotalTuitions(data.pagination.totalItems ?? data.pagination.total ?? 0);
-            }
-        } catch (err) {
-            toast.error(err?.response?.data?.error || 'Failed to load tuitions');
-        } finally {
-            setLoading(false);
-        }
-    }, [page, subjectFilter, classFilter, locationFilter]);
-
-    useEffect(() => {
-        loadTuitions();
-    }, [loadTuitions]);
-
     const filtered = useMemo(() => {
-        if (filter === 'all') return tuitions;
-        return tuitions.filter(t => t.status === filter);
-    }, [tuitions, filter]);
+        if (filter === 'all') return rawTuitions;
+        return rawTuitions.filter(t => t.status === filter);
+    }, [rawTuitions, filter]);
 
     const handleApprove = async (id) => {
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
@@ -100,7 +97,7 @@ const DashTuitions = () => {
         try {
             await api.patch(`/api/tuitions/${id}/status`, { status: 'approved' });
             toast.success('Tuition approved');
-            await loadTuitions();
+            invalidateTuitions();
         } catch {
             toast.error('Failed to approve tuition');
         }
@@ -118,7 +115,7 @@ const DashTuitions = () => {
         try {
             await api.delete(`/api/tuitions/${id}`);
             toast.success('Tuition rejected');
-            await loadTuitions();
+            invalidateTuitions();
         } catch {
             toast.error('Failed to reject tuition');
         }
@@ -140,7 +137,7 @@ const DashTuitions = () => {
             await api.patch(`/api/tuitions/${selectedTuition._id}`, updatedData);
             toast.success('Tuition updated');
             setIsEditModalOpen(false);
-            await loadTuitions();
+            invalidateTuitions();
         } catch {
             toast.error('Failed to update tuition');
         } finally {
@@ -161,14 +158,27 @@ const DashTuitions = () => {
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    // Batch 5 (audit Exec #2): layout-preserving skeleton instead of a
+    // full-page spinner early-return.
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <DashboardPageHeader
+                    category="Marketplace Management"
+                    title="Tuition Streams"
+                    subtitle="Loading tuition postings."
+                />
+                <TableSkeleton rows={8} columns={5} />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 animate-in fade-in duration-700 animate-fade-in-up">
             <DashboardPageHeader
                 category="Marketplace Management"
                 title="Tuition Streams"
-                subtitle={`${totalTuitions || tuitions.length} active tuition postings.`}
+                subtitle={`${totalTuitions || rawTuitions.length} active tuition postings.`}
                 action={
                     <div className="flex bg-background p-1 rounded-lg gap-1 border border-border w-fit">
                         {['all', 'pending', 'approved'].map(f => (

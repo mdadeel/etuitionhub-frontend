@@ -1,33 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, FileText, Calendar, Users } from "lucide-react";
-import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 
 const OrgAssignments = () => {
   const { orgId } = useParams();
   const { hasPermission } = useAuth();
   const canCreate = hasPermission('assignment:create');
   const canGrade = hasPermission('assignment:grade');
-  const [assignments, setAssignments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: assignments = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'assignments');
 
   useEffect(() => {
-    const fetchAssignments = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/assignments`);
-        setAssignments(res.data.data);
-      } catch {
-        toast.error("Failed to fetch assignments");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAssignments();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch assignments");
+  }, [isError]);
 
   const getStatusColor = (status) => {
     switch (status) {

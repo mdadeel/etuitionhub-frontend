@@ -1,28 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../../services/api";
-import { toast } from "react-hot-toast";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { MessageSquare, Send, Loader2, Inbox, MailOpen } from "lucide-react";
 import DataTable from "@/components/ui/data-table";
 
 const OrgMessages = () => {
   const { orgId } = useParams();
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchMessages = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/api/v1/organizations/${orgId}/messages`).catch(() => ({ data: { data: [] } }));
-      setMessages(res.data.data || []);
-    } catch {
-      toast.error("Failed to load messages");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
-
-  useEffect(() => { fetchMessages(); }, [fetchMessages]);
+  // ponytail: errors stay swallowed (queryFn catch returns []) exactly like
+  // the old `.catch(() => ({ data: { data: [] } }))`, so no isError toast.
+  const { data: messages = [], isLoading: loading } = useOrgListQuery(orgId, 'messages');
 
   if (loading) {
     return (

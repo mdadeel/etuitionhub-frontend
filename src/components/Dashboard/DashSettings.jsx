@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { FormSkeleton } from "@/components/shared/skeletons";
@@ -9,28 +10,27 @@ import { useNavigate } from 'react-router-dom';
 
 const DashSettings = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    // Batch 4c: cached load (signal cancels on unmount). Draft edits stay
+    // local until Save — the sync effect below re-seeds the draft on refetch.
+    const { data: remoteSettings = [], isLoading: loading } = useQuery({
+        queryKey: ['admin', 'settings'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get('/api/settings', { signal });
+            const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+            return data;
+        },
+        staleTime: 60_000,
+        placeholderData: keepPreviousData,
+    });
     const [settings, setSettings] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [modifiedKeys, setModifiedKeys] = useState(new Set());
 
-    const loadSettings = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await api.get('/api/settings');
-            const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
-            setSettings(data);
-            setModifiedKeys(new Set());
-        } catch {
-            toast.error('Failed to load system configurations');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
     useEffect(() => {
-        loadSettings();
-    }, [loadSettings]);
+        setSettings(remoteSettings);
+        setModifiedKeys(new Set());
+    }, [remoteSettings]);
 
     const handleInputChange = (key, value) => {
         setSettings(prev => (Array.isArray(prev) ? prev : []).map(s => s.key === key ? { ...s, value } : s));
@@ -52,6 +52,7 @@ const DashSettings = () => {
             await api.patch('/api/settings/bulk', { settings: settingsToUpdate });
             toast.success('System parameters updated successfully');
             setModifiedKeys(new Set());
+            queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] });
         } catch {
             toast.error('Strategic update failed');
         } finally {
@@ -118,7 +119,7 @@ const DashSettings = () => {
 
                 <div className="flex gap-3">
                     <button 
-                        onClick={loadSettings}
+                        onClick={() => queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] })}
                         className="h-10 px-4 rounded-lg text-muted-foreground hover:text-foreground border border-border hover:bg-muted text-[9px] font-label font-semibold uppercase tracking-wider transition-all"
                     >
                         Reset

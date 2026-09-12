@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Trash2, RotateCcw, Bookmark, BookmarkCheck, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
+import { useSavedSearchAlertsQuery } from '@/hooks/queries/useAdminQuery';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
@@ -9,25 +11,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 
 const SavedSearchAlerts = () => {
-    const [alerts, setAlerts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const { data: alerts = [], isLoading: loading } = useSavedSearchAlertsQuery();
     const [deletedItems, setDeletedItems] = useState({});
-
-    const fetchAlerts = async () => {
-        try {
-            const res = await api.get('/api/search-alerts');
-            setAlerts(res.data?.data || []);
-        } catch (error) {
-            console.error('Failed to fetch search alerts', error);
-            toast.error('Could not load saved searches');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchAlerts();
-    }, []);
 
     const handleDeleteIntent = (id) => {
         setDeletedItems(prev => ({ ...prev, [id]: true }));
@@ -35,7 +21,7 @@ const SavedSearchAlerts = () => {
         const timer = setTimeout(async () => {
             try {
                 await api.delete(`/api/search-alerts/${id}`);
-                setAlerts(prev => prev.filter(a => a._id !== id));
+                queryClient.invalidateQueries({ queryKey: ['search-alerts'] });
             } catch (error) {
                 console.error('Failed to delete search alert', error);
             }

@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { useAdminTutorsQuery } from '@/hooks/queries/useAdminQuery';
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { Plus, UserX, ShieldCheck, Clock, Eye, BookOpen, FileText, GraduationCap, Mail, Phone, ShieldAlert, AlertCircle, Award, Shield, Star, Calendar } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DataTable from "@/components/ui/data-table";
@@ -27,8 +29,8 @@ const VERIFICATION_OPTIONS = [
 ];
 
 const AdminTutors = () => {
-    const [tutors, setTutors] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const { data: tutors = [], isLoading: loading } = useAdminTutorsQuery();
     const [addOpen, setAddOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [adding, setAdding] = useState(false);
@@ -39,19 +41,9 @@ const AdminTutors = () => {
     const [profileLoading, setProfileLoading] = useState(false);
     const [updatingVerification, setUpdatingVerification] = useState(false);
 
-    const loadTutors = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await api.get('/api/tutors');
-            setTutors(res.data?.data || []);
-        } catch (err) {
-            toast.error(err?.response?.data?.error || 'Failed to load tutors');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => { loadTutors(); }, [loadTutors]);
+    const invalidateTutors = () => {
+        queryClient.invalidateQueries({ queryKey: ['admin', 'tutors', 'all'] });
+    };
 
     const handleAddTutor = async (e) => {
         e.preventDefault();
@@ -62,7 +54,7 @@ const AdminTutors = () => {
             toast.success('User upgraded to tutor');
             setAddOpen(false);
             setEmail('');
-            await loadTutors();
+            invalidateTutors();
         } catch (err) {
             const msg = err?.response?.data?.error || 'Failed to add tutor';
             toast.error(msg);
@@ -81,7 +73,7 @@ const AdminTutors = () => {
         try {
             await api.patch(`/api/users/${id}`, { role: 'student' });
             toast.success('Tutor downgraded to student');
-            await loadTutors();
+            invalidateTutors();
         } catch (err) {
             toast.error(err?.response?.data?.error || 'Failed to remove tutor');
         }
@@ -111,7 +103,7 @@ const AdminTutors = () => {
             await api.patch(`/api/users/${userId}`, { verificationStatus: newStatus, searchVisibility: newStatus.startsWith('verified_') });
             toast.success(`Verification updated to ${newStatus.replace('_', ' ')}`);
             setProfileTutor(prev => prev ? { ...prev, verificationStatus: newStatus, isVerified: newStatus.startsWith('verified_') } : prev);
-            await loadTutors();
+            invalidateTutors();
         } catch (err) {
             toast.error(err?.response?.data?.error || 'Failed to update verification');
         } finally {
@@ -119,7 +111,20 @@ const AdminTutors = () => {
         }
     };
 
-    if (loading) return <LoadingSpinner />;
+    // Batch 5 (audit Exec #2): layout-preserving skeleton instead of a
+    // full-page spinner early-return.
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <DashboardPageHeader
+                    category="Tutor Management"
+                    title="All Tutors"
+                    subtitle="Loading tutors."
+                />
+                <TableSkeleton rows={8} columns={5} hasAvatar />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

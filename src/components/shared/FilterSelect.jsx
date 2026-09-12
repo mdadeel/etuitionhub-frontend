@@ -63,25 +63,30 @@ const FilterSelect = ({
         [multi, value]
     );
 
-    // Async loading
+    // Async loading — Batch 4b: request-id guard so a slow earlier keystroke
+    // can never overwrite fresher results (loadOptions takes no signal).
+    const asyncRequestId = useRef(0);
     useEffect(() => {
         if (!isOpen || !isAsync || !loadOptions) return;
+        let active = true;
         const timer = setTimeout(async () => {
             if (!searchQuery && options.length > 0) {
                 setAsyncOptions(options);
                 return;
             }
+            const requestId = ++asyncRequestId.current;
             setLoadingAsync(true);
             try {
                 const results = await loadOptions(searchQuery);
+                if (!active || asyncRequestId.current !== requestId) return;
                 setAsyncOptions(results || []);
             } catch {
-                setAsyncOptions([]);
+                if (active && asyncRequestId.current === requestId) setAsyncOptions([]);
             } finally {
-                setLoadingAsync(false);
+                if (active && asyncRequestId.current === requestId) setLoadingAsync(false);
             }
         }, 200);
-        return () => clearTimeout(timer);
+        return () => { active = false; clearTimeout(timer); };
     }, [searchQuery, isOpen, isAsync, loadOptions, options]);
 
     // Focus search input when dropdown opens

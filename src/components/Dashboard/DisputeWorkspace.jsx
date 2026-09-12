@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDisputesQuery } from '@/hooks/queries/useTutorQuery';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import {
@@ -78,11 +80,11 @@ const DisputeRow = ({ dispute, isAdmin, onRefresh }) => {
 
             {open && (
                 <div className="border-t border-border px-6 py-5 space-y-4 bg-background/50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {/* Evidence */}
-                    {dispute.evidence?.notes && (
+                    {/* Reason (evidence.notes kept as fallback for legacy rows) */}
+                    {(dispute.reason || dispute.evidence?.notes) && (
                         <div>
-                            <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mb-1">Evidence</p>
-                            <p className="text-sm text-foreground bg-card border border-border rounded-lg px-4 py-3 italic">{dispute.evidence.notes}</p>
+                            <p className="text-[10px] font-label font-semibold uppercase tracking-wider text-muted-foreground mb-1">Details</p>
+                            <p className="text-sm text-foreground bg-card border border-border rounded-lg px-4 py-3 italic">{dispute.reason || dispute.evidence.notes}</p>
                         </div>
                     )}
 
@@ -153,12 +155,15 @@ const FileDisputeForm = ({ connections, onSuccess, onCancel }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.connectionId || !form.type) { toast.error('Please select a connection and dispute type'); return; }
+        // Batch 3: backend create schema requires `reason` and rejects unknown
+        // keys — `evidence.notes` was 422'd and the text never displayed.
+        if (!form.notes.trim()) { toast.error('Please describe what happened'); return; }
         setSubmitting(true);
         try {
             await api.post('/api/disputes', {
                 connectionId: form.connectionId,
                 type: form.type,
-                evidence: { notes: form.notes },
+                reason: form.notes.trim(),
             });
             toast.success('Dispute filed — admin notified');
             onSuccess();
@@ -255,42 +260,33 @@ const FileDisputeForm = ({ connections, onSuccess, onCancel }) => {
 /** Main DisputeWorkspace component */
 const DisputeWorkspace = ({ isAdminView = false }) => {
     const { dbUser } = useAuth();
-    const isAdmin = isAdminView || dbUser?.globalRole === 'super_admin';
+    const queryClient = useQueryClient();
+    const isAdmin = isAdminView || dbUser?.globalRole === 'super_admin' || dbUser?.role === 'admin';
+    const scope = isAdmin ? 'all' : 'my';
+    const { data: disputes = [], isLoading: loading } = useDisputesQuery(scope);
 
-    const [disputes, setDisputes] = useState([]);
     const [connections, setConnections] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState('');
+    const [filterStatus, setFilterStatus] = useState('');
     const [showForm, setShowForm] = useState(false);
 
-    const loadDisputes = useCallback(async () => {
-        setLoading(true);
-        try {
-            const params = {};
-            if (filter) params.status = filter;
-            const res = await api.get('/api/disputes', { params });
-            setDisputes(res.data?.data || res.data || []);
-        } catch {
-            toast.error('Failed to load disputes');
-        } finally {
-            setLoading(false);
-        }
-    }, [filter]);
+    const refresh = useCallback(() => {
+        queryClient.invalidateQueries({ queryKey: ['disputes'] });
+    }, [queryClient]);
 
-    const loadConnections = useCallback(async () => {
-        if (isAdmin) return;
-        try {
-            const res = await api.get('/api/connections');
-            setConnections(res.data?.data || res.data || []);
-        } catch {
-            // silently fail — not critical
-        }
-    }, [isAdmin]);
+    // Batch 4c: cached connection options for the file-form select.
+    const { data: connectionOptions = [] } = useQuery({
+        queryKey: ['connections', 'workspace-options'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get('/api/connections', { signal });
+            return res.data?.data || res.data || [];
+        },
+        enabled: !isAdmin,
+        staleTime: 60_000,
+    });
 
     useEffect(() => {
-        loadDisputes();
-        loadConnections();
-    }, [loadDisputes, loadConnections]);
+        setConnections(connectionOptions);
+    }, [connectionOptions]);
 
     const filters = [
         { id: '', label: 'All' },
@@ -298,6 +294,8 @@ const DisputeWorkspace = ({ isAdminView = false }) => {
         { id: 'under_review', label: 'Under Review' },
         { id: 'resolved', label: 'Resolved' },
     ];
+
+    const filteredDisputes = filterStatus ? disputes.filter(d => d.status === filterStatus) : disputes;
 
     return (
         <div className="space-y-8 animate-in fade-in-up duration-700">
@@ -335,7 +333,7 @@ const DisputeWorkspace = ({ isAdminView = false }) => {
             {showForm && !isAdmin && (
                 <FileDisputeForm
                     connections={connections}
-                    onSuccess={() => { setShowForm(false); loadDisputes(); }}
+                    onSuccess={() => { setShowForm(false); refresh(); }}
                     onCancel={() => setShowForm(false)}
                 />
             )}
@@ -345,10 +343,10 @@ const DisputeWorkspace = ({ isAdminView = false }) => {
                 {filters.map(f => (
                     <button
                         key={f.id}
-                        onClick={() => setFilter(f.id)}
+                        onClick={() => setFilterStatus(f.id)}
                         className={cn(
                             'px-5 py-2 text-[9px] font-heading font-bold uppercase tracking-widest rounded-lg border transition-all active:scale-[0.98]',
-                            filter === f.id
+                            filterStatus === f.id
                                 ? 'bg-primary border-primary text-primary-foreground'
                                 : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted'
                         )}
@@ -363,7 +361,7 @@ const DisputeWorkspace = ({ isAdminView = false }) => {
                 <div className="flex items-center justify-center py-20">
                     <Loader2 className="size-6 animate-spin text-muted-foreground" />
                 </div>
-            ) : disputes.length === 0 ? (
+            ) : filteredDisputes.length === 0 ? (
                 <div className="py-32 text-center bg-background border border-border rounded-xl">
                     <Database size={40} className="text-muted-foreground/30 mx-auto mb-6" strokeWidth={1} />
                     <p className="text-[10px] font-label font-semibold text-muted-foreground/60 uppercase tracking-[0.25em]">
@@ -372,12 +370,12 @@ const DisputeWorkspace = ({ isAdminView = false }) => {
                 </div>
             ) : (
                 <div className="space-y-3">
-                    {disputes.map(d => (
+                    {filteredDisputes.map(d => (
                         <DisputeRow
                             key={d._id}
                             dispute={d}
                             isAdmin={isAdmin}
-                            onRefresh={loadDisputes}
+                            onRefresh={refresh}
                         />
                     ))}
                 </div>

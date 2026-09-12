@@ -1,29 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, BookOpen, Hash } from "lucide-react";
-import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 
 const OrgSubjects = () => {
   const { orgId } = useParams();
-  const [subjects, setSubjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: subjects = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'subjects-list');
 
   useEffect(() => {
-    const fetchSubjects = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/subjects-list`);
-        setSubjects(res.data.data);
-      } catch {
-        toast.error("Failed to fetch subjects");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSubjects();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch subjects");
+  }, [isError]);
 
   return (
     <div className="space-y-6">

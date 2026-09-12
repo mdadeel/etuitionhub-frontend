@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
@@ -30,14 +32,39 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import ConfirmModal from "@/components/shared/ConfirmModal";
 
 const AllOrganizations = () => {
-  const [orgs, setOrgs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 500);
+
+  const { data, isLoading: loading, isError } = useQuery({
+    queryKey: ['admin', 'organizations', { search: debouncedSearch, status: statusFilter, page }],
+    queryFn: async ({ signal }) => {
+      const res = await api.get("/api/v1/organizations/all", {
+        params: { search: debouncedSearch, status: statusFilter, page, limit: 12 },
+        signal,
+      });
+      return {
+        orgs: res.data.data || [],
+        totalPages: res.data.pagination?.pages || 1,
+      };
+    },
+    staleTime: 30 * 1000,
+    placeholderData: keepPreviousData,
+  });
+
+  const orgs = data?.orgs ?? [];
+  const totalPages = data?.totalPages ?? 1;
+
+  useEffect(() => {
+    if (isError) toast.error("Failed to load organizations");
+  }, [isError]);
+
+  const refreshOrgs = () => queryClient.invalidateQueries({ queryKey: ['admin', 'organizations'] });
 
   // Notification modal
   const [notifyModalOpen, setNotifyModalOpen] = useState(false);
@@ -52,30 +79,16 @@ const AllOrganizations = () => {
   const [suspendReason, setSuspendReason] = useState("");
   const [suspendLoading, setSuspendLoading] = useState(false);
 
+  // Batch 2 (audit Exec #6): ban/unban go through ConfirmModal with a reason
+  // textarea (ban) instead of native prompt()/confirm().
+  const [banningOrg, setBanningOrg] = useState(null);
+  const [banReason, setBanReason] = useState("");
+  const [unbanningOrg, setUnbanningOrg] = useState(null);
+
   // Details modal
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [detailsOrg, setDetailsOrg] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-
-  const fetchOrgs = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/api/v1/organizations/all", {
-        params: { search, status: statusFilter, page, limit: 12 }
-      });
-      setOrgs(res.data.data || []);
-      setTotalPages(res.data.pagination?.pages || 1);
-    } catch {
-      toast.error("Failed to load organizations");
-    } finally {
-      setLoading(false);
-    }
-  }, [search, statusFilter, page]);
-
-  useEffect(() => {
-    const timer = setTimeout(fetchOrgs, 500);
-    return () => clearTimeout(timer);
-  }, [fetchOrgs]);
 
   const handleOpenSuspend = (org) => {
     setSuspendingOrg(org);
@@ -97,7 +110,7 @@ const AllOrganizations = () => {
       if (detailsOrg && detailsOrg._id === suspendingOrg._id) {
         setDetailsOrg(res.data.data);
       }
-      fetchOrgs();
+      refreshOrgs();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to suspend organization");
     } finally {
@@ -113,7 +126,7 @@ const AllOrganizations = () => {
       if (detailsOrg && detailsOrg._id === orgId) {
         setDetailsOrg(res.data.data);
       }
-      fetchOrgs();
+      refreshOrgs();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to activate organization");
     } finally {
@@ -121,19 +134,25 @@ const AllOrganizations = () => {
     }
   };
 
-  const handleBan = async (orgId, orgName) => {
-    const reason = prompt(`Ban "${orgName}"? Enter ban reason (all activities will be frozen):`);
-    if (reason === null) return;
+  const handleBan = (orgId, orgName) => {
+    // Arm the modal; the PATCH fires on confirm.
+    setBanningOrg({ _id: orgId, name: orgName });
+    setBanReason("");
+  };
+
+  const handleConfirmBan = async () => {
+    if (!banningOrg) return;
     try {
       setActionLoading(true);
-      const res = await api.patch(`/api/v1/organizations/${orgId}/ban`, {
-        reason: reason.trim() || "Banned by platform administration"
+      const res = await api.patch(`/api/v1/organizations/${banningOrg._id}/ban`, {
+        reason: banReason.trim() || "Banned by platform administration"
       });
-      toast.success(`${orgName} has been banned`);
-      if (detailsOrg && detailsOrg._id === orgId) {
+      toast.success(`${banningOrg.name} has been banned`);
+      if (detailsOrg && detailsOrg._id === banningOrg._id) {
         setDetailsOrg(res.data.data);
       }
-      fetchOrgs();
+      setBanningOrg(null);
+      refreshOrgs();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to ban organization");
     } finally {
@@ -141,16 +160,21 @@ const AllOrganizations = () => {
     }
   };
 
-  const handleUnban = async (orgId, orgName) => {
-    if (!confirm(`Unban "${orgName}" and restore to active status?`)) return;
+  const handleUnban = (orgId, orgName) => {
+    setUnbanningOrg({ _id: orgId, name: orgName });
+  };
+
+  const handleConfirmUnban = async () => {
+    if (!unbanningOrg) return;
     try {
       setActionLoading(true);
-      const res = await api.patch(`/api/v1/organizations/${orgId}/unban`);
-      toast.success(`${orgName} has been unbanned and restored`);
-      if (detailsOrg && detailsOrg._id === orgId) {
+      const res = await api.patch(`/api/v1/organizations/${unbanningOrg._id}/unban`);
+      toast.success(`${unbanningOrg.name} has been unbanned and restored`);
+      if (detailsOrg && detailsOrg._id === unbanningOrg._id) {
         setDetailsOrg(res.data.data);
       }
-      fetchOrgs();
+      setUnbanningOrg(null);
+      refreshOrgs();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to unban organization");
     } finally {
@@ -396,7 +420,7 @@ const AllOrganizations = () => {
               </button>
             </div>
           )}
-        </>
+    </>
       )}
 
       {/* Suspend Confirmation Modal */}
@@ -657,6 +681,43 @@ const AllOrganizations = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Ban / Unban Confirmation Modals (root level: must not unmount with list state) */}
+      <ConfirmModal
+        open={!!banningOrg}
+        onOpenChange={(open) => { if (!open) setBanningOrg(null); }}
+        title={`Ban "${banningOrg?.name}"?`}
+        description="All workspace activities will be frozen immediately. Members will see a banned-workspace notice."
+        confirmLabel="Ban Organization"
+        loadingLabel="Banning..."
+        loading={actionLoading}
+        onConfirm={handleConfirmBan}
+      >
+        <div className="py-1">
+          <label className="text-xs font-semibold text-foreground block mb-1">
+            Ban reason
+          </label>
+          <textarea
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background resize-none focus:outline-none focus:ring-1 focus:ring-destructive"
+            rows={3}
+            placeholder="e.g., Fraud investigation, terms violation..."
+            value={banReason}
+            onChange={(e) => setBanReason(e.target.value)}
+          />
+        </div>
+      </ConfirmModal>
+
+      <ConfirmModal
+        open={!!unbanningOrg}
+        onOpenChange={(open) => { if (!open) setUnbanningOrg(null); }}
+        title={`Unban "${unbanningOrg?.name}"?`}
+        description="The workspace will be restored to active status for all members."
+        confirmLabel="Unban"
+        confirmVariant="default"
+        loadingLabel="Working..."
+        loading={actionLoading}
+        onConfirm={handleConfirmUnban}
+      />
     </div>
   );
 };

@@ -1,5 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAssignmentsQuery } from '@/hooks/queries/useTutorQuery';
+import { useConnectionsQuery } from '@/hooks/queries/useStudentQuery';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import {
@@ -321,40 +324,18 @@ const CreateAssignmentForm = ({ connections, onSuccess, onCancel }) => {
 /** Main Assignments component — works for both tutor and student */
 const Assignments = () => {
     const { dbUser } = useAuth();
+    const queryClient = useQueryClient();
     const role = dbUser?.role;
 
-    const [assignments, setAssignments] = useState([]);
-    const [connections, setConnections] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data: connections = [] } = useConnectionsQuery('accepted');
+    const { data: assignments = [], isLoading: loading } = useAssignmentsQuery();
     const [filter, setFilter] = useState('');
     const [showForm, setShowForm] = useState(false);
 
-    const loadAssignments = useCallback(async () => {
-        setLoading(true);
-        try {
-            // Use the connection-based endpoint to get assignments
-            const res = await api.get('/api/connections');
-            const conns = res.data?.data || res.data || [];
-            setConnections(conns);
-
-
-            // Try the direct list endpoint
-            try {
-                const assignRes = await api.get('/api/assignments', {
-                    params: filter ? { status: filter } : {}
-                });
-                setAssignments(assignRes.data?.data || assignRes.data || []);
-            } catch {
-                setAssignments([]);
-            }
-        } catch {
-            toast.error('Failed to load assignments');
-        } finally {
-            setLoading(false);
-        }
-    }, [filter]);
-
-    useEffect(() => { loadAssignments(); }, [loadAssignments]);
+    const loadAssignments = useCallback(() => {
+        queryClient.invalidateQueries({ queryKey: ['assignments'] });
+        queryClient.invalidateQueries({ queryKey: ['connections'] });
+    }, [queryClient]);
 
     const statusFilters = [
         { id: '', label: 'All' },

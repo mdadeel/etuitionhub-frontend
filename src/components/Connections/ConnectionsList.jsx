@@ -1,43 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api';
-import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
+import { useConnectionsQuery } from '@/hooks/queries/useStudentQuery';
 import ConnectionRequestCard from './ConnectionRequestCard';
 import { Loader2, RefreshCw, MessageCircleWarning } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const ConnectionsList = () => {
-  const [connections, setConnections] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState('all'); // all, pending, accepted
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/immutability
-    loadConnections();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
-
-  const loadConnections = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get(`/api/connections?status=${filter !== 'all' ? filter : ''}`);
-      setConnections(res.data || []);
-    } catch (err) {
-      console.error('Failed to load connections:', err);
-      toast.error('Failed to load connections');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Batch 4c: cached, cancellable list (same ?status= semantics as before).
+  const { data: connections = [], isLoading: loading } = useConnectionsQuery(filter === 'all' ? '' : filter);
 
   const handleUpdate = () => {
-    loadConnections();
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const handleNavigateToProfile = (userId) => {
-    navigate(`/profile/${userId}`);
+    queryClient.invalidateQueries({ queryKey: ['connections'] });
   };
 
   if (loading) {

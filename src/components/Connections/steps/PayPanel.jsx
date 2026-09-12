@@ -11,6 +11,12 @@ const PayPanel = ({ connection, onMarked }) => {
 
   const handleMarkPaid = async (e) => {
     e.preventDefault();
+    // Batch 2 (audit Exec #6): a payment claim without evidence cannot be
+    // verified by an admin — require the MFS transaction ID up front.
+    if (!txnId.trim()) {
+      toast.error('Transaction ID is required — admin verifies every payment against it.');
+      return;
+    }
     setSubmitting(true);
     try {
       await api.put(`/api/connections/${connection._id}/mark-paid`, {
@@ -54,7 +60,8 @@ const PayPanel = ({ connection, onMarked }) => {
         </div>
         <input
           type="text" value={txnId} onChange={(e) => setTxnId(e.target.value)}
-          placeholder="Transaction ID (optional until admin verifies)"
+          placeholder="Transaction ID (required for admin verification)"
+          required
           className="w-full border border-border rounded-md p-2 text-sm bg-background text-foreground"
         />
         <button type="submit" disabled={submitting} className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90 disabled:opacity-50">

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "../../../services/api";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { toast } from "react-hot-toast";
 import { 
   BookOpen, 
@@ -15,24 +15,14 @@ import {
 
 const OrgTuitions = () => {
   const { orgId } = useParams();
-  const [tuitions, setTuitions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: tuitions = [], isLoading: loading, isError, error } = useOrgListQuery(orgId, 'tuitions');
 
   useEffect(() => {
-    const fetchTuitions = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get(`/api/v1/organizations/${orgId}/tuitions`);
-        setTuitions(res.data.data);
-      } catch (error) {
-        toast.error("Failed to load tuitions");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTuitions();
-  }, [orgId]);
+    if (isError) {
+      toast.error("Failed to load tuitions");
+      console.error(error);
+    }
+  }, [isError, error]);
 
   if (loading) {
     return (

@@ -1,29 +1,17 @@
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, DollarSign, CheckCircle } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const OrgSalaries = () => {
   const { orgId } = useParams();
-  const [salaries, setSalaries] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchSalaries = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/salaries`);
-        setSalaries(res.data.data);
-      } catch {
-        toast.error("Failed to fetch salaries");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSalaries();
-  }, [orgId]);
+  const queryClient = useQueryClient();
+  const salariesKey = ['org', orgId, 'salaries'];
+  const { data: salaries = [], isLoading: loading } = useOrgListQuery(orgId, 'salaries');
 
   const getStatusColor = (s) => ({
     paid: 'bg-green-100 text-green-700', approved: 'bg-primary/10 text-primary',
@@ -34,7 +22,10 @@ const OrgSalaries = () => {
     try {
       await api.patch(`/api/v1/organizations/${orgId}/salaries/${salaryId}/approve`);
       toast.success("Salary approved");
-      setSalaries(salaries.map(s => s._id === salaryId ? { ...s, status: 'approved' } : s));
+      queryClient.setQueryData(salariesKey, (prev) =>
+        (prev || []).map(s => s._id === salaryId ? { ...s, status: 'approved' } : s)
+      );
+      queryClient.invalidateQueries({ queryKey: salariesKey });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to approve");
     }

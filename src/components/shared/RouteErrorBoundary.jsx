@@ -13,7 +13,7 @@ const RouteErrorBoundary = ({ children }) => {
   const { pathname, search } = useLocation();
   const key = pathname + search;
   return (
-    <ErrorBoundary resetKey={key} key={key}>
+    <ErrorBoundary resetKey={key}>
       <Suspense fallback={<PageSkeleton />}>{children}</Suspense>
     </ErrorBoundary>
   );

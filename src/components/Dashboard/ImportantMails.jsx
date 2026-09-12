@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { Trash2, RotateCcw, Mail, MailOpen, AlertCircle, Send, Loader2, Search, CheckCheck, Clock, Users, Inbox, ArrowUpRight } from 'lucide-react';
 import api from '../../services/api';
 import { Card } from '@/components/ui/card';
@@ -6,13 +7,26 @@ import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
+import ConfirmModal from '../shared/ConfirmModal';
 
 const ImportantMails = () => {
     const { dbUser } = useAuth();
+    const queryClient = useQueryClient();
     const isAdmin = dbUser?.globalRole === 'super_admin';
     const [mailTab, setMailTab] = useState('received');
+    // Batch 4c: cached, tab-keyed inbox (signal cancels on tab switch).
+    // Local `mails` copy stays: mark-read + delete-undo mutate it locally.
+    const { data: mailsData = [], isLoading: loading } = useQuery({
+        queryKey: ['mails', mailTab],
+        queryFn: async ({ signal }) => {
+            const endpoint = mailTab === 'sent' ? '/api/mails/sent' : '/api/mails';
+            const res = await api.get(endpoint, { signal });
+            return res.data || [];
+        },
+        staleTime: 30_000,
+        placeholderData: keepPreviousData,
+    });
     const [mails, setMails] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [deletedItems, setDeletedItems] = useState({});
     const [showCompose, setShowCompose] = useState(false);
     const [composeForm, setComposeForm] = useState({ userId: '', subject: '', body: '', type: 'admin' });
@@ -24,25 +38,23 @@ const ImportantMails = () => {
     const [expandedMail, setExpandedMail] = useState(null);
     const debounceRef = useRef(null);
     const deleteTimersRef = useRef({});
+    // Batch 2 (audit Exec #6): broadcast to all users requires an explicit
+    // second confirmation. The ref arms the send across the modal round-trip.
+    const [showBroadcastConfirm, setShowBroadcastConfirm] = useState(false);
+    const broadcastArmed = useRef(false);
 
-    const fetchMails = async (tab) => {
-        setLoading(true);
-        try {
-            const endpoint = tab === 'sent' ? '/api/mails/sent' : '/api/mails';
-            const res = await api.get(endpoint);
-            setMails(res.data);
-        } catch (error) {
-            console.error('Failed to fetch mails', error);
-            toast.error('Could not load mails');
-        } finally {
-            setLoading(false);
-        }
+    // Sync server data into the locally-mutated copy (read/delete-undo).
+    useEffect(() => {
+        setMails(mailsData);
+    }, [mailsData]);
+
+    const refreshMails = () => {
+        queryClient.invalidateQueries({ queryKey: ['mails'] });
     };
 
-    useEffect(() => {
-        fetchMails(mailTab);
-    }, [mailTab]);
-
+    // Batch 4b/4c: sequencing guard — a slow earlier keystroke must not
+    // overwrite fresher user-search results.
+    const userSearchRequestId = useRef(0);
     const searchUsers = useCallback((query) => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -52,14 +64,16 @@ const ImportantMails = () => {
         }
 
         debounceRef.current = setTimeout(async () => {
+            const requestId = ++userSearchRequestId.current;
             setSearchingUsers(true);
             try {
                 const res = await api.get(`/api/users?search=${encodeURIComponent(query)}&limit=10`);
+                if (userSearchRequestId.current !== requestId) return;
                 setUserResults(res.data?.data || res.data?.users || res.data || []);
             } catch (error) {
                 console.error('Failed to search users', error);
             } finally {
-                setSearchingUsers(false);
+                if (userSearchRequestId.current === requestId) setSearchingUsers(false);
             }
         }, 300);
     }, []);
@@ -70,6 +84,11 @@ const ImportantMails = () => {
                 toast.error('Please fill in subject and message');
                 return;
             }
+            if (!broadcastArmed.current) {
+                setShowBroadcastConfirm(true);
+                return;
+            }
+            broadcastArmed.current = false;
             setSending(true);
             try {
                 const res = await api.post('/api/mails/admin/send-all', {
@@ -79,7 +98,7 @@ const ImportantMails = () => {
                 });
                 toast.success(`Mail sent to ${res.data.count} users`);
                 resetCompose();
-                fetchMails('sent');
+                refreshMails();
             } catch (error) {
                 console.error(error);
                 toast.error(error.response?.data?.error || 'Failed to send mail');
@@ -96,7 +115,7 @@ const ImportantMails = () => {
                 await api.post('/api/mails/admin/send', composeForm);
                 toast.success('Mail sent successfully');
                 resetCompose();
-                fetchMails('sent');
+                refreshMails();
             } catch (error) {
                 console.error(error);
                 toast.error(error.response?.data?.error || 'Failed to send mail');
@@ -104,6 +123,12 @@ const ImportantMails = () => {
                 setSending(false);
             }
         }
+    };
+
+    const handleConfirmBroadcast = () => {
+        broadcastArmed.current = true;
+        setShowBroadcastConfirm(false);
+        handleSendMail();
     };
 
     const resetCompose = () => {
@@ -496,6 +521,16 @@ const ImportantMails = () => {
                     })}
                 </div>
             )}
+            <ConfirmModal
+                open={showBroadcastConfirm}
+                onOpenChange={(open) => { if (!open) setShowBroadcastConfirm(false); }}
+                title="Send to all users?"
+                description={`"${composeForm.subject}" will be emailed to every user on the platform. This cannot be undone.`}
+                confirmLabel="Send to All"
+                loadingLabel="Sending..."
+                loading={sending}
+                onConfirm={handleConfirmBroadcast}
+            />
         </Card>
     );
 };

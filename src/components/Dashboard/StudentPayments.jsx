@@ -1,11 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
-import api from '../../services/api';
+import { useStudentPaymentsQuery } from '@/hooks/queries/useStudentQuery';
 import { useRealtimeStore } from '../../store/realtimeStore';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
-import toast from 'react-hot-toast';
 import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 import {
     Banknote,
@@ -55,32 +55,17 @@ const PAYMENT_METHOD_LABELS = {
  
 const StudentPayments = ({ hideHeader }) => {
     const { user } = useAuth();
-    const [payments, setPayments] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const { data: payments = [], isLoading: loading } = useStudentPaymentsQuery(user?.email);
     const [filter, setFilter] = useState('all');
     const [receiptFor, setReceiptFor] = useState(null);
- 
-    const fetchPayments = useCallback(async () => {
-        if (!user?.email) return;
-        try {
-            const res = await api.get(`/api/payments/student/${user.email}`);
-            setPayments(res.data || []);
-        } catch {
-            toast.error('Failed to load payment history');
-        } finally {
-            setLoading(false);
-        }
-    }, [user]);
- 
-    useEffect(() => {
-        fetchPayments();
-    }, [fetchPayments]);
- 
+
     const lastPayment = useRealtimeStore((s) => s.lastPayment);
     useEffect(() => {
-        if (lastPayment) fetchPayments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lastPayment]);
+        if (lastPayment && user?.email) {
+            queryClient.invalidateQueries({ queryKey: ['payments', 'student', user.email] });
+        }
+    }, [lastPayment, user?.email, queryClient]);
  
     const stats = useMemo(() => {
         const total = payments.length;

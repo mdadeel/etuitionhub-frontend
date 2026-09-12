@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
@@ -13,40 +14,39 @@ import DataTable from "@/components/ui/data-table";
 
 const OrgBilling = () => {
   const { orgId } = useParams();
-  const [subscription, setSubscription] = useState(null);
-  const [plans, setPlans] = useState([]);
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data, isLoading: loading } = useQuery({
+    queryKey: ['org', orgId, 'billing'],
+    queryFn: async ({ signal }) => {
+      const [subRes, plansRes, paymentsRes] = await Promise.all([
+        api.get(`/api/v1/subscriptions/${orgId}/subscription`, { signal }).catch(() => ({ data: { data: null } })),
+        api.get("/api/v1/plans/public", { signal }).catch(() => ({ data: { data: [] } })),
+        api.get(`/api/v1/organizations/${orgId}/payments`, { signal }).catch(() => ({ data: { data: [] } })),
+      ]);
+      return {
+        subscription: subRes.data.data,
+        plans: plansRes.data.data || [],
+        payments: paymentsRes.data?.data || paymentsRes.data || [],
+      };
+    },
+    enabled: Boolean(orgId),
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
+  });
+
+  const subscription = data?.subscription ?? null;
+  const plans = data?.plans ?? [];
+  const payments = data?.payments ?? [];
   const [upgrading, setUpgrading] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [subRes, plansRes, paymentsRes] = await Promise.all([
-        api.get(`/api/v1/subscriptions/${orgId}/subscription`).catch(() => ({ data: { data: null } })),
-        api.get("/api/v1/plans/public").catch(() => ({ data: { data: [] } })),
-        api.get(`/api/v1/organizations/${orgId}/payments`).catch(() => ({ data: { data: [] } })),
-      ]);
-      setSubscription(subRes.data.data);
-      setPlans(plansRes.data.data || []);
-      setPayments(paymentsRes.data?.data || paymentsRes.data || []);
-    } catch {
-      toast.error("Failed to load billing data");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  const refreshBilling = () => queryClient.invalidateQueries({ queryKey: ['org', orgId, 'billing'] });
 
   const handleSubscribe = async (planId, billingCycle) => {
     try {
       setUpgrading(true);
       await api.post(`/api/v1/subscriptions/${orgId}/subscription`, { planId, billingCycle });
       toast.success("Subscription activated!");
-      fetchData();
+      refreshBilling();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to subscribe");
     } finally {
@@ -59,7 +59,7 @@ const OrgBilling = () => {
     try {
       await api.patch(`/api/v1/subscriptions/${orgId}/subscription/cancel`);
       toast.success("Subscription canceled");
-      fetchData();
+      refreshBilling();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to cancel");
     }

@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
 import api from "../../../services/api";
 import toast from "react-hot-toast";
 import {
@@ -34,42 +36,45 @@ const GLOBAL_FILTERS = [
 const GlobalUsers = () => {
   const { dbUser } = useAuth();
   const selfId = dbUser?._id?.toString();
+  const queryClient = useQueryClient();
 
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [accountFilter, setAccountFilter] = useState('all');
   const [globalFilter, setGlobalFilter] = useState('all');
+  const debouncedSearch = useDebouncedValue(search, 400);
+
+  const { data, isLoading: loading, isError } = useQuery({
+    queryKey: ['admin', 'users', { search: debouncedSearch, page, accountFilter, globalFilter }],
+    queryFn: async ({ signal }) => {
+      const params = { search: debouncedSearch, page, limit: 10 };
+      if (accountFilter !== 'all') params.accountType = accountFilter;
+      if (globalFilter !== 'all') params.globalRole = globalFilter;
+      const res = await api.get("/api/users", { params, signal });
+      return {
+        users: res.data.data || res.data || [],
+        totalPages: res.data.pagination?.pages || 1,
+        total: res.data.pagination?.total || 0,
+      };
+    },
+    staleTime: 30 * 1000,
+    placeholderData: keepPreviousData,
+  });
+
+  const users = data?.users ?? [];
+  const totalPages = data?.totalPages ?? 1;
+  const total = data?.total ?? 0;
+
+  useEffect(() => {
+    if (isError) toast.error("Failed to load users");
+  }, [isError]);
+
+  const refreshUsers = () => queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
 
   const [showModerationModal, setShowModerationModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
   const [actionLoading, setActionLoading] = useState(null);
-
-  const fetchUsers = useCallback(async () => {
-    try {
-      setLoading(true);
-      const params = { search, page, limit: 10 };
-      if (accountFilter !== 'all') params.accountType = accountFilter;
-      if (globalFilter !== 'all') params.globalRole = globalFilter;
-      const res = await api.get("/api/users", { params });
-      setUsers(res.data.data || res.data || []);
-      setTotalPages(res.data.pagination?.pages || 1);
-      setTotal(res.data.pagination?.total || 0);
-    } catch {
-      toast.error("Failed to load users");
-    } finally {
-      setLoading(false);
-    }
-  }, [search, page, accountFilter, globalFilter]);
-
-  useEffect(() => {
-    const timer = setTimeout(fetchUsers, 400);
-    return () => clearTimeout(timer);
-  }, [fetchUsers]);
 
   const toggleSelect = (id) => {
     setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
@@ -85,7 +90,7 @@ const GlobalUsers = () => {
     try {
       await api.patch(`/api/admin/promote-to-admin/${user._id}`);
       toast.success(`${user.displayName} is now Super Admin`);
-      fetchUsers();
+      refreshUsers();
     } catch (err) {
       toast.error(err.response?.data?.error || "Promote failed");
     } finally {
@@ -103,7 +108,7 @@ const GlobalUsers = () => {
     try {
       await api.patch(`/api/admin/demote-from-admin/${user._id}`);
       toast.success(`${user.displayName} demoted to user`);
-      fetchUsers();
+      refreshUsers();
     } catch (err) {
       toast.error(err.response?.data?.error || "Demote failed");
     } finally {
@@ -196,7 +201,7 @@ const GlobalUsers = () => {
       <BulkActionBar
         selectedIds={selectedIds}
         onClear={() => setSelectedIds([])}
-        onAction={fetchUsers}
+        onAction={refreshUsers}
         total={total}
       />
 
@@ -384,7 +389,7 @@ const GlobalUsers = () => {
             if (!open) setSelectedUser(null);
           }}
           targetUser={selectedUser}
-          onModerationComplete={fetchUsers}
+          onModerationComplete={refreshUsers}
         />
       )}
     </div>

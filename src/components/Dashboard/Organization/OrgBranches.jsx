@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -11,24 +13,15 @@ import toast from "react-hot-toast";
 
 const OrgBranches = () => {
   const { orgId } = useParams();
-  const [branches, setBranches] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: branches = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'branches');
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', address: '', district: '', phone: '', email: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchBranches = useCallback(async () => {
-    try {
-      const res = await api.get(`/api/v1/organizations/${orgId}/branches`);
-      setBranches(res.data.data);
-    } catch {
-      toast.error("Failed to fetch branches");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
-
-  useEffect(() => { fetchBranches(); }, [fetchBranches]);
+  useEffect(() => {
+    if (isError) toast.error("Failed to fetch branches");
+  }, [isError]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -38,7 +31,7 @@ const OrgBranches = () => {
       toast.success("Branch created");
       setShowCreate(false);
       setForm({ name: '', address: '', district: '', phone: '', email: '' });
-      fetchBranches();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'branches'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to create branch");
     } finally {
@@ -51,7 +44,7 @@ const OrgBranches = () => {
     try {
       await api.delete(`/api/v1/organizations/${orgId}/branches/${branchId}`);
       toast.success("Branch deleted");
-      fetchBranches();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'branches'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to delete branch");
     }

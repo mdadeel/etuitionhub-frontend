@@ -1,8 +1,7 @@
 import { Card } from "@/components/ui/card";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../services/api";
-import toast from "react-hot-toast";
 import { Bookmark, Users, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TutorCardGridSkeleton, TuitionCardGridSkeleton } from "@/components/shared/skeletons";
@@ -12,42 +11,34 @@ import TuitionCard from "@/components/shared/TuitionCard";
 
 const Bookmarks = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("tutors");
-  const [savedTutors, setSavedTutors] = useState([]);
-  const [savedTuitions, setSavedTuitions] = useState([]);
-  const [loadingTutors, setLoadingTutors] = useState(true);
-  const [loadingTuitions, setLoadingTuitions] = useState(true);
-
-  const fetchSavedTutors = async () => {
-    setLoadingTutors(true);
-    try {
-      const res = await api.get("/api/bookmarks");
-      setSavedTutors(res.data || []);
-    } catch (err) {
-      console.error("Failed to fetch saved tutors:", err);
-      toast.error("Failed to load saved tutors");
-    } finally {
-      setLoadingTutors(false);
-    }
+  // Batch 7: tab in URL for deep-linking (copies AdminFinanceWorkspace pattern).
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") === "tuitions" ? "tuitions" : "tutors";
+  const changeTab = (tab) => {
+    setSearchParams(tab === "tutors" ? {} : { tab }, { replace: true });
   };
 
-  const fetchSavedTuitions = async () => {
-    setLoadingTuitions(true);
-    try {
-      const res = await api.get("/api/bookmarks/tuitions");
-      setSavedTuitions(res.data || []);
-    } catch (err) {
-      console.error("Failed to fetch saved tuitions:", err);
-      toast.error("Failed to load saved tuitions");
-    } finally {
-      setLoadingTuitions(false);
-    }
-  };
+  // Batch 4c: cached per-tab queries (signal cancels on unmount/tab switch).
+  // Both stay enabled: the tab switcher shows live counts for each side.
+  const { data: savedTutors = [], isLoading: loadingTutors } = useQuery({
+    queryKey: ["bookmarks", "tutors"],
+    queryFn: async ({ signal }) => {
+      const res = await api.get("/api/bookmarks", { signal });
+      return res.data || [];
+    },
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
 
-  useEffect(() => {
-    fetchSavedTutors();
-    fetchSavedTuitions();
-  }, []);
+  const { data: savedTuitions = [], isLoading: loadingTuitions } = useQuery({
+    queryKey: ["bookmarks", "tuitions"],
+    queryFn: async ({ signal }) => {
+      const res = await api.get("/api/bookmarks/tuitions", { signal });
+      return res.data || [];
+    },
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
 
   const tabs = [
     { id: "tutors", label: "Saved Tutors", icon: Users, count: savedTutors.length },
@@ -69,7 +60,7 @@ const Bookmarks = () => {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => changeTab(tab.id)}
             className={cn(
               "flex items-center gap-2 px-5 py-2.5 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap",
               activeTab === tab.id

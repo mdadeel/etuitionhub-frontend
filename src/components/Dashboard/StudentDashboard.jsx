@@ -1,12 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect, useCallback, Suspense, lazy } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSearchParams, useLocation, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
+import { useStudentTuitionsQuery, useStudentBookingsQuery, useStudentApplicationsQuery, useUpdateApplicationStatusMutation } from "@/hooks/queries/useStudentQuery";
 import { StatCardSkeleton } from "@/components/shared/skeletons";
 import StudentPayments from "./StudentPayments";
 import Assignments from "./Assignments";
@@ -28,6 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import DataTable from "@/components/ui/data-table";
 import OnboardingChecklist from "./widgets/OnboardingChecklist";
+import ConfirmModal from "@/components/shared/ConfirmModal";
 
 const PostTuition = lazy(() => import("../../pages/PostTuition"));
  
@@ -46,6 +49,7 @@ const tabs = [
  */
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -61,102 +65,43 @@ const StudentDashboard = () => {
     }
   }, [pathname, searchParams]);
 
-  const [bookings, setBookings] = useState([]);
-  const [myTuitions, setMyTuitions] = useState([]);
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
- 
-  // Fetch tuitions for this student
-  const fetchMyTuitions = useCallback(async () => {
-    if (!user?.email) return;
-    try {
-      const res = await api.get(`/api/tuitions/student/${user.email}`);
-      setMyTuitions(res.data || []);
-    } catch (err) {
-      console.error("Failed to fetch tuitions:", err);
-      toast.error(t("student.load_requests_failed"));
-      setMyTuitions([]);
-    }
-  }, [user?.email, t]);
- 
-  // Fetch bookings for this student
-  const fetchBookings = useCallback(async () => {
-    if (!user?.email) return;
-    try {
-      const res = await api.get(`/api/bookings/student/${user.email}`);
-      setBookings(res.data || []);
-    } catch (err) {
-      console.error("Failed to fetch bookings:", err);
-      toast.error(t("student.load_bookings_failed"));
-      setBookings([]);
-    }
-  }, [user?.email, t]);
- 
-  // Fetch applications for student's tuitions
-  const fetchApplications = useCallback(async () => {
-    if (!user?.email) return;
-    try {
-      const res = await api.get(`/api/applications/student/${user.email}`);
-      setApplications(res.data || []);
-    } catch (err) {
-      console.error("Failed to fetch applications:", err);
-      toast.error(t("student.load_applications_failed"));
-      setApplications([]);
-    }
-  }, [user?.email, t]);
- 
-  // Initial data fetch
-  useEffect(() => {
-    if (!user?.email) return;
- 
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        await Promise.all([
-          fetchMyTuitions(),
-          fetchBookings(),
-          fetchApplications(),
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
- 
-    loadData();
-  }, [user?.email, fetchMyTuitions, fetchBookings, fetchApplications]);
- 
-  // Refresh data after any mutation
-  const refreshData = useCallback(async () => {
-    await Promise.all([
-      fetchMyTuitions(),
-      fetchBookings(),
-      fetchApplications(),
-    ]);
-  }, [fetchMyTuitions, fetchBookings, fetchApplications]);
- 
-  const handleApprove = (id) => navigate(`/checkout/${id}`);
- 
-  const handleReject = async (id) => {
-    if (!confirm(t("student.confirm_reject"))) return;
-    try {
-      await api.patch(`/api/applications/${id}`, { status: "rejected" });
-      toast.success(t("student.app_rejected"));
-      setApplications((prev) =>
-        prev.map((a) => (a._id === id ? { ...a, status: "rejected" } : a)),
-      );
-    } catch {
-      toast.error(t("student.reject_failed"));
-    }
-  };
+  // Batch 7: hidden tabs don't fetch — each query is enabled only on the
+  // tabs that render it (overview previews all three).
+  const { data: myTuitions = [], isLoading: loadingTuitions } = useStudentTuitionsQuery(user?.email, activeTab === "overview" || activeTab === "my-jobs");
+  const { data: bookings = [], isLoading: loadingBookings } = useStudentBookingsQuery(user?.email, activeTab === "overview" || activeTab === "booked");
+  const { data: applications = [], isLoading: loadingApplications } = useStudentApplicationsQuery(user?.email, activeTab === "overview" || activeTab === "applications");
+  const updateAppMutation = useUpdateApplicationStatusMutation(user?.email);
 
-  const handleDeleteTuition = async (tid) => {
-    if (!confirm(t("student.confirm_delete"))) return;
+  const loading = loadingTuitions || loadingBookings || loadingApplications;
+
+  const handleApprove = (id) => navigate(`/checkout/${id}`);
+
+  // Batch 2 (audit Exec #6): destructive actions go through ConfirmModal,
+  // not native confirm(). pendingAction holds the armed {type, id} target.
+  const [pendingAction, setPendingAction] = useState(null);
+  const [confirming, setConfirming] = useState(false);
+
+  const handleReject = (id) => setPendingAction({ type: "reject", id });
+
+  const handleDeleteTuition = (tid) => setPendingAction({ type: "delete", id: tid });
+
+  const handleConfirmPendingAction = async () => {
+    if (!pendingAction) return;
+    setConfirming(true);
     try {
-      await api.delete(`/api/tuitions/${tid}`);
-      toast.success(t("student.request_deleted"));
-      await refreshData();
+      if (pendingAction.type === "reject") {
+        await updateAppMutation.mutateAsync({ applicationId: pendingAction.id, status: "rejected" });
+        toast.success(t("student.app_rejected"));
+      } else {
+        await api.delete(`/api/tuitions/${pendingAction.id}`);
+        toast.success(t("student.request_deleted"));
+        queryClient.invalidateQueries({ queryKey: ['tuitions', 'student', user?.email] });
+      }
+      setPendingAction(null);
     } catch {
-      toast.error(t("student.delete_failed"));
+      toast.error(t(pendingAction.type === "reject" ? "student.reject_failed" : "student.delete_failed"));
+    } finally {
+      setConfirming(false);
     }
   };
 
@@ -367,8 +312,8 @@ const StudentDashboard = () => {
         <Suspense fallback={<div className="p-8 text-center text-muted-foreground text-sm italic">{t("student.loading")}</div>}>
           <PostTuition
             isDashboard={true}
-            onSuccess={async () => {
-              await refreshData();
+            onSuccess={() => {
+              queryClient.invalidateQueries({ queryKey: ['tuitions', 'student', user?.email] });
               setActiveTab("my-jobs");
             }}
           />
@@ -567,6 +512,19 @@ const StudentDashboard = () => {
 
       {/* Assignments Tab */}
       {activeTab === "assignments" && <Assignments />}
+
+      <ConfirmModal
+        open={!!pendingAction}
+        onOpenChange={(open) => { if (!open) setPendingAction(null); }}
+        title={pendingAction?.type === "delete"
+          ? t("student.confirm_delete_title", "Delete tuition request?")
+          : t("student.confirm_reject_title", "Reject this application?")}
+        description={pendingAction?.type === "delete" ? t("student.confirm_delete") : t("student.confirm_reject")}
+        confirmLabel={pendingAction?.type === "delete" ? t("common.delete", "Delete") : t("common.reject", "Reject")}
+        loadingLabel={t("common.working", "Working...")}
+        loading={confirming}
+        onConfirm={handleConfirmPendingAction}
+      />
     </div>
   );
 };

@@ -2,13 +2,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import DataTable from "@/components/ui/data-table";
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useLocation, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContext";
 import { useChat } from '../../contexts/ChatContext';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import { useTutorApplicationsQuery, useTutorRevenueQuery, useDeleteTutorApplicationMutation } from '@/hooks/queries/useTutorQuery';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import TutorAvailability from './TutorAvailability';
 import Assignments from './Assignments';
@@ -29,6 +30,7 @@ import {
 } from "lucide-react";
 import { cn } from '@/lib/utils';
 import OnboardingChecklist from './widgets/OnboardingChecklist';
+import ConfirmModal from '@/components/shared/ConfirmModal';
  
 /**
  * TutorDashboard Component — High Signal-to-Noise Tutor Workspace
@@ -42,75 +44,34 @@ const TutorDashboard = () => {
     const { pathname } = useLocation();
     const initialTab = pathname.includes('/applications') ? 'applications' : (searchParams.get('tab') || 'overview');
     const [activeTab, setActiveTab] = useState(initialTab);
-    const [apps, setApps] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [revenue, setRevenue] = useState([]);
+    // Batch 7: hidden tabs don't fetch — enabled only where rendered.
+    const { data: apps = [], isLoading: loadingApps } = useTutorApplicationsQuery(user?.email, activeTab === 'overview' || activeTab === 'applications' || activeTab === 'ongoing');
+    const { data: revenue = [], isLoading: loadingRevenue } = useTutorRevenueQuery(user?.email, activeTab === 'overview' || activeTab === 'revenue');
+    const deleteAppMutation = useDeleteTutorApplicationMutation(user?.email);
 
-    useEffect(() => {
-        if (pathname.includes('/applications')) {
-            setActiveTab('applications');
-        } else {
-            setActiveTab(searchParams.get('tab') || 'overview');
-        }
-    }, [pathname, searchParams]);
-
-    // Fetch applications
-    const fetchApplications = useCallback(async () => {
-        if (!user?.email) return;
-        try {
-            const res = await api.get(`/api/applications/tutor/${user.email}`);
-            setApps(res.data || []);
-        } catch (err) {
-            console.error('Failed to fetch applications:', err);
-            toast.error(t('tutorDashboard.load_apps_failed'));
-            setApps([]);
-        }
-    }, [user?.email, t]);
-
-    // Fetch earnings
-    const fetchRevenue = useCallback(async () => {
-        if (!user?.email) return;
-        try {
-            const res = await api.get(`/api/payments/tutor/${user.email}`);
-            setRevenue(res.data || []);
-        } catch (err) {
-            console.error('Failed to fetch earnings:', err);
-            toast.error(t('tutorDashboard.load_earnings_failed'));
-            setRevenue([]);
-        }
-    }, [user?.email, t]);
-
-    // Initial data fetch
-    useEffect(() => {
-        if (!user?.email) return;
-        
-        const loadData = async () => {
-            setLoading(true);
-            try {
-                await Promise.all([
-                    fetchApplications(),
-                    fetchRevenue()
-                ]);
-            } finally {
-                setLoading(false);
-            }
-        };
-        
-        loadData();
-    }, [user?.email, fetchApplications, fetchRevenue]);
+    const loading = loadingApps || loadingRevenue;
 
     const totalEarnings = revenue.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
     const projectedThisMonth = computeProjectedThisMonth(revenue);
     const activeEngagements = apps.filter(a => a.status === 'approved').length;
 
-    const handleDelete = async (id) => {
-        if (!confirm(t('tutorDashboard.confirm_delete'))) return;
+    const handleDelete = (id) => setDeleteTarget(id);
+
+    // Batch 2 (audit Exec #6): arm-then-confirm instead of native confirm().
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [confirming, setConfirming] = useState(false);
+
+    const handleConfirmDelete = async () => {
+        if (!deleteTarget) return;
+        setConfirming(true);
         try {
-            await api.delete(`/api/applications/${id}`);
+            await deleteAppMutation.mutateAsync(deleteTarget);
             toast.success(t('tutorDashboard.app_deleted'));
-            await fetchApplications();
+            setDeleteTarget(null);
         } catch (err) {
             toast.error(err.response?.data?.error || t('tutorDashboard.delete_failed'));
+        } finally {
+            setConfirming(false);
         }
     };
 
@@ -140,6 +101,11 @@ const TutorDashboard = () => {
     if (loading) {
         return (
             <div className="space-y-6 max-w-7xl mx-auto pb-12">
+                {/* Batch 5: keep the header mounted so the page shell never blanks */}
+                <DashboardPageHeader
+                    title={t('tutorDashboard.loading_title', 'Loading workspace')}
+                    subtitle={t('tutorDashboard.loading_subtitle', 'Fetching your overview.')}
+                />
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[...Array(4)].map((_, i) => (
                         <StatCardSkeleton key={i} />
@@ -504,6 +470,17 @@ const TutorDashboard = () => {
 
             {/* Assignments Tab */}
             {activeTab === 'assignments' && <Assignments />}
+
+            <ConfirmModal
+                open={!!deleteTarget}
+                onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+                title={t('tutorDashboard.confirm_delete_title', 'Delete this application?')}
+                description={t('tutorDashboard.confirm_delete')}
+                confirmLabel={t('common.delete', 'Delete')}
+                loadingLabel={t('common.working', 'Working...')}
+                loading={confirming}
+                onConfirm={handleConfirmDelete}
+            />
         </div>
     );
 };

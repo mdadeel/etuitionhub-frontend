@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
+import { useHireRequestsQuery } from '@/hooks/queries/useStudentQuery';
 import { Loader2, Check, X, Send, Inbox, User, Mail, ArrowRightLeft, Eye, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import ImportantMails from './ImportantMails';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -20,9 +22,19 @@ const statusConfig = {
 };
 
 const HireRequests = () => {
-  const [tab, setTab] = useState('inbox');
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  // Batch 7: tab in URL for deep-linking; the query key already follows the
+  // tab, so only the active tab ever fetches.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = ['inbox', 'sent', 'important'].includes(searchParams.get('tab'))
+    ? searchParams.get('tab')
+    : 'inbox';
+  const [tab, setTab] = useState(initialTab);
+  const changeTab = (next) => {
+    setTab(next);
+    setSearchParams(next === 'inbox' ? {} : { tab: next }, { replace: true });
+  };
+  const { data: requests = [], isLoading: loading } = useHireRequestsQuery(tab);
 
   const [counterModal, setCounterModal] = useState({ open: false, requestId: null, originalRate: 0 });
   const [counterRate, setCounterRate] = useState('');
@@ -36,35 +48,28 @@ const HireRequests = () => {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    if (tab === 'important') return; // ImportantMails handles its own data
-    setLoading(true);
-    api.get(`/api/hire-requests/${tab}`)
-      .then(res => setRequests(res.data?.data || res.data || []))
-      .catch(() => toast.error('Failed to load requests'))
-      .finally(() => setLoading(false));
-  }, [tab]);
+  const invalidateHireRequests = () => {
+    queryClient.invalidateQueries({ queryKey: ['hire-requests'] });
+  };
 
   const acceptMutation = useAppMutation({
     mutationFn: (id) => api.patch(`/api/hire-requests/${id}/accept`),
     successMessage: 'Request accepted — connection created',
-    onSuccess: (_, id) => setRequests((prev) => prev.map((r) => (r._id === id ? { ...r, status: 'accepted' } : r))),
+    onSuccess: invalidateHireRequests,
   });
 
   const declineMutation = useAppMutation({
     mutationFn: (id) => api.patch(`/api/hire-requests/${id}/decline`),
     successMessage: 'Request declined',
-    onSuccess: (_, id) => setRequests((prev) => prev.map((r) => (r._id === id ? { ...r, status: 'declined' } : r))),
+    onSuccess: invalidateHireRequests,
   });
 
   const counterMutation = useAppMutation({
     mutationFn: ({ requestId, rate, message }) =>
       api.patch(`/api/hire-requests/${requestId}/counter`, { counterRate: rate, counterMessage: message }),
     successMessage: 'Counter-offer sent',
-    onSuccess: (_, { requestId, rate, message }) => {
-      setRequests((prev) => prev.map((r) =>
-        r._id === requestId ? { ...r, status: 'countered', counterRate: rate, counterMessage: message } : r
-      ));
+    onSuccess: () => {
+      invalidateHireRequests();
       setCounterModal({ open: false, requestId: null, originalRate: 0 });
       setCounterRate('');
       setCounterMessage('');
@@ -74,7 +79,7 @@ const HireRequests = () => {
   const cancelMutation = useAppMutation({
     mutationFn: (id) => api.delete(`/api/hire-requests/${id}`),
     successMessage: 'Request cancelled',
-    onSuccess: (_, id) => setRequests((prev) => prev.filter((r) => r._id !== id)),
+    onSuccess: invalidateHireRequests,
   });
 
   const handleCounter = () => {
@@ -118,7 +123,7 @@ const HireRequests = () => {
       {/* Tabs */}
       <div className="flex gap-2 border-b border-border pb-3 overflow-x-auto">
         <button
-          onClick={() => setTab('inbox')}
+          onClick={() => changeTab('inbox')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
             tab === 'inbox' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
           }`}
@@ -126,7 +131,7 @@ const HireRequests = () => {
           <Inbox className="size-4" /> Incoming
         </button>
         <button
-          onClick={() => setTab('sent')}
+          onClick={() => changeTab('sent')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
             tab === 'sent' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
           }`}
@@ -134,7 +139,7 @@ const HireRequests = () => {
           <Send className="size-4" /> Sent
         </button>
         <button
-          onClick={() => setTab('important')}
+          onClick={() => changeTab('important')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
             tab === 'important' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
           }`}

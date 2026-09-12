@@ -1,35 +1,54 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import api from '../../services/api';
-import toast from 'react-hot-toast';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import { Receipt as ReceiptIcon, Calendar, FileText } from 'lucide-react';
 import DataTable from '@/components/ui/data-table';
 import ReceiptModal from '../shared/ReceiptModal';
+import { TableSkeleton } from "@/components/shared/skeletons";
 
 /**
  * Lists all the user's receipts (student or tutor) with click-to-open modal.
  * Reachable from student/tutor sidebar.
  */
 const MyReceipts = ({ hideHeader }) => {
-    const [receipts, setReceipts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // Batch 5 (audit Exec #2): cached query + table skeleton instead of a
+    // full-page spinner early-return; failures render inline with retry.
+    const { data: receipts = [], isLoading: loading, isError, refetch } = useQuery({
+        queryKey: ['receipts', 'me'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get('/api/receipts/me', { signal });
+            return res.data || [];
+        },
+        staleTime: 60_000,
+        placeholderData: keepPreviousData,
+    });
     const [openId, setOpenId] = useState(null);
 
-    const load = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await api.get('/api/receipts/me');
-            setReceipts(res.data || []);
-        } catch {
-            toast.error('Failed to load receipts');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    if (loading) {
+        return (
+            <div className="space-y-8 animate-in fade-in-up duration-700">
+                <TableSkeleton rows={5} columns={4} />
+            </div>
+        );
+    }
 
-    useEffect(() => { load(); }, [load]);
-
-    if (loading) return <LoadingSpinner />;
+    if (isError && receipts.length === 0) {
+        return (
+            <div className="space-y-8 animate-in fade-in-up duration-700">
+                <div className="bg-card border border-border p-12 text-center">
+                    <ReceiptIcon size={32} className="mx-auto text-destructive/40 mb-3" />
+                    <p className="text-sm font-semibold text-foreground mb-1">Couldn&apos;t load receipts</p>
+                    <p className="text-xs text-muted-foreground mb-6">Check your connection and try again.</p>
+                    <button
+                        onClick={() => refetch()}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 active:scale-[0.98] transition-all"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in-up duration-700">

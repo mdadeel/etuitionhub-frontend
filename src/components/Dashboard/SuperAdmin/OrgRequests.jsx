@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
@@ -27,38 +29,42 @@ import {
 } from "@/components/ui/dialog";
 
 const OrgRequests = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 500);
+
+  const { data, isLoading: loading, isError } = useQuery({
+    queryKey: ['admin', 'org-requests', { search: debouncedSearch, status: statusFilter, page }],
+    queryFn: async ({ signal }) => {
+      const res = await api.get("/api/v1/org-requests", {
+        params: { search: debouncedSearch, status: statusFilter, page, limit: 10 },
+        signal,
+      });
+      return {
+        requests: res.data.data || [],
+        totalPages: res.data.pagination?.pages || 1,
+      };
+    },
+    staleTime: 30 * 1000,
+    placeholderData: keepPreviousData,
+  });
+
+  const requests = data?.requests ?? [];
+  const totalPages = data?.totalPages ?? 1;
+
+  useEffect(() => {
+    if (isError) toast.error("Failed to load requests");
+  }, [isError]);
+
+  const refreshRequests = () => queryClient.invalidateQueries({ queryKey: ['admin', 'org-requests'] });
 
   // Review modal
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
-
-  const fetchRequests = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/api/v1/org-requests", {
-        params: { search, status: statusFilter, page, limit: 10 }
-      });
-      setRequests(res.data.data || []);
-      setTotalPages(res.data.pagination?.pages || 1);
-    } catch {
-      toast.error("Failed to load requests");
-    } finally {
-      setLoading(false);
-    }
-  }, [search, statusFilter, page]);
-
-  useEffect(() => {
-    const timer = setTimeout(fetchRequests, 500);
-    return () => clearTimeout(timer);
-  }, [fetchRequests]);
 
   const handleApprove = async (id) => {
     try {
@@ -67,7 +73,7 @@ const OrgRequests = () => {
       toast.success("Organization created successfully!");
       setReviewModalOpen(false);
       setSelectedRequest(null);
-      fetchRequests();
+      refreshRequests();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to approve");
     } finally {
@@ -83,7 +89,7 @@ const OrgRequests = () => {
       setReviewModalOpen(false);
       setSelectedRequest(null);
       setRejectReason("");
-      fetchRequests();
+      refreshRequests();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to reject");
     } finally {

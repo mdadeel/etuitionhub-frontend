@@ -1,28 +1,15 @@
-import { useState, useEffect } from "react";
-import api from "../../services/api";
 import { cn } from "@/lib/utils";
+import { SUBJECT_OPTIONS } from "../../utils/constants";
 
 /**
  * Subject filter dropdown with search.
+ * Batch 4e: uses the shared SUBJECT_OPTIONS vocabulary (same list as
+ * PostTuition/BecomeTutor/Profile). The old implementation misused
+ * GET /api/tuitions?limit=1 and derived "unique subjects" from a single
+ * record, so the list was near-always wrong.
  */
 const SubjectFilter = ({ value, onChange, className }) => {
-  const [subjects, setSubjects] = useState([]);
-
-  useEffect(() => {
-    const fetchSubjects = async () => {
-      try {
-        const res = await api.get("/api/tuitions", { params: { limit: 1 } });
-        // Extract unique subjects from tuitions
-        const tuitions = res.data?.data || [];
-        const uniqueSubjects = [...new Set(tuitions.map(t => t.subject).filter(Boolean))];
-        setSubjects(uniqueSubjects.sort());
-      } catch {
-        // Fallback: use common subjects
-        setSubjects(["Mathematics", "Physics", "Chemistry", "Biology", "English", "Bangla", "ICT"]);
-      }
-    };
-    fetchSubjects();
-  }, []);
+  const subjects = [...SUBJECT_OPTIONS].sort();
 
   return (
     <div className={cn("min-w-[150px]", className)}>

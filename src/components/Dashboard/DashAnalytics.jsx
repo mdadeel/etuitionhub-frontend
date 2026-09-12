@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
-import api from '../../services/api';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import { Users, Zap, Layers, Banknote, Database } from 'lucide-react';
 import { useAnalyticsQuery } from '../../hooks/queries/useAnalyticsQuery';
 import { useAllPaymentsQuery } from '../../hooks/queries/usePaymentsQuery';
 import DataTable from "@/components/ui/data-table";
-import toast from 'react-hot-toast';
 
 const EMERALD_PRIMARY = '#10b981';
 const COLORS = [EMERALD_PRIMARY, '#3b82f6', '#6366f1', '#f43f5e'];
@@ -31,7 +29,6 @@ const DashAnalytics = () => {
     const { data: paymentsData } = useAllPaymentsQuery({ limit: 50 });
 
     // Core: prefer /analytics/stats (cached + invalidated by socket).
-    // Fallback: aggregate from raw endpoints only if stats endpoint is down.
     useEffect(() => {
         if (statsData && !statsError) {
             setStats({
@@ -44,9 +41,6 @@ const DashAnalytics = () => {
                 approvedTuitions: statsData.approvedTuitions ?? 0,
                 totalRevenue: statsData.totalRevenue ?? 0,
             });
-        } else if (statsError) {
-            // eslint-disable-next-line react-hooks/immutability
-            loadFallback();
         }
     }, [statsData, statsError]);
 
@@ -54,38 +48,9 @@ const DashAnalytics = () => {
         if (Array.isArray(paymentsData)) setTransactions(paymentsData);
     }, [paymentsData]);
 
-    const loadFallback = async () => {
-        try {
-            const [usersRes, tuitionsRes, paymentsRes] = await Promise.all([
-                api.get('/api/users').catch(() => ({ data: [] })),
-                api.get('/api/tuitions').catch(() => ({ data: [] })),
-                api.get('/api/payments/all').catch(() => ({ data: [] }))
-            ]);
-
-            const users = Array.isArray(usersRes.data?.data) ? usersRes.data.data : Array.isArray(usersRes.data) ? usersRes.data : [];
-            const tuitions = Array.isArray(tuitionsRes.data?.data) ? tuitionsRes.data.data : Array.isArray(tuitionsRes.data) ? tuitionsRes.data : [];
-            const payments = Array.isArray(paymentsRes.data?.data) ? paymentsRes.data.data : Array.isArray(paymentsRes.data) ? paymentsRes.data : [];
-
-            const tutors = users.filter(u => u.role === 'tutor').length;
-            const students = users.filter(u => u.role === 'student').length;
-            const admins = users.filter(u => u.globalRole === 'super_admin').length;
-            const pending = tuitions.filter(t => t.status === 'pending').length;
-            const approved = tuitions.filter(t => t.status === 'approved').length;
-            const completed = payments.filter(p => p.status === 'confirmed');
-            const revenue = completed.reduce((sum, p) => sum + (p.grossAmount || 0), 0);
-
-            setTransactions(payments);
-            setStats({
-                totalUsers: users.length, totalTutors: tutors,
-                totalStudents: students, totalAdmins: admins,
-                totalTuitions: tuitions.length, pendingTuitions: pending,
-                approvedTuitions: approved, totalRevenue: revenue
-            });
-        } catch {
-            console.error('Fallback systems failure');
-            toast.error('Failed to load analytics');
-        }
-    };
+    // Batch 6: fallback removed — it downloaded ALL users/tuitions/payments
+    // client-side on stats failure (PII over-fetch). Failure now renders the
+    // error panel below instead.
 
     const userDist = [
         { name: 'Students', value: stats.totalStudents },
@@ -98,7 +63,24 @@ const DashAnalytics = () => {
         { name: 'Approved', count: stats.approvedTuitions, fill: EMERALD_PRIMARY }
     ];
 
-    if (statsLoading) return <LoadingSpinner />;
+    // Batch 5 (audit Exec #2): layout-preserving skeletons instead of a
+    // full-page spinner early-return.
+    if (statsLoading) {
+        return (
+            <div className="space-y-6">
+                <div className="mb-4 border-b border-border pb-3">
+                    <h2 className="text-lg md:text-xl font-heading font-bold uppercase tracking-tight text-foreground">Platform Insights</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">Real-time performance metrics and user distribution tracking.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <StatCardSkeleton key={i} />
+                    ))}
+                </div>
+                <TableSkeleton rows={5} columns={4} />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

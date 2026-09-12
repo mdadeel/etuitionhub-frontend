@@ -1,29 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, Receipt } from "lucide-react";
-import api from "../../../services/api";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { useParams } from "react-router-dom";
-import toast from "react-hot-toast";
 
 const OrgExpenses = () => {
   const { orgId } = useParams();
-  const [expenses, setExpenses] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/expenses`);
-        setExpenses(res.data.data);
-      } catch {
-        toast.error("Failed to fetch expenses");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchExpenses();
-  }, [orgId]);
+  const { data: expenses = [], isLoading: loading } = useOrgListQuery(orgId, 'expenses');
 
   const getStatusColor = (s) => ({
     paid: 'bg-green-100 text-green-700', approved: 'bg-primary/10 text-primary',

@@ -46,7 +46,8 @@ const DisputeModal = ({ open, onOpenChange, connectionId, sessionId, paymentId, 
       if (sessionId) payload.sessionId = sessionId;
       if (paymentId) payload.paymentId = paymentId;
 
-      await api.post('/api/v1/disputes', payload);
+      // Batch 3: canonical endpoint is POST /api/disputes (no /api/v1/disputes mount exists).
+      await api.post('/api/disputes', payload);
       toast.dismiss(toastId);
       toast.success('Dispute filed successfully. Our team will review it shortly.');
       reset();

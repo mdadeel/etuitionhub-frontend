@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import StudentPayments from "./StudentPayments";
 import MyReceipts from "./MyReceipts";
 import { CreditCard, Receipt } from "lucide-react";
@@ -6,7 +6,14 @@ import { cn } from "@/lib/utils";
 import DashboardPageHeader from "@/components/shared/DashboardPageHeader";
 
 const BillingHistory = () => {
-  const [activeTab, setActiveTab] = useState("payments");
+  // Batch 7: tab in URL for deep-linking. Both children stay mounted behind
+  // `hidden` so toggling preserves their scroll/filter state instead of
+  // remounting + refetching.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") === "receipts" ? "receipts" : "payments";
+  const changeTab = (tab) => {
+    setSearchParams(tab === "payments" ? {} : { tab }, { replace: true });
+  };
 
   const tabs = [
     { id: "payments", label: "Payment Log", icon: CreditCard },
@@ -26,7 +33,7 @@ const BillingHistory = () => {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => changeTab(tab.id)}
             className={cn(
               "flex items-center gap-2 px-5 py-2.5 text-xs font-semibold transition-all duration-300 rounded-lg whitespace-nowrap active:scale-[0.98]",
               activeTab === tab.id
@@ -42,11 +49,12 @@ const BillingHistory = () => {
 
       {/* Content */}
       <div className="mt-8">
-        {activeTab === "payments" ? (
+        <div className={activeTab === "payments" ? "" : "hidden"}>
           <StudentPayments hideHeader />
-        ) : (
+        </div>
+        <div className={activeTab === "receipts" ? "" : "hidden"}>
           <MyReceipts hideHeader />
-        )}
+        </div>
       </div>
     </div>
   );

@@ -1,29 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useOrgInvoicesQuery } from "@/hooks/queries/useOrgQuery";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, FileText, Calendar } from "lucide-react";
-import api from "../../../services/api";
-import { useParams } from "react-router-dom";
-import toast from "react-hot-toast";
 
 const OrgInvoices = () => {
   const { orgId } = useParams();
-  const [invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/invoices`);
-        setInvoices(res.data.data);
-      } catch {
-        toast.error("Failed to fetch invoices");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchInvoices();
-  }, [orgId]);
+  const { data: invoices = [], isLoading: loading } = useOrgInvoicesQuery(orgId);
 
   const getStatusColor = (s) => ({
     paid: 'bg-green-100 text-green-700', sent: 'bg-primary/10 text-primary',

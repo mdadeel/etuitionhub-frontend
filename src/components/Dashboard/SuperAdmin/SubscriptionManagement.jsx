@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
@@ -14,9 +15,26 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 
 const SubscriptionManagement = () => {
-  const [plans, setPlans] = useState([]);
-  const [subscriptions, setSubscriptions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data, isLoading: loading, isError } = useQuery({
+    queryKey: ['admin', 'subscriptions-mgmt'],
+    queryFn: async ({ signal }) => {
+      const [plansRes, subsRes] = await Promise.all([
+        api.get("/api/v1/plans", { signal }).catch(() => ({ data: [] })),
+        api.get("/api/v1/subscriptions", { signal }).catch(() => ({ data: [] })),
+      ]);
+      const pData = Array.isArray(plansRes.data?.data) ? plansRes.data.data : Array.isArray(plansRes.data) ? plansRes.data : [];
+      const sData = Array.isArray(subsRes.data?.data) ? subsRes.data.data : Array.isArray(subsRes.data) ? subsRes.data : [];
+      return { plans: pData, subscriptions: sData };
+    },
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
+  });
+
+  const plans = data?.plans ?? [];
+  const subscriptions = data?.subscriptions ?? [];
+
+  const refreshData = () => queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions-mgmt'] });
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -29,27 +47,9 @@ const SubscriptionManagement = () => {
     isPublic: true,
   });
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [plansRes, subsRes] = await Promise.all([
-        api.get("/api/v1/plans").catch(() => ({ data: [] })),
-        api.get("/api/v1/subscriptions").catch(() => ({ data: [] })),
-      ]);
-      const pData = Array.isArray(plansRes.data?.data) ? plansRes.data.data : Array.isArray(plansRes.data) ? plansRes.data : [];
-      const sData = Array.isArray(subsRes.data?.data) ? subsRes.data.data : Array.isArray(subsRes.data) ? subsRes.data : [];
-      setPlans(pData);
-      setSubscriptions(sData);
-    } catch {
-      toast.error("Failed to load data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (isError) toast.error("Failed to load data");
+  }, [isError]);
 
   const openCreate = () => {
     setEditingPlan(null);
@@ -100,7 +100,7 @@ const SubscriptionManagement = () => {
         toast.success("Plan created");
       }
       setShowPlanModal(false);
-      fetchData();
+      refreshData();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to save plan");
     } finally {
@@ -117,7 +117,7 @@ const SubscriptionManagement = () => {
     try {
       await api.delete(`/api/v1/plans/${plan._id}`);
       toast.success("Plan deleted");
-      fetchData();
+      refreshData();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to delete plan");
     }

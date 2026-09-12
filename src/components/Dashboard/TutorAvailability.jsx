@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -211,34 +212,33 @@ const AddDayForm = ({ existingDays, onSuccess, onCancel }) => {
 /** Main TutorAvailability component */
 const TutorAvailability = ({ tutorId }) => {
     const { dbUser } = useAuth();
+    const queryClient = useQueryClient();
     const targetId = tutorId || dbUser?._id;
 
-    const [availability, setAvailability] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // Batch 4c: cached, cancellable fetch (signal aborts on tutor switch).
+    const { data: availability = [], isLoading: loading } = useQuery({
+        queryKey: ['tutors', targetId, 'availability'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get(`/api/tutors/${targetId}/availability`, { signal });
+            return Array.isArray(res.data) ? res.data : [];
+        },
+        enabled: Boolean(targetId),
+        staleTime: 60_000,
+        placeholderData: keepPreviousData,
+    });
     const [showAddForm, setShowAddForm] = useState(false);
     const [linkCopied, setLinkCopied] = useState(false);
 
-    const load = useCallback(async () => {
-        if (!targetId) return;
-        setLoading(true);
-        try {
-            const res = await api.get(`/api/tutors/${targetId}/availability`);
-            setAvailability(Array.isArray(res.data) ? res.data : []);
-        } catch {
-            toast.error('Failed to load availability');
-        } finally {
-            setLoading(false);
-        }
-    }, [targetId]);
-
-    useEffect(() => { load(); }, [load]);
+    const refreshAvailability = () => {
+        queryClient.invalidateQueries({ queryKey: ['tutors', targetId, 'availability'] });
+    };
 
     const handleDelete = async (dayOfWeek) => {
         if (!confirm(`Remove ${DAYS_OF_WEEK[dayOfWeek]} from your availability?`)) return;
         try {
             await api.delete(`/api/tutors/availability/${dayOfWeek}`);
             toast.success(`${DAYS_OF_WEEK[dayOfWeek]} removed`);
-            load();
+            refreshAvailability();
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to remove');
         }
@@ -301,7 +301,7 @@ const TutorAvailability = ({ tutorId }) => {
             {showAddForm && (
                 <AddDayForm
                     existingDays={existingDays}
-                    onSuccess={() => { setShowAddForm(false); load(); }}
+                    onSuccess={() => { setShowAddForm(false); refreshAvailability(); }}
                     onCancel={() => setShowAddForm(false)}
                 />
             )}
@@ -343,7 +343,7 @@ const TutorAvailability = ({ tutorId }) => {
                             key={a.dayOfWeek}
                             dayData={a}
                             onDelete={handleDelete}
-                            onUpdate={load}
+                            onUpdate={refreshAvailability}
                         />
                     ))}
                 </div>

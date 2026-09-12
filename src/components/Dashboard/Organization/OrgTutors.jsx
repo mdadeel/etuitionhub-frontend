@@ -8,11 +8,11 @@ import { Plus, Users, Mail, BookOpen, Clock, BarChart } from "lucide-react";
 import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 
 const OrgTutors = () => {
   const { orgId } = useParams();
-  const [tutors, setTutors] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: tutors = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'tutors');
   const [showWorkload, setShowWorkload] = useState(false);
   const [selectedTutor, setSelectedTutor] = useState(null);
   const [workloadData, setWorkloadData] = useState(null);
@@ -20,18 +20,8 @@ const OrgTutors = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const fetchTutors = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/tutors`);
-        setTutors(res.data.data);
-      } catch {
-        toast.error("Failed to fetch tutors");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTutors();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch tutors");
+  }, [isError]);
 
   const openWorkload = async (tutor) => {
     setSelectedTutor(tutor);

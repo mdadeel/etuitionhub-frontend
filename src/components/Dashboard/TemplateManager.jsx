@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2, Edit3, FileText, Loader2, X, Save } from 'lucide-react';
 import api from '../../services/api';
+import { useTemplatesQuery } from '@/hooks/queries/useAdminQuery';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
@@ -9,28 +11,16 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 
 const TemplateManager = () => {
-    const [templates, setTemplates] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const { data: templates = [], isLoading: loading } = useTemplatesQuery();
     const [showForm, setShowForm] = useState(false);
     const [editing, setEditing] = useState(null);
     const [form, setForm] = useState({ title: '', content: '', category: 'general', isPublic: false });
     const [saving, setSaving] = useState(false);
 
-    const fetchTemplates = async () => {
-        try {
-            const res = await api.get('/api/templates');
-            setTemplates(res.data?.templates || res.data || []);
-        } catch (error) {
-            console.error('Failed to fetch templates', error);
-            toast.error('Could not load templates');
-        } finally {
-            setLoading(false);
-        }
+    const invalidateTemplates = () => {
+        queryClient.invalidateQueries({ queryKey: ['admin', 'templates'] });
     };
-
-    useEffect(() => {
-        fetchTemplates();
-    }, []);
 
     const handleCreate = async () => {
         if (!form.title || !form.content) {
@@ -39,8 +29,8 @@ const TemplateManager = () => {
         }
         setSaving(true);
         try {
-            const res = await api.post('/api/templates', form);
-            setTemplates(prev => [res.data, ...prev]);
+            await api.post('/api/templates', form);
+            invalidateTemplates();
             toast.success('Template created');
             resetForm();
         } catch (error) {
@@ -58,8 +48,8 @@ const TemplateManager = () => {
         }
         setSaving(true);
         try {
-            const res = await api.put(`/api/templates/${editing._id}`, form);
-            setTemplates(prev => prev.map(t => t._id === editing._id ? res.data : t));
+            await api.put(`/api/templates/${editing._id}`, form);
+            invalidateTemplates();
             toast.success('Template updated');
             resetForm();
         } catch (error) {
@@ -71,10 +61,10 @@ const TemplateManager = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Delete this template?')) return;
+        if (!confirm('Are you sure you want to delete this template?')) return;
         try {
             await api.delete(`/api/templates/${id}`);
-            setTemplates(prev => prev.filter(t => t._id !== id));
+            invalidateTemplates();
             toast.success('Template deleted');
         } catch (error) {
             console.error(error);

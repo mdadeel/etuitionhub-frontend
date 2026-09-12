@@ -1,29 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useOrgBatchesQuery } from "@/hooks/queries/useOrgQuery";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, Layers, Users } from "lucide-react";
-import api from "../../../services/api";
-import { useParams } from "react-router-dom";
-import toast from "react-hot-toast";
 
 const OrgBatches = () => {
   const { orgId } = useParams();
-  const [batches, setBatches] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBatches = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/batches`);
-        setBatches(res.data.data);
-      } catch {
-        toast.error("Failed to fetch batches");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBatches();
-  }, [orgId]);
+  const { data: batches = [], isLoading: loading } = useOrgBatchesQuery(orgId);
 
   const getStatusColor = (s) => ({
     active: 'bg-green-100 text-green-700', upcoming: 'bg-primary/10 text-primary',

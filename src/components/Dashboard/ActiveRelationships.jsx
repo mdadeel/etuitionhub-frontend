@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import api from '../../services/api';
-import toast from 'react-hot-toast';
-import { Loader2, Users, UserX } from 'lucide-react';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useConnectionsQuery } from '@/hooks/queries/useStudentQuery';
+import { Loader2, UserX } from 'lucide-react';
 import ActiveRelationshipCard from './ActiveRelationshipCard';
 import DashboardPageHeader from '@/components/shared/DashboardPageHeader';
 import EmptyState from '@/components/shared/EmptyState';
@@ -14,25 +14,13 @@ const TABS = [
 ];
 
 const ActiveRelationships = () => {
-  const [connections, setConnections] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: connections = [], isLoading: loading } = useConnectionsQuery('accepted');
   const [tab, setTab] = useState('all');
 
-  const fetchConnections = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/api/connections?status=accepted');
-      setConnections(res.data?.data || res.data || []);
-    } catch {
-      toast.error('Failed to load relationships');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchConnections();
-  }, [fetchConnections]);
+  const handleUpdate = () => {
+    queryClient.invalidateQueries({ queryKey: ['connections', 'accepted'] });
+  };
 
   const filtered = tab === 'all'
     ? connections
@@ -79,7 +67,7 @@ const ActiveRelationships = () => {
             <ActiveRelationshipCard
               key={conn._id}
               connection={conn}
-              onUpdate={fetchConnections}
+              onUpdate={handleUpdate}
             />
           ))}
         </div>

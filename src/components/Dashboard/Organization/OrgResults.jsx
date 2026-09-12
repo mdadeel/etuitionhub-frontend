@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -11,30 +13,31 @@ import toast from "react-hot-toast";
 
 const OrgResults = () => {
   const { orgId } = useParams();
-  const [results, setResults] = useState([]);
+  const queryClient = useQueryClient();
+  // ponytail: only the results list is cached via TanStack Query; the exams
+  // fetch stays raw because it feeds the <select> options, not the list.
+  const { data: results = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'results');
   const [exams, setExams] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [selectedExam, setSelectedExam] = useState('');
   const [marks, setMarks] = useState([{ studentId: '', marksObtained: '', totalMarks: '' }]);
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const [resultsRes, examsRes] = await Promise.all([
-        api.get(`/api/v1/organizations/${orgId}/results`),
-        api.get(`/api/v1/organizations/${orgId}/exams`)
-      ]);
-      setResults(resultsRes.data.data);
-      setExams(examsRes.data.data);
-    } catch {
-      toast.error("Failed to fetch data");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
+  useEffect(() => {
+    if (isError) toast.error("Failed to fetch data");
+  }, [isError]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const examsRes = await api.get(`/api/v1/organizations/${orgId}/exams`);
+        setExams(examsRes.data.data);
+      } catch {
+        toast.error("Failed to fetch data");
+      }
+    };
+    if (orgId) fetchExams();
+  }, [orgId]);
 
   const addRow = () => setMarks([...marks, { studentId: '', marksObtained: '', totalMarks: '' }]);
   const removeRow = (i) => setMarks(marks.filter((_, idx) => idx !== i));
@@ -58,7 +61,7 @@ const OrgResults = () => {
       setShowCreate(false);
       setSelectedExam('');
       setMarks([{ studentId: '', marksObtained: '', totalMarks: '' }]);
-      fetchData();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'results'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to enter results");
     } finally {
@@ -71,7 +74,7 @@ const OrgResults = () => {
     try {
       await api.patch(`/api/v1/organizations/${orgId}/results/exams/${examId}/publish`);
       toast.success("Results published");
-      fetchData();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'results'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to publish");
     }

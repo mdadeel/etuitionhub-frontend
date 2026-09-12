@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "../../../services/api";
 import { useAuth } from "../../../contexts/AuthContext";
-import { toast } from "react-hot-toast";
+import { useOrgHomeQuery } from "@/hooks/queries/useOrgQuery";
 import {
   Building2,
   Users,
@@ -22,47 +20,15 @@ const OrgHome = () => {
   const canViewStudents = hasPermission("student:view");
   const canViewTuitions = hasPermission("tuition:view");
   const canManageSettings = hasPermission("settings:manage");
-  const [org, setOrg] = useState(null);
-  const [stats, setStats] = useState(null);
-  const [tuitions, setTuitions] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const membersPromise = canViewMembers
-          ? api.get(`/api/v1/organizations/${orgId}/members`)
-          : Promise.resolve({ data: { data: [] } });
-        const [orgRes, membersRes, tuitionsRes] = await Promise.all([
-          api.get(`/api/v1/organizations/${orgId}`).catch(() => ({ data: { data: null } })),
-          membersPromise.catch(() => ({ data: { data: [] } })),
-          canViewTuitions
-            ? api.get(`/api/v1/organizations/${orgId}/tuitions`).catch(() => ({ data: { data: [] } }))
-            : Promise.resolve({ data: { data: [] } }),
-        ]);
+  const { data: homeData, isLoading: loading } = useOrgHomeQuery(orgId, {
+    canViewMembers,
+    canViewTuitions,
+  });
 
-        setOrg(orgRes.data.data);
-        setTuitions(tuitionsRes.data.data || []);
-
-        const memberList = membersRes.data.data || [];
-        const tuitionList = tuitionsRes.data.data || [];
-        setStats({
-          totalMembers: memberList.length,
-          teachers: memberList.filter(m => ['teacher', 'admin', 'coordinator', 'owner'].includes(m.roleId?.slug)).length,
-          students: memberList.filter(m => m.roleId?.slug === 'student').length,
-          activeTuitions: tuitionList.filter(t => t.status === 'approved' || t.status === 'matched').length,
-          totalTuitions: tuitionList.length,
-        });
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load organization data");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [orgId, canViewMembers, canViewTuitions]);
+  const org = homeData?.org || null;
+  const stats = homeData?.stats || null;
+  const tuitions = homeData?.tuitions || [];
 
   if (loading) {
     return (

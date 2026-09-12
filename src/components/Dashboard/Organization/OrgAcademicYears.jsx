@@ -1,29 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, Calendar, CheckCircle } from "lucide-react";
-import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 
 const OrgAcademicYears = () => {
   const { orgId } = useParams();
-  const [years, setYears] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: years = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'academic-years');
 
   useEffect(() => {
-    const fetchYears = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/academic-years`);
-        setYears(res.data.data);
-      } catch {
-        toast.error("Failed to fetch academic years");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchYears();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch academic years");
+  }, [isError]);
 
   const getStatusColor = (s) => ({
     active: 'bg-green-100 text-green-700', upcoming: 'bg-primary/10 text-primary',

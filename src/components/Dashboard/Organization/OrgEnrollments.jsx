@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -11,32 +13,36 @@ import toast from "react-hot-toast";
 
 const OrgEnrollments = () => {
   const { orgId } = useParams();
-  const [enrollments, setEnrollments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  // ponytail: only the enrollments list is cached via TanStack Query; the
+  // students/courses option fetches stay raw because they feed <select>
+  // options (not the list) and have different consumers/refresh needs.
+  const { data: enrollments = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'enrollments');
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ studentId: '', courseId: '', batchId: '' });
   const [submitting, setSubmitting] = useState(false);
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const [enrollRes, studentsRes, coursesRes] = await Promise.all([
-        api.get(`/api/v1/organizations/${orgId}/enrollments`),
-        api.get(`/api/v1/organizations/${orgId}/students`),
-        api.get(`/api/v1/organizations/${orgId}/courses`)
-      ]);
-      setEnrollments(enrollRes.data.data);
-      setStudents(studentsRes.data.data);
-      setCourses(coursesRes.data.data);
-    } catch {
-      toast.error("Failed to fetch data");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId]);
+  useEffect(() => {
+    if (isError) toast.error("Failed to fetch data");
+  }, [isError]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [studentsRes, coursesRes] = await Promise.all([
+          api.get(`/api/v1/organizations/${orgId}/students`),
+          api.get(`/api/v1/organizations/${orgId}/courses`)
+        ]);
+        setStudents(studentsRes.data.data);
+        setCourses(coursesRes.data.data);
+      } catch {
+        toast.error("Failed to fetch data");
+      }
+    };
+    if (orgId) fetchOptions();
+  }, [orgId]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -46,7 +52,7 @@ const OrgEnrollments = () => {
       toast.success("Enrollment created");
       setShowCreate(false);
       setForm({ studentId: '', courseId: '', batchId: '' });
-      fetchData();
+      queryClient.invalidateQueries({ queryKey: ['org', orgId, 'enrollments'] });
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to create enrollment");
     } finally {

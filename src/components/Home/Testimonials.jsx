@@ -116,18 +116,18 @@ const Testimonials = () => {
             />
           ) : (
             <div className="grid md:grid-cols-3 gap-6 items-center">
-              {items.map((t, idx) => {
+              {items.map((item, idx) => {
                 if (idx === 1 && spotlightVideo) return null;
                 const Icon = testimonialIcons[idx];
                 const color = avatarColors[idx] || avatarColors[0];
-                const name = t.name || 'Anonymous';
+                const name = item.name || 'Anonymous';
                 const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-                const role = t.role || 'Parent';
-                const school = t.school || '';
-                const rating = t.rating || 5;
+                const role = item.role || 'Parent';
+                const school = item.school || '';
+                const rating = item.rating || 5;
 
                 return (
-                  <div key={t._id || idx} className="relative p-6 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm shadow-sm hover: hover:border-primary/20 transition-all duration-300 group flex flex-col justify-between min-h-[250px] z-10">
+                  <div key={item._id || idx} className="relative p-6 rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm shadow-sm hover: hover:border-primary/20 transition-all duration-300 group flex flex-col justify-between min-h-[250px] z-10">
                     <div className="absolute top-4 right-4 opacity-[0.08] group-hover:opacity-[0.12] transition-opacity">
                       <Icon size={36} />
                     </div>
@@ -139,7 +139,7 @@ const Testimonials = () => {
                         ))}
                       </div>
                       <p className="text-xs md:text-sm text-muted-foreground leading-relaxed italic mb-6">
-                        &ldquo;{t.quote}&rdquo;
+                        &ldquo;{item.quote}&rdquo;
                       </p>
                     </div>
 

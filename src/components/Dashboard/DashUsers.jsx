@@ -1,8 +1,9 @@
-// user management dashboard
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import { useDashUsersQuery } from '@/hooks/queries/useAdminQuery';
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableSkeleton } from "@/components/shared/skeletons";
 import useDebouncedValue from '../../hooks/useDebouncedValue';
@@ -18,6 +19,7 @@ import Pagination from '../shared/Pagination';
 import StatusBadge from '../shared/StatusBadge';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
 import BulkActionBar from './SuperAdmin/BulkActionBar';
+import ConfirmModal from '../shared/ConfirmModal';
 import { useAppMutation } from '../../hooks/queries/useAppMutation';
 
 const ROLE_OPTIONS = [
@@ -28,18 +30,31 @@ const ROLE_OPTIONS = [
 ];
 
 const DashUsers = () => {
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [filter] = useState('all');
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalUsers, setTotalUsers] = useState(0);
     const debouncedSearch = useDebouncedValue(search, 300);
 
     // Advanced filters
     const [roleFilter, setRoleFilter] = useState('');
     const [locationFilter, setLocationFilter] = useState(null);
+
+    const { data, isLoading: loading } = useDashUsersQuery({
+        page,
+        search: debouncedSearch,
+        roleFilter,
+        locationFilter
+    });
+
+    const users = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+    const pagination = data?.pagination || {};
+    const totalPages = pagination.totalPages ?? pagination.pages ?? 1;
+    const totalUsers = pagination.totalItems ?? pagination.total ?? users.length;
+
+    const invalidateUsers = () => {
+        queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    };
 
     // Filtered users memo
     const filtered = useMemo(() => {
@@ -69,14 +84,14 @@ const DashUsers = () => {
 
     const deleteMutation = useAppMutation({
         mutationFn: (id) => api.delete(`/api/users/${id}`),
-        onSuccess: loadUsers,
+        onSuccess: invalidateUsers,
         errorTitle: 'Delete failed',
     });
 
     const roleMutation = useAppMutation({
         mutationFn: ({ id, role }) => api.patch(`/api/users/${id}`, { role }),
         successMessage: 'Role updated',
-        onSuccess: loadUsers,
+        onSuccess: invalidateUsers,
     });
 
     const verifyMutation = useAppMutation({
@@ -85,7 +100,7 @@ const DashUsers = () => {
             return api.patch(`/api/users/${id}`, { verificationStatus: status, isVerified, searchVisibility: isVerified });
         },
         successMessage: 'Verification updated',
-        onSuccess: loadUsers,
+        onSuccess: invalidateUsers,
     });
 
     const userFields = [
@@ -94,43 +109,23 @@ const DashUsers = () => {
         { name: 'photoURL', label: 'Photo URL', placeholder: 'https://...' }
     ];
 
-    const loadUsers = useCallback(async () => {
-        setLoading(true);
-        try {
-            const params = {
-                search: debouncedSearch,
-                page: page,
-            };
-            if (roleFilter) params.role = roleFilter;
-            if (locationFilter) params.location = locationFilter;
-
-            const res = await api.get('/api/users', { params });
-            setUsers(res.data?.data || res.data || []);
-            if (res.data?.pagination) {
-                setTotalPages(res.data.pagination.pages);
-                setTotalUsers(res.data.pagination.total);
-            }
-        } catch (err) {
-            toast.error(err.response?.data?.error || 'Failed to load users');
-        } finally {
-            setLoading(false);
-        }
-    }, [debouncedSearch, page, roleFilter, locationFilter]);
-
-    useEffect(() => {
-        loadUsers();
-    }, [loadUsers]);
-
     const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
 
     const handleDelete = async (id) => {
-        if (!confirm('Delete this user? This action cannot be undone.')) return;
-
         if (!isValidId(id)) {
             toast.error('Demo data is read-only');
             return;
         }
-        deleteMutation.mutate(id);
+        // Batch 2 (audit Exec #6): arm the modal; the mutation fires on confirm.
+        setDeleteTarget(id);
+    };
+
+    // Batch 2 (audit Exec #6): arm-then-confirm instead of native confirm().
+    const [deleteTarget, setDeleteTarget] = useState(null);
+
+    const handleConfirmDelete = () => {
+        if (!deleteTarget) return;
+        deleteMutation.mutate(deleteTarget, { onSuccess: () => setDeleteTarget(null) });
     };
 
     const handleRoleChange = (id, role) => {
@@ -164,7 +159,7 @@ const DashUsers = () => {
             await api.patch(`/api/users/${selectedUser._id}`, updatedData);
             toast.success('User updated successfully');
             setIsEditModalOpen(false);
-            await loadUsers();
+            invalidateUsers();
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to update user');
         } finally {
@@ -230,7 +225,7 @@ const DashUsers = () => {
                 selectedIds={selectedIds}
                 total={filtered.length}
                 onClear={() => setSelectedIds([])}
-                onAction={() => { loadUsers(); setSelectedIds([]); }}
+                onAction={() => { invalidateUsers(); setSelectedIds([]); }}
             />
 
             <DataTable
@@ -378,6 +373,16 @@ const DashUsers = () => {
                 fields={userFields}
                 onSave={handleEditSave}
                 isLoading={isSaving}
+            />
+
+            <ConfirmModal
+                open={!!deleteTarget}
+                onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+                title="Delete this user?"
+                description="This action cannot be undone. The account is anonymized per the platform deletion policy."
+                confirmLabel="Delete"
+                loading={deleteMutation.isPending}
+                onConfirm={handleConfirmDelete}
             />
         </div>
     );

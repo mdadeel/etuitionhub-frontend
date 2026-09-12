@@ -31,6 +31,7 @@ const OrgExams = lazy(() => import('./Organization/OrgExams'));
 const OrgResults = lazy(() => import('./Organization/OrgResults'));
 const OrgInvoices = lazy(() => import('./Organization/OrgInvoices'));
 const OrgSalaries = lazy(() => import('./Organization/OrgSalaries'));
+const OrgScholarships = lazy(() => import('./Organization/OrgScholarships'));
 const OrgExpenses = lazy(() => import('./Organization/OrgExpenses'));
 const OrgAuditLogs = lazy(() => import('./Organization/OrgAuditLogs'));
 const OrgAcademicYears = lazy(() => import('./Organization/OrgAcademicYears'));

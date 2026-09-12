@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import api from "../../../services/api";
-import { toast } from "react-hot-toast";
 import {
   Calendar,
   Clock,
@@ -16,49 +16,24 @@ import {
 
 const OrgSessions = () => {
   const { orgId } = useParams();
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
-  useEffect(() => {
-    const fetchSessions = async () => {
-      try {
-        setLoading(true);
-        // Fetch tuitions for this org, then derive sessions from bookings
-        const tuitionsRes = await api.get(`/api/v1/organizations/${orgId}/tuitions`).catch(() => ({ data: { data: [] } }));
-        const tuitions = tuitionsRes.data.data || [];
+  // Batch 6: single org-scoped endpoint (member-participation semantic —
+  // bookings carry no tuition link, and the old N+1 hit a nonexistent
+  // /api/bookings/tuition/:id route, so this page always came up empty).
+  const { data: sessions = [], isLoading: loading } = useQuery({
+    queryKey: ["org", orgId, "sessions", filter],
+    queryFn: async ({ signal }) => {
+      const params = filter === "all" ? "" : `?status=${filter}`;
+      const res = await api.get(`/api/v1/organizations/${orgId}/sessions${params}`, { signal });
+      return res.data?.data || [];
+    },
+    enabled: Boolean(orgId),
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
 
-        // Fetch bookings for each tuition
-        const bookingPromises = tuitions.map(t =>
-          api.get(`/api/bookings/tuition/${t._id}`).catch(() => ({ data: [] }))
-        );
-        const bookingResults = await Promise.all(bookingPromises);
-
-        const allSessions = [];
-        bookingResults.forEach((res, idx) => {
-          const bookings = res.data || [];
-          bookings.forEach(b => {
-            allSessions.push({
-              ...b,
-              tuitionSubject: tuitions[idx]?.subject || "Unknown",
-              tuitionClass: tuitions[idx]?.class_name || "",
-            });
-          });
-        });
-
-        setSessions(allSessions);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load sessions");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSessions();
-  }, [orgId]);
-
-  const filtered = filter === "all" ? sessions : sessions.filter(s => s.status === filter);
-
+  const filtered = sessions;
   const statusIcon = (status) => {
     switch (status) {
       case "confirmed": return <CheckCircle2 size={14} className="text-emerald-500" />;
@@ -127,17 +102,12 @@ const OrgSessions = () => {
                   <BookOpen size={16} className="text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-heading font-bold text-foreground">{session.tuitionSubject}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{session.tuitionClass}</p>
+                      <p className="text-sm font-heading font-bold text-foreground">{session.tuitionSubject || session.subject || "Session"}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{session.tuitionClass || ""}</p>
                   <div className="flex items-center gap-3 mt-2 text-[10px] text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Users size={10} /> {session.studentEmail || session.tutorName}
                     </span>
-                    {session.isAccepted && (
-                      <span className="flex items-center gap-1 text-emerald-600">
-                        <Video size={10} /> Active
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>

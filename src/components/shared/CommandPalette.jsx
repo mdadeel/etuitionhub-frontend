@@ -320,6 +320,8 @@ const CommandPalette = ({ open, onOpenChange }) => {
 
   const [adminSearchResults, setAdminSearchResults] = useState(null);
   const [isSearchingAdmin, setIsSearchingAdmin] = useState(false);
+  // Batch 4b: out-of-order admin-search responses must not overwrite fresher ones.
+  const adminSearchRequestId = useRef(0);
 
   useEffect(() => {
     if (!isAdmin || !open) {
@@ -336,16 +338,18 @@ const CommandPalette = ({ open, onOpenChange }) => {
     }
 
     const timer = setTimeout(async () => {
+      const requestId = ++adminSearchRequestId.current;
       setIsSearchingAdmin(true);
       try {
         const res = await api.get(`/api/admin/search?q=${encodeURIComponent(trimmed)}`);
+        if (adminSearchRequestId.current !== requestId) return;
         if (res.data?.data) {
           setAdminSearchResults(res.data.data);
         }
       } catch {
         // silent fallback
       } finally {
-        setIsSearchingAdmin(false);
+        if (adminSearchRequestId.current === requestId) setIsSearchingAdmin(false);
       }
     }, 250);
 

@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import { History, Search, Loader2, Filter } from "lucide-react";
@@ -25,27 +27,27 @@ const actions = [
 
 const OrgAuditLogs = () => {
   const { orgId } = useParams();
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 400);
 
-  const fetchLogs = useCallback(async () => {
-    try {
-      setLoading(true);
+  const { data: logs = [], isLoading: loading, isError } = useQuery({
+    queryKey: ['org', orgId, 'audit-logs', { search: debouncedSearch, action: actionFilter }],
+    queryFn: async ({ signal }) => {
       const params = { orgId, limit: 200 };
       if (actionFilter) params.action = actionFilter;
-      if (search) params.userEmail = search;
-      const res = await api.get("/api/audit-logs", { params });
-      setLogs(res.data.logs || []);
-    } catch {
-      toast.error("Failed to load audit logs");
-    } finally {
-      setLoading(false);
-    }
-  }, [orgId, actionFilter, search]);
+      if (debouncedSearch) params.userEmail = debouncedSearch;
+      const res = await api.get("/api/audit-logs", { params, signal });
+      return res.data.logs || [];
+    },
+    enabled: Boolean(orgId),
+    staleTime: 30 * 1000,
+    placeholderData: keepPreviousData,
+  });
 
-  useEffect(() => { fetchLogs(); }, [fetchLogs]);
+  useEffect(() => {
+    if (isError) toast.error("Failed to load audit logs");
+  }, [isError]);
 
   if (loading) {
     return (

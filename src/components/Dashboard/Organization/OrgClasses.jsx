@@ -1,32 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Plus, Users, BookOpen } from "lucide-react";
-import api from "../../../services/api";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useOrgListQuery } from "@/hooks/queries/useOrgQuery";
 
 const OrgClasses = () => {
   const { orgId } = useParams();
   const { hasPermission } = useAuth();
   const canManage = hasPermission('class:manage');
-  const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: classes = [], isLoading: loading, isError } = useOrgListQuery(orgId, 'classes');
 
   useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-        const res = await api.get(`/api/v1/organizations/${orgId}/classes`);
-        setClasses(res.data.data);
-      } catch {
-        toast.error("Failed to fetch classes");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchClasses();
-  }, [orgId]);
+    if (isError) toast.error("Failed to fetch classes");
+  }, [isError]);
 
   return (
     <div className="space-y-6">

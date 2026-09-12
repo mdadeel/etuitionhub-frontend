@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { Settings, Eye, EyeOff, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 import { Button } from '@/components/ui/button';
@@ -6,24 +7,24 @@ import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 
 const ConnectionPrivacySettings = ({ connectionId, onClose }) => {
+    const queryClient = useQueryClient();
+    // Batch 4c: cached per-connection fetch (signal cancels on unmount).
+    const { data: serverSettings, isLoading: loading, isError } = useQuery({
+        queryKey: ['connections', connectionId, 'privacy'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get(`/api/connections/${connectionId}/privacy`, { signal });
+            return res.data.privacySettings || {};
+        },
+        enabled: Boolean(connectionId),
+        staleTime: 60_000,
+        placeholderData: keepPreviousData,
+    });
     const [settings, setSettings] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const res = await api.get(`/api/connections/${connectionId}/privacy`);
-                setSettings(res.data.privacySettings || {});
-            } catch (error) {
-                console.error('Failed to fetch privacy settings', error);
-                toast.error('Could not load privacy settings');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSettings();
-    }, [connectionId]);
+        if (serverSettings) setSettings(serverSettings);
+    }, [serverSettings]);
 
     const handleToggle = (key) => {
         setSettings(prev => ({ ...prev, [key]: !prev[key] }));
@@ -33,6 +34,7 @@ const ConnectionPrivacySettings = ({ connectionId, onClose }) => {
         setSaving(true);
         try {
             await api.patch(`/api/connections/${connectionId}/privacy`, { privacySettings: settings });
+            queryClient.invalidateQueries({ queryKey: ['connections', connectionId, 'privacy'] });
             toast.success('Privacy settings updated');
             onClose?.();
         } catch (error) {
@@ -47,6 +49,16 @@ const ConnectionPrivacySettings = ({ connectionId, onClose }) => {
         return (
             <div className="flex items-center justify-center py-6">
                 <Loader2 size={20} className="animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    // Batch 4c: previously a failed fetch fell through to settings[key] on
+    // null and threw — render an error instead.
+    if (isError || !settings) {
+        return (
+            <div className="flex flex-col items-center gap-3 py-6 text-center">
+                <p className="text-sm text-muted-foreground">Couldn&apos;t load privacy settings.</p>
             </div>
         );
     }

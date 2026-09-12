@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { Trash2, RotateCcw, MailOpen, AlertCircle, MailPlus } from 'lucide-react';
 import api from '../../services/api';
 import { Card } from '@/components/ui/card';
@@ -9,33 +10,29 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
 
 const AdminContacts = () => {
-    const [contacts, setContacts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
+    // Batch 4c: cached, cancellable inbox fetch (signal cancels on unmount).
+    const { data: contacts = [], isLoading: loading } = useQuery({
+        queryKey: ['admin', 'contacts'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get('/api/contact', { signal });
+            const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+            return data;
+        },
+        staleTime: 60_000,
+        placeholderData: keepPreviousData,
+    });
     const [deletedItems, setDeletedItems] = useState({});
 
-    const fetchContacts = async () => {
-        try {
-            const res = await api.get('/api/contact');
-            const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
-            setContacts(data);
-        } catch (error) {
-            console.error('Failed to fetch contacts', error);
-            toast.error('Could not load contact submissions');
-            setContacts([]);
-        } finally {
-            setLoading(false);
-        }
+    const updateCachedContacts = (updater) => {
+        queryClient.setQueryData(['admin', 'contacts'], (prev) => updater(Array.isArray(prev) ? prev : []));
     };
-
-    useEffect(() => {
-        fetchContacts();
-    }, []);
 
     const markAsRead = async (id, currentStatus) => {
         if (currentStatus === 'read') return;
         try {
             await api.patch(`/api/contact/${id}`, { status: 'read' });
-            setContacts(prev => (Array.isArray(prev) ? prev : []).map(c => c._id === id ? { ...c, status: 'read' } : c));
+            updateCachedContacts((prev) => prev.map(c => c._id === id ? { ...c, status: 'read' } : c));
         } catch (error) {
             console.error(error);
             toast.error('Failed to mark as read');
@@ -48,7 +45,7 @@ const AdminContacts = () => {
         const timer = setTimeout(async () => {
             try {
                 await api.delete(`/api/contact/${id}`);
-                setContacts(prev => prev.filter(c => c._id !== id));
+                updateCachedContacts((prev) => prev.filter(c => c._id !== id));
             } catch (error) {
                 console.error('Failed to delete contact', error);
             }

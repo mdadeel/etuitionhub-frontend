@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import api from "../../../services/api";
 import { toast } from "react-hot-toast";
 import {
@@ -17,25 +18,23 @@ const fmtDate = (d) => (d ? new Date(d).toLocaleString() : "—");
 const fmtMoney = (v) => `৳${Number(v || 0).toLocaleString("en-US")}`;
 
 const Reports = () => {
-  const [reports, setReports] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: reports = [], isLoading: loading, isError } = useQuery({
+    queryKey: ['admin', 'reports'],
+    queryFn: async ({ signal }) => {
+      const res = await api.get("/api/admin/reports", { signal });
+      return res.data.data || [];
+    },
+    staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
+  });
   const [running, setRunning] = useState(false);
 
-  const fetchReports = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/api/admin/reports");
-      setReports(res.data.data || []);
-    } catch {
-      toast.error("Failed to load reports");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const refreshReports = () => queryClient.invalidateQueries({ queryKey: ['admin', 'reports'] });
 
   useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+    if (isError) toast.error("Failed to load reports");
+  }, [isError]);
 
   const handleRunNow = async () => {
     try {
@@ -46,7 +45,7 @@ const Reports = () => {
           ? "Digest generated and delivered"
           : "Digest generation failed — see report entry"
       );
-      fetchReports();
+      refreshReports();
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to run digest");
     } finally {
@@ -66,7 +65,7 @@ const Reports = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={fetchReports} disabled={loading}>
+          <Button size="sm" variant="outline" onClick={refreshReports} disabled={loading}>
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
           <Button size="sm" onClick={handleRunNow} disabled={running}>

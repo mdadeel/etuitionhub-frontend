@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Wallet, TrendingUp, Clock, ArrowDownToLine, Banknote, Percent } from 'lucide-react';
 import { StatCardSkeleton, TableSkeleton } from "@/components/shared/skeletons";
@@ -10,25 +11,18 @@ import StatusBadge from '../shared/StatusBadge';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
 import EmptyState from '../shared/EmptyState';
 
-const STATUS_COLORS = {
-    pending_verification: 'bg-amber-500/10 text-amber-700 border-amber-500/20',
-    confirmed: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20',
-    commission_applied: 'bg-primary/10 text-primary border-primary/20',
-    available_for_withdrawal: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20',
-    withdrawn: 'bg-zinc-500/10 text-zinc-700 border-zinc-500/20',
-    rejected: 'bg-red-500/10 text-red-700 border-red-500/20',
-};
-
 const TutorWallet = () => {
-    const { data, isLoading, isError } = useWalletQuery();
+    const { data, isLoading, isError, refetch } = useWalletQuery();
     const walletSnapshot = useRealtimeStore((s) => s.walletSnapshot);
-    const [commissionPct, setCommissionPct] = useState(null);
-
-    useEffect(() => {
-        api.get('/api/settings/public').then(res => {
-            if (res.data?.commission_percentage) setCommissionPct(Number(res.data.commission_percentage));
-        }).catch(() => {});
-    }, []);
+    // Batch 4c: cached public commission (changes rarely; no per-mount fetch).
+    const { data: commissionPct = null } = useQuery({
+        queryKey: ['settings', 'public-commission'],
+        queryFn: async ({ signal }) => {
+            const res = await api.get('/api/settings/public', { signal });
+            return res.data?.commission_percentage ? Number(res.data.commission_percentage) : null;
+        },
+        staleTime: 10 * 60_000,
+    });
 
     // Live snapshot wins over the cached server value (covers the gap between
     // a socket event and the React Query refetch).
@@ -50,7 +44,42 @@ const TutorWallet = () => {
             </div>
         );
     }
-    if (isError || !wallet) return null;
+    // Batch 1 (audit Exec #4): never blank-screen on wallet error — show retry.
+    // A loaded-but-missing wallet (new tutor) is an empty state, not an error.
+    if (isError) {
+        return (
+            <div className="space-y-8">
+                <DashboardPageHeader
+                    category="Tutor Wallet"
+                    title="Earnings Overview"
+                    subtitle="Track available balance, pending earnings, and withdrawal history."
+                />
+                <EmptyState
+                    icon={Wallet}
+                    title="Couldn't load your wallet"
+                    description="Check your connection and try again."
+                    action="Retry"
+                    onAction={() => refetch()}
+                />
+            </div>
+        );
+    }
+    if (!wallet) {
+        return (
+            <div className="space-y-8">
+                <DashboardPageHeader
+                    category="Tutor Wallet"
+                    title="Earnings Overview"
+                    subtitle="Track available balance, pending earnings, and withdrawal history."
+                />
+                <EmptyState
+                    icon={Wallet}
+                    title="No wallet yet"
+                    description="Your wallet appears after your first confirmed payment."
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in animate-fade-in-up duration-700">
