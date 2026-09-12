@@ -214,8 +214,6 @@ const CommandPaletteBridge = () => {
 };
 
 const AuthenticatedProviders = ({ children }) => {
-  const { user } = useAuth();
-  if (!user) return children;
   return (
     <ChatProvider>
       <DynamicIslandProvider>
