@@ -11,8 +11,8 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
     // Poll online status every 30s — Vercel-only fallback (standalone socket server doesn't need this)
     useEffect(() => {
         if (!user) return;
-        const socketUrl = SOCKET_URL || API_URL;
-        if (socketUrl.includes('vercel')) {
+        const socketUrl = SOCKET_URL || (import.meta.env.DEV ? API_URL : null);
+        if (!socketUrl || socketUrl.includes('vercel')) {
             const fetchOnline = async () => {
                 try {
                     const res = await import('../services/api').then(m => m.default.get('/api/users/online'));
@@ -32,8 +32,8 @@ const useChatSocket = (user, dbUser, fetchConversations) => {
     // Socket connection is managed by useSocketEvents — we just attach listeners here.
     useEffect(() => {
         if (!user) return;
-        const socketUrl = SOCKET_URL || API_URL;
-        if (socketUrl.includes('vercel')) return;
+        const socketUrl = SOCKET_URL || (import.meta.env.DEV ? API_URL : null);
+        if (!socketUrl || socketUrl.includes('vercel')) return;
 
         const existingSocket = getSocket();
         if (!existingSocket) return;

@@ -17,8 +17,8 @@ const useSocketEvents = () => {
         if (!user || socketRef) return;
 
         // Use standalone Socket.IO service in production; embedded in dev.
-        const socketUrl = SOCKET_URL || API_URL;
-        if (socketUrl.includes('vercel')) return undefined;
+        const socketUrl = SOCKET_URL || (import.meta.env.DEV ? API_URL : null);
+        if (!socketUrl || socketUrl.includes('vercel')) return undefined;
 
         const s = io(socketUrl, {
             withCredentials: true,

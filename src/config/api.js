@@ -11,10 +11,11 @@ const API_URL = import.meta.env.DEV
 
 export default API_URL;
 
-// Socket.IO URL — use a dedicated service in production (Railway/Fly.io).
+// Socket.IO URL — use a dedicated service in production (Railway/Fly.io) if deployed.
 // In dev, Socket.IO is embedded in the Express server at API_URL.
-// In production, the standalone socket-server (socket-server/index.js) runs
-// separately and WebSocket upgrades work without Vercel's serverless constraints.
+// If no dedicated socket host is available in production, return null (the app
+// automatically falls back to HTTP polling / REST endpoints).
 export const SOCKET_URL = import.meta.env.DEV
     ? API_URL           // dev: embedded in Express
-    : 'https://etuitionhub-socket.fly.dev'; // prod: standalone Railway/Fly.io service
+    : null;             // prod: null unless custom socket server URL is configured
+
