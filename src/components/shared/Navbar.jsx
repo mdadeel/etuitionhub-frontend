@@ -225,9 +225,9 @@ const Navbar = () => {
           </button>
 
           {/* Platform Logo */}
-          <div className="shrink-0 flex items-center">
-            <Logo />
-          </div>
+          <Link to="/" aria-label="e-tuitionBD home" className="shrink-0 flex items-center rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <Logo showText={false} />
+          </Link>
 
           {/* Desktop Search Bar (Expandable + Keyboard-Aware) */}
           {!isAdminPath(location.pathname) && (
