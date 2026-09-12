@@ -196,7 +196,8 @@ export default function SessionRoom() {
     };
 
     const toggleMic = () => {
-        const audioTrack = stream.getAudioTracks()[0];
+        // Batch 1 (audit Exec #4): stream is undefined until getUserMedia resolves.
+        const audioTrack = stream?.getAudioTracks?.()[0];
         if (audioTrack) {
             audioTrack.enabled = !audioTrack.enabled;
             setMicOn(audioTrack.enabled);
@@ -204,7 +205,7 @@ export default function SessionRoom() {
     };
 
     const toggleVideo = () => {
-        const videoTrack = stream.getVideoTracks()[0];
+        const videoTrack = stream?.getVideoTracks?.()[0];
         if (videoTrack) {
             videoTrack.enabled = !videoTrack.enabled;
             setVideoOn(videoTrack.enabled);

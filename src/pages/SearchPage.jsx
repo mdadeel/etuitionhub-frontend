@@ -51,22 +51,18 @@ const SearchPage = () => {
     const controller = new AbortController();
     const fetchAll = async () => {
       try {
-        const [tutorsRes, tuitionsRes, combinedRes] = await Promise.all([
-          api.get(`/api/tutors/search?q=${encodeURIComponent(debouncedQuery)}&limit=10`, { signal: controller.signal }),
-          api.get(`/api/tuitions?search=${encodeURIComponent(debouncedQuery)}&limit=10&status=approved`, { signal: controller.signal }),
-          api.get(`/api/search/combined?q=${encodeURIComponent(debouncedQuery)}&limit=6`, { signal: controller.signal }),
-        ]);
-        setTutors(tutorsRes.data.data || []);
-        const tuitionData = tuitionsRes.data.data || tuitionsRes.data.tuitions || [];
-        setTuitions(tuitionData);
-        const orgs = combinedRes.data?.organizations || [];
-        setOrganizations(orgs);
-        // Reuse same combined response for suggestions (was duplicate GET limit=4)
+        // Single /combined call covers tutors + tuitions + organizations —
+        // previously this fired 3 overlapping endpoints per keystroke.
+        const combinedRes = await api.get(`/api/search/combined?q=${encodeURIComponent(debouncedQuery)}&limit=10`, { signal: controller.signal });
         const d = combinedRes.data || {};
+        setTutors(d.tutors || []);
+        setTuitions(d.tuitions || []);
+        setOrganizations(d.organizations || []);
+        // Reuse the same response for suggestions (no second request)
         setSuggestions({
           tutors: (d.tutors || []).slice(0, 4),
           tuitions: (d.tuitions || []).slice(0, 4),
-          organizations: orgs.slice(0, 4),
+          organizations: (d.organizations || []).slice(0, 4),
         });
         setShowSuggestions(true);
         setActiveIndex(-1);

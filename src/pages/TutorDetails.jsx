@@ -117,6 +117,8 @@ const TutorDetails = () => {
       setLoading(true);
 
       try {
+        // Batch 6: viewer context (canReview + active request) comes from one
+        // indexed server lookup instead of full bookings + hire-request lists.
         const promises = [
           api.get(`/api/tutors/${id}`),
           api.get(`/api/tutors/${id}/reviews`).catch((err) => {
@@ -127,8 +129,8 @@ const TutorDetails = () => {
 
         if (user?.email) {
           promises.push(
-            api.get(`/api/bookings/student/${user.email}`).catch((err) => {
-              console.warn('Failed to fetch user bookings:', err);
+            api.get(`/api/tutors/${id}/context`).catch((err) => {
+              console.warn('Failed to fetch tutor context:', err);
               return null;
             })
           );
@@ -137,23 +139,16 @@ const TutorDetails = () => {
         const results = await Promise.all(promises);
         const tutorRes = results[0];
         const reviewsRes = results[1];
-        const bookingsRes = user?.email ? results[2] : null;
+        const contextRes = user?.email ? results[2] : null;
 
         if (tutorRes?.data) {
           setTutor(tutorRes.data);
 
-          if (bookingsRes?.data) {
-            const bookingsList = Array.isArray(bookingsRes.data)
-              ? bookingsRes.data
-              : Array.isArray(bookingsRes.data?.data)
-              ? bookingsRes.data.data
-              : [];
-            const completed = bookingsList.some(
-              (b) =>
-                b.tutorEmail?.toLowerCase() === tutorRes.data.email?.toLowerCase() &&
-                b.status === 'completed'
-            );
-            setCanReview(completed);
+          if (contextRes?.data) {
+            setCanReview(Boolean(contextRes.data.canReview));
+            if (contextRes.data.existingActiveRequest) {
+              setExistingRequest(contextRes.data.existingActiveRequest);
+            }
           }
         } else {
           setTutor(null);
@@ -194,21 +189,7 @@ const TutorDetails = () => {
       .catch(() => setSimilarTutors([]));
   }, [tutor?._id, tutor?.subjects]);
 
-  useEffect(() => {
-    const checkExistingRequest = async () => {
-      if (!user || !tutor) return;
-      try {
-        const res = await api.get('/api/hire-requests/sent');
-        const active = (res.data?.data || []).find(
-          (r) => r.toUserId?._id === tutor._id && ['pending', 'countered'].includes(r.status)
-        );
-        if (active) setExistingRequest(active);
-      } catch {
-        // silent — not critical
-      }
-    };
-    checkExistingRequest();
-  }, [user, tutor]);
+  // (existing-request check moved into the context fetch above)
 
   const handleCancelRequest = async () => {
     if (!existingRequest) return;

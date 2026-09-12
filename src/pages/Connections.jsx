@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import api from '../../services/api';
+import api from '../services/api';
 import ConnectionsList from '../components/Connections/ConnectionsList';
 import ConnectionRequestCard from '../components/Connections/ConnectionRequestCard';
 import OnboardingWizard from '../components/Connections/OnboardingWizard';

@@ -9,17 +9,10 @@ import SEO from '@/components/shared/SEO';
 const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    // eslint-disable-next-line no-unused-vars
-    const [payment, setPayment] = useState(null);
     const [receipt, setReceipt] = useState(null);
 
-    useEffect(() => {
-        const paymentId = searchParams.get('payment_id');
-        if (!paymentId) return;
-        api.get(`/api/payments/${paymentId}`)
-            .then((res) => setPayment(res.data))
-            .catch(() => {});
-    }, [searchParams]);
+    // Batch 3: single receipt fetch. The old parallel GET /api/payments/:id
+    // only fed a `payment` state that was never rendered — removed.
 
     useEffect(() => {
         const paymentId = searchParams.get('payment_id');

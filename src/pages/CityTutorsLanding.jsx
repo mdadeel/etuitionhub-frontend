@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -39,11 +40,25 @@ const CityTutorsLanding = () => {
 
   const [guaranteeOpen, setGuaranteeOpen] = useState(false);
   const [selectedCurriculum, setSelectedCurriculum] = useState('All Curricula');
-  const [tutors, setTutors] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   const loc = useMemo(() => resolveLocationData(city, thana), [city, thana]);
+
+  // Batch 4a: cached, cancellable city listing (signal aborts stale requests
+  // on fast city switches; back-nav serves cache instead of refetching).
+  const { data: tutors = [], isLoading: loading } = useQuery({
+    queryKey: ['tutors', 'city', loc.queryArea],
+    queryFn: async ({ signal }) => {
+      const res = await api.get('/api/tutors', {
+        params: { location: loc.queryArea, limit: 12 },
+        signal,
+      });
+      const list = res.data?.data;
+      return Array.isArray(list) ? list : [];
+    },
+    staleTime: 120_000,
+    placeholderData: keepPreviousData,
+  });
 
   const breadcrumbs = useMemo(() => {
     const crumbs = [
@@ -90,33 +105,7 @@ const CityTutorsLanding = () => {
     },
   ], [loc]);
 
-  const fetchLocationTutors = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/api/tutors', {
-        params: {
-          area: loc.queryArea,
-          limit: 12,
-        },
-      });
-
-      const list = Array.isArray(res.data?.tutors)
-        ? res.data.tutors
-        : Array.isArray(res.data)
-          ? res.data
-          : [];
-
-      setTutors(list);
-    } catch {
-      setTutors([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [loc.queryArea]);
-
-  useEffect(() => {
-    fetchLocationTutors();
-  }, [fetchLocationTutors]);
+  // (location fetch moved to the useQuery above)
 
   const filteredTutors = useMemo(() => {
     if (selectedCurriculum === 'All Curricula') return tutors;

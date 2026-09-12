@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from 'react-i18next';
 import useDebouncedValue from "../hooks/useDebouncedValue";
+import { useTutorsInfiniteQuery } from "../hooks/queries/useTutorsQuery";
 import { useSearchParams } from "react-router-dom";
 import TutorCard from "../components/shared/TutorCard";
 import TutorCompareModal from "../components/shared/TutorCompareModal";
@@ -29,15 +30,11 @@ import toast from "react-hot-toast";
 const Tutors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
-  const [tutors, setTutors] = useState([]);
   const [savedTutorIds, setSavedTutorIds] = useState(new Set());
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("ratings");
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [selectedArea, setSelectedArea] = useState("All");
-  const [allSubjects, setAllSubjects] = useState([]);
-  const [allAreas, setAllAreas] = useState(["All"]);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [selectedGender, setSelectedGender] = useState("all");
   const [selectedMinSalary, setSelectedMinSalary] = useState(1000);
@@ -45,16 +42,76 @@ const Tutors = () => {
   const searchQuery = searchParams.get("q") || "";
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debouncedSearch = useDebouncedValue(localSearch, 300);
-  const [page, setPage] = useState(1);
-  const [_pagination, setPagination] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [error, setError] = useState(null);
-  const [retryNonce, setRetryNonce] = useState(0);
 
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [compareIds, setCompareIds] = useState([]);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
+
+  // Batch 4a: cached, cancellable listing via useInfiniteQuery — filter
+  // changes swap the query key (no manual wipe, no skeleton flash), the
+  // axios signal cancels stale requests, and "Load more" appends pages.
+  const apiFilters = useMemo(() => ({
+    ...(debouncedSearch ? { q: debouncedSearch } : {}),
+    ...(selectedSubjects.length > 0 ? { subject: selectedSubjects } : {}),
+    ...(selectedArea !== "All" ? { location: selectedArea } : {}),
+    ...(selectedLanguage !== "all" && selectedLanguage !== "All" ? { language: selectedLanguage } : {}),
+    ...(selectedGender && selectedGender !== "all" ? { gender: selectedGender } : {}),
+    ...(selectedMinSalary !== 1000 ? { minPrice: selectedMinSalary } : {}),
+    ...(selectedMaxSalary !== 20000 ? { maxPrice: selectedMaxSalary } : {}),
+    ...(sortBy ? { sort: sortBy } : {}),
+  }), [debouncedSearch, selectedSubjects, selectedArea, selectedLanguage, selectedGender, selectedMinSalary, selectedMaxSalary, sortBy]);
+
+  const {
+    data: tutorsInfiniteData,
+    isLoading,
+    isFetching,
+    isError,
+    error: queryError,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+  } = useTutorsInfiniteQuery(apiFilters);
+
+  const tutors = useMemo(() => {
+    const pages = tutorsInfiniteData?.pages || [];
+    return pages.flatMap((p) => {
+      if (Array.isArray(p?.data)) return p.data;
+      return Array.isArray(p) ? p : [];
+    });
+  }, [tutorsInfiniteData]);
+
+  const filterOptions = tutorsInfiniteData?.pages?.[0]?.filterOptions || null;
+
+  const allSubjects = useMemo(() => {
+    if (!filterOptions?.subjects) return [];
+    const subjectsSet = new Set();
+    filterOptions.subjects.forEach((s) => {
+      if (typeof s === "string" && s.includes(",")) {
+        s.split(",").forEach((sub) => subjectsSet.add(sub.trim()));
+      } else {
+        subjectsSet.add(s);
+      }
+    });
+    return Array.from(subjectsSet);
+  }, [filterOptions]);
+
+  const allAreas = useMemo(() => {
+    const areasSet = new Set(["All"]);
+    (filterOptions?.locations || []).forEach((loc) => {
+      if (typeof loc === "string") {
+        const area = loc.split(",").pop().trim();
+        if (area) areasSet.add(area);
+      }
+    });
+    return Array.from(areasSet);
+  }, [filterOptions]);
+
+  const loading = isLoading;
+  const appending = isFetching && !isLoading;
+  const error = isError
+    ? queryError?.response?.data?.message || "Unable to load tutors. Please check your connection and try again."
+    : null;
 
   const handleToggleCompare = (id) => {
     const { ids, rejected } = toggleCompare(compareIds, id);
@@ -89,23 +146,8 @@ const Tutors = () => {
     };
   }, [isMobileFiltersOpen]);
 
-  // Reset page, loaders, and list when search or filters change to prevent visual glitches
-  useEffect(() => {
-    setPage(1);
-    setHasMore(true);
-    setTutors([]);
-    setLoading(true);
-    setError(null);
-  }, [
-    debouncedSearch,
-    selectedSubjects,
-    selectedArea,
-    selectedLanguage,
-    selectedGender,
-    selectedMinSalary,
-    selectedMaxSalary,
-    sortBy,
-  ]);
+  // (reset effect removed — filter changes swap the infinite-query key,
+  // which resets pages automatically while keepPreviousData holds the list)
 
   // Sync filters to URL
   useEffect(() => {
@@ -153,99 +195,7 @@ const Tutors = () => {
   }, []);
 
 
-  useEffect(() => {
-    let active = true;
-    const fetchTutors = async () => {
-      setLoading(true);
-      try {
-        let params = new URLSearchParams();
-        if (debouncedSearch) params.append("q", debouncedSearch);
-
-        selectedSubjects.forEach((sub) => params.append("subject", sub));
-
-        if (selectedArea !== "All") params.append("location", selectedArea);
-        if (selectedLanguage !== "all" && selectedLanguage !== "All")
-          params.append("language", selectedLanguage);
-        if (selectedGender && selectedGender !== "all")
-          params.append("gender", selectedGender);
-        if (selectedMinSalary && selectedMinSalary !== 1000)
-          params.append("minPrice", selectedMinSalary);
-        if (selectedMaxSalary && selectedMaxSalary !== 20000)
-          params.append("maxPrice", selectedMaxSalary);
-
-        params.append("page", page);
-        params.append("limit", 21);
-
-        if (sortBy) {
-          params.append("sort", sortBy);
-        }
-
-        const response = await api.get(
-          `/api/tutors?${params.toString()}`,
-        );
-        
-        if (!active) return;
-        
-        const responseData = response.data;
-        const tutorsData = responseData.data || responseData;
-        const paginationData = responseData.pagination || null;
-        const filterOptions = responseData.filterOptions || null;
-
-        setError(null);
-        setTutors(prev => page === 1 ? (Array.isArray(tutorsData) ? tutorsData : []) : [...prev, ...(Array.isArray(tutorsData) ? tutorsData : [])]);
-        setPagination(paginationData);
-        setHasMore(paginationData ? paginationData.page < paginationData.pages : false);
-
-        if (filterOptions) {
-          if (filterOptions.subjects) {
-            const subjectsSet = new Set();
-            filterOptions.subjects.forEach((s) => {
-              if (typeof s === "string" && s.includes(",")) {
-                s.split(",").forEach((sub) => subjectsSet.add(sub.trim()));
-              } else {
-                subjectsSet.add(s);
-              }
-            });
-            setAllSubjects(Array.from(subjectsSet));
-          }
-          if (filterOptions.locations) {
-            const areasSet = new Set(["All"]);
-            filterOptions.locations.forEach((loc) => {
-              if (typeof loc === "string") {
-                const area = loc.split(",").pop().trim();
-                if (area) areasSet.add(area);
-              }
-            });
-            setAllAreas(Array.from(areasSet));
-          }
-        }
-      } catch (error) {
-        if (!active) return;
-        console.error("Error fetching tutors", error);
-        setError(
-          error?.response?.data?.message ||
-            "Unable to load tutors. Please check your connection and try again.",
-        );
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-    fetchTutors();
-    return () => {
-      active = false;
-    };
-  }, [
-    debouncedSearch,
-    selectedSubjects,
-    selectedArea,
-    sortBy,
-    selectedLanguage,
-    selectedGender,
-    selectedMinSalary,
-    selectedMaxSalary,
-    page,
-    retryNonce,
-  ]);
+  // (fetch effect removed — data comes from useTutorsInfiniteQuery above)
 
   useEffect(() => {
     if (!user || tutors.length === 0) return;
@@ -290,7 +240,6 @@ const Tutors = () => {
     setSelectedGender("all");
     setSelectedMinSalary(1000);
     setSelectedMaxSalary(20000);
-    setPage(1);
   };
 
   const toggleSubject = (sub) => {
@@ -558,7 +507,7 @@ const Tutors = () => {
                   {error}
                 </p>
                 <button
-                  onClick={() => { setError(null); setLoading(true); setRetryNonce(n => n + 1); }}
+                  onClick={() => { refetch(); }}
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 active:scale-[0.98] transition-all shadow-sm"
                 >
                   <RefreshCw size={14} />
@@ -612,22 +561,22 @@ const Tutors = () => {
                   ))}
                 </div>
 
-                {loading && tutors.length > 0 && (
+                {appending && tutors.length > 0 && (
                   <div className="mt-6">
                     <TutorCardGridSkeleton count={3} columns={3} className="gap-4 md:gap-4" />
                   </div>
                 )}
-                {hasMore && !loading && (
+                {hasNextPage && !isFetching && (
                   <div className="flex justify-center mt-8">
                     <button
-                      onClick={() => setPage((prev) => prev + 1)}
+                      onClick={() => fetchNextPage()}
                       className="px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-all shadow-md"
                     >
                       {t('tutors.load_more')}
                     </button>
                   </div>
                 )}
-                {!hasMore && tutors.length > 0 && !loading && (
+                {!hasNextPage && tutors.length > 0 && !isFetching && (
                   <div className="py-8 text-center text-sm text-muted-foreground border-t border-border mt-8">
                     {t('tutors.no_more')}
                   </div>

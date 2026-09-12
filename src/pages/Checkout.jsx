@@ -309,7 +309,7 @@ const Checkout = () => {
                                         onChange={handleChange}
                                         className="h-14 rounded-none border-border bg-muted/20 font-mono text-xs font-bold text-primary focus-visible:ring-primary uppercase tracking-widest"
                                         placeholder={t('checkout.tx_placeholder')}
-                                        required
+                                        required={!isInstantMethod(formData.paymentMethod)}
                                     />
                                 </div>
 
@@ -322,7 +322,7 @@ const Checkout = () => {
                                         onChange={handleChange}
                                         className="h-14 rounded-none border-border bg-muted/20 font-bold focus-visible:ring-primary tabular-nums"
                                         placeholder="01XXXXXXXXX"
-                                        required
+                                        required={!isInstantMethod(formData.paymentMethod)}
                                     />
                                 </div>
                             </div>

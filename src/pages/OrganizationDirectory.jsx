@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import api from "../services/api";
-import { toast } from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { useOrganizationsQuery, useMyOrgsQuery } from "../hooks/queries/useOrganizationsQuery";
 import {
   Building2,
   Search,
@@ -88,10 +88,6 @@ const OrganizationDirectory = () => {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [organizations, setOrganizations] = useState([]);
-  const [myOrgs, setMyOrgs] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   // Mobile Filter Drawer state
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
@@ -141,34 +137,31 @@ const OrganizationDirectory = () => {
     setSearchParams(params, { replace: true });
   }, [debouncedSearch, activeCategory, selectedDivision, verifiedOnly, sortBy, setSearchParams]);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const queryParams = new URLSearchParams();
-      if (debouncedSearch.trim()) queryParams.set("search", debouncedSearch.trim());
-      if (activeCategory !== "all") queryParams.set("type", activeCategory);
-      if (selectedDivision) queryParams.set("district", selectedDivision);
-      if (verifiedOnly) queryParams.set("verified", "true");
-      if (sortBy) queryParams.set("sort", sortBy);
+  // Batch 4a: cached, cancellable directory listing — filter changes swap
+  // the query key (no skeleton flash, stale requests cancelled via signal).
+  // Memberships load as an independent query so they never block the public
+  // directory.
+  const queryClient = useQueryClient();
+  const orgFilters = useMemo(() => ({
+    ...(debouncedSearch.trim() ? { search: debouncedSearch.trim() } : {}),
+    ...(activeCategory !== "all" ? { type: activeCategory } : {}),
+    ...(selectedDivision ? { district: selectedDivision } : {}),
+    ...(verifiedOnly ? { verified: "true" } : {}),
+    ...(sortBy ? { sort: sortBy } : {}),
+  }), [debouncedSearch, activeCategory, selectedDivision, verifiedOnly, sortBy]);
 
-      const [orgsRes, myOrgsRes] = await Promise.all([
-        api.get(`/api/v1/organizations?${queryParams.toString()}`),
-        user
-          ? api.get("/api/v1/organizations/my/orgs").catch(() => ({ data: { data: [] } }))
-          : { data: { data: [] } },
-      ]);
-      setOrganizations(orgsRes.data.data || []);
-      setMyOrgs(myOrgsRes.data.data || []);
-    } catch {
-      toast.error(t("org.failed_to_load", "Failed to load organizations"));
-    } finally {
-      setLoading(false);
-    }
-  }, [user, debouncedSearch, activeCategory, selectedDivision, verifiedOnly, sortBy, t]);
+  const {
+    data: organizations = [],
+    isLoading: loading,
+    isFetching,
+    isError,
+    refetch: refetchOrgs,
+  } = useOrganizationsQuery(orgFilters);
+  const { data: myOrgs = [] } = useMyOrgsQuery(user);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  const handleAdmissionSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ["organizations"] });
+  };
 
   const isMember = (orgId) => myOrgs.some((m) => m._id === orgId);
 
@@ -490,10 +483,10 @@ const OrganizationDirectory = () => {
                 <div className="inline-flex items-center gap-2 font-heading font-bold text-foreground text-sm sm:text-base">
                   <Building2 className="size-4.5 text-primary shrink-0" />
                   <span>
-                    {loading ? "Searching..." : `${organizations.length} Institutions Found`}
+                    {isFetching ? "Searching..." : `${organizations.length} Institutions Found`}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold">
-                    {loading ? "..." : organizations.length}
+                    {isFetching ? "..." : organizations.length}
                   </span>
                 </div>
 
@@ -592,8 +585,29 @@ const OrganizationDirectory = () => {
               </div>
             )}
 
+            {/* Error State */}
+            {isError && organizations.length === 0 && (
+              <div className="text-center py-16 bg-card/40 border border-border/60 rounded-3xl p-8 max-w-xl mx-auto">
+                <Building2 className="size-16 mx-auto text-destructive/40 mb-4" />
+                <h3 className="text-lg font-bold font-heading text-foreground mb-1">
+                  {t("org.load_error_title", "Couldn't load institutions")}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-6">
+                  {t("org.load_error_desc", "Check your connection and try again.")}
+                </p>
+                <Button
+                  onClick={() => refetchOrgs()}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs font-semibold rounded-xl"
+                >
+                  {t("common.retry", "Retry")}
+                </Button>
+              </div>
+            )}
+
             {/* Empty State */}
-            {!loading && organizations.length === 0 && (
+            {!loading && !isError && organizations.length === 0 && (
               <div className="text-center py-16 bg-card/40 border border-border/60 rounded-3xl p-8 max-w-xl mx-auto">
                 <Building2 className="size-16 mx-auto text-muted-foreground/30 mb-4" />
                 <h3 className="text-lg font-bold font-heading text-foreground mb-1">
@@ -639,7 +653,7 @@ const OrganizationDirectory = () => {
           open={Boolean(selectedOrgForAdmission)}
           onClose={() => setSelectedOrgForAdmission(null)}
           organization={selectedOrgForAdmission}
-          onSuccess={() => fetchData()}
+          onSuccess={() => handleAdmissionSuccess()}
         />
       )}
     </div>
