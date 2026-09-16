@@ -23,7 +23,7 @@ function ActionButton({ active, activeClass, children, onClick, label, disabled,
             title={label}
             aria-live={ariaLive}
             className={cn(
-                'h-7 px-2 text-[11px] font-label rounded-md text-muted-foreground hover:text-foreground hover:bg-muted',
+                'min-h-[32px] sm:h-7 px-2.5 sm:px-2 text-[11px] font-label rounded-md text-muted-foreground hover:text-foreground hover:bg-muted',
                 'border border-transparent hover:border-border/60 transition-all duration-200',
                 'inline-flex items-center gap-1',
                 'disabled:opacity-40 disabled:cursor-not-allowed',
@@ -63,7 +63,7 @@ export default function MessageActions({
             <div
                 className={cn(
                     'flex items-center justify-end gap-1',
-                    'opacity-0 group-hover:opacity-100 transition-opacity duration-200',
+                    'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200',
                     className,
                 )}
             >
@@ -80,7 +80,7 @@ export default function MessageActions({
         <div
             className={cn(
                 'flex items-center gap-1',
-                'opacity-0 group-hover:opacity-100 transition-opacity duration-200',
+                'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200',
                 className,
             )}
         >

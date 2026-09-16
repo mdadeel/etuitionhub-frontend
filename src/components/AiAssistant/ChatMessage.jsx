@@ -129,7 +129,7 @@ const UserBubble = memo(function UserBubble({
                 </div>
                 <div className="flex items-center gap-2.5 px-0.5">
                     {timestamp && (
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/45 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/45 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
                             {timestamp}
                         </span>
                     )}
@@ -137,7 +137,7 @@ const UserBubble = memo(function UserBubble({
                         <button
                             type="button"
                             onClick={onEdit}
-                            className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/40 hover:text-primary transition-all duration-150 opacity-0 group-hover:opacity-100 active:scale-95"
+                            className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/40 hover:text-primary transition-all duration-150 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 active:scale-95 py-1 px-1.5 min-h-[32px] inline-flex items-center"
                             title="Edit message"
                         >
                             Edit
@@ -289,7 +289,7 @@ const AssistantMessage = memo(function AssistantMessage({
                     />
                     <div className="flex items-center gap-2">
                         {timestamp && (
-                            <span className="text-[11px] font-label text-muted-foreground/50 opacity-0 group-hover:opacity-60 transition-opacity duration-200">
+                            <span className="text-[11px] font-label text-muted-foreground/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-60 transition-opacity duration-200">
                                 {timestamp}
                             </span>
                         )}
@@ -347,7 +347,7 @@ const AssistantMessage = memo(function AssistantMessage({
             </AiResponseCard>
             <div className="flex items-center gap-2 pl-1">
                 {timestamp && (
-                    <span className="text-[11px] font-label text-muted-foreground/50 opacity-0 group-hover:opacity-60 transition-opacity duration-200">
+                    <span className="text-[11px] font-label text-muted-foreground/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-60 transition-opacity duration-200">
                         {timestamp}
                     </span>
                 )}

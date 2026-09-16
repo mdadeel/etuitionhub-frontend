@@ -50,7 +50,7 @@ function ChatRow({ session, onOpen, onDelete }) {
             <ChevronRight className="size-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
             <button
                 onClick={() => onDelete(session._id)}
-                className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
+                className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
                 title="Delete"
             >
                 <X className="size-3.5" />
@@ -101,7 +101,7 @@ function QuizRow({ quiz, onOpen, onDelete }) {
             <ChevronRight className="size-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
             <button
                 onClick={() => onDelete(quiz._id)}
-                className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
+                className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
                 title="Delete"
             >
                 <X className="size-3.5" />
@@ -237,7 +237,9 @@ export default function AiAssistantHistory() {
                             <EmptyState
                                 icon={MessageSquare}
                                 title="No chats yet"
-                                hint="Start a conversation from the Porua home page."
+                                hint="Start a conversation with Porua AI to get instant academic help."
+                                actionLabel="Start a Chat"
+                                onAction={() => navigate('/ai/chat')}
                             />
                         ) : (
                             allChats.map((s) => (
@@ -266,7 +268,9 @@ export default function AiAssistantHistory() {
                             <EmptyState
                                 icon={ClipboardList}
                                 title="No quizzes yet"
-                                hint="Generate a quiz from a chat response or the home page."
+                                hint="Generate practice quizzes to test and reinforce your knowledge."
+                                actionLabel="Generate a Quiz"
+                                onAction={() => navigate('/ai/quiz')}
                             />
                         ) : (
                             allQuizzes.map((q) => (
@@ -304,12 +308,21 @@ export default function AiAssistantHistory() {
     );
 }
 
-function EmptyState({ icon: Icon, title, hint }) {
+function EmptyState({ icon: Icon, title, hint, actionLabel, onAction }) {
     return (
         <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-12 text-center text-muted-foreground">
             <Icon className="mx-auto mb-3 text-muted-foreground/60" size={28} />
             <p className="text-sm font-medium text-foreground/80">{title}</p>
-            <p className="text-xs mt-1">{hint}</p>
+            <p className="text-xs mt-1 mb-4">{hint}</p>
+            {actionLabel && onAction && (
+                <button
+                    type="button"
+                    onClick={onAction}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
+                >
+                    {actionLabel}
+                </button>
+            )}
         </div>
     );
 }
