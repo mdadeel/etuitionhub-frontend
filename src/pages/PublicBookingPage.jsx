@@ -137,7 +137,12 @@ const PublicBookingPage = () => {
 
     return (
         <div className="min-h-screen bg-background py-8 px-4">
-            <SEO title={`Book a slot with ${tutor.displayName || 'the tutor'}`} description={`Book a tutoring session with ${tutor.displayName || ''}`} />
+            <SEO
+                title={`Book a slot with ${tutor.displayName || 'the tutor'}`}
+                description={`Book a tutoring session with ${tutor.displayName || ''}`}
+                canonicalUrl={`https://e-tuitionhub.vercel.app/tutor/${tutorId}`}
+                noIndex
+            />
 
             <div className="max-w-2xl mx-auto space-y-6">
                 {/* Back link */}

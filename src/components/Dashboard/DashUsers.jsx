@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TableSkeleton } from "@/components/shared/skeletons";
 import useDebouncedValue from '../../hooks/useDebouncedValue';
 import { Button } from '@/components/ui/button';
-import { UserX, Edit2, Search, ShieldAlert, UserCog } from 'lucide-react';
+import { UserX, Edit2, Search, ShieldAlert, UserCog, Crown } from 'lucide-react';
 import FilterSelect from '../shared/FilterSelect';
 import DashboardFilterBar from '../shared/DashboardFilterBar';
 import LocationFilter from '../shared/LocationFilter';
@@ -103,6 +103,12 @@ const DashUsers = () => {
         onSuccess: invalidateUsers,
     });
 
+    const premiumMutation = useAppMutation({
+        mutationFn: ({ id, isPremium }) => api.patch(`/api/users/${id}`, { isPremium }),
+        successMessage: 'Premium access updated',
+        onSuccess: invalidateUsers,
+    });
+
     const userFields = [
         { name: 'displayName', label: 'Full Name', placeholder: 'e.g. Rahim Khan' },
         { name: 'mobileNumber', label: 'Mobile Number', placeholder: 'e.g. 01700000000' },
@@ -142,6 +148,14 @@ const DashUsers = () => {
             return;
         }
         verifyMutation.mutate({ id, status });
+    };
+
+    const handlePremiumChange = (id, isPremium) => {
+        if (!isValidId(id)) {
+            toast.error('Demo data is read-only');
+            return;
+        }
+        premiumMutation.mutate({ id, isPremium });
     };
 
     const handleEditClick = (user) => {
@@ -306,6 +320,19 @@ const DashUsers = () => {
                                         />
                                     </div>
                                 )}
+                                <button
+                                    onClick={() => handlePremiumChange(user._id, !user.isPremium)}
+                                    title={user.isPremium ? 'Revoke Porua AI premium access' : 'Grant Porua AI premium access'}
+                                    className={cn(
+                                        'flex w-32 items-center gap-1.5 rounded-lg border px-2 py-1.5 text-[11px] font-semibold active:scale-[0.98]',
+                                        user.isPremium
+                                            ? 'border-primary/20 bg-primary/10 text-primary hover:bg-primary/15'
+                                            : 'border-transparent text-muted-foreground/60 hover:border-primary/20 hover:bg-primary/10 hover:text-primary'
+                                    )}
+                                >
+                                    <Crown size={12} />
+                                    {user.isPremium ? 'Premium' : 'Grant premium'}
+                                </button>
                             </div>
                         ),
                     },

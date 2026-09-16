@@ -6,14 +6,20 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import ModernSidebar from '../shared/ModernSidebar';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
+import PremiumGate from './PremiumGate';
+import { hasPremiumAccess } from './premiumAccess';
 import { Menu, X, ChevronLeft } from 'lucide-react';
 
 export default function AiAssistantLayout({ children, showBack = false, rightSlot = null, className = '' }) {
     useTheme();
+    const { dbUser, loading } = useAuth();
+    const blocked = !loading && !hasPremiumAccess(dbUser);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     return (
         <div className={cn('flex w-full bg-background overflow-hidden fixed top-14 md:top-16 inset-x-0 bottom-0 gap-1 pb-[env(safe-area-inset-bottom,0)]', className)}>
+            {blocked && <PremiumGate />}
             {/* Desktop Sidebar */}
             <ModernSidebar className="hidden lg:flex shrink-0 z-40" />
 

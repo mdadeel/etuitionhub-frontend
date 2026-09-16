@@ -66,7 +66,7 @@ const Register = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
-            <SEO title="Create Account | eTuitionBD" description="Join eTuitionBD as a student or tutor. Connect with verified tutors across all curricula in Bangladesh." />
+            <SEO title="Create Account | eTuitionBD" description="Join eTuitionBD as a student or tutor. Connect with verified tutors across all curricula in Bangladesh." noIndex />
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
             <div className="w-full max-w-md z-10">
                 <div className="bg-card border border-border rounded-xl  overflow-hidden p-5 sm:p-6">

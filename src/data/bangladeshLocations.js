@@ -74,6 +74,75 @@ export const BANGLADESH_LOCATIONS = {
       { slug: "daulatpur", name: "Daulatpur", popularCurricula: ["Bangla Medium"] },
     ],
   },
+  barishal: {
+    name: "Barishal",
+    division: "Barishal",
+    description: "Southern educational center home to University of Barishal, BM College, and Sher-e-Bangla Medical College.",
+    averageRate: "৳3,000 - ৳8,000/mo",
+    thanas: [
+      { slug: "kotwali", name: "Kotwali", popularCurricula: ["Bangla Medium", "Science", "Admission"] },
+      { slug: "rupatoli", name: "Rupatoli", popularCurricula: ["University Prep", "SSC/HSC"] },
+      { slug: "natullabad", name: "Natullabad", popularCurricula: ["Bangla Medium", "Commerce"] },
+    ],
+  },
+  rangpur: {
+    name: "Rangpur",
+    division: "Rangpur",
+    description: "Northern educational hub anchored by Begum Rokeya University (BRUR), Carmichael College, and Rangpur Medical College.",
+    averageRate: "৳3,000 - ৳7,500/mo",
+    thanas: [
+      { slug: "kotwali", name: "Kotwali", popularCurricula: ["Bangla Medium", "Admission Prep"] },
+      { slug: "dhap", name: "Dhap", popularCurricula: ["Medical Admission", "Science"] },
+      { slug: "modern-mor", name: "Modern Mor", popularCurricula: ["SSC/HSC", "Bangla Medium"] },
+    ],
+  },
+  mymensingh: {
+    name: "Mymensingh",
+    division: "Mymensingh",
+    description: "Renowned academic district featuring Bangladesh Agricultural University (BAU), Mymensingh Medical College (MMC), and Ananda Mohan College.",
+    averageRate: "৳3,500 - ৳8,500/mo",
+    thanas: [
+      { slug: "sadar", name: "Kotwali Sadar", popularCurricula: ["Bangla Medium", "Admission"] },
+      { slug: "charpara", name: "Charpara", popularCurricula: ["Medical Admission", "Science"] },
+      { slug: "ganginarpar", name: "Ganginarpar", popularCurricula: ["SSC/HSC", "English Version"] },
+      { slug: "shankipara", name: "Shankipara", popularCurricula: ["Science", "Math"] },
+    ],
+  },
+  comilla: {
+    name: "Comilla",
+    aliases: ["cumilla"],
+    division: "Chattogram",
+    description: "Historic education hub home to Comilla University, Victoria Government College, and premier cadet prep schools.",
+    averageRate: "৳3,500 - ৳8,500/mo",
+    thanas: [
+      { slug: "kandirpar", name: "Kandirpar", popularCurricula: ["Bangla Medium", "Science", "HSC"] },
+      { slug: "badurtala", name: "Badurtala", popularCurricula: ["Admission", "English Version"] },
+      { slug: "shashangachha", name: "Shashangachha", popularCurricula: ["SSC", "General Science"] },
+    ],
+  },
+  gazipur: {
+    name: "Gazipur",
+    division: "Dhaka",
+    description: "Technological and academic hub home to DUET, IUT (OIC), and prominent engineering preparatory academies.",
+    averageRate: "৳4,000 - ৳9,500/mo",
+    thanas: [
+      { slug: "chowrasta", name: "Chowrasta", popularCurricula: ["Engineering Prep", "Bangla Medium"] },
+      { slug: "joydebpur", name: "Joydebpur", popularCurricula: ["SSC/HSC", "English Version"] },
+      { slug: "board-bazar", name: "Board Bazar", popularCurricula: ["Science", "IUT Prep"] },
+      { slug: "konabari", name: "Konabari", popularCurricula: ["Bangla Medium"] },
+    ],
+  },
+  narayanganj: {
+    name: "Narayanganj",
+    division: "Dhaka",
+    description: "Vibrant riverside commercial and academic center featuring reputable high schools and collegiate tuition networks.",
+    averageRate: "৳3,500 - ৳9,000/mo",
+    thanas: [
+      { slug: "chashara", name: "Chashara", popularCurricula: ["Bangla Medium", "English Medium", "Commerce"] },
+      { slug: "bandar", name: "Bandar", popularCurricula: ["SSC/HSC", "Science"] },
+      { slug: "siddhirganj", name: "Siddhirganj", popularCurricula: ["Bangla Medium", "General Math"] },
+    ],
+  },
 };
 
 /**

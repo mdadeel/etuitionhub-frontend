@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import SEO from '../components/shared/SEO';
 import { Helmet } from 'react-helmet-async';
-import { breadcrumbJsonLd, serializeJsonLd } from '../lib/jsonLd';
+import { breadcrumbJsonLd, tutorProfileJsonLd, serializeJsonLd } from '../lib/jsonLd';
 import LoginRequiredModal from '../components/shared/LoginRequiredModal';
 import Breadcrumb from '../components/shared/Breadcrumb';
 import ReportModal from '../components/shared/ReportModal';
@@ -318,6 +318,11 @@ const TutorDetails = () => {
               ).__html
             }
           </script>
+          {tutor && (
+            <script type="application/ld+json">
+              {serializeJsonLd(tutorProfileJsonLd(tutor, reviews)).__html}
+            </script>
+          )}
         </Helmet>
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

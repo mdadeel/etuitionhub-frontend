@@ -1,10 +1,29 @@
 User-agent: *
 Allow: /
+
+# Private & Dashboard Areas
 Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /admin-login
+Disallow: /super-admin/
 Disallow: /session/
 Disallow: /checkout/
 Disallow: /payment-success/
 Disallow: /ai-assistant/
-Disallow: /admin-login
+Disallow: /password-reset
+Disallow: /reset-password
+Disallow: /403
 
+# Internal Search & Parameter Crawl Budget Protection
+Disallow: /search
+Disallow: /*?*q=*
+Disallow: /*?*expired=*
+
+# Backend APIs
+Disallow: /api/
+
+# Sitemaps
 Sitemap: https://e-tuitionhub.vercel.app/sitemap.xml
+Sitemap: https://e-tuitionhub.vercel.app/api/sitemap-tutors.xml
+Sitemap: https://e-tuitionhub.vercel.app/api/sitemap-tuitions.xml
+Sitemap: https://e-tuitionhub.vercel.app/api/sitemap-organizations.xml

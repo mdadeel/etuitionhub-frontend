@@ -141,7 +141,7 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO title="Search Tutors, Tuitions & Institutions | eTuitionBD" description="Search for verified private tutors, tuition opportunities, and educational institutions across Bangladesh." />
+      <SEO title="Search Tutors, Tuitions & Institutions | eTuitionBD" description="Search for verified private tutors, tuition opportunities, and educational institutions across Bangladesh." noIndex />
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="relative mb-6">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />

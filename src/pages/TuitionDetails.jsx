@@ -44,6 +44,7 @@ import SEO from '../components/shared/SEO';
 import { Helmet } from 'react-helmet-async';
 import {
     breadcrumbJsonLd,
+    tuitionJobPostingJsonLd,
     serializeJsonLd,
 } from '../lib/jsonLd';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -263,6 +264,11 @@ const TuitionDetails = () => {
                     { name: tuition?.subject || 'Tuition', url: `/tuition/${tuition?._id || ''}` },
                 ])).__html}
             </script>
+            {tuition && (
+                <script type="application/ld+json">
+                    {serializeJsonLd(tuitionJobPostingJsonLd(tuition)).__html}
+                </script>
+            )}
         </Helmet>
         <div className="bg-background min-h-screen py-8">
             <div className="max-w-6xl mx-auto px-4">
