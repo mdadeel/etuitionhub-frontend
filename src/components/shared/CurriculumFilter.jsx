@@ -16,14 +16,14 @@ const CurriculumFilter = ({ value, onChange }) => (
       <button
         type="button"
         onClick={() => onChange(null)}
-        className={`px-2.5 py-1 text-xs rounded-full border ${!value ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
+        className={`px-3 py-1.5 min-h-[36px] inline-flex items-center text-xs font-medium rounded-full border transition-colors ${!value ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
       >All</button>
       {OPTIONS.map((o) => (
         <button
           key={o.id}
           type="button"
           onClick={() => onChange(o.id)}
-          className={`px-2.5 py-1 text-xs rounded-full border ${value === o.id ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
+          className={`px-3 py-1.5 min-h-[36px] inline-flex items-center text-xs font-medium rounded-full border transition-colors ${value === o.id ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
         >{o.label}</button>
       ))}
     </div>

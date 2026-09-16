@@ -11,6 +11,7 @@ const EmptyState = ({
   variant = "default",
   query,
   suggestions,
+  onSuggestionClick,
 }) => {
   if (variant === "search") {
     return (
@@ -35,12 +36,14 @@ const EmptyState = ({
             <p className="text-xs text-muted-foreground mb-2 font-medium">Suggestions</p>
             <div className="flex flex-wrap gap-2 justify-center">
               {suggestions.map((s, i) => (
-                <span
+                <button
                   key={i}
-                  className="px-3 py-1.5 text-xs bg-background text-muted-foreground border border-border rounded-lg"
+                  type="button"
+                  onClick={() => onSuggestionClick ? onSuggestionClick(s) : onAction ? onAction(s) : null}
+                  className="px-3 py-1.5 min-h-[36px] inline-flex items-center text-xs bg-background text-foreground hover:bg-primary/5 hover:border-primary/50 border border-border rounded-lg transition-colors cursor-pointer"
                 >
                   {s}
-                </span>
+                </button>
               ))}
             </div>
           </div>

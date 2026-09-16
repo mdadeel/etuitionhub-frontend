@@ -55,12 +55,14 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = emptySuggesti
                     </p>
                     <div className="flex flex-wrap gap-2 justify-center">
                         {suggestions.map((s, i) => (
-                            <span
+                            <button
                                 key={i}
-                                className="px-3 py-1.5 text-xs bg-background text-muted-foreground border border-border"
+                                type="button"
+                                onClick={() => navigate(`/${type === 'tuitions' ? 'tuitions' : 'tutors'}?q=${encodeURIComponent(s)}`)}
+                                className="px-3 py-1.5 min-h-[36px] inline-flex items-center text-xs rounded-lg bg-background text-foreground border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors cursor-pointer"
                             >
                                 {s}
-                            </span>
+                            </button>
                         ))}
                     </div>
                 </div>
@@ -74,13 +76,25 @@ const SearchEmptyState = ({ query, type = 'results', suggestions = emptySuggesti
                         {spellingSuggestions.map((s, i) => (
                             <button
                                 key={i}
+                                type="button"
                                 onClick={() => navigate(`/tutors?q=${encodeURIComponent(s)}`)}
-                                className="px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-lg transition-colors"
+                                className="px-3 py-1.5 min-h-[36px] inline-flex items-center text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-lg transition-colors"
                             >
                                 {s}
                             </button>
                         ))}
                     </div>
+                </div>
+            )}
+            {suggestions.length === 0 && spellingSuggestions.length === 0 && (
+                <div className="mt-4">
+                    <button
+                        type="button"
+                        onClick={() => navigate(`/${type === 'tuitions' ? 'tuitions' : 'tutors'}`)}
+                        className="inline-flex items-center justify-center px-4 py-2 min-h-[36px] text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    >
+                        Browse all {type}
+                    </button>
                 </div>
             )}
         </div>

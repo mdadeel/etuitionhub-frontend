@@ -117,6 +117,18 @@ const OrganizationDetails = () => {
     }
   };
 
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  useEffect(() => {
+    if (!organization?._id) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem("saved_organizations") || "[]");
+      setIsBookmarked(Array.isArray(saved) && saved.includes(organization._id));
+    } catch {
+      setIsBookmarked(false);
+    }
+  }, [organization?._id]);
+
   const handleShare = () => {
     const url = window.location.href;
     if (navigator.clipboard) {
@@ -128,7 +140,27 @@ const OrganizationDetails = () => {
   };
 
   const handleBookmark = () => {
-    toast.success(`${organization?.name} saved to your bookmarks!`);
+    if (!organization?._id) return;
+    try {
+      const raw = localStorage.getItem("saved_organizations") || "[]";
+      let list = JSON.parse(raw);
+      if (!Array.isArray(list)) list = [];
+      const orgId = organization._id;
+      let nextState = false;
+      if (list.includes(orgId)) {
+        list = list.filter((id) => id !== orgId);
+        nextState = false;
+        toast.success(`${organization.name} removed from your bookmarks`);
+      } else {
+        list.push(orgId);
+        nextState = true;
+        toast.success(`${organization.name} saved to your bookmarks!`);
+      }
+      localStorage.setItem("saved_organizations", JSON.stringify(list));
+      setIsBookmarked(nextState);
+    } catch {
+      toast.error("Failed to update bookmark");
+    }
   };
 
   if (loading) {
@@ -304,10 +336,15 @@ const OrganizationDetails = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleBookmark}
-                  className="h-10 px-3 text-muted-foreground hover:text-foreground"
-                  title="Bookmark"
+                  className={cn(
+                    "h-10 px-3 transition-colors",
+                    isBookmarked
+                      ? "text-primary hover:text-primary/80"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                  title={isBookmarked ? "Remove Bookmark" : "Bookmark"}
                 >
-                  <Bookmark size={15} />
+                  <Bookmark size={15} className={isBookmarked ? "fill-primary text-primary" : ""} />
                 </Button>
 
                 <Button
