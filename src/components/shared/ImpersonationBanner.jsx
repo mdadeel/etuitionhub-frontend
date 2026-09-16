@@ -6,6 +6,10 @@ import toast from 'react-hot-toast';
 /**
  * ImpersonationBanner — persistent top banner rendered whenever a Super Admin
  * is viewing the application in shadow/impersonation mode.
+ *
+ * SECURITY: Session metadata is stored in sessionStorage (tab-scoped, not
+ * persistent across browser restarts) and contains NO tokens or credentials.
+ * The actual auth token is managed exclusively via HTTP-only cookies.
  */
 export default function ImpersonationBanner() {
   const [session, setSession] = useState(null);
@@ -13,7 +17,7 @@ export default function ImpersonationBanner() {
 
   useEffect(() => {
     const checkSession = () => {
-      const raw = localStorage.getItem('impersonator-session');
+      const raw = sessionStorage.getItem('impersonator-session');
       if (raw) {
         try {
           setSession(JSON.parse(raw));
@@ -26,6 +30,8 @@ export default function ImpersonationBanner() {
     };
 
     checkSession();
+    // sessionStorage doesn't fire 'storage' cross-tab, but we keep the
+    // listener for the legacy localStorage→sessionStorage migration window.
     window.addEventListener('storage', checkSession);
     return () => window.removeEventListener('storage', checkSession);
   }, []);
@@ -35,20 +41,14 @@ export default function ImpersonationBanner() {
   const handleExit = async () => {
     setExiting(true);
     try {
-      const res = await api.post('/api/admin/impersonate/exit');
-      localStorage.removeItem('impersonator-session');
-      if (res.data?.token) {
-        localStorage.setItem('token', res.data.token);
-      } else if (session.adminToken) {
-        localStorage.setItem('token', session.adminToken);
-      }
+      await api.post('/api/admin/impersonate/exit');
+      // Backend restores the admin HTTP-only cookie in the response.
+      sessionStorage.removeItem('impersonator-session');
       toast.success('Exited shadow login mode');
       window.location.href = '/super-admin/users';
     } catch {
-      if (session.adminToken) {
-        localStorage.setItem('token', session.adminToken);
-      }
-      localStorage.removeItem('impersonator-session');
+      // Even on network failure, clear the UI flag and redirect.
+      sessionStorage.removeItem('impersonator-session');
       toast.success('Restored Super Admin session');
       window.location.href = '/super-admin/users';
     } finally {

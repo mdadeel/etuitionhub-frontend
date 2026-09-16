@@ -120,17 +120,15 @@ const GlobalUsers = () => {
     if (!window.confirm(`Shadow Login as ${u.displayName} (${u.email})? You will navigate the platform from their perspective.`)) return;
     setActionLoading(u._id);
     try {
-      const res = await api.post(`/api/admin/impersonate/${u._id}`);
-      localStorage.setItem('impersonator-session', JSON.stringify({
-        adminToken: localStorage.getItem('token'),
+      await api.post(`/api/admin/impersonate/${u._id}`);
+      // SECURITY: Only store non-sensitive UI metadata — the actual token
+      // is managed via HTTP-only cookies set by the backend response.
+      sessionStorage.setItem('impersonator-session', JSON.stringify({
         targetEmail: u.email,
         targetName: u.displayName,
         targetRole: u.role,
         startedAt: new Date().toISOString()
       }));
-      if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-      }
       toast.success(`Now viewing platform as ${u.displayName}`);
       window.location.href = '/dashboard';
     } catch (err) {
