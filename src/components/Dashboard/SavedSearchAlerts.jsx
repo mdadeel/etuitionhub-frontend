@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Trash2, RotateCcw, Bookmark, BookmarkCheck, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
@@ -97,7 +98,13 @@ const SavedSearchAlerts = () => {
                 <div className="py-12 text-center text-muted-foreground bg-background rounded-lg border border-border">
                     <BookmarkCheck size={32} className="mx-auto mb-3 opacity-20" />
                     <p className="text-sm font-medium text-foreground">No saved searches</p>
-                    <p className="text-xs mt-1">Save a search from the search page to get started.</p>
+                    <p className="text-xs mt-1 mb-4">Save a search from the search page to get instant notifications.</p>
+                    <Link
+                        to="/tutors"
+                        className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    >
+                        Browse Tutors
+                    </Link>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -106,15 +113,15 @@ const SavedSearchAlerts = () => {
 
                         if (isPendingDelete) {
                             return (
-                                <div key={alert._id} className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-lg">
-                                    <span className="text-sm text-red-600 font-medium flex items-center gap-2">
+                                <div key={alert._id} className="flex items-center justify-between p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                                    <span className="text-sm text-destructive font-medium flex items-center gap-2">
                                         <AlertCircle size={16} /> Search alert marked for deletion (30s remaining)
                                     </span>
                                     <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={() => undoDelete(alert._id)}
-                                        className="h-8 text-xs border-red-200 text-red-600 hover:bg-red-100"
+                                        className="h-8 text-xs border-destructive/30 text-destructive hover:bg-destructive/20"
                                     >
                                         <RotateCcw size={14} className="mr-1.5" />
                                         Undo
@@ -150,7 +157,8 @@ const SavedSearchAlerts = () => {
                                         e.stopPropagation();
                                         handleDeleteIntent(alert._id);
                                     }}
-                                    className="absolute right-4 top-4 size-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                                    className="absolute right-3 top-3 size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-all hover:bg-destructive hover:text-destructive-foreground"
+                                    title="Delete alert"
                                 >
                                     <Trash2 size={16} />
                                 </button>

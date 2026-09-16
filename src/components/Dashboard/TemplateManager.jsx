@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton, LineSkeleton } from '@/components/shared/skeletons';
+import ConfirmModal from '../shared/ConfirmModal';
 
 const TemplateManager = () => {
     const queryClient = useQueryClient();
@@ -17,6 +18,8 @@ const TemplateManager = () => {
     const [editing, setEditing] = useState(null);
     const [form, setForm] = useState({ title: '', content: '', category: 'general', isPublic: false });
     const [saving, setSaving] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     const invalidateTemplates = () => {
         queryClient.invalidateQueries({ queryKey: ['admin', 'templates'] });
@@ -60,15 +63,23 @@ const TemplateManager = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm('Are you sure you want to delete this template?')) return;
+    const handleDelete = (id) => {
+        setDeleteTarget(id);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deleteTarget) return;
+        setDeleting(true);
         try {
-            await api.delete(`/api/templates/${id}`);
+            await api.delete(`/api/templates/${deleteTarget}`);
             invalidateTemplates();
             toast.success('Template deleted');
+            setDeleteTarget(null);
         } catch (error) {
             console.error(error);
-            toast.error('Failed to delete template');
+            toast.error(error.response?.data?.error || 'Failed to delete template');
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -230,18 +241,24 @@ const TemplateManager = () => {
                                         </span>
                                     )}
                                 </div>
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                                     <button
+                                        type="button"
                                         onClick={() => startEdit(template)}
-                                        className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted transition-colors"
+                                        aria-label="Edit template"
+                                        title="Edit template"
+                                        className="size-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus-visible:opacity-100"
                                     >
-                                        <Edit3 size={14} />
+                                        <Edit3 size={15} />
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() => handleDelete(template._id)}
-                                        className="size-7 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                                        aria-label="Delete template"
+                                        title="Delete template"
+                                        className="size-9 flex items-center justify-center rounded-lg text-destructive hover:bg-destructive/10 transition-colors focus-visible:opacity-100"
                                     >
-                                        <Trash2 size={14} />
+                                        <Trash2 size={15} />
                                     </button>
                                 </div>
                             </div>
@@ -252,6 +269,17 @@ const TemplateManager = () => {
                     ))}
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={Boolean(deleteTarget)}
+                onClose={() => setDeleteTarget(null)}
+                onConfirm={handleConfirmDelete}
+                title="Delete Template"
+                description="Are you sure you want to delete this response template? This action cannot be undone."
+                confirmText="Delete Template"
+                confirmVariant="destructive"
+                isLoading={deleting}
+            />
         </Card>
     );
 };

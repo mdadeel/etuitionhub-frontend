@@ -136,15 +136,15 @@ const AdminContacts = () => {
 
                         if (isPendingDelete) {
                             return (
-                                <div key={contact._id} className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-lg">
-                                    <span className="text-sm text-red-600 font-medium flex items-center gap-2">
+                                <div key={contact._id} className="flex items-center justify-between p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                                    <span className="text-sm text-destructive font-medium flex items-center gap-2">
                                         <AlertCircle size={16} /> Contact marked for deletion (30s remaining)
                                     </span>
                                     <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={() => undoDelete(contact._id)}
-                                        className="h-8 text-xs border-red-200 text-red-600 hover:bg-red-100"
+                                        className="h-8 text-xs border-destructive/30 text-destructive hover:bg-destructive/20"
                                     >
                                         <RotateCcw size={14} className="mr-1.5" />
                                         Undo
@@ -187,7 +187,8 @@ const AdminContacts = () => {
                                         e.stopPropagation();
                                         handleDeleteIntent(contact._id);
                                     }}
-                                    className="absolute right-4 top-4 size-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                                    className="absolute right-3 top-3 size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-all hover:bg-destructive hover:text-destructive-foreground"
+                                    title="Delete contact"
                                 >
                                     <Trash2 size={16} />
                                 </button>

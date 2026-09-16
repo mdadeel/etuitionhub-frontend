@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DAY_NAMES, DAY_NAMES_FULL, generateBookingLink } from '@/lib/slotBooking';
+import ConfirmModal from '@/components/shared/ConfirmModal';
 
 const DAYS_OF_WEEK = DAY_NAMES_FULL; // Sunday-first, matches backend dayOfWeek 0-6
 
@@ -105,16 +106,18 @@ const DayCard = ({ dayData, onDelete, onUpdate }) => {
                         <button
                             type="button"
                             onClick={() => setEditing(true)}
-                            className="size-8 flex items-center justify-center rounded-lg border border-transparent hover:border-border hover:bg-muted transition-all opacity-0 group-hover:opacity-100"
+                            className="size-9 flex items-center justify-center rounded-lg border border-transparent hover:border-border hover:bg-muted transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
+                            title="Edit slots"
                         >
-                            <Edit2 size={13} className="text-muted-foreground" />
+                            <Edit2 size={14} className="text-muted-foreground" />
                         </button>
                         <button
                             type="button"
                             onClick={() => onDelete(dayData.dayOfWeek)}
-                            className="size-8 flex items-center justify-center rounded-lg border border-transparent hover:border-red-200 hover:bg-red-50 text-red-500 transition-all opacity-0 group-hover:opacity-100"
+                            className="size-9 flex items-center justify-center rounded-lg border border-transparent text-destructive hover:bg-destructive/10 hover:border-destructive/20 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
+                            title="Remove day"
                         >
-                            <Trash2 size={13} />
+                            <Trash2 size={14} />
                         </button>
                     </>
                 )}
@@ -229,18 +232,29 @@ const TutorAvailability = ({ tutorId }) => {
     const [showAddForm, setShowAddForm] = useState(false);
     const [linkCopied, setLinkCopied] = useState(false);
 
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+
     const refreshAvailability = () => {
         queryClient.invalidateQueries({ queryKey: ['tutors', targetId, 'availability'] });
     };
 
-    const handleDelete = async (dayOfWeek) => {
-        if (!confirm(`Remove ${DAYS_OF_WEEK[dayOfWeek]} from your availability?`)) return;
+    const handleDelete = (dayOfWeek) => {
+        setDeleteTarget(dayOfWeek);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deleteTarget === null) return;
+        setDeleting(true);
         try {
-            await api.delete(`/api/tutors/availability/${dayOfWeek}`);
-            toast.success(`${DAYS_OF_WEEK[dayOfWeek]} removed`);
+            await api.delete(`/api/tutors/availability/${deleteTarget}`);
+            toast.success(`${DAYS_OF_WEEK[deleteTarget]} removed`);
             refreshAvailability();
+            setDeleteTarget(null);
         } catch (err) {
             toast.error(err.response?.data?.error || 'Failed to remove');
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -348,6 +362,18 @@ const TutorAvailability = ({ tutorId }) => {
                     ))}
                 </div>
             )}
+
+            <ConfirmModal
+                open={deleteTarget !== null}
+                onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+                title="Remove Day Availability"
+                description={deleteTarget !== null ? `Are you sure you want to remove ${DAYS_OF_WEEK[deleteTarget]} from your weekly availability?` : ''}
+                confirmLabel="Remove Day"
+                confirmVariant="destructive"
+                loadingLabel="Removing..."
+                loading={deleting}
+                onConfirm={handleConfirmDelete}
+            />
         </div>
     );
 };

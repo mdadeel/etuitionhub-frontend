@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { User, Pause, Play, CheckCircle, Clock, BookOpen, Settings, ChevronDown, ChevronUp } from 'lucide-react';
 import SessionLogModal from './SessionLogModal';
 import ConnectionPrivacySettings from '../Connections/ConnectionPrivacySettings';
+import ConfirmModal from '../shared/ConfirmModal';
 
 const statusConfig = {
   active: { variant: 'success', label: 'Active' },
@@ -22,6 +23,7 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
   const [actionLoading, setActionLoading] = useState(null);
   const [showLogModal, setShowLogModal] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   const currentUserId = dbUser?._id;
   const isTutor = currentUserId === connection.tutorId?._id;
@@ -48,8 +50,12 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
   };
 
   const handleEnd = () => {
-    if (!confirm('Are you sure you want to end this tutoring relationship?')) return;
-    handleAction('/complete', 'Connection ended', 'complete');
+    setShowEndConfirm(true);
+  };
+
+  const handleConfirmEnd = async () => {
+    setShowEndConfirm(false);
+    await handleAction('/complete', 'Connection ended', 'complete');
   };
 
   const isActive = connection.relationshipStatus === 'active';
@@ -114,10 +120,10 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
             <button
               type="button"
               onClick={() => setShowPrivacy(!showPrivacy)}
-              className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+              className="size-9 flex items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
               title="Privacy Settings"
             >
-              <Settings className="size-3.5 sm:size-4" />
+              <Settings className="size-4" />
             </button>
 
             {isActive && (
@@ -125,10 +131,10 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
                 type="button"
                 onClick={() => handleAction('/pause', 'Relationship paused', 'pause')}
                 disabled={actionLoading !== null}
-                className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-warning/10 text-warning hover:bg-warning/20 transition-colors disabled:opacity-50"
+                className="size-9 flex items-center justify-center rounded-lg bg-warning/10 text-warning hover:bg-warning/20 transition-colors disabled:opacity-50"
                 title="Pause"
               >
-                <Pause className="size-3.5 sm:size-4" />
+                <Pause className="size-4" />
               </button>
             )}
 
@@ -137,10 +143,10 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
                 type="button"
                 onClick={() => handleAction('/resume', 'Relationship resumed', 'resume')}
                 disabled={actionLoading !== null}
-                className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-success/10 text-success hover:bg-success/20 transition-colors disabled:opacity-50"
+                className="size-9 flex items-center justify-center rounded-lg bg-success/10 text-success hover:bg-success/20 transition-colors disabled:opacity-50"
                 title="Resume"
               >
-                <Play className="size-3.5 sm:size-4" />
+                <Play className="size-4" />
               </button>
             )}
 
@@ -148,10 +154,10 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
               type="button"
               onClick={handleEnd}
               disabled={actionLoading !== null}
-              className="size-8 sm:size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50"
+              className="size-9 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50"
               title="End"
             >
-              <CheckCircle className="size-3.5 sm:size-4" />
+              <CheckCircle className="size-4" />
             </button>
           </div>
         )}
@@ -171,6 +177,17 @@ const ActiveRelationshipCard = ({ connection, onUpdate }) => {
         isOpen={showLogModal}
         onClose={() => setShowLogModal(false)}
         onLogged={() => { setShowLogModal(false); onUpdate?.(); }}
+      />
+
+      <ConfirmModal
+        isOpen={showEndConfirm}
+        onClose={() => setShowEndConfirm(false)}
+        onConfirm={handleConfirmEnd}
+        title="End Tutoring Relationship"
+        description={`Are you sure you want to end your active tutoring relationship with ${displayName}? This will complete the connection.`}
+        confirmText="End Relationship"
+        confirmVariant="destructive"
+        isLoading={actionLoading === 'complete'}
       />
     </div>
   );

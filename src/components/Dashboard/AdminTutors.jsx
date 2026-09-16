@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import StatusBadge from '../shared/StatusBadge';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
+import ConfirmModal from '../shared/ConfirmModal';
 import EmptyState from '../shared/EmptyState';
 
 const VERIFICATION_OPTIONS = [
@@ -63,19 +64,30 @@ const AdminTutors = () => {
         }
     };
 
-    const handleRemoveTutor = async (id) => {
-        if (!confirm('Downgrade this tutor to student?')) return;
+    const [downgradeTarget, setDowngradeTarget] = useState(null);
+    const [downgrading, setDowngrading] = useState(false);
+
+    const handleRemoveTutor = (id) => {
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
             toast.error('Demo data is read-only');
             return;
         }
+        setDowngradeTarget(id);
+    };
+
+    const handleConfirmDowngrade = async () => {
+        if (!downgradeTarget) return;
+        setDowngrading(true);
         try {
-            await api.patch(`/api/users/${id}`, { role: 'student' });
+            await api.patch(`/api/users/${downgradeTarget}`, { role: 'student' });
             toast.success('Tutor downgraded to student');
             invalidateTutors();
+            setDowngradeTarget(null);
         } catch (err) {
             toast.error(err?.response?.data?.error || 'Failed to remove tutor');
+        } finally {
+            setDowngrading(false);
         }
     };
 
@@ -453,6 +465,18 @@ const AdminTutors = () => {
                     ) : null}
                 </DialogContent>
             </Dialog>
+
+            <ConfirmModal
+                open={downgradeTarget !== null}
+                onOpenChange={(open) => { if (!open) setDowngradeTarget(null); }}
+                title="Downgrade Tutor"
+                description="Are you sure you want to downgrade this tutor account to student? They will lose access to tutor dashboard and tuition applications."
+                confirmLabel="Downgrade Tutor"
+                confirmVariant="destructive"
+                loadingLabel="Downgrading..."
+                loading={downgrading}
+                onConfirm={handleConfirmDowngrade}
+            />
         </div>
     );
 };

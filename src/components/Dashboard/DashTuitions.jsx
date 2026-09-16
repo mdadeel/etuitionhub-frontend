@@ -11,6 +11,7 @@ import EditModal from './EditModal';
 import Pagination from '../shared/Pagination';
 import StatusBadge from '../shared/StatusBadge';
 import DashboardPageHeader from '../shared/DashboardPageHeader';
+import ConfirmModal from '../shared/ConfirmModal';
 import EmptyState from '../shared/EmptyState';
 import DashboardFilterBar from '../shared/DashboardFilterBar';
 import SubjectFilter from '../shared/SubjectFilter';
@@ -103,21 +104,30 @@ const DashTuitions = () => {
         }
     };
 
-    const handleReject = async (id) => {
-        if (!confirm('Reject this tuition?')) return;
+    const [rejectTarget, setRejectTarget] = useState(null);
+    const [rejecting, setRejecting] = useState(false);
 
+    const handleReject = (id) => {
         const isValidId = (id) => /^[a-f\d]{24}$/i.test(id);
         if (!isValidId(id)) {
             toast.error('Demo data is read-only');
             return;
         }
+        setRejectTarget(id);
+    };
 
+    const handleConfirmReject = async () => {
+        if (!rejectTarget) return;
+        setRejecting(true);
         try {
-            await api.delete(`/api/tuitions/${id}`);
+            await api.delete(`/api/tuitions/${rejectTarget}`);
             toast.success('Tuition rejected');
             invalidateTuitions();
+            setRejectTarget(null);
         } catch {
             toast.error('Failed to reject tuition');
+        } finally {
+            setRejecting(false);
         }
     };
 
@@ -272,7 +282,7 @@ const DashTuitions = () => {
                                         </button>
                                         <button
                                             onClick={() => handleReject(row._id)}
-                                            className="h-7 px-3 rounded-lg text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 text-[9px] font-label font-semibold uppercase tracking-widest transition-all active:scale-[0.98]"
+                                            className="h-7 px-3 rounded-lg text-destructive border border-transparent hover:border-destructive/20 hover:bg-destructive/10 text-[9px] font-label font-semibold uppercase tracking-widest transition-all active:scale-[0.98]"
                                         >
                                             Drop
                                         </button>
@@ -451,6 +461,18 @@ const DashTuitions = () => {
                     ) : null}
                 </DialogContent>
             </Dialog>
+
+            <ConfirmModal
+                open={rejectTarget !== null}
+                onOpenChange={(open) => { if (!open) setRejectTarget(null); }}
+                title="Reject Tuition"
+                description="Are you sure you want to reject this tuition request? This will remove the listing from the marketplace."
+                confirmLabel="Reject Tuition"
+                confirmVariant="destructive"
+                loadingLabel="Rejecting..."
+                loading={rejecting}
+                onConfirm={handleConfirmReject}
+            />
         </div>
     );
 };
