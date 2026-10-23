@@ -50,6 +50,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Breadcrumb from '../components/shared/Breadcrumb';
 import SaveButton from '../components/Dashboard/SaveButton';
+import { MOCK_TUITIONS } from '../data/mockData';
 
 function TuitionDetailsSkeleton() {
   return (
@@ -102,8 +103,9 @@ const TuitionDetails = () => {
     // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
 
-    const [tuition, setTuition] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const initialMock = MOCK_TUITIONS.find((t) => t._id === id);
+    const [tuition, setTuition] = useState(() => initialMock || null);
+    const [loading, setLoading] = useState(() => !initialMock);
     const [showModal, setShowModal] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [similarTuitions, setSimilarTuitions] = useState([]);
@@ -134,18 +136,21 @@ const TuitionDetails = () => {
             const trimmedId = id?.trim();
             if (!trimmedId) return;
 
+            if (!initialMock) setLoading(true);
             try {
                 const response = await api.get(`/api/tuitions/${trimmedId}`);
                 setTuition(response.data);
             } catch (error) {
                 console.error('Failed to fetch tuition:', error);
-                toast.error('Tuition post not found.');
+                if (!initialMock) {
+                    toast.error('Tuition post not found.');
+                }
             } finally {
                 setLoading(false);
             }
         };
         fetchTuitionDetails();
-    }, [id]);
+    }, [id, initialMock]);
 
     useEffect(() => {
         if (tuition?._id) {

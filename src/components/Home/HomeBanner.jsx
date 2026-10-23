@@ -22,6 +22,7 @@ import LocationFilter from '@/components/shared/LocationFilter';
 import TutorCard from '@/components/shared/TutorCard';
 import ParentGuaranteeModal from '@/components/shared/ParentGuaranteeModal';
 import { cn } from "@/lib/utils";
+import { MOCK_TUTORS, MOCK_AVAILABILITY } from '@/data/mockData';
 
 
 const HomeBanner = () => {
@@ -36,6 +37,7 @@ const HomeBanner = () => {
             const raw = res.data?.data || res.data?.tutors || res.data;
             return Array.isArray(raw) ? raw.slice(0, 4) : [];
         },
+        initialData: MOCK_TUTORS.slice(0, 4),
         select: (data) => data.slice(0, 3),
         staleTime: 120_000,
     });
@@ -56,6 +58,7 @@ const HomeBanner = () => {
             const res = await api.get(`/api/tutors/availability?${params.toString()}`);
             return res.data;
         },
+        initialData: MOCK_AVAILABILITY,
         staleTime: 300_000,
         refetchInterval: false,
     });

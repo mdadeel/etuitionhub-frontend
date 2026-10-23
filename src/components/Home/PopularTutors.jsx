@@ -5,6 +5,7 @@ import { Venus } from 'lucide-react';
 import TutorCard from '../shared/TutorCard';
 import api from '../../services/api';
 import { TutorCardGridSkeleton } from '../shared/skeletons';
+import { MOCK_TUTORS } from '../../data/mockData';
 
 const PopularTutors = () => {
     const { t } = useTranslation();
@@ -15,6 +16,7 @@ const PopularTutors = () => {
             const raw = res.data?.data || res.data?.tutors || res.data;
             return Array.isArray(raw) ? raw.slice(0, 4) : [];
         },
+        initialData: MOCK_TUTORS.slice(0, 4),
         staleTime: 120_000,
     });
 

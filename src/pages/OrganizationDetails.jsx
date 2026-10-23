@@ -28,6 +28,7 @@ import {
 import api from "../services/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { MOCK_ORGANIZATIONS } from "../data/mockData";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 import SEO from "../components/shared/SEO";
@@ -54,8 +55,16 @@ const OrganizationDetails = () => {
   const { t } = useTranslation();
   const { slug } = useParams();
   const { user } = useAuth();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const initialOrg = MOCK_ORGANIZATIONS.find((o) => o.slug === slug);
+  const [data, setData] = useState(() => initialOrg ? {
+    ...initialOrg,
+    courses: initialOrg.courses || [],
+    branches: initialOrg.branches || [],
+    scholarships: initialOrg.scholarships || [],
+    announcements: initialOrg.announcements || [],
+    teachers: initialOrg.faculty || [],
+  } : null);
+  const [loading, setLoading] = useState(() => !initialOrg);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -68,18 +77,20 @@ const OrganizationDetails = () => {
   useEffect(() => {
     const fetchOrgDetails = async () => {
       try {
-        setLoading(true);
+        if (!initialOrg) setLoading(true);
         const res = await api.get(`/api/v1/organizations/slug/${slug}`);
         setData(res.data.data);
       } catch {
-        setError("Failed to load institution details.");
+        if (!initialOrg) {
+          setError("Failed to load institution details.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrgDetails();
-  }, [slug]);
+  }, [slug, initialOrg]);
 
   const organization = data;
 

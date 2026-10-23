@@ -1,5 +1,14 @@
 import { useInfiniteQuery, keepPreviousData } from '@tanstack/react-query';
 import api from '../../services/api';
+import { MOCK_TUTORS, MOCK_TUTOR_FILTER_OPTIONS } from '../../data/mockData';
+
+const isDefaultFilters = (filters = {}) => {
+    return !filters.q && 
+        (!filters.subject || filters.subject.length === 0) &&
+        (!filters.location || filters.location === 'All') &&
+        (!filters.language || filters.language === 'all' || filters.language === 'All') &&
+        (!filters.gender || filters.gender === 'all');
+};
 
 // Batch 4a: cached, cancellable tutors listing with paginated append.
 // Mirrors useTuitionsQuery (60s stale + keepPreviousData) but uses
@@ -25,6 +34,14 @@ export const useTutorsInfiniteQuery = (filters = {}) =>
             const p = lastPage?.pagination;
             return p && p.page < p.pages ? p.page + 1 : undefined;
         },
+        initialData: isDefaultFilters(filters) ? {
+            pages: [{
+                data: MOCK_TUTORS,
+                pagination: { page: 1, limit: 21, total: MOCK_TUTORS.length, pages: 1 },
+                filterOptions: MOCK_TUTOR_FILTER_OPTIONS,
+            }],
+            pageParams: [1],
+        } : undefined,
         staleTime: 60_000,
         placeholderData: keepPreviousData,
     });

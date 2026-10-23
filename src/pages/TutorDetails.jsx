@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,6 +30,7 @@ import TutorSubjectsBadges from '../components/TutorProfile/TutorSubjectsBadges'
 import TutorAvailabilityGrid from '../components/TutorProfile/TutorAvailabilityGrid';
 import TutorReviewsSection from '../components/TutorProfile/TutorReviewsSection';
 import TutorMobileActionBar from '../components/TutorProfile/TutorMobileActionBar';
+import { MOCK_TUTORS } from '../data/mockData';
 
 function TutorDetailsSkeleton() {
   return (
@@ -90,9 +91,10 @@ const TutorDetails = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const [tutor, setTutor] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [reviews, setReviews] = useState([]);
+  const initialMock = useMemo(() => MOCK_TUTORS.find((t) => t._id === id), [id]);
+  const [tutor, setTutor] = useState(() => initialMock || null);
+  const [loading, setLoading] = useState(() => !initialMock);
+  const [reviews, setReviews] = useState(() => initialMock?.reviews || []);
   const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
   const [submitting, setSubmitting] = useState(false);
   const [canReview, setCanReview] = useState(false);
@@ -114,7 +116,7 @@ const TutorDetails = () => {
 
   useEffect(() => {
     const fetchTutorData = async () => {
-      setLoading(true);
+      if (!initialMock) setLoading(true);
 
       try {
         // Batch 6: viewer context (canReview + active request) comes from one
@@ -150,7 +152,7 @@ const TutorDetails = () => {
               setExistingRequest(contextRes.data.existingActiveRequest);
             }
           }
-        } else {
+        } else if (!initialMock) {
           setTutor(null);
         }
 
@@ -160,11 +162,15 @@ const TutorDetails = () => {
             : Array.isArray(reviewsRes.data?.data)
             ? reviewsRes.data.data
             : [];
-          setReviews(list);
+          if (list.length > 0 || !initialMock?.reviews?.length) {
+            setReviews(list);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch tutor:', error);
-        setTutor(null);
+        if (!initialMock) {
+          setTutor(null);
+        }
       } finally {
         setLoading(false);
       }
@@ -173,7 +179,7 @@ const TutorDetails = () => {
     if (id) {
       fetchTutorData();
     }
-  }, [id, user]);
+  }, [id, user, initialMock]);
 
   useEffect(() => {
     if (!tutor?._id) return;

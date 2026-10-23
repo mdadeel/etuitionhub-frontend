@@ -1,5 +1,6 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import api from '../../services/api';
+import { MOCK_ORGANIZATIONS } from '../../data/mockData';
 
 const buildParams = (filters = {}) => {
     const params = new URLSearchParams();
@@ -7,6 +8,10 @@ const buildParams = (filters = {}) => {
         if (v != null && v !== '') params.append(k, v);
     }
     return params.toString();
+};
+
+const isDefaultFilters = (filters = {}) => {
+    return !filters.search && (!filters.category || filters.category === 'all') && (!filters.division || filters.division === 'all');
 };
 
 // Batch 4a: cached, cancellable organization directory listing.
@@ -19,6 +24,7 @@ export const useOrganizationsQuery = (filters = {}) =>
             const res = await api.get(`/api/v1/organizations?${buildParams(filters)}`, { signal });
             return res.data?.data || [];
         },
+        initialData: isDefaultFilters(filters) ? MOCK_ORGANIZATIONS : undefined,
         staleTime: 60_000,
         placeholderData: keepPreviousData,
     });
