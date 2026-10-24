@@ -31,7 +31,9 @@ import { Card } from "@/components/ui/card";
 import { MOCK_ORGANIZATIONS } from "../data/mockData";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
+import { Helmet } from "react-helmet-async";
 import SEO from "../components/shared/SEO";
+import { breadcrumbJsonLd, organizationDetailsJsonLd, serializeJsonLd } from "../lib/jsonLd";
 import { cn } from "@/lib/utils";
 import OrgAdmissionModal from "../components/Organizations/OrgAdmissionModal";
 import { useTranslation } from "react-i18next";
@@ -232,7 +234,25 @@ const OrganizationDetails = () => {
           organization.profile?.description?.slice(0, 160) ||
           `Explore courses, batches, verified faculty, and campus details for ${organization.name} on eTuitionBD.`
         }
+        image={organization.profile?.logo || organization.profile?.banner}
+        canonicalUrl={`https://e-tuitionhub.vercel.app/organizations/${organization.slug || slug}`}
       />
+      <Helmet>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={serializeJsonLd(
+            breadcrumbJsonLd([
+              { name: "Home", url: "/" },
+              { name: "Institutions", url: "/organizations" },
+              { name: organization.name, url: `/organizations/${organization.slug || slug}` },
+            ])
+          )}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={serializeJsonLd(organizationDetailsJsonLd(organization))}
+        />
+      </Helmet>
 
       {/* Hero Cover Banner */}
       <div className="h-52 sm:h-64 md:h-80 bg-gradient-to-r from-primary/20 via-primary/10 to-muted w-full relative overflow-hidden">

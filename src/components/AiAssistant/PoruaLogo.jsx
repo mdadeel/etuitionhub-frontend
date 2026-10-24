@@ -79,11 +79,17 @@ export default function PoruaLogo({ className = '', iconOnly = false, size = 20 
     }
 
     return (
-        <img
-            src="/porua_logo.png"
-            alt="Porua"
-            style={{ height: size }}
-            className={`object-contain ${className}`}
-        />
+        <picture className="inline-flex items-center">
+            <source srcSet="/porua_logo.webp" type="image/webp" />
+            <img
+                src="/porua_logo.png"
+                alt="Porua AI Academic Assistant"
+                width={size}
+                height={size}
+                decoding="async"
+                style={{ height: size, width: 'auto' }}
+                className={`object-contain ${className}`}
+            />
+        </picture>
     );
 }

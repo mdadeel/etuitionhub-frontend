@@ -97,8 +97,20 @@ const handleSearch = (e) => {
     };
 
     return (
-        <section className="relative min-h-[85vh] flex items-center bg-background overflow-hidden bg-cover bg-center"
-            style={{ backgroundImage: 'url(/images/herobackground.png)' }}>
+        <section className="relative min-h-[85vh] flex items-center bg-background overflow-hidden">
+            {/* LCP-optimized decorative hero background with WebP + PNG fallback */}
+            <picture className="pointer-events-none select-none absolute inset-0 z-0" aria-hidden="true">
+                <source srcSet="/images/herobackground.webp" type="image/webp" />
+                <img
+                    src="/images/herobackground.png"
+                    alt=""
+                    width={1600}
+                    height={1067}
+                    fetchPriority="high"
+                    decoding="async"
+                    className="size-full object-cover object-center"
+                />
+            </picture>
             {/* Soft overlay for readability */}
             <div className="absolute inset-0 bg-background/85 backdrop-blur-[4px] z-0" />
 

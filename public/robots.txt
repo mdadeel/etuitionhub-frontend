@@ -1,63 +1,117 @@
-# Default Crawler Directives
+# Default Crawler Directives (Googlebot, Bingbot, Applebot, DuckDuckBot, etc.)
 User-agent: *
 Allow: /
-
-# Dedicated AI Search Engine Crawlers (AEO / GEO Discovery)
-User-agent: OAI-SearchBot
-Allow: /
-Allow: /tutors
-Allow: /tuitions
-Allow: /organizations
-Disallow: /dashboard/
-Disallow: /admin/
-Disallow: /super-admin/
-
-User-agent: GPTBot
-Allow: /
-Allow: /tutors
-Allow: /tuitions
-Allow: /organizations
-Disallow: /dashboard/
-Disallow: /admin/
-Disallow: /super-admin/
-
-User-agent: PerplexityBot
-Allow: /
-Allow: /tutors
-Allow: /tuitions
-Allow: /organizations
-Disallow: /dashboard/
-Disallow: /admin/
-Disallow: /super-admin/
-
-User-agent: ClaudeBot
-Allow: /
-Allow: /tutors
-Allow: /tuitions
-Allow: /organizations
-Disallow: /dashboard/
-Disallow: /admin/
-Disallow: /super-admin/
-
-# Private & Dashboard Areas (All Crawlers)
+Allow: /llms.txt
+Allow: /api/sitemap
 Disallow: /dashboard/
 Disallow: /admin/
 Disallow: /admin-login
 Disallow: /super-admin/
 Disallow: /session/
 Disallow: /checkout/
-Disallow: /payment-success/
+Disallow: /payment-success
 Disallow: /ai-assistant/
+Disallow: /connections
+Disallow: /post-tuition
 Disallow: /password-reset
 Disallow: /reset-password
 Disallow: /403
-
-# Internal Search & Parameter Crawl Budget Protection
 Disallow: /search
 Disallow: /*?*q=*
 Disallow: /*?*expired=*
+Disallow: /api/
 
-# Backend APIs
+# Dedicated AI Search & Answer Engine Crawlers (AEO / GEO Discovery)
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /llms.txt
+Allow: /tutors
+Allow: /tutor/
+Allow: /tuitions
+Allow: /tuition/
+Allow: /organizations
+Allow: /tutor-earnings
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /ai-assistant/
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /api/
+
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /tutors
+Allow: /tutor/
+Allow: /tuitions
+Allow: /tuition/
+Allow: /organizations
+Allow: /tutor-earnings
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /ai-assistant/
+Disallow: /api/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /tutors
+Allow: /tutor/
+Allow: /tuitions
+Allow: /tuition/
+Allow: /organizations
+Allow: /tutor-earnings
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /ai-assistant/
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Allow: /tutors
+Allow: /tutor/
+Allow: /tuitions
+Allow: /tuition/
+Allow: /organizations
+Allow: /tutor-earnings
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /ai-assistant/
+Disallow: /api/
+
+User-agent: Claude-SearchBot
+Allow: /
+Allow: /llms.txt
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /api/
+
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /api/
+
+User-agent: Applebot-Extended
+Allow: /
+Allow: /llms.txt
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
 Disallow: /api/
 
 # Sitemaps

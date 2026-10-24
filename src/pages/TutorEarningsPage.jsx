@@ -80,6 +80,7 @@ const TutorEarningsPage = () => {
         title="Tutor Earnings Calculator & Transparent Economics | eTuitionHub"
         description="Calculate your real net take-home tuition income. eTuitionHub keeps only 20% to 12% in Month 1 vs 50%+ on Caretutors and 33% on Preply. Subsequent months are 100% yours."
         keywords="tutor earnings calculator, tuition commission bangladesh, caretutors commission comparison, etuitionhub tutor fees, private tutor salary dhaka"
+        canonicalUrl="https://e-tuitionhub.vercel.app/tutor-earnings"
       />
 
       <Helmet>

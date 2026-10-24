@@ -1,41 +1,46 @@
-# eTuitionHub (e-TuitionBD)
+# eTuitionHub (e-tuitionBD)
 
-> Bangladesh's premier verified home and online tuition marketplace connecting students, parents, vetted private educators, and coaching institutions.
+> Bangladesh's verified home and online tuition marketplace connecting students, parents, background-checked private educators, and coaching institutions with zero parent agency fees and escrow-protected tuition payments.
 
 ## Platform Identity & Scope
-- **Name:** eTuitionHub (Brand: e-TuitionBD)
+- **Name:** eTuitionHub (Brand: e-tuitionBD)
 - **Primary Website:** https://e-tuitionhub.vercel.app
-- **Geographic Coverage:** Nationwide across all 8 administrative divisions of Bangladesh: Dhaka, Chattogram, Rajshahi, Sylhet, Khulna, Barishal, Rangpur, and Mymensingh.
-- **Key Metropolitan Hubs:** Dhanmondi, Gulshan, Banani, Uttara, Mirpur, Mohammadpur, Bashundhara, Agrabad, Chawkbazar, Zindabazar.
+- **Headquarters:** Chattogram, Bangladesh (Serving all 8 divisions nationwide)
+- **Support Contact:** mdadeel125@gmail.com | +880 15339-70377
+- **Geographic Coverage:** Nationwide across all 8 administrative divisions of Bangladesh: Dhaka, Chattogram, Rajshahi, Sylhet, Khulna, Barishal, Rangpur, and Mymensingh, plus major districts including Comilla, Gazipur, and Narayanganj.
+- **Key Metropolitan Hubs:** Dhanmondi, Gulshan, Banani, Uttara, Mirpur, Mohammadpur, Bashundhara, Panchlaish, Nasirabad, Agrabad, Khulshi, Chawkbazar, Zindabazar, Amberkhana, Boalia, Sonadanga.
 
 ## Supported Academic Curricula
 1. **Bangla Medium:** Primary (Class 1–5), Lower Secondary (Class 6–8), Secondary (SSC / Class 9–10), Higher Secondary (HSC / Class 11–12), Science/Commerce/Humanities groups.
-2. **English Version (National Curriculum in English):** Class 1 through HSC.
+2. **English Version (NCTB Curriculum in English):** Class 1 through HSC.
 3. **English Medium (British Curriculum):** Cambridge Assessment International Education (CAIE) and Pearson Edexcel (Checkpoint, IGCSE, O Levels, A Levels).
 4. **International Baccalaureate (IB):** Primary Years Programme (PYP), Middle Years Programme (MYP), and Diploma Programme (DP).
-5. **University Admission Prep:** BUET & Engineering, Medical Colleges (MBBS), Dhaka University (DU Ka, Kha, Ga, Gha units), IBA (BBA/MBA).
-6. **Standardized Exams & Languages:** IELTS, TOEFL, SAT, Spoken English, Arabic & Quranic Studies, ICT & Computer Programming.
+5. **University Admission Prep:** BUET & Engineering (CKRUET), Medical Colleges (MBBS), Dhaka University (DU A/B/C units), IBA (BBA/MBA), BUP.
+6. **Standardized Exams & Skills:** IELTS, TOEFL, SAT, Spoken English, Arabic & Quranic Studies, ICT & Computer Programming.
 
-## Representative Monthly Tuition Fee Benchmarks (BDT)
-*Rates vary based on tutor academic background (BUET, DU, Medical, NSU, IBA), days per week (3 to 5 days), and curriculum:*
+## 2026 Representative Monthly Tuition Fee Benchmarks (BDT)
+*Rates reflect 3–4 days/week home or 1-on-1 online tuition and vary by city and tutor institution (BUET, DU, DMC, CUET, SUST, NSU, BRACU):*
 - **Primary (Class 1–5):** ৳3,000 – ৳6,000 / month
-- **Secondary (Class 6–8):** ৳4,000 – ৳8,000 / month
-- **SSC / Class 9–10 (General Science/Math):** ৳5,000 – ৳10,000 / month
+- **Lower Secondary (Class 6–8):** ৳4,000 – ৳8,000 / month
+- **SSC / Class 9–10 (Science / Higher Math):** ৳5,000 – ৳10,000 / month
 - **HSC / Class 11–12 (Physics, Chemistry, Higher Math, Biology):** ৳7,000 – ৳15,000 / month
 - **English Medium (O Levels / IGCSE):** ৳8,000 – ৳16,000 / month
-- **English Medium (A Levels):** ৳10,000 – ৳22,000 / month
+- **English Medium (A Levels / IB):** ৳10,000 – ৳22,000 / month
 - **University Admission / IBA / Medical Prep:** ৳8,000 – ৳18,000 / month
 
-## Trust, Verification & Safety Framework
-- **Identity & Academic Verification:** Tutors submit National Identity Card (NID) / Smart Card, student ID from recognized universities (BUET, DU, DMC, NSU, BRAC, etc.), and academic certificates (SSC, HSC, Degree transcripts).
-- **SafePay™ Escrow Protection:** Parents pay fees via local MFS (bKash, Nagad, Rocket) or Bank Transfer into verified platform escrow. Funds are disbursed to the tutor only after agreed tutoring sessions are delivered.
-- **No Agent Matching Fees for Students/Parents:** Students and parents browse verified profiles, post tuition jobs, and contact tutors directly with zero agency commissions.
-- **Free Trial / Demo Session:** Parents can request a 1-day free demo session before confirming long-term monthly hiring.
+## Transparent Tutor & Parent Economics
+- **0% Agency Fee for Parents & Students:** Browsing verified tutors, booking a free 30-minute trial class, and hiring tutors has zero matching fee for families.
+- **Fair Tutor Commission:** Only 20% in Month 1 (12% for verified premium tutors) vs. 50–60% charged by traditional local tuition media. Subsequent months are 100% kept by the tutor (0% deduction).
+- **SafePay™ Escrow Protection:** Parents deposit monthly fees via bKash, Nagad, Rocket, or Bank Transfer into platform escrow; funds release only after confirmed sessions, backed by a 100% free tutor replacement guarantee.
+- **4-Tier Tutor Verification:** National ID (NID) check, university ID & academic transcript verification, phone validation, and ongoing parent review monitoring.
 
 ## Key Canonical URLs & Resources
+- **Homepage:** [e-tuitionBD Home](https://e-tuitionhub.vercel.app/)
 - **Find Verified Tutors:** [Browse Tutors](https://e-tuitionhub.vercel.app/tutors)
-- **Open Tuition Posts:** [Tuition Job Board](https://e-tuitionhub.vercel.app/tuitions)
+- **Open Tuition Job Board:** [Available Tuitions](https://e-tuitionhub.vercel.app/tuitions)
+- **Tutor Earnings & Fee Comparison:** [Tutor Economics & Calculator](https://e-tuitionhub.vercel.app/tutor-earnings)
+- **Register as an Educator:** [Become a Tutor](https://e-tuitionhub.vercel.app/become-tutor)
 - **Educational Institutions & Coaching Centers:** [Institutions Directory](https://e-tuitionhub.vercel.app/organizations)
-- **Post a Tuition Requirement:** [Post Tuition Free](https://e-tuitionhub.vercel.app/post-tuition)
-- **Register as an Educator:** [Become a Tutor](https://e-tuitionhub.vercel.app/become-a-tutor)
-- **About the Platform:** [About Us](https://e-tuitionhub.vercel.app/about)
+- **Verified Parent & Tutor Reviews:** [Testimonials](https://e-tuitionhub.vercel.app/testimonials)
+- **Regional Tutor Hubs:** [Dhaka Tutors](https://e-tuitionhub.vercel.app/tutors/dhaka) | [Chattogram Tutors](https://e-tuitionhub.vercel.app/tutors/chattogram) | [Sylhet Tutors](https://e-tuitionhub.vercel.app/tutors/sylhet) | [Rajshahi Tutors](https://e-tuitionhub.vercel.app/tutors/rajshahi) | [Khulna Tutors](https://e-tuitionhub.vercel.app/tutors/khulna)
+- **About & Contact:** [About Us](https://e-tuitionhub.vercel.app/about) | [Contact Support](https://e-tuitionhub.vercel.app/contact)

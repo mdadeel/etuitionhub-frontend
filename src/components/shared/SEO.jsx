@@ -1,6 +1,9 @@
 import { Helmet } from 'react-helmet-async';
+import { useInRouterContext, useLocation } from 'react-router-dom';
+import { SITE_URL } from '../../lib/jsonLd';
+import { normalizeCanonicalUrl } from '../../lib/seoHtmlInjector';
 
-const SEO = ({
+const SEOInner = ({
     title,
     description,
     keywords,
@@ -8,20 +11,22 @@ const SEO = ({
     noindex = false,
     canonicalUrl,
     image,
+    ogType = 'website',
+    pathname,
 }) => {
     const shouldNoIndex = Boolean(noIndex || noindex);
     const siteName = "e-tuitionBD";
-    const SITE_URL = "https://e-tuitionhub.vercel.app";
     const defaultTitle = "e-tuitionBD | Master Your Future with Expert Tutors";
-    const defaultDescription = "Connect with top-rated educators across Bangladesh. Personalized learning tailored to your goals, pace, and schedule.";
+    const defaultDescription = "Connect with top-rated verified educators across Bangladesh. Personalized home & online learning tailored to your goals, pace, and schedule.";
     const defaultImage = `${SITE_URL}/og-image.png`;
 
-    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-    const canonical = canonicalUrl || `${SITE_URL}${currentPath}`;
-    const ogImage = image || defaultImage;
+    const canonical = normalizeCanonicalUrl(canonicalUrl || pathname || '/');
+    const ogImage = image
+        ? (image.startsWith('http') ? image : `${SITE_URL}${image.startsWith('/') ? '' : '/'}${image}`)
+        : defaultImage;
 
-    // Avoid double brand suffix if title already contains eTuitionBD
-    const hasBrand = title && /etuitionbd/i.test(title);
+    // Avoid double brand suffix if title already contains eTuitionBD / e-tuitionBD / eTuitionHub
+    const hasBrand = title && /e-?tuition(?:bd|hub)/i.test(title);
     const fullTitle = title && !hasBrand
         ? `${title} | ${siteName}`
         : title || defaultTitle;
@@ -37,8 +42,8 @@ const SEO = ({
             <meta name="description" content={description || defaultDescription} />
             {keywords && <meta name="keywords" content={keywords} />}
 
-            {/* Open Graph / Facebook */}
-            <meta property="og:type" content="website" />
+            {/* Open Graph / Facebook / WhatsApp */}
+            <meta property="og:type" content={ogType} />
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={description || defaultDescription} />
             <meta property="og:url" content={canonical} />
@@ -55,6 +60,20 @@ const SEO = ({
             <meta name="twitter:site" content="@etuitionbd" />
         </Helmet>
     );
+};
+
+const RouterSEO = (props) => {
+    const location = useLocation();
+    return <SEOInner {...props} pathname={location.pathname || '/'} />;
+};
+
+const SEO = (props) => {
+    const inRouter = useInRouterContext();
+    if (inRouter) {
+        return <RouterSEO {...props} />;
+    }
+    const fallbackPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+    return <SEOInner {...props} pathname={fallbackPath} />;
 };
 
 export default SEO;

@@ -1,41 +1,52 @@
 /**
  * Structured data (JSON-LD) snippets for key pages.
- * Each function returns a JavaScript object suitable for serialization into Helmet.
+ * Each function returns a JavaScript object suitable for serialization into Helmet
+ * or server/build-time HTML injection.
  *
- * Only add schema types that reflect real content — no fake data.
- * All schemas follow https://schema.org and are validated with
- * Google's Rich Results Test.
+ * Only add schema types that reflect real visible content — no fake data.
+ * All schemas follow https://schema.org and Google's Rich Results specifications.
  */
 
-const SITE_URL = "https://e-tuitionhub.vercel.app";
+export const SITE_URL = "https://e-tuitionhub.vercel.app";
 
 /**
  * EducationalOrganization & Organization schema — placed on the homepage.
+ * Aligned strictly with verified contact & social details rendered in Footer.jsx.
  */
 export function organizationJsonLd() {
     return {
         "@context": "https://schema.org",
         "@type": ["EducationalOrganization", "Organization"],
-        name: "e-TuitionBD",
-        alternateName: "eTuitionHub",
+        "@id": `${SITE_URL}/#organization`,
+        name: "e-tuitionBD",
+        alternateName: ["eTuitionHub", "e-TuitionBD"],
         url: SITE_URL,
-        logo: `${SITE_URL}/og-image.png`,
+        logo: {
+            "@type": "ImageObject",
+            url: `${SITE_URL}/logo.png`,
+        },
         image: `${SITE_URL}/og-image.png`,
         description:
-            "Bangladesh's tuition marketplace connecting students and parents with verified private tutors across all curricula.",
+            "Bangladesh's verified tuition marketplace connecting students and parents with background-checked private tutors and coaching institutions across all curricula.",
         address: {
             "@type": "PostalAddress",
-            addressLocality: "Dhaka",
-            addressRegion: "Dhaka Division",
+            addressLocality: "Chattogram",
+            addressRegion: "Chattogram Division",
             addressCountry: "BD",
         },
+        areaServed: {
+            "@type": "Country",
+            name: "Bangladesh",
+        },
         sameAs: [
-            "https://www.facebook.com/etuitionbd",
-            "https://www.linkedin.com/company/etuitionbd",
+            "https://github.com/mdadeel",
+            "https://linkedin.com/in/shahnawasadee1",
+            "https://instagram.com/shahnawas.adeel",
         ],
         contactPoint: {
             "@type": "ContactPoint",
-            telephone: "+880-1700-000000",
+            telephone: "+880-15339-70377",
+            email: "mdadeel125@gmail.com",
             contactType: "customer service",
             areaServed: "BD",
             availableLanguage: ["en", "bn"],
@@ -45,21 +56,27 @@ export function organizationJsonLd() {
 
 /**
  * WebSite schema — placed on the homepage.
- * Includes searchAction for site search Sitelinks Search Box.
+ * Uses the indexable /tutors?q= directory endpoint rather than disallowed /search.
  */
 export function webSiteJsonLd() {
     return {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        name: "e-TuitionBD",
+        "@id": `${SITE_URL}/#website`,
+        name: "e-tuitionBD",
+        alternateName: "eTuitionHub",
         url: SITE_URL,
+        inLanguage: ["en", "bn"],
+        publisher: {
+            "@id": `${SITE_URL}/#organization`,
+        },
         description:
-            "Find verified private tutors in Bangladesh for SSC, HSC, O-Level, A-Level, and university prep.",
+            "Find verified private tutors in Bangladesh for Bangla Medium, English Version, Cambridge/Edexcel O & A Levels, and University Admission prep.",
         potentialAction: {
             "@type": "SearchAction",
             target: {
                 "@type": "EntryPoint",
-                urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+                urlTemplate: `${SITE_URL}/tutors?q={search_term_string}`,
             },
             "query-input": "required name=search_term_string",
         },
@@ -67,7 +84,7 @@ export function webSiteJsonLd() {
 }
 
 /**
- * BreadcrumbList schema — for detail pages.
+ * BreadcrumbList schema — for detail & regional landing pages.
  * @param {Array<{ name: string, url: string }>} crumbs
  */
 export function breadcrumbJsonLd(crumbs) {
@@ -81,7 +98,7 @@ export function breadcrumbJsonLd(crumbs) {
             name: crumb.name,
             item: crumb.url.startsWith("http")
                 ? crumb.url
-                : `${SITE_URL}${crumb.url}`,
+                : `${SITE_URL}${crumb.url.startsWith("/") ? "" : "/"}${crumb.url}`,
         })),
     };
 }
@@ -92,10 +109,12 @@ export function breadcrumbJsonLd(crumbs) {
  */
 export function faqPageJsonLd(faqs) {
     if (!Array.isArray(faqs) || faqs.length === 0) return null;
+    const valid = faqs.filter((f) => f && f.question && f.answer);
+    if (valid.length === 0) return null;
     return {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        mainEntity: faqs.map((faq) => ({
+        mainEntity: valid.map((faq) => ({
             "@type": "Question",
             name: faq.question,
             acceptedAnswer: {
@@ -116,44 +135,72 @@ export function tutorProfileJsonLd(tutor, reviews = []) {
     if (!tutor || !tutor.displayName) return null;
 
     const validReviews = Array.isArray(reviews) ? reviews : [];
-    const avgRating = validReviews.length > 0
-        ? (validReviews.reduce((sum, r) => sum + (Number(r.rating) || 5), 0) / validReviews.length).toFixed(1)
-        : null;
+    const fallbackCount = Number(tutor.reviewCount || tutor.totalReviews) || 0;
+    const fallbackRating = Number(tutor.rating || tutor.averageRating) || 0;
+
+    let avgRating = null;
+    let totalCount = 0;
+
+    if (validReviews.length > 0) {
+        totalCount = validReviews.length;
+        avgRating = (
+            validReviews.reduce((sum, r) => sum + (Number(r.rating) || 5), 0) / totalCount
+        ).toFixed(1);
+    } else if (fallbackCount > 0 && fallbackRating > 0) {
+        totalCount = fallbackCount;
+        avgRating = fallbackRating.toFixed(1);
+    }
 
     const tutorUrl = `${SITE_URL}/tutor/${tutor._id}`;
-    const subjects = Array.isArray(tutor.subjects) ? tutor.subjects : [tutor.subjects || "Academic Coaching"];
+    const subjects = Array.isArray(tutor.subjects)
+        ? tutor.subjects.filter(Boolean)
+        : [tutor.subjects || "Academic Coaching"];
 
-    return {
+    const profileSchema = {
         "@context": "https://schema.org",
         "@type": "ProfilePage",
+        url: tutorUrl,
+        ...(tutor.createdAt ? { dateCreated: new Date(tutor.createdAt).toISOString() } : {}),
+        ...(tutor.updatedAt ? { dateModified: new Date(tutor.updatedAt).toISOString() } : {}),
         mainEntity: {
             "@type": "Person",
+            "@id": `${tutorUrl}#person`,
             name: tutor.displayName,
             url: tutorUrl,
             image: tutor.photoURL || `${SITE_URL}/og-image.png`,
-            jobTitle: "Private Tutor",
-            description: tutor.bio || `Verified academic tutor in ${tutor.location || "Bangladesh"} specializing in ${subjects.slice(0, 3).join(", ")}.`,
-            alumniOf: tutor.university || tutor.qualification ? {
-                "@type": "EducationalOrganization",
-                name: tutor.university || tutor.qualification,
-            } : undefined,
+            jobTitle: "Verified Private Tutor",
+            description:
+                tutor.bio ||
+                `Verified academic tutor in ${tutor.location || "Bangladesh"} specializing in ${subjects.slice(0, 4).join(", ")}.`,
+            ...(tutor.university || tutor.qualification
+                ? {
+                      alumniOf: {
+                          "@type": "EducationalOrganization",
+                          name: tutor.university || tutor.qualification,
+                      },
+                  }
+                : {}),
             knowsAbout: subjects,
             address: {
                 "@type": "PostalAddress",
                 addressLocality: tutor.thana || tutor.location || "Dhaka",
                 addressCountry: "BD",
             },
-            ...(avgRating && validReviews.length > 0 ? {
-                aggregateRating: {
-                    "@type": "AggregateRating",
-                    ratingValue: avgRating,
-                    reviewCount: validReviews.length,
-                    bestRating: "5",
-                    worstRating: "1",
-                },
-            } : {}),
+            ...(avgRating && totalCount > 0
+                ? {
+                      aggregateRating: {
+                          "@type": "AggregateRating",
+                          ratingValue: avgRating,
+                          reviewCount: totalCount,
+                          bestRating: "5",
+                          worstRating: "1",
+                      },
+                  }
+                : {}),
         },
     };
+
+    return profileSchema;
 }
 
 /**
@@ -166,30 +213,61 @@ export function tuitionJobPostingJsonLd(tuition) {
 
     const salary = Number(tuition.salary || tuition.budget) || 5000;
     const location = tuition.location || "Dhaka";
+    const isOnline =
+        /online|remote/i.test(String(tuition.mode || "")) ||
+        /online|remote/i.test(String(location));
     const postTitle = `${tuition.subject || "Academic"} Tutor Needed in ${location}`;
-    const descriptionText = tuition.requirements || tuition.description || `Required experienced tutor for ${tuition.subject || "Academic coaching"} in ${location}.`;
+    const descriptionText =
+        tuition.requirements ||
+        tuition.description ||
+        `Required experienced tutor for ${tuition.subject || "Academic coaching"} (${tuition.class || "School/College level"}) in ${location}.`;
+
+    const postedMs = tuition.createdAt
+        ? new Date(tuition.createdAt).getTime()
+        : Date.UTC(2026, 0, 1);
+    const safePostedMs = Number.isNaN(postedMs) ? Date.UTC(2026, 0, 1) : postedMs;
+    const datePostedIso = new Date(safePostedMs).toISOString();
+    const validThroughIso = tuition.validThrough
+        ? new Date(tuition.validThrough).toISOString()
+        : new Date(safePostedMs + 45 * 24 * 60 * 60 * 1000).toISOString();
 
     return {
         "@context": "https://schema.org",
         "@type": "JobPosting",
+        identifier: {
+            "@type": "PropertyValue",
+            name: "e-tuitionBD",
+            value: String(tuition._id),
+        },
         title: postTitle,
-        description: `<p>${descriptionText}</p>`,
-        datePosted: tuition.createdAt ? new Date(tuition.createdAt).toISOString() : new Date().toISOString(),
-        validThrough: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        description: `<p>${String(descriptionText).replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`,
+        datePosted: datePostedIso,
+        validThrough: validThroughIso,
         employmentType: "PART_TIME",
+        directApply: true,
         hiringOrganization: {
             "@type": "Organization",
-            name: "e-TuitionBD Verified Student/Guardian",
+            name: "e-tuitionBD Verified Guardian",
             sameAs: SITE_URL,
+            logo: `${SITE_URL}/logo.png`,
         },
         jobLocation: {
             "@type": "Place",
             address: {
                 "@type": "PostalAddress",
-                addressLocality: location,
+                addressLocality: isOnline ? "Dhaka" : location,
                 addressCountry: "BD",
             },
         },
+        ...(isOnline
+            ? {
+                  jobLocationType: "TELECOMMUTE",
+                  applicantLocationRequirements: {
+                      "@type": "Country",
+                      name: "BD",
+                  },
+              }
+            : {}),
         baseSalary: {
             "@type": "MonetaryAmount",
             currency: "BDT",
@@ -213,25 +291,34 @@ export function organizationDetailsJsonLd(org) {
     return {
         "@context": "https://schema.org",
         "@type": "EducationalOrganization",
+        "@id": `${orgUrl}#institution`,
         name: org.name,
         url: orgUrl,
         logo: org.profile?.logo || `${SITE_URL}/og-image.png`,
-        description: org.profile?.description || `${org.name} educational campus on eTuitionBD.`,
+        description:
+            org.profile?.description ||
+            `${org.name} verified educational campus and coaching institution on e-tuitionBD.`,
         address: {
             "@type": "PostalAddress",
-            addressLocality: org.district || org.division || "Dhaka",
+            addressLocality: org.profile?.district || org.district || org.division || "Dhaka",
             addressCountry: "BD",
         },
+        ...(org.profile?.publicPhone || org.contact?.phone
+            ? { telephone: org.profile?.publicPhone || org.contact?.phone }
+            : {}),
+        ...(org.profile?.publicEmail || org.contact?.email
+            ? { email: org.profile?.publicEmail || org.contact?.email }
+            : {}),
     };
 }
 
 /**
- * Serialize a JSON-LD object to a <script> tag string.
+ * Serialize a JSON-LD object to a <script> tag string safely (escapes </script>).
  * Returns an object with safe __html string (never null to prevent TypeError).
  */
 export function serializeJsonLd(data) {
     if (!data) return { __html: "" };
     return {
-        __html: JSON.stringify(data, null, 2),
+        __html: JSON.stringify(data, null, 2).replace(/</g, "\\u003c"),
     };
 }

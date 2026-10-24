@@ -312,6 +312,9 @@ const TutorDetails = () => {
             subjects: Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : 'Various',
             defaultValue: `Hire ${tutor.displayName} for personalized home & online tuition in ${tutor.location || 'Dhaka'}. Verified qualifications and parent guarantee.`,
           })}
+          image={tutor.photoURL}
+          ogType="profile"
+          canonicalUrl={`https://e-tuitionhub.vercel.app/tutor/${tutor._id}`}
         />
         <Helmet>
           <script type="application/ld+json">

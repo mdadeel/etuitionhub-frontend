@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender-seo.mjs",
+    "sitemap": "node scripts/generate-programmatic-sitemap.cjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "doctor": "npx react-doctor@latest",
