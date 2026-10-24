@@ -2,11 +2,23 @@
     "name": "e-tuitionhub",
     "rewrites": [
         {
-            "source": "/api/(.*)",
+            "source": "/tutor/:id",
+            "destination": "/api/seo-render?type=tutor&id=:id"
+        },
+        {
+            "source": "/tuition/:id",
+            "destination": "/api/seo-render?type=tuition&id=:id"
+        },
+        {
+            "source": "/organizations/:slug",
+            "destination": "/api/seo-render?type=organization&id=:slug"
+        },
+        {
+            "source": "/api/((?!seo-render$).*)",
             "destination": "https://etuitionhub-backend.vercel.app/api/$1"
         },
         {
-            "source": "/((?!sitemap\\.xml|robots\\.txt|assets/|images/|locales/|favicon\\.ico|.*\\.(?:xml|txt|png|jpg|jpeg|svg|ico|json|js|css)).*)",
+            "source": "/((?!api/|sitemap\\.xml|robots\\.txt|llms\\.txt|assets/|images/|locales/|favicon\\.ico|.*\\.(?:html|xml|txt|png|jpg|jpeg|webp|avif|svg|ico|json|js|css|webmanifest)).*)",
             "destination": "/index.html"
         }
     ],
@@ -21,7 +33,15 @@
         {
             "source": "/robots.txt",
             "headers": [
-                { "key": "Content-Type", "value": "text/plain; charset=utf-8" }
+                { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+                { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=86400" }
+            ]
+        },
+        {
+            "source": "/llms.txt",
+            "headers": [
+                { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+                { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=86400" }
             ]
         },
         {

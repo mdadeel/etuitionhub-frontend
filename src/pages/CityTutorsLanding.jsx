@@ -119,6 +119,51 @@ const CityTutorsLanding = () => {
 
   const pageTitle = `Best Home & Online Tutors in ${loc.displayName} | 100% Parent Guarantee`;
   const pageDescription = `Find verified, top-rated home and online tutors in ${loc.displayName}. Background-checked BUET, DU, and English Medium educators. Free 1st demo session & escrow safe.`;
+  const canonicalPath = loc.thanaSlug
+    ? `/tutors/${loc.canonicalCitySlug}/${loc.thanaSlug}`
+    : `/tutors/${loc.canonicalCitySlug}`;
+
+  const feeBenchmarks = useMemo(() => {
+    const isDhakaMetro = loc.canonicalCitySlug === 'dhaka';
+    return [
+      {
+        level: 'Primary (Class 1–5)',
+        curriculum: 'Bangla Medium / English Version',
+        schedule: '3–4 days / week',
+        rate: isDhakaMetro ? '৳3,500 – ৳6,500 / mo' : '৳3,000 – ৳5,500 / mo',
+      },
+      {
+        level: 'Junior Secondary (Class 6–8)',
+        curriculum: 'NCTB / Cambridge Checkpoint',
+        schedule: '3–4 days / week',
+        rate: isDhakaMetro ? '৳4,500 – ৳8,500 / mo' : '৳3,500 – ৳7,000 / mo',
+      },
+      {
+        level: 'SSC / Class 9–10 (Science & Math)',
+        curriculum: 'Bangla Medium / English Version',
+        schedule: '3–4 days / week',
+        rate: isDhakaMetro ? '৳6,000 – ৳10,000 / mo' : '৳4,500 – ৳8,500 / mo',
+      },
+      {
+        level: 'HSC / Class 11–12 (STEM)',
+        curriculum: 'Physics, Chemistry, Higher Math',
+        schedule: '3–4 days / week',
+        rate: isDhakaMetro ? '৳8,000 – ৳15,000 / mo' : '৳6,000 – ৳12,000 / mo',
+      },
+      {
+        level: 'O Levels / IGCSE & A Levels',
+        curriculum: 'Cambridge (CAIE) / Pearson Edexcel',
+        schedule: '3 days / week',
+        rate: isDhakaMetro ? '৳10,000 – ৳22,000 / mo' : '৳8,000 – ৳16,000 / mo',
+      },
+      {
+        level: 'University Admission Prep',
+        curriculum: 'BUET / Medical / DU / IBA',
+        schedule: '3–4 days / week',
+        rate: isDhakaMetro ? '৳9,000 – ৳18,000 / mo' : '৳7,000 – ৳14,000 / mo',
+      },
+    ];
+  }, [loc.canonicalCitySlug]);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -126,6 +171,8 @@ const CityTutorsLanding = () => {
         title={pageTitle}
         description={pageDescription}
         keywords={`tutors in ${loc.displayName}, home tutor ${loc.displayName}, online tuition ${loc.cityName}, private tutor ${loc.thanaName || loc.cityName}, English medium tutor ${loc.displayName}`}
+        canonicalUrl={`https://e-tuitionhub.vercel.app${canonicalPath}`}
+        noIndex={!loc.isKnownLocation}
       />
 
       <Helmet>
@@ -339,7 +386,50 @@ const CityTutorsLanding = () => {
         </div>
       </section>
 
-      {/* Localized FAQ Accordion */}
+      {/* GEO / AEO Structured Benchmark Section: Atomic Answer + HTML Rate Table */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <div className="rounded-2xl border border-border/80 bg-card p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="space-y-2">
+            <h2 className="text-xl sm:text-2xl font-heading font-bold text-foreground">
+              How much does a private home tutor cost in {loc.displayName}?
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Private home and online tutor fees in {loc.displayName} average{' '}
+              <strong className="text-foreground">{loc.averageRate}</strong> for 3 to 4 weekly sessions.
+              Exact monthly rates depend on student grade, curriculum ({(loc.popularCurricula || []).slice(0, 3).join(', ')}),
+              and tutor academic credentials, with zero agency matching fees for parents on e-tuitionBD.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-border/70">
+            <table className="w-full text-left border-collapse text-xs sm:text-sm">
+              <caption className="sr-only">
+                2026 Monthly Tuition Rate Benchmarks in {loc.displayName}
+              </caption>
+              <thead>
+                <tr className="bg-muted/60 text-foreground border-b border-border/70">
+                  <th scope="col" className="py-3 px-4 font-semibold">Academic Level</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Curriculum / Track</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Typical Schedule</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Monthly Fee (BDT)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/50">
+                {feeBenchmarks.map((row) => (
+                  <tr key={row.level} className="hover:bg-muted/30 transition-colors">
+                    <td className="py-3 px-4 font-medium text-foreground">{row.level}</td>
+                    <td className="py-3 px-4 text-muted-foreground">{row.curriculum}</td>
+                    <td className="py-3 px-4 text-muted-foreground">{row.schedule}</td>
+                    <td className="py-3 px-4 font-semibold text-primary">{row.rate}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Localized FAQ Accordion (Always in DOM for Google FAQPage Schema Compliance) */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-widest mb-2">
@@ -361,6 +451,7 @@ const CityTutorsLanding = () => {
               >
                 <button
                   type="button"
+                  aria-expanded={isOpen}
                   onClick={() => setOpenFaqIndex(isOpen ? null : index)}
                   className="w-full text-left px-5 py-4 flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-foreground hover:text-primary transition-colors cursor-pointer"
                 >
@@ -372,11 +463,17 @@ const CityTutorsLanding = () => {
                     }`}
                   />
                 </button>
-                {isOpen && (
-                  <div className="px-5 pb-4 pt-1 text-xs sm:text-sm text-muted-foreground leading-relaxed border-t border-border/40">
-                    {faq.answer}
+                <div
+                  className={`grid transition-all duration-200 ${
+                    isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="px-5 pb-4 pt-1 text-xs sm:text-sm text-muted-foreground leading-relaxed border-t border-border/40">
+                      {faq.answer}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}

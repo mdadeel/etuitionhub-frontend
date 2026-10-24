@@ -74,7 +74,18 @@ const FAQ = () => {
           {/* RIGHT - Student Thinking Illustration */}
           <div className="lg:col-span-5 flex justify-center items-center">
             <div className="relative w-full max-w-[450px] aspect-[5/4.2]">
-              <img src="/images/faq.png" alt="FAQ illustration" className="w-full h-auto object-contain" />
+              <picture>
+                <source srcSet="/images/faq.webp" type="image/webp" />
+                <img
+                  src="/images/faq.png"
+                  alt="Parent and student finding answers about verified home tuition in Bangladesh"
+                  width={900}
+                  height={900}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-auto object-contain"
+                />
+              </picture>
             </div>
           </div>
 

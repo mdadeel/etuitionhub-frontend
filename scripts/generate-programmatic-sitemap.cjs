@@ -4,16 +4,20 @@ const path = require('path');
 const SITE_URL = 'https://e-tuitionhub.vercel.app';
 const TODAY = new Date().toISOString().split('T')[0];
 
+/**
+ * Only publicly indexable, canonical 200-OK pages belong in sitemap.xml.
+ * Excluded intentionally:
+ *  - /search       (disallowed in robots.txt + noindex)
+ *  - /post-tuition (wrapped in <PrivateRoute> -> redirects unauthenticated bots to /login)
+ *  - /pricing      (alias route canonicalized to /tutor-earnings)
+ */
 const CORE_PAGES = [
   { path: '/', priority: '1.0', changefreq: 'daily' },
   { path: '/tutors', priority: '0.9', changefreq: 'daily' },
   { path: '/tuitions', priority: '0.9', changefreq: 'daily' },
   { path: '/tutor-earnings', priority: '0.9', changefreq: 'weekly' },
-  { path: '/pricing', priority: '0.9', changefreq: 'weekly' },
   { path: '/organizations', priority: '0.8', changefreq: 'weekly' },
-  { path: '/search', priority: '0.8', changefreq: 'daily' },
   { path: '/become-tutor', priority: '0.8', changefreq: 'monthly' },
-  { path: '/post-tuition', priority: '0.8', changefreq: 'monthly' },
   { path: '/testimonials', priority: '0.7', changefreq: 'weekly' },
   { path: '/about', priority: '0.6', changefreq: 'monthly' },
   { path: '/contact', priority: '0.6', changefreq: 'monthly' },
@@ -22,6 +26,7 @@ const CORE_PAGES = [
   { path: '/privacy', priority: '0.3', changefreq: 'yearly' },
 ];
 
+// Kept in sync with src/data/bangladeshLocations.js (11 cities + 49 thanas)
 const LOCATIONS = [
   {
     city: 'dhaka',
@@ -43,11 +48,30 @@ const LOCATIONS = [
     city: 'khulna',
     thanas: ['sonadanga', 'khalishpur', 'daulatpur'],
   },
-  { city: 'barishal', thanas: [] },
-  { city: 'rangpur', thanas: [] },
-  { city: 'comilla', thanas: [] },
-  { city: 'gazipur', thanas: [] },
-  { city: 'narayanganj', thanas: [] },
+  {
+    city: 'barishal',
+    thanas: ['kotwali', 'rupatoli', 'natullabad'],
+  },
+  {
+    city: 'rangpur',
+    thanas: ['kotwali', 'dhap', 'modern-mor'],
+  },
+  {
+    city: 'mymensingh',
+    thanas: ['sadar', 'charpara', 'ganginarpar', 'shankipara'],
+  },
+  {
+    city: 'comilla',
+    thanas: ['kandirpar', 'badurtala', 'shashangachha'],
+  },
+  {
+    city: 'gazipur',
+    thanas: ['chowrasta', 'joydebpur', 'board-bazar', 'konabari'],
+  },
+  {
+    city: 'narayanganj',
+    thanas: ['chashara', 'bandar', 'siddhirganj'],
+  },
 ];
 
 function generateSitemap() {
@@ -62,7 +86,6 @@ function generateSitemap() {
   </url>`);
   }
 
-  // Regional city and thana URLs
   for (const loc of LOCATIONS) {
     urls.push(`  <url>
     <loc>${SITE_URL}/tutors/${loc.city}</loc>
@@ -92,4 +115,8 @@ ${urls.join('\n')}
   console.log(`Generated sitemap with ${urls.length} URLs at ${outputPath}`);
 }
 
-generateSitemap();
+if (require.main === module) {
+  generateSitemap();
+}
+
+module.exports = { generateSitemap, CORE_PAGES, LOCATIONS, SITE_URL };

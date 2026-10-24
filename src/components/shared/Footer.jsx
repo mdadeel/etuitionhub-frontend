@@ -113,14 +113,16 @@ const Footer = () => {
                         
                         <ul className={cn(
                             "space-y-3 transition-all duration-300 ease-in-out overflow-hidden md:max-h-none md:opacity-100",
-                            openSection === 'areas' ? "max-h-64 opacity-100 mt-3" : "max-h-0 opacity-0 md:mt-0"
+                            openSection === 'areas' ? "max-h-80 opacity-100 mt-3" : "max-h-0 opacity-0 md:mt-0"
                         )}>
                             <li><Link to="/tutors/dhaka" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Dhaka</Link></li>
-                            <li><Link to="/tutors/chattogram" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Chittagong</Link></li>
+                            <li><Link to="/tutors/chattogram" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Chattogram</Link></li>
                             <li><Link to="/tutors/sylhet" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Sylhet</Link></li>
-                            <li><Link to="/tutors/dhaka/uttara" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Uttara, Dhaka</Link></li>
+                            <li><Link to="/tutors/rajshahi" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Rajshahi</Link></li>
+                            <li><Link to="/tutors/khulna" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Tutors in Khulna</Link></li>
                             <li><Link to="/tutors/dhaka/dhanmondi" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Dhanmondi, Dhaka</Link></li>
-                            <li><Link to="/tutors/dhaka/mirpur" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Mirpur, Dhaka</Link></li>
+                            <li><Link to="/tutors/dhaka/uttara" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Uttara, Dhaka</Link></li>
+                            <li><Link to="/tutors/dhaka/gulshan" className="text-sm text-white/60 hover:text-white transition-colors duration-300">Gulshan, Dhaka</Link></li>
                         </ul>
                     </div>
 

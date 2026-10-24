@@ -497,7 +497,7 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
 
   return (
     <div className="bg-background min-h-screen py-12">
-      <SEO title={t('postTuition.seo_title')} description={t('postTuition.seo_desc')} />
+      <SEO title={t('postTuition.seo_title')} description={t('postTuition.seo_desc')} noIndex />
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         {submissionSuccess ? (
           instantMatchView

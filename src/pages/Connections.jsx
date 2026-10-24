@@ -59,7 +59,7 @@ const ConnectionsPage = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <SEO title={t('connections.seo_title')} description={t('connections.seo_desc')} />
+      <SEO title={t('connections.seo_title')} description={t('connections.seo_desc')} noIndex />
       <DashboardPageHeader 
         title={t('connections.title')} 
         subtitle={t('connections.subtitle')}

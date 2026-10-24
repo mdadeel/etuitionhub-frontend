@@ -67,7 +67,7 @@ const PasswordReset = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 relative overflow-hidden ">
-            <SEO title="Reset Password | eTuitionBD" description="Reset your eTuitionBD account password. We'll send you a link to create a new one." />
+            <SEO title="Reset Password | eTuitionBD" description="Reset your eTuitionBD account password. We'll send you a link to create a new one." noIndex />
             <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
 
             <div className="w-full max-w-md z-10">

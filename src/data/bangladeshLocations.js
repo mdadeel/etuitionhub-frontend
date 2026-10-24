@@ -169,6 +169,7 @@ export function resolveLocationData(cityParam = "", thanaParam = "") {
   if (!matchedCity) {
     const formattedCity = citySlug ? citySlug.charAt(0).toUpperCase() + citySlug.slice(1) : "Bangladesh";
     return {
+      isKnownLocation: false,
       cityName: formattedCity,
       citySlug,
       canonicalCitySlug,
@@ -178,6 +179,7 @@ export function resolveLocationData(cityParam = "", thanaParam = "") {
       description: `Verified home and online tutors in ${formattedCity}. Hand-picked and background-checked with 100% Parent Guarantee.`,
       averageRate: "৳4,000 - ৳12,000/mo",
       thanas: [],
+      popularCurricula: ["Bangla Medium", "English Medium", "English Version", "Admission"],
       queryArea: thanaSlug || formattedCity,
     };
   }
@@ -186,15 +188,17 @@ export function resolveLocationData(cityParam = "", thanaParam = "") {
     ? matchedCity.thanas.find((t) => t.slug === thanaSlug || t.name.toLowerCase() === thanaSlug)
     : null;
 
+  const canonicalThanaSlug = matchedThana?.slug || thanaSlug;
   const thanaName = matchedThana?.name || (thanaSlug ? thanaSlug.charAt(0).toUpperCase() + thanaSlug.slice(1) : "");
   const displayName = thanaName ? `${thanaName}, ${matchedCity.name}` : matchedCity.name;
 
   return {
+    isKnownLocation: Boolean(!thanaSlug || matchedThana),
     cityName: matchedCity.name,
     citySlug,
     canonicalCitySlug,
     thanaName,
-    thanaSlug,
+    thanaSlug: canonicalThanaSlug,
     displayName,
     description: matchedCity.description,
     averageRate: matchedCity.averageRate,

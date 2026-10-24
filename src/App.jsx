@@ -103,14 +103,18 @@ const ConditionalNavbar = () => {
 
 const ConditionalFooter = () => {
   const { pathname } = useLocation();
-  const isDashboard = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/super-admin");
-  const isSession = pathname.startsWith("/session");
-  const isAiAssistant = pathname.startsWith("/ai-assistant");
-  const isAuth = pathname === "/login" || pathname === "/register";
-  const isTutors = pathname.startsWith("/tutors");
-  const isTuitions = pathname.startsWith("/tuitions");
-  const isOrganizations = pathname.startsWith("/organizations");
-  if (isDashboard || isSession || isAiAssistant || isAuth || isTutors || isTuitions || isOrganizations) return null;
+  const normalized = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  const isDashboard = normalized.startsWith("/dashboard") || normalized.startsWith("/admin") || normalized.startsWith("/super-admin");
+  const isSession = normalized.startsWith("/session");
+  const isAiAssistant = normalized.startsWith("/ai-assistant");
+  const isAuth = normalized === "/login" || normalized === "/register";
+  // Only hide Footer on the 100vh split-pane directory index views (/tutors, /tuitions, /organizations),
+  // NOT on full-scroll detail & programmatic city landing pages (/tutors/dhaka, /organizations/:slug).
+  const isSplitPaneDirectory =
+    normalized === "/tutors" ||
+    normalized === "/tuitions" ||
+    normalized === "/organizations";
+  if (isDashboard || isSession || isAiAssistant || isAuth || isSplitPaneDirectory) return null;
   return <Suspense fallback={null}><Footer /></Suspense>;
 };
 
