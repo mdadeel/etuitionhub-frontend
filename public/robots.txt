@@ -1,7 +1,45 @@
+# Default Crawler Directives
 User-agent: *
 Allow: /
 
-# Private & Dashboard Areas
+# Dedicated AI Search Engine Crawlers (AEO / GEO Discovery)
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /tutors
+Allow: /tuitions
+Allow: /organizations
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+
+User-agent: GPTBot
+Allow: /
+Allow: /tutors
+Allow: /tuitions
+Allow: /organizations
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /tutors
+Allow: /tuitions
+Allow: /organizations
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /tutors
+Allow: /tuitions
+Allow: /organizations
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+
+# Private & Dashboard Areas (All Crawlers)
 Disallow: /dashboard/
 Disallow: /admin/
 Disallow: /admin-login

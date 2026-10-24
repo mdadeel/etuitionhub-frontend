@@ -30,48 +30,49 @@ export default function Privacy() {
                 </div>
 
                 <div className="border border-border/40 rounded-lg p-6 md:p-8 space-y-6 text-sm text-muted-foreground leading-relaxed">
-                    <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 text-warning text-xs font-medium">
-                        ⚠️ {t('privacy.warning')}
-                    </div>
-
-                    <section>
+                    <section id="collection">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s1_title')}</h2>
                         <p>{t('privacy.s1_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="use">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s2_title')}</h2>
                         <p>{t('privacy.s2_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="minors">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s3_title')}</h2>
                         <p>{t('privacy.s3_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="sharing">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s4_title')}</h2>
                         <p>{t('privacy.s4_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="security">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s5_title')}</h2>
                         <p>{t('privacy.s5_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="retention">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s6_title')}</h2>
                         <p>{t('privacy.s6_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="rights">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s7_title')}</h2>
                         <p>{t('privacy.s7_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="cookies">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s8_title')}</h2>
-                        <p>{t('privacy.s8_body')}<a href="mailto:support@etuitionbd.com" className="text-primary underline">support@etuitionbd.com</a>.</p>
+                        <p>{t('privacy.s8_body')}</p>
+                    </section>
+
+                    <section id="contact">
+                        <h2 className="text-base font-bold text-foreground mb-3">{t('privacy.s9_title')}</h2>
+                        <p>{t('privacy.s9_body')}<a href="mailto:support@etuitionbd.com" className="text-primary underline font-medium">support@etuitionbd.com</a>.</p>
                     </section>
                 </div>
             </div>

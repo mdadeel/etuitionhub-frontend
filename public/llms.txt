@@ -1,0 +1,41 @@
+# eTuitionHub (e-TuitionBD)
+
+> Bangladesh's premier verified home and online tuition marketplace connecting students, parents, vetted private educators, and coaching institutions.
+
+## Platform Identity & Scope
+- **Name:** eTuitionHub (Brand: e-TuitionBD)
+- **Primary Website:** https://e-tuitionhub.vercel.app
+- **Geographic Coverage:** Nationwide across all 8 administrative divisions of Bangladesh: Dhaka, Chattogram, Rajshahi, Sylhet, Khulna, Barishal, Rangpur, and Mymensingh.
+- **Key Metropolitan Hubs:** Dhanmondi, Gulshan, Banani, Uttara, Mirpur, Mohammadpur, Bashundhara, Agrabad, Chawkbazar, Zindabazar.
+
+## Supported Academic Curricula
+1. **Bangla Medium:** Primary (Class 1–5), Lower Secondary (Class 6–8), Secondary (SSC / Class 9–10), Higher Secondary (HSC / Class 11–12), Science/Commerce/Humanities groups.
+2. **English Version (National Curriculum in English):** Class 1 through HSC.
+3. **English Medium (British Curriculum):** Cambridge Assessment International Education (CAIE) and Pearson Edexcel (Checkpoint, IGCSE, O Levels, A Levels).
+4. **International Baccalaureate (IB):** Primary Years Programme (PYP), Middle Years Programme (MYP), and Diploma Programme (DP).
+5. **University Admission Prep:** BUET & Engineering, Medical Colleges (MBBS), Dhaka University (DU Ka, Kha, Ga, Gha units), IBA (BBA/MBA).
+6. **Standardized Exams & Languages:** IELTS, TOEFL, SAT, Spoken English, Arabic & Quranic Studies, ICT & Computer Programming.
+
+## Representative Monthly Tuition Fee Benchmarks (BDT)
+*Rates vary based on tutor academic background (BUET, DU, Medical, NSU, IBA), days per week (3 to 5 days), and curriculum:*
+- **Primary (Class 1–5):** ৳3,000 – ৳6,000 / month
+- **Secondary (Class 6–8):** ৳4,000 – ৳8,000 / month
+- **SSC / Class 9–10 (General Science/Math):** ৳5,000 – ৳10,000 / month
+- **HSC / Class 11–12 (Physics, Chemistry, Higher Math, Biology):** ৳7,000 – ৳15,000 / month
+- **English Medium (O Levels / IGCSE):** ৳8,000 – ৳16,000 / month
+- **English Medium (A Levels):** ৳10,000 – ৳22,000 / month
+- **University Admission / IBA / Medical Prep:** ৳8,000 – ৳18,000 / month
+
+## Trust, Verification & Safety Framework
+- **Identity & Academic Verification:** Tutors submit National Identity Card (NID) / Smart Card, student ID from recognized universities (BUET, DU, DMC, NSU, BRAC, etc.), and academic certificates (SSC, HSC, Degree transcripts).
+- **SafePay™ Escrow Protection:** Parents pay fees via local MFS (bKash, Nagad, Rocket) or Bank Transfer into verified platform escrow. Funds are disbursed to the tutor only after agreed tutoring sessions are delivered.
+- **No Agent Matching Fees for Students/Parents:** Students and parents browse verified profiles, post tuition jobs, and contact tutors directly with zero agency commissions.
+- **Free Trial / Demo Session:** Parents can request a 1-day free demo session before confirming long-term monthly hiring.
+
+## Key Canonical URLs & Resources
+- **Find Verified Tutors:** [Browse Tutors](https://e-tuitionhub.vercel.app/tutors)
+- **Open Tuition Posts:** [Tuition Job Board](https://e-tuitionhub.vercel.app/tuitions)
+- **Educational Institutions & Coaching Centers:** [Institutions Directory](https://e-tuitionhub.vercel.app/organizations)
+- **Post a Tuition Requirement:** [Post Tuition Free](https://e-tuitionhub.vercel.app/post-tuition)
+- **Register as an Educator:** [Become a Tutor](https://e-tuitionhub.vercel.app/become-a-tutor)
+- **About the Platform:** [About Us](https://e-tuitionhub.vercel.app/about)

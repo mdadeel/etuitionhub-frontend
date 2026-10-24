@@ -283,7 +283,10 @@
       "error_sender_required": "Sender number required",
       "error_submit": "Payment submission failed",
       "success_submitted": "Payment submitted for verification",
-      "upload_failed": "Screenshot upload failed — your payment was still submitted."
+      "upload_failed": "Screenshot upload failed — your payment was still submitted.",
+      "safepay_guarantee_title": "SafePay™ Escrow Protection",
+      "safepay_guarantee_desc": "Your tuition fee is securely held in platform escrow and is only disbursed to the tutor after verified sessions. Covered by our",
+      "refund_terms_link": "Parent Guarantee & Refund Policy"
     },
     "student": {
       "hello": "Hello, {{name}}",
@@ -442,7 +445,21 @@
       "toast_logging_in": "Logging in...",
       "error_not_found": "No account found with this email",
       "error_wrong_password": "Incorrect password",
-      "error_generic": "Login failed. Please try again."
+      "error_generic": "Login failed. Please try again.",
+      "terms_notice": "By signing in, you agree to our"
+    },
+    "register": {
+      "full_name": "Full Name",
+      "phone_number": "Phone Number",
+      "email_address": "Email Address",
+      "password": "Password",
+      "create_account": "Create Account",
+      "registering": "Registering...",
+      "or_connect_with": "Or Connect With",
+      "signup_google": "Sign Up with Google",
+      "already_have_account": "Already have an account?",
+      "sign_in": "Sign In",
+      "terms_agreement": "By creating an account, you agree to our"
     },
     "notFound": {
       "title": "Page Not Found",
@@ -586,7 +603,8 @@
       "loading": "Loading...",
       "prev": "Previous",
       "next": "Next",
-      "page": "Page"
+      "page": "Page",
+      "and": "and"
     },
     "save": {
       "save": "Save",
@@ -597,49 +615,57 @@
       "removed_anon": "Removed",
       "failed": "Could not save — try again"
     },
+    "becomeTutor": {
+      "consent_text": "By submitting your tutor profile, you agree to our",
+      "terms_link": "Tutor Code of Conduct",
+      "privacy_link": "Privacy Policy",
+      "verification_consent": ", and consent to administrative verification of your NID and academic credentials."
+    },
     "terms": {
       "seo_title": "Terms of Service | e-TuitionBD",
       "seo_desc": "The terms governing your use of the e-TuitionBD tutoring marketplace.",
       "title": "Terms of Service",
-      "warning": "This is a placeholder document and has not been reviewed by a legal professional. The terms below are a general template and should not be treated as legally binding. Contact the platform owner to have formal terms drafted.",
-      "s1_title": "1. Acceptance of Terms",
-      "s1_body": "By accessing or using e-TuitionBD (\"the Platform\"), you agree to be bound by these Terms of Service. If you do not agree, please do not use the Platform.",
-      "s2_title": "2. Description of Service",
-      "s2_body": "e-TuitionBD is a marketplace that connects students and parents with tutors and educational organizations. The Platform facilitates discovery, communication, and booking of tutoring services. We are not a party to any tutoring agreement between users.",
-      "s3_title": "3. User Accounts",
-      "s3_body": "You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account. You must provide accurate information and update it as needed.",
-      "s4_title": "4. Tutor Verification",
-      "s4_body": "We verify tutor credentials to the best of our ability, but we do not guarantee the accuracy of any information provided by tutors. Users should exercise their own judgment when selecting a tutor.",
-      "s5_title": "5. Payments",
-      "s5_body": "Payments are processed manually through bKash, Nagad, Rocket, or bank transfer. Tutors are paid after payment verification and applicable commission deductions. Refund requests are handled on a case-by-case basis.",
-      "s6_title": "6. Limitation of Liability",
-      "s6_body": "To the maximum extent permitted by law, e-TuitionBD shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Platform.",
-      "s7_title": "7. Changes to Terms",
-      "s7_body": "We reserve the right to update these terms at any time. Users will be notified of material changes via email or platform notice.",
-      "s8_title": "8. Contact",
-      "s8_body": "For questions about these terms, contact "
+      "s1_title": "1. Acceptance of Terms & Platform Role",
+      "s1_body": "By accessing or using e-TuitionBD (\"the Platform\"), you agree to be bound by these Terms of Service. e-TuitionBD operates as an independent educational marketplace facilitating discovery, communication, verified tutor matching, and fee escrow between students, parents, tutors, and coaching centers across Bangladesh. e-TuitionBD is not an employer or agent of any tutor, and tutoring agreements are formed directly between participating parties under these Platform Terms.",
+      "s2_title": "2. User Accounts & Minor Guardianship",
+      "s2_body": "Users must register with accurate, verifiable information. Tutors must be at least 18 years of age. For students under 18 years of age, accounts must be created, authorized, or supervised by a parent or legal guardian. You are solely responsible for maintaining the confidentiality of your login credentials and for all activities conducted through your account.",
+      "s3_title": "3. User Conduct & Academic Integrity",
+      "s3_body": "Users agree to interact with respect, honesty, and professional courtesy. e-TuitionBD strictly prohibits academic dishonesty, including but not limited to taking exams, completing graded university assessments on behalf of students, or any form of cheating assistance. Harassment, abusive language, inappropriate conduct, or discriminatory behavior will result in immediate permanent account termination and possible referral to law enforcement authorities.",
+      "s4_title": "4. Tutor Verification & Parent Supervision",
+      "s4_body": "e-TuitionBD reviews government National Identity (NID) cards, university student IDs, and academic degree certificates for verified tutors to the best of our administrative capability. While this vetting process significantly elevates community safety, verification does not constitute an absolute guarantee or endorsement. Parents and guardians are strongly advised to exercise reasonable parental supervision, verify references independently, and maintain appropriate oversight during home and online tutoring sessions.",
+      "s5_title": "5. SafePay™ Escrow & Payment Protection",
+      "s5_body": "To protect families and educators against payment disputes and non-performance, payments made via bKash, Nagad, Rocket, or direct Bank transfer are deposited into e-TuitionBD's secure SafePay™ Escrow. Escrow funds are held safely and are only disbursed to the tutor upon the verified completion of scheduled tutoring sessions. Tutors must not demand direct cash payments outside the platform before sessions have been delivered.",
+      "s6_title": "6. Cancellations, Trial Sessions & Refund Policy",
+      "s6_body": "Parents are entitled to our Replacement Guarantee. If a tutor is not the right academic or behavioral fit within the first 3 trial sessions, parents may request a free tutor rematch through our support team or request a prompt refund of unutilized escrow funds. Completed and verified sessions that satisfy agreed standards are non-refundable. Platform administrative fees may apply to voluntary cancellations after class commencement.",
+      "s7_title": "7. Tutor Obligations & Code of Conduct",
+      "s7_body": "Tutors agree to maintain punctual attendance, deliver high-quality syllabus-aligned instruction, communicate transparently with parents regarding student progress, and adhere to strict child protection and safeguarding standards. Tutors must promptly notify parents and the platform of any required schedule adjustments.",
+      "s8_title": "8. Limitation of Liability",
+      "s8_body": "To the maximum extent permitted by applicable laws of Bangladesh, e-TuitionBD and its operators shall not be liable for any indirect, punitive, incidental, or consequential damages resulting from tutor performance, missed sessions, off-platform private arrangements, or interactions between users. Our aggregate liability is strictly limited to the amount of platform service fees retained for the specific transaction in dispute.",
+      "s9_title": "9. Governing Law & Contact",
+      "s9_body": "These Terms are governed by and construed in accordance with the laws of the People's Republic of Bangladesh. For questions, dispute resolution, or formal notices, please contact us at "
     },
     "privacy": {
       "seo_title": "Privacy Policy | e-TuitionBD",
       "seo_desc": "How e-TuitionBD collects, uses, and protects your personal information.",
       "title": "Privacy Policy",
-      "warning": "This is a placeholder document and has not been reviewed by a legal professional. The policy below is a general template and should not be treated as legally binding. Contact the platform owner to have a formal privacy policy drafted.",
       "s1_title": "1. Information We Collect",
-      "s1_body": "We collect information you provide when creating an account (name, email, phone number, role), profile information (educational background, subjects, areas), and communication data (messages, session details). We also collect usage data such as page views and search queries to improve the Platform.",
+      "s1_body": "We collect information necessary to provide a trusted tutoring network: (a) Account Information: Full name, verified email address, and mobile phone number; (b) Profile Details: Curricula (Bangla Medium, English Version, Cambridge/Edexcel, IB), subjects, grade levels, geographic location/division; (c) Tutor Verification Data: National ID (NID) numbers, university student identity cards, graduation certificates, and profile photographs; (d) Transaction Records: Manual payment transaction IDs (TrxID), payment amounts, and billing confirmations via bKash, Nagad, Rocket, or bank transfer.",
       "s2_title": "2. How We Use Your Information",
-      "s2_body": "Your information is used to: provide and maintain the Platform, connect you with tutors or students, process payments, send notifications, improve our services, and comply with legal obligations.",
-      "s3_title": "3. Information Sharing",
-      "s3_body": "We do not sell your personal information. We may share information with tutors or organizations as necessary to facilitate tutoring arrangements, with service providers who help operate the Platform, or when required by law.",
-      "s4_title": "4. Data Security",
-      "s4_body": "We implement reasonable security measures to protect your data, including encryption in transit and at rest. However, no method of electronic storage is 100% secure.",
-      "s5_title": "5. Data Retention",
-      "s5_body": "We retain your account information for as long as your account is active. You may request deletion of your account and associated data by contacting us.",
-      "s6_title": "6. Your Rights",
-      "s6_body": "You may access, update, or delete your personal information through your account settings. You may also contact us to request data portability or restriction of processing.",
-      "s7_title": "7. Cookies",
-      "s7_body": "We use essential cookies for authentication and platform functionality. Analytics cookies are used to improve performance. You can control cookie settings through your browser.",
-      "s8_title": "8. Contact",
-      "s8_body": "For privacy-related inquiries, contact "
+      "s2_body": "We use collected information exclusively to: (a) Match students with compatible verified educators; (b) Validate educator credentials and prevent platform fraud; (c) Audit and verify manual MFS payments through our secure escrow queue; (d) Facilitate in-app communications, booking scheduling, and session reminders; (e) Provide responsive customer and dispute support; (f) Comply with applicable statutory and regulatory requirements in Bangladesh.",
+      "s3_title": "3. Child Safety & Minors' Data Protection",
+      "s3_body": "We treat the privacy and safety of minor students with the utmost gravity. Personal contact details (phone numbers and residential addresses) of students under 18 years of age are never displayed publicly on search engines or open directories. Contact information is only shared with an educator after a parent or guardian explicitly initiates or accepts a hire request.",
+      "s4_title": "4. Zero Sale of Personal Data & Information Sharing",
+      "s4_body": "We do not sell, rent, monetize, or trade your personal data to any advertisers, data brokers, or third parties under any circumstances. We share your information strictly under the following limited conditions: (a) With your confirmed tutoring counterparty to facilitate lessons; (b) With trusted cloud hosting and database infrastructure providers under strict confidentiality agreements; (c) With authorized law enforcement or judicial bodies if required by formal court order or statutory legal process under Bangladesh law.",
+      "s5_title": "5. Data Security & Storage",
+      "s5_body": "We deploy industry-standard administrative, technical, and physical safeguards to secure your personal data. All data transmissions are protected via SSL/TLS 256-bit encryption. Account credentials and authentication tokens are securely encrypted and salted. Access to verification documents (such as NID cards) is restricted strictly to authorized compliance administrators.",
+      "s6_title": "6. Data Retention & Account Deletion",
+      "s6_body": "We retain account data for as long as your account remains active. Users may request permanent account deletion and erasure of personal data at any time through account settings or by emailing our privacy desk. Upon verified deletion requests, personal identifying information is permanently purged or cryptographically anonymized in accordance with our data management protocol.",
+      "s7_title": "7. Your Privacy Rights",
+      "s7_body": "Under this Policy, you have the right to: (a) Review and update your personal and academic information; (b) Request a copy of your stored personal data; (c) Object to or restrict specific forms of data processing; (d) Withdraw consent for marketing notifications at any time via your notification preferences.",
+      "s8_title": "8. Cookies & Local Storage",
+      "s8_body": "e-TuitionBD uses essential cookies and local storage tokens strictly required for secure user authentication, session persistence, language localization (Bengali/English), and theme preferences. We do not deploy invasive third-party tracking pixels or cross-site advertising cookies.",
+      "s9_title": "9. Data Protection Contact",
+      "s9_body": "If you have any questions, concerns, or requests regarding this Privacy Policy or how your personal information is handled, please reach out to our team at "
     },
     "postTuition": {
       "seo_title": "Post a Tuition Request | Find a Tutor in Bangladesh – eTuitionBD",
@@ -670,7 +696,9 @@
       "error_days": "Days per week must be between 1 and 7.",
       "success": "Tuition posted successfully!",
       "error_generic": "Failed to post tuition",
-      "login_msg": "You need to be logged in to post a tuition request"
+      "login_msg": "You need to be logged in to post a tuition request",
+      "consent_text": "By posting this tuition requirement, you agree to our",
+      "consent_text_suffix": "and allow verified educators to review your academic requirements to apply."
     },
     "connections": {
       "seo_title": "My Connections | eTuitionBD",

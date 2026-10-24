@@ -30,48 +30,49 @@ export default function Terms() {
                 </div>
 
                 <div className="border border-border/40 rounded-lg p-6 md:p-8 space-y-6 text-sm text-muted-foreground leading-relaxed">
-                    <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 text-warning text-xs font-medium">
-                        ⚠️ {t('terms.warning')}
-                    </div>
-
-                    <section>
+                    <section id="acceptance">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s1_title')}</h2>
                         <p>{t('terms.s1_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="services">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s2_title')}</h2>
                         <p>{t('terms.s2_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="accounts">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s3_title')}</h2>
                         <p>{t('terms.s3_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="verification">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s4_title')}</h2>
                         <p>{t('terms.s4_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="escrow">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s5_title')}</h2>
                         <p>{t('terms.s5_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="refunds">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s6_title')}</h2>
                         <p>{t('terms.s6_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="tutors">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s7_title')}</h2>
                         <p>{t('terms.s7_body')}</p>
                     </section>
 
-                    <section>
+                    <section id="liability">
                         <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s8_title')}</h2>
-                        <p>{t('terms.s8_body')}<a href="mailto:support@etuitionbd.com" className="text-primary underline">support@etuitionbd.com</a>.</p>
+                        <p>{t('terms.s8_body')}</p>
+                    </section>
+
+                    <section id="contact">
+                        <h2 className="text-base font-bold text-foreground mb-3">{t('terms.s9_title')}</h2>
+                        <p>{t('terms.s9_body')}<a href="mailto:support@etuitionbd.com" className="text-primary underline font-medium">support@etuitionbd.com</a>.</p>
                     </section>
                 </div>
             </div>

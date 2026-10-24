@@ -197,6 +197,17 @@ const Register = () => {
                             className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-smooth active:scale-[0.98] text-sm shadow-sm">
                             {loading ? t('register.registering', 'Registering...') : t('register.create_account', 'Create Account')}
                         </Button>
+
+                        <p className="text-[11px] text-muted-foreground text-center mt-2.5 leading-relaxed">
+                            {t('register.terms_agreement', 'By creating an account, you agree to our')}{' '}
+                            <Link to="/terms" className="text-primary hover:underline font-medium">
+                                {t('terms.title', 'Terms of Service')}
+                            </Link>{' '}
+                            {t('common.and', 'and')}{' '}
+                            <Link to="/privacy" className="text-primary hover:underline font-medium">
+                                {t('privacy.title', 'Privacy Policy')}
+                            </Link>.
+                        </p>
                     </form>
 
                     <div className="relative my-4 flex items-center justify-center">

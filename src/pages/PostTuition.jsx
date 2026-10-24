@@ -327,6 +327,14 @@ const PostTuition = ({ isDashboard = false, onSuccess }) => {
         />
       </div>
 
+      <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+        {t('postTuition.consent_text', 'By posting this tuition requirement, you agree to our')}{' '}
+        <Link to="/terms" className="text-primary font-medium hover:underline">
+          {t('terms.title', 'Terms of Service')}
+        </Link>{' '}
+        {t('postTuition.consent_text_suffix', 'and allow verified educators to review your academic requirements to apply.')}
+      </p>
+
       <div className="flex items-center gap-4 pt-2">
         {isDashboard ? (
           <Button

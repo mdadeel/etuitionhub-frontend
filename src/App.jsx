@@ -31,7 +31,6 @@ const CommandPalette = lazy(() => import("./components/shared/CommandPalette"));
 import { cn } from "@/lib/utils";
 import RouteErrorBoundary from "./components/shared/RouteErrorBoundary";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
-import { DynamicIslandProvider } from "./contexts/DynamicIslandProvider";
 
 /**
  * Legacy SEO URLs of the form /tutors/<city-slug> (e.g. /tutors/dhaka) must
@@ -44,7 +43,6 @@ const RedirectToTutorsCity = () => {
   const cityName = (city || "").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   return <Navigate to={`/tutors?area=${encodeURIComponent(cityName)}`} replace />;
 };
-const DynamicIsland = lazy(() => import("./components/shared/DynamicIsland").then(m => ({ default: m.DynamicIsland })));
 
 // Lazy-loaded page components for code splitting
 const Home = lazy(() => import("./pages/Home"));
@@ -216,11 +214,9 @@ const CommandPaletteBridge = () => {
 const AuthenticatedProviders = ({ children }) => {
   return (
     <ChatProvider>
-      <DynamicIslandProvider>
-        <RealtimeBridge />
-        <HeartbeatBridge />
-        {children}
-      </DynamicIslandProvider>
+      <RealtimeBridge />
+      <HeartbeatBridge />
+      {children}
     </ChatProvider>
   );
 };

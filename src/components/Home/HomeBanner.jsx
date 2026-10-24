@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api';
@@ -13,6 +13,8 @@ import {
   GraduationCap, 
   BookOpen, 
   MapPin,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -64,13 +66,15 @@ const HomeBanner = () => {
     });
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    useEffect(() => {
+    const handleNextTutor = () => {
         if (tutors.length === 0) return;
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % tutors.length);
-        }, 5000); 
-        return () => clearInterval(interval);
-    }, [tutors.length]);
+        setCurrentIndex((prev) => (prev + 1) % tutors.length);
+    };
+
+    const handlePrevTutor = () => {
+        if (tutors.length === 0) return;
+        setCurrentIndex((prev) => (prev - 1 + tutors.length) % tutors.length);
+    };
 
     const subjects = [
         "Mathematics", "English", "Physics", "Chemistry", "Biology", "ICT", "Accounting"
@@ -97,8 +101,6 @@ const handleSearch = (e) => {
             style={{ backgroundImage: 'url(/images/herobackground.png)' }}>
             {/* Soft overlay for readability */}
             <div className="absolute inset-0 bg-background/85 backdrop-blur-[4px] z-0" />
-            {/* Soft radial glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-primary/5 blur-[120px] pointer-events-none z-0" />
 
             <div className="w-full px-4 md:px-6 lg:px-8 relative z-10 py-8 lg:py-20">
                 <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -228,66 +230,65 @@ const handleSearch = (e) => {
                         </div>
                     </div>
 
-                    {/* RIGHT - Layered tutor card stack */}
-                    <div className="lg:col-span-5 relative flex justify-center lg:justify-end mt-8 lg:mt-0">
-                        <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] h-[260px] sm:h-[310px] md:h-[330px] select-none">
-                            {/* Decorative Background Elements for Depth */}
-                            <div className="absolute -top-10 -right-10 size-48 bg-primary/10 rounded-full blur-[100px] -z-10" />
-                            <div className="absolute -bottom-10 -left-10 size-64 bg-primary/5 rounded-full blur-[100px] -z-10" />
-                            
-                            {tutors.map((tutor, idx) => {
-                                const relativeIndex = (idx - currentIndex + tutors.length) % tutors.length;
-                                
-                                // Only show the top cards
-                                if (relativeIndex > 2) return null;
-                                
-                                const zIndex = 30 - relativeIndex;
-                                const scale = 1 - relativeIndex * 0.05;
-                                const translateY = relativeIndex * 16; 
-                                const translateX = relativeIndex * 16; 
-                                const opacity = 1 - relativeIndex * 0.35;
-                                
-                                return (
-                                    <div
-                                        key={tutor._id}
-                                        className={cn(
-                                            "absolute inset-0 rounded-lg overflow-hidden bg-card shadow-[0_20px_40px_rgba(0,0,0,0.06)] border border-border/80 transition-all duration-500",
-                                        )}
-                                        style={{
-                                            zIndex,
-                                            transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
-                                            opacity: opacity
-                                        }}
-                                    >
-                                        <TutorCard tutor={tutor} isBannerPreview={true} />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
+                    {/* RIGHT - Featured Verified Tutor Spotlight */}
+                    <div className="lg:col-span-5 relative flex flex-col items-center lg:items-end justify-center mt-8 lg:mt-0">
+                        {tutors.length > 0 && (
+                            <div className="w-full max-w-[340px] sm:max-w-[380px] space-y-3">
+                                <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground px-1">
+                                    <span className="flex items-center gap-1.5 text-primary">
+                                        <ShieldCheck size={14} />
+                                        <span>{t('tutors.verified_badge', 'Verified Educator Spotlight')}</span>
+                                    </span>
+                                    <span className="font-mono text-[11px]">
+                                        {currentIndex + 1} / {tutors.length}
+                                    </span>
+                                </div>
 
-                {/* Bottom Stats */}
-                <div className="mt-24 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 pt-12 border-t border-border/60">
-                    {availability?.count ? (
-                        <div className="flex items-center gap-3">
-                            <div className="size-10 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center">
-                                <Users size={18} className="text-primary" />
+                                <div className="rounded-xl overflow-hidden bg-card border border-border shadow-md">
+                                    <TutorCard tutor={tutors[currentIndex]} isBannerPreview={true} />
+                                </div>
+
+                                {/* Manual Carousel Controls */}
+                                <div className="flex items-center justify-between px-1 pt-1 text-xs">
+                                    <div className="flex items-center gap-1">
+                                        {tutors.map((_, i) => (
+                                            <button
+                                                key={i}
+                                                type="button"
+                                                onClick={() => setCurrentIndex(i)}
+                                                aria-label={`View featured tutor ${i + 1}`}
+                                                className={cn(
+                                                    "h-1.5 rounded-full transition-all duration-300",
+                                                    currentIndex === i ? "w-6 bg-primary" : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                                                )}
+                                            />
+                                        ))}
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            className="size-7 rounded-lg"
+                                            onClick={handlePrevTutor}
+                                            aria-label="Previous tutor"
+                                        >
+                                            <ChevronLeft size={14} />
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            className="size-7 rounded-lg"
+                                            onClick={handleNextTutor}
+                                            aria-label="Next tutor"
+                                        >
+                                            <ChevronRight size={14} />
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-2xl font-bold text-foreground leading-none">{availability.count}</p>
-                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{t('homeBanner.live_suffix')}</p>
-                            </div>
-                        </div>
-                    ) : null}
-                    <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center">
-                            <ShieldCheck size={18} className="text-primary" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-foreground leading-none">{t('homeBanner.live_nationwide')}</p>
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{t('tutors.vetted')}</p>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -11,7 +11,6 @@ import FAQ from '../components/Home/FAQ';
 import CallToAction from '@/components/Home/CallToAction';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import FinalTrustStrip from '@/components/Home/FinalTrustStrip';
 import SEO from '../components/shared/SEO';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -20,7 +19,6 @@ import {
     serializeJsonLd,
 } from '../lib/jsonLd';
 import { trackEvent, trackPageView } from '../services/analytics';
-import SectionDivider from '../components/Home/illustrations/SectionDivider';
 
 const Home = () => {
     const { t } = useTranslation();
@@ -44,11 +42,9 @@ const Home = () => {
             <HomeBanner />
             <FeaturedCategories />
             <PopularTutors />
-            <SectionDivider variant="minimal-wave" />
             <WhyChooseUs />
             <PoruaTeaser />
             <Statistics />
-            <SectionDivider variant="book-edge" />
             <Testimonials />
             <FAQ />
             <CallToAction />
@@ -70,7 +66,6 @@ const Home = () => {
                 </div>
               </section>
             )}
-            <FinalTrustStrip />
         </div>
     );
 };

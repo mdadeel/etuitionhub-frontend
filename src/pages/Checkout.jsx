@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate, Navigate } from "react-router-dom"
+import { Link, useParams, useNavigate, Navigate } from "react-router-dom"
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { useAuth } from "../contexts/AuthContext"
@@ -376,6 +376,19 @@ const Checkout = () => {
                             </div>
 
                             <div className="pt-8 border-t border-border">
+                                <div className="mb-4 p-4 rounded-lg border border-primary/20 bg-primary/5 text-xs text-muted-foreground leading-relaxed">
+                                    <div className="flex items-center gap-2 font-bold text-foreground mb-1">
+                                        <ShieldCheck size={16} className="text-primary" />
+                                        <span>{t('checkout.safepay_guarantee_title')}</span>
+                                    </div>
+                                    <p>
+                                        {t('checkout.safepay_guarantee_desc')}{' '}
+                                        <Link to="/terms#refunds" className="text-primary font-semibold hover:underline">
+                                            {t('checkout.refund_terms_link')}
+                                        </Link>.
+                                    </p>
+                                </div>
+
                                 <Button
                                     type="submit"
                                     className="w-full h-16 rounded-none text-[11px] font-black uppercase tracking-[0.3em] shadow-lg flex items-center justify-center gap-3 group/btn"

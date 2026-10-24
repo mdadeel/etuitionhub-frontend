@@ -458,7 +458,19 @@ const BecomeTutor = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+                  <p className="text-xs text-muted-foreground leading-relaxed pt-2">
+                    {t('becomeTutor.consent_text', 'By submitting your tutor profile, you agree to our')}{' '}
+                    <Link to="/terms#tutors" className="text-primary font-medium hover:underline">
+                      {t('becomeTutor.terms_link', 'Tutor Code of Conduct')}
+                    </Link>{' '}
+                    {t('common.and', 'and')}{' '}
+                    <Link to="/privacy" className="text-primary font-medium hover:underline">
+                      {t('becomeTutor.privacy_link', 'Privacy Policy')}
+                    </Link>
+                    {t('becomeTutor.verification_consent', ', and consent to administrative verification of your NID and academic credentials.')}
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
                     <Button
                       type="button"
                       variant="outline"

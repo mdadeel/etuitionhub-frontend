@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import { cn } from '@/lib/utils';
 import useAnimateOnScroll from '../../hooks/useAnimateOnScroll';
+import { faqPageJsonLd, serializeJsonLd } from '../../lib/jsonLd';
 
 const FAQ = () => {
   const { t } = useTranslation();
@@ -20,8 +22,11 @@ const FAQ = () => {
 
   return (
     <section className="relative overflow-hidden bg-background py-16 md:py-24 border-b border-border/10">
-      {/* Soft violet glow — grounds the student-thinking illustration */}
-      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] -translate-y-1/2 rounded-full bg-violet-400/5 blur-[120px] pointer-events-none z-0" />
+      <Helmet>
+        <script type="application/ld+json">
+          {serializeJsonLd(faqPageJsonLd(faqs)).__html}
+        </script>
+      </Helmet>
 
       <div className="w-full px-4 md:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
